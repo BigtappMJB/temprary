@@ -4,6 +4,7 @@ import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { validationFunction } from "../generals/validators";
 import TableColumnForm from "../components/ColumnForm";
+import { useDialog } from "../components/alerts/DialogContent";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -97,6 +98,8 @@ const CreateTableForm = () => {
   const inputRef = useRef(null);
   const [columnsData, setFormData] = useState([]);
 
+  const { openDialog } = useDialog();
+
   const validateTableName = (name) => {
     if (!name) {
       return "Table name is required";
@@ -167,11 +170,50 @@ const CreateTableForm = () => {
     setFormData(updatedData);
   };
 
+  const handleColumnsClear = () => {
+    setFormData([]);
+  };
+
   const handleCreateTable = () => {
     console.log({
       tableName,
       columnsData,
     });
+    let type, message, title;
+    const noOfFormSubmitted = columnsData.filter(
+      (column) => column?.formSubmitted
+    ).length;
+    const totalForms = columnsData.length;
+    let error = totalForms !== noOfFormSubmitted;
+
+    if (error) {
+      type = "warning";
+      title = "Warning";
+      message = "Columns are not saved/updated properly.";
+    }
+
+    error &&
+      openDialog(
+        type,
+        title,
+        message,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            // Handle 'Yes' action
+            return;
+          }
+        }
+      );
   };
 
   return (
@@ -219,8 +261,20 @@ const CreateTableForm = () => {
                 type="button"
                 variant="contained"
                 color="primary"
+                style={{ marginRight: "10px" }}
+                disabled={columnsData.length === 0}
               >
                 Create
+              </FormButton>
+
+              <FormButton
+                onClick={handleColumnsClear}
+                type="button"
+                variant="contained"
+                color="error"
+                disabled={columnsData.length === 0}
+              >
+                Clear
               </FormButton>
             </Box>
           </SubHeader>

@@ -70,7 +70,6 @@ const AlertDialog = () => {
   const handleConfirmNo = () => {
     confirmDialog(false); // Return false for 'No'
   };
-
   return (
     <Dialog
       open={dialogOpen}

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -65,6 +65,7 @@ const Container = styled(Box)(({ theme }) => ({
  * @returns {JSX.Element} The rendered component
  */
 const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const {
     control,
     handleSubmit,
@@ -98,6 +99,7 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
       formSubmitted: true,
       ...getValues(),
     };
+    setFormSubmitted(true);
     onColumnSubmit(fullValue);
   }, [data.id, getValues, onColumnSubmit]);
 
@@ -114,7 +116,8 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
         fkTableName: data.fkTableName ?? "",
         fkTableFieldName: data.fkTableFieldName ?? "",
       });
-      onLocalSubmit();
+
+      data?.formSubmitted && onLocalSubmit();
     }
 
     console.log({
@@ -168,6 +171,9 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             error={!!errors.columnName}
             helperText={errors.columnName?.message}
             className="input-field"
+            InputProps={{
+              readOnly: formSubmitted, // Make the field read-only
+            }}
           />
         )}
       />
@@ -183,6 +189,9 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             error={!!errors.dataType}
             helperText={errors.dataType?.message}
             className="input-field"
+            InputProps={{
+              readOnly: formSubmitted, // Make the field read-only
+            }}
           >
             <MenuItem value="string">String</MenuItem>
             <MenuItem value="number">Number</MenuItem>
@@ -201,6 +210,9 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             error={!!errors.length}
             helperText={errors.length?.message}
             className="input-field"
+            InputProps={{
+              readOnly: formSubmitted, // Make the field read-only
+            }}
           />
         )}
       />
@@ -216,6 +228,9 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             error={!!errors.isPrimary}
             helperText={errors.isPrimary?.message}
             className="input-field"
+            InputProps={{
+              readOnly: formSubmitted, // Make the field read-only
+            }}
           >
             <MenuItem value={true}>Yes</MenuItem>
             <MenuItem value={false}>No</MenuItem>
@@ -234,6 +249,9 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             error={!!errors.isForeign}
             helperText={errors.isForeign?.message}
             className="input-field"
+            InputProps={{
+              readOnly: formSubmitted, // Make the field read-only
+            }}
           >
             <MenuItem value={true}>Yes</MenuItem>
             <MenuItem value={false}>No</MenuItem>
@@ -250,7 +268,7 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             variant="outlined"
             select
             InputProps={{
-              readOnly: watchIsPrimary === true, // Make the field read-only
+              readOnly: formSubmitted || watchIsPrimary === true, // Make the field read-only
             }}
             error={!!errors.isMandatory}
             helperText={errors.isMandatory?.message}
@@ -272,6 +290,9 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             error={!!errors.defaultValue}
             helperText={errors.defaultValue?.message}
             className="input-field"
+            InputProps={{
+              readOnly: formSubmitted, // Make the field read-only
+            }}
           />
         )}
       />
@@ -285,7 +306,7 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             variant="outlined"
             select
             InputProps={{
-              readOnly: watchIsForeign === false,
+              readOnly: formSubmitted || watchIsForeign === false,
             }}
             error={!!errors.fkTableName}
             helperText={errors.fkTableName?.message}
@@ -307,7 +328,7 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
             variant="outlined"
             select
             InputProps={{
-              readOnly: watchIsForeign === false,
+              readOnly: formSubmitted || watchIsForeign === false,
             }}
             error={!!errors.fkTableFieldName}
             helperText={errors.fkTableFieldName?.message}
@@ -319,18 +340,20 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
           </TextField>
         )}
       />
-      <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
-        <Tooltip title={data?.formSubmitted ? "Update" : "Save"}>
-          <IconButton type="submit" color="primary">
-            {data?.formSubmitted ? <CheckIcon /> : <CheckIcon />}
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton color="secondary" onClick={handleReset}>
-            <CloseIcon />
-          </IconButton>
-        </Tooltip>
-      </Box>
+      {!formSubmitted && (
+        <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
+          <Tooltip title={data?.formSubmitted ? "Update" : "Save"}>
+            <IconButton type="submit" color="primary">
+              {data?.formSubmitted ? <CheckIcon /> : <CheckIcon />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton color="secondary" onClick={handleReset}>
+              <CloseIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
     </Container>
   );
 };
