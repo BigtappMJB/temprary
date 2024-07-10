@@ -1,7 +1,7 @@
 /**
  * Creates an instance of Axios with default headers and security configurations.
  *
- * This instance is pre-configured with a base URL from the environment variable `REACT_APP_API_URL`.
+ * This instance is pre-configured with a base URL from the environment variable `REACT_APP_SPRINGBOOT_API_URL`.
  * It also includes various security headers to protect against common web vulnerabilities.
  *
  * @example
@@ -20,9 +20,9 @@ import axios from "axios";
 const instance = axios.create({
   /**
    * Base URL for the API requests.
-   * This value is taken from the environment variable `REACT_APP_API_URL`.
+   * This value is taken from the environment variable `REACT_APP_SPRINGBOOT_API_URL`.
    */
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: process.env.REACT_APP_SPRINGBOOT_API_URL,
   headers: {
     /**
      * Content-Type header set to application/json.

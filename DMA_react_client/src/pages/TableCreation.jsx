@@ -1,10 +1,13 @@
-// CreateTableForm.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { validationFunction } from "../generals/validators";
 import TableColumnForm from "../components/ColumnForm";
 import { useDialog } from "../components/alerts/DialogContent";
+import {
+  getDataTypesController,
+  tableCreationController,
+} from "../controllers/tableCreationController";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -63,7 +66,6 @@ const Form = styled("form")(({ theme }) => ({
 }));
 
 const FormField = styled(TextField)(({ theme }) => ({
-  // flex: 1,
   [theme.breakpoints.down("sm")]: {
     width: "100%",
   },
@@ -92,11 +94,12 @@ const FormButton = styled(Button)(({ theme }) => ({
  * @returns {JSX.Element} The rendered component
  */
 const CreateTableForm = () => {
-  const [tableName, setTableName] = useState();
+  const [tableName, setTableName] = useState("");
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const inputRef = useRef(null);
   const [columnsData, setFormData] = useState([]);
+  const [dataTypes, setDataTypes] = useState([]);
 
   const { openDialog } = useDialog();
 
@@ -115,6 +118,8 @@ const CreateTableForm = () => {
     setTableName(e.target.value);
     if (submitted) {
       setError(validateTableName(e.target.value));
+    } else {
+      setSubmitted(false);
     }
   };
 
@@ -124,10 +129,8 @@ const CreateTableForm = () => {
     setError(validationError);
 
     if (!validationError) {
-      // Handle form submission
       setSubmitted(true);
-      addColumnForm();
-      console.log("Form submitted:", tableName);
+      if (columnsData.length === 0) addColumnForm();
     }
   };
 
@@ -139,6 +142,14 @@ const CreateTableForm = () => {
 
   useEffect(() => {
     inputRef.current.focus();
+    const getDataTypes = async () => {
+      try {
+        setDataTypes(await getDataTypesController());
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getDataTypes();
   }, []);
 
   const addColumnForm = () => {
@@ -155,18 +166,13 @@ const CreateTableForm = () => {
         ...form,
         id: index,
       }));
-    console.log({
-      "Remove column": updatedFormData,
-    });
     setFormData(updatedFormData);
   };
 
   const onColumnSubmit = (columnData) => {
     let updatedData = columnsData;
     updatedData[columnData.id] = columnData;
-    console.log({
-      "Column Submit": updatedData[columnData.id],
-    });
+
     setFormData(updatedData);
   };
 
@@ -174,29 +180,78 @@ const CreateTableForm = () => {
     setFormData([]);
   };
 
-  const handleCreateTable = () => {
-    console.log({
-      tableName,
-      columnsData,
-    });
-    let type, message, title;
-    const noOfFormSubmitted = columnsData.filter(
-      (column) => column?.formSubmitted
-    ).length;
-    const totalForms = columnsData.length;
-    let error = totalForms !== noOfFormSubmitted;
+  const handleCreateTable = async () => {
+    try {
+      const finalObject = {
+        tableName,
+        columnsData,
+      };
+      let type, message, title;
+      const noOfFormSubmitted = columnsData.filter(
+        (column) => column?.formSubmitted
+      ).length;
+      const totalForms = columnsData.length;
+      let error = totalForms !== noOfFormSubmitted;
 
-    if (error) {
-      type = "warning";
-      title = "Warning";
-      message = "Columns are not saved/updated properly.";
-    }
+      if (error) {
+        type = "warning";
+        title = "Warning";
+        message = "Columns are not saved properly.";
+      }
 
-    error &&
+      if (error) {
+        openDialog(
+          type,
+          title,
+          message,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            if (confirmed) {
+              return;
+            }
+          }
+        );
+        return;
+      }
+
+      const response = await tableCreationController(finalObject);
+
+      if (response) {
+        openDialog(
+          "success",
+          "Success",
+          `Table "${tableName}" has been created successfully.`,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            setTableName("");
+            setSubmitted(false);
+            handleColumnsClear();
+          }
+        );
+      }
+    } catch (error) {
       openDialog(
-        type,
-        title,
-        message,
+        "critical",
+        "Table Creation Failed",
+        error?.errorMessage,
         {
           confirm: {
             name: "Ok",
@@ -209,11 +264,11 @@ const CreateTableForm = () => {
         },
         (confirmed) => {
           if (confirmed) {
-            // Handle 'Yes' action
             return;
           }
         }
       );
+    }
   };
 
   return (
@@ -240,7 +295,7 @@ const CreateTableForm = () => {
           </FormButtonContainer>
         </Form>
       </Container>
-      {tableName && submitted && (
+      {submitted && (
         <SecondContainer>
           <SubHeader>
             <Typography variant="h6">
@@ -284,6 +339,7 @@ const CreateTableForm = () => {
               onColumnSubmit={onColumnSubmit}
               data={data}
               onReset={onRemoveForm}
+              dataTypes={dataTypes}
             />
           ))}
         </SecondContainer>

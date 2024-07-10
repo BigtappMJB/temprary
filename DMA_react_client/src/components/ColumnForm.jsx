@@ -62,9 +62,11 @@ const Container = styled(Box)(({ theme }) => ({
  * @param {Object} props.data - Data for the form
  * @param {Function} props.onColumnSubmit - Function to handle form submission
  * @param {Function} props.onReset - Function to handle form reset
+ * @param {Function} props.dataTypes - Array of DataTypes
+ *
  * @returns {JSX.Element} The rendered component
  */
-const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
+const TableColumnForm = ({ data, onColumnSubmit, onReset, dataTypes }) => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const {
     control,
@@ -119,11 +121,6 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
 
       data?.formSubmitted && onLocalSubmit();
     }
-
-    console.log({
-      ID: data.id,
-      formValues: getValues(),
-    });
   }, [data, reset, getValues, onLocalSubmit]);
 
   // Reset form handler
@@ -193,9 +190,11 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset }) => {
               readOnly: formSubmitted, // Make the field read-only
             }}
           >
-            <MenuItem value="string">String</MenuItem>
-            <MenuItem value="number">Number</MenuItem>
-            <MenuItem value="boolean">Boolean</MenuItem>
+            {dataTypes.map((type) => (
+              <MenuItem key={type} value={type}>
+                {type}
+              </MenuItem>
+            ))}
           </TextField>
         )}
       />

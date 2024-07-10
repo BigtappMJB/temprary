@@ -1,1 +1,3 @@
-export const createTableAPI = "";
+export const createTableAPI = "/createtable";
+export const getDataTypes = "/getDataTypes";
+

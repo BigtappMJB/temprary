@@ -1,7 +1,7 @@
-import { createTableAPI } from "../services/apiPath";
-import { post } from "../services/apiService";
+import { createTableAPI, getDataTypes } from "../services/apiPath";
+import { get, post } from "../services/apiServices";
 
-export const postCMDController = async (formData) => {
+export const tableCreationController = async (formData) => {
   try {
     // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
@@ -9,15 +9,34 @@ export const postCMDController = async (formData) => {
     }
 
     // Prepare the body object with sanitized data
-
     const body = {
-      target: formData.target.trim(),
-      subTarget: formData.subTarget.trim(),
-      sectorClassification: formData.sectorClassification.trim(),
-      incorporationCity: formData.incorporationCity.trim(),
+      tableMetadata: {
+        tableName: formData.tableName,
+        columns: formData.columnsData.map((column) => ({
+          name: column.columnName,
+          dataType: column.dataType,
+          length: column.length,
+          nullable: column.isMandatory,
+          defaultValue: column.defaultValue,
+          primaryKey: column.isPrimary,
+        })),
+        includeAuditColumns: true,
+      },
     };
     // Send the POST request to the cmd API API endpoint
     const response = await post(createTableAPI, body);
+    // Return the response data
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getDataTypesController = async () => {
+  try {
+    // Prepare the body object with sanitized data
+    // Send the GET request to the cmd API API endpoint
+    const response = await get(getDataTypes);
     // Return the response data
     return response;
   } catch (error) {
