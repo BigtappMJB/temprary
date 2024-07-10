@@ -229,7 +229,7 @@ const CreateTableForm = () => {
         openDialog(
           "success",
           "Success",
-          `Table "${tableName}" has been created successfully.`,
+          response,
           {
             confirm: {
               name: "Ok",
