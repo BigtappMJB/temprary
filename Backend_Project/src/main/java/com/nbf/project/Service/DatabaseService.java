@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,10 @@ public class DatabaseService {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+    DataSource dataSource;
+
 
 	public void createTable(TableMetadata tableMetadata) {
         String tableName = tableMetadata.getTableName();
@@ -292,6 +298,31 @@ public class DatabaseService {
 		}
 		return jdbcTemplate.queryForList(sql.toString());
 	}
+	
+	
+	
+	
+	 /**
+     * Retrieves all table names from the specified database.
+     * @return List of table names.
+     */
+    public List<String> getAllTableNames() {
+        List<String> tableNames = new ArrayList<>();
+        try {
+            DatabaseMetaData metaData = dataSource.getConnection().getMetaData();
+            String dbName = dataSource.getConnection().getCatalog();
+            ResultSet tables = metaData.getTables(dbName, null, "%", new String[]{"TABLE"});
+            while (tables.next()) {
+                tableNames.add(tables.getString("TABLE_NAME"));
+            }
+        } catch (Exception e) {
+            LOG.error("Error retrieving table names: {}", e.getMessage());
+            throw new RuntimeException("Failed to retrieve table names.", e);
+        }
+        return tableNames;
+    }
+	
+	
 
 	public void addData(String tableName, Map<String, Object> data) {
 		StringBuilder columns = new StringBuilder();

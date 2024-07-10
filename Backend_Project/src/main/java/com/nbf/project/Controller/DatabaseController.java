@@ -39,88 +39,88 @@ public class DatabaseController {
 		}
 	}
 
-	
-	  @PostMapping("/addColumns")
-	    public ResponseEntity<String> addColumns(@RequestBody TableMetadata tableMetadata) {
-	        try {
-	            databaseService.addColumnsToTable(tableMetadata);
-	            return ResponseEntity.ok("Columns added successfully to the table: " + tableMetadata.getTableName());
-	        } catch (RuntimeException e) {
-	            return ResponseEntity.badRequest().body("Failed to add columns: " + e.getMessage());
-	        }
-	    }
-	  
-	  
-	  // delete Column 
-	  
-	  @PostMapping("deleteColumn/{tableName}/{columnName}")
-	    public ResponseEntity<String> deleteColumn(@PathVariable String tableName, @PathVariable String columnName) {
-	        try {
-	        	databaseService.deleteColumn(tableName, columnName);
-	            return ResponseEntity.ok("Column '" + columnName + "' successfully deleted from '" + tableName + "'.");
-	        } catch (RuntimeException e) {
-	            return ResponseEntity.badRequest().body("Error deleting column: " + e.getMessage());
-	        }
-	    }
-	  
-	  
-	  //Update Coloumn 
-	  
-	  @PostMapping("/updateColumn")
-	  public ResponseEntity<String> updateColumn(@RequestBody UpdateColumnRequest updateColumnRequest) {
-	      try {
-	          databaseService.updateColumn(updateColumnRequest.getTableName(), updateColumnRequest.getColumnInfo());
-	          return ResponseEntity.ok("Column updated successfully.");
-	      } catch (RuntimeException e) {
-	          return ResponseEntity.badRequest().body("Failed to update column: " + e.getMessage());
-	      }
-	  }
+	@PostMapping("/addColumns")
+	public ResponseEntity<String> addColumns(@RequestBody TableMetadata tableMetadata) {
+		try {
+			databaseService.addColumnsToTable(tableMetadata);
+			return ResponseEntity.ok("Columns added successfully to the table: " + tableMetadata.getTableName());
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body("Failed to add columns: " + e.getMessage());
+		}
+	}
 
-	  
-	  @GetMapping("/getDataTypes")
-	  public ResponseEntity<List<String>> getDataTypes() {
-	      try {
-	          List<String> dataTypes = databaseService.getAllDataTypes();
-	          return ResponseEntity.ok(dataTypes);
-	      } catch (RuntimeException e) {
-	          return ResponseEntity.badRequest().body(Collections.emptyList());
-	      }
-	  }
+	// delete Column
 
-	  
-	  
+	@PostMapping("deleteColumn/{tableName}/{columnName}")
+	public ResponseEntity<String> deleteColumn(@PathVariable String tableName, @PathVariable String columnName) {
+		try {
+			databaseService.deleteColumn(tableName, columnName);
+			return ResponseEntity.ok("Column '" + columnName + "' successfully deleted from '" + tableName + "'.");
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body("Error deleting column: " + e.getMessage());
+		}
+	}
+
+	// Update Coloumn
+
+	@PostMapping("/updateColumn")
+	public ResponseEntity<String> updateColumn(@RequestBody UpdateColumnRequest updateColumnRequest) {
+		try {
+			databaseService.updateColumn(updateColumnRequest.getTableName(), updateColumnRequest.getColumnInfo());
+			return ResponseEntity.ok("Column updated successfully.");
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body("Failed to update column: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/getDataTypes")
+	public ResponseEntity<List<String>> getDataTypes() {
+		try {
+			List<String> dataTypes = databaseService.getAllDataTypes();
+			return ResponseEntity.ok(dataTypes);
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body(Collections.emptyList());
+		}
+	}
+
 	// In DatabaseController.java
 
-	  @PostMapping("/getData")
-	  public ResponseEntity<List<Map<String, Object>>> getData(@RequestBody Map<String, Object> request) {
-	      String tableName = (String) request.get("tableName");
-	      Map<String, Object> conditions = (Map<String, Object>) request.get("conditions");
-	      return ResponseEntity.ok(databaseService.getData(tableName, conditions));
-	  }
+	@PostMapping("/getData")
+	public ResponseEntity<List<Map<String, Object>>> getData(@RequestBody Map<String, Object> request) {
+		String tableName = (String) request.get("tableName");
+		Map<String, Object> conditions = (Map<String, Object>) request.get("conditions");
+		return ResponseEntity.ok(databaseService.getData(tableName, conditions));
+	}
 
-	  @PostMapping("/addData")
-	  public ResponseEntity<String> addData(@RequestBody Map<String, Object> request) {
-	      String tableName = (String) request.get("tableName");
-	      Map<String, Object> data = (Map<String, Object>) request.get("data");
-	      databaseService.addData(tableName, data);
-	      return ResponseEntity.ok("Data added successfully.");
-	  }
+	@GetMapping("/tables")
+	public ResponseEntity<List<String>> getAllTableNames() {
+		List<String> tableNames = databaseService.getAllTableNames();
+		return ResponseEntity.ok(tableNames);
+	}
 
-	  @PostMapping("/updateData")
-	  public ResponseEntity<String> updateData(@RequestBody Map<String, Object> request) {
-	      String tableName = (String) request.get("tableName");
-	      Map<String, Object> data = (Map<String, Object>) request.get("data");
-	      Map<String, Object> conditions = (Map<String, Object>) request.get("conditions");
-	      databaseService.updateData(tableName, data, conditions);
-	      return ResponseEntity.ok("Data updated successfully.");
-	  }
+	@PostMapping("/addData")
+	public ResponseEntity<String> addData(@RequestBody Map<String, Object> request) {
+		String tableName = (String) request.get("tableName");
+		Map<String, Object> data = (Map<String, Object>) request.get("data");
+		databaseService.addData(tableName, data);
+		return ResponseEntity.ok("Data added successfully.");
+	}
 
-	  @PostMapping("/deleteData")
-	  public ResponseEntity<String> deleteData(@RequestBody Map<String, Object> request) {
-	      String tableName = (String) request.get("tableName");
-	      Map<String, Object> conditions = (Map<String, Object>) request.get("conditions");
-	      databaseService.deleteData(tableName, conditions);
-	      return ResponseEntity.ok("Data deleted successfully.");
-	  }
+	@PostMapping("/updateData")
+	public ResponseEntity<String> updateData(@RequestBody Map<String, Object> request) {
+		String tableName = (String) request.get("tableName");
+		Map<String, Object> data = (Map<String, Object>) request.get("data");
+		Map<String, Object> conditions = (Map<String, Object>) request.get("conditions");
+		databaseService.updateData(tableName, data, conditions);
+		return ResponseEntity.ok("Data updated successfully.");
+	}
+
+	@PostMapping("/deleteData")
+	public ResponseEntity<String> deleteData(@RequestBody Map<String, Object> request) {
+		String tableName = (String) request.get("tableName");
+		Map<String, Object> conditions = (Map<String, Object>) request.get("conditions");
+		databaseService.deleteData(tableName, conditions);
+		return ResponseEntity.ok("Data deleted successfully.");
+	}
 
 }
