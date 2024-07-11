@@ -240,11 +240,10 @@ const TableConfiguration = () => {
 
   const formCancelled = () => {
     setselectedColumnData({});
-    if (formActions.action !== "add")
-      setFormAction({
-        display: false,
-        action: null,
-      });
+    setFormAction({
+      display: false,
+      action: null,
+    });
   };
 
   const openDeleteDialog = () => {
@@ -294,7 +293,12 @@ const TableConfiguration = () => {
           },
         },
         (confirmed) => {
-          formCancelled();
+          setselectedColumnData({});
+          if (formActions.action !== "add")
+            setFormAction({
+              display: false,
+              action: null,
+            });
         }
       );
     } catch (error) {
