@@ -138,7 +138,7 @@ function Header({ open, handleDrawerToggle }) {
           {!open && <MenuIcon style={{ color: "black" }} />}
         </IconButton>
 
-        <Title variant="h6">NBF CAD&CMD</Title>
+        <Title variant="h6">DMA Application</Title>
         <UserInfo onClick={handleMenuOpen}>
           <Avatar />
           <UserText>
