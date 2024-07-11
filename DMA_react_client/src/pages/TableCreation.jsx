@@ -71,14 +71,14 @@ const FormField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-const FormButtonContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "flex-end",
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-    justifyContent: "flex-start",
-  },
-}));
+// const FormButtonContainer = styled(Box)(({ theme }) => ({
+//   display: "flex",
+//   justifyContent: "flex-end",
+//   [theme.breakpoints.down("sm")]: {
+//     width: "100%",
+//     justifyContent: "flex-start",
+//   },
+// }));
 
 const FormButton = styled(Button)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
@@ -96,7 +96,7 @@ const FormButton = styled(Button)(({ theme }) => ({
 const CreateTableForm = () => {
   const [tableName, setTableName] = useState("");
   const [error, setError] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(true);
   const inputRef = useRef(null);
   const [columnsData, setFormData] = useState([]);
   const [dataTypes, setDataTypes] = useState([]);
@@ -182,11 +182,37 @@ const CreateTableForm = () => {
 
   const handleCreateTable = async () => {
     try {
+      const validationError = validateTableName(tableName);
+      setError(validationError);
+      if (tableName === "" && validationError) {
+        openDialog(
+          "warning",
+          "Warning",
+          "Invalid Table Name",
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            if (confirmed) {
+              return;
+            }
+          }
+        );
+
+        return;
+      }
       const finalObject = {
         tableName,
         columnsData,
       };
-      let type, message, title;
+
       const noOfFormSubmitted = columnsData.filter(
         (column) => column?.formSubmitted
       ).length;
@@ -194,16 +220,10 @@ const CreateTableForm = () => {
       let error = totalForms !== noOfFormSubmitted;
 
       if (error) {
-        type = "warning";
-        title = "Warning";
-        message = "Columns are not saved properly.";
-      }
-
-      if (error) {
         openDialog(
-          type,
-          title,
-          message,
+          "warning",
+          "Warning",
+          "Columns are not saved properly.",
           {
             confirm: {
               name: "Ok",
@@ -226,9 +246,12 @@ const CreateTableForm = () => {
       const response = await tableCreationController(finalObject);
 
       if (response) {
+        const success =
+          response.trim().toLowerCase() ===
+          "Table created successfully".trim().toLowerCase();
         openDialog(
-          "success",
-          "Success",
+          success ? "success" : "warning",
+          success ? "Success" : "Warning ",
           response,
           {
             confirm: {
@@ -241,9 +264,14 @@ const CreateTableForm = () => {
             },
           },
           (confirmed) => {
-            setTableName("");
-            setSubmitted(false);
-            handleColumnsClear();
+            if (
+              response.trim().toLowerCase() ===
+              "Table created successfully".trim().toLowerCase()
+            ) {
+              setTableName("");
+              setSubmitted(false);
+              handleColumnsClear();
+            }
           }
         );
       }
@@ -288,11 +316,11 @@ const CreateTableForm = () => {
             inputRef={inputRef}
             onKeyDown={handleKeyPress}
           />
-          <FormButtonContainer>
+          {/* <FormButtonContainer>
             <FormButton type="submit" variant="contained" color="primary">
               Submit
             </FormButton>
-          </FormButtonContainer>
+          </FormButtonContainer> */}
         </Form>
       </Container>
       {submitted && (
@@ -309,7 +337,7 @@ const CreateTableForm = () => {
                 color="primary"
                 style={{ marginRight: "10px" }}
               >
-                Add
+                Add Column
               </FormButton>
               <FormButton
                 onClick={handleCreateTable}
@@ -319,10 +347,10 @@ const CreateTableForm = () => {
                 style={{ marginRight: "10px" }}
                 disabled={columnsData.length === 0}
               >
-                Create
+                Create Table
               </FormButton>
 
-              <FormButton
+              {/* <FormButton
                 onClick={handleColumnsClear}
                 type="button"
                 variant="contained"
@@ -330,7 +358,7 @@ const CreateTableForm = () => {
                 disabled={columnsData.length === 0}
               >
                 Clear
-              </FormButton>
+              </FormButton> */}
             </Box>
           </SubHeader>
           {columnsData?.map((data) => (
