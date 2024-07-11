@@ -25,7 +25,7 @@ const SecondContainer = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   borderRadius: theme.spacing(1),
   boxShadow: theme.shadows[3],
-  width: "80vw",
+  // width: "80vw",
   [theme.breakpoints.down("sm")]: {
     padding: theme.spacing(2),
   },
@@ -329,13 +329,13 @@ const CreateTableForm = () => {
             <Typography variant="h6">
               <b>Add columns to Table</b>
             </Typography>
-            <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+            <Box display="flex"  justifyContent="space-between" flexWrap="wrap">
               <FormButton
                 type="button"
                 onClick={addColumnForm}
                 variant="contained"
                 color="primary"
-                style={{ marginRight: "10px" }}
+                style={{ marginRight: "10px" }  }
               >
                 Add Column
               </FormButton>

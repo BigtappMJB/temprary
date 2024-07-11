@@ -50,6 +50,7 @@ const Main = styled("main", {
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginLeft: open ? drawerWidth : "0",
+  width: open ? "80vw" :"100%",
   [theme.breakpoints.down("sm")]: {
     marginLeft: 0,
   },
