@@ -1,7 +1,7 @@
 package com.nbf.project.Model;
 
 public class ColumnInfo {
-
+	private boolean isAutoIncrement;
 	private String name;
 	private String dataType;
 	private boolean nullable;
@@ -118,6 +118,14 @@ public class ColumnInfo {
 
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public boolean isAutoIncrement() {
+		return isAutoIncrement;
+	}
+
+	public void setAutoIncrement(boolean isAutoIncrement) {
+		this.isAutoIncrement = isAutoIncrement;
 	}
 
 }

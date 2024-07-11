@@ -122,19 +122,24 @@ public class DatabaseController {
 
 	@PostMapping("/updateData")
 	public ResponseEntity<String> updateData(@RequestBody Map<String, Object> request) {
-		String tableName = (String) request.get("tableName");
-		Map<String, Object> data = (Map<String, Object>) request.get("data");
-		Map<String, Object> conditions = (Map<String, Object>) request.get("conditions");
-		databaseService.updateData(tableName, data, conditions);
-		return ResponseEntity.ok("Data updated successfully.");
+	    String tableName = (String) request.get("tableName");
+	    Map<String, Object> data = (Map<String, Object>) request.get("data");
+
+	    if (!data.containsKey("paymentTable_ID")) {
+	        return ResponseEntity.badRequest().body("Primary key 'paymentTable_ID' is missing.");
+	    }
+
+	    // Extract the primary key value and remove it from data map
+	    Object primaryKeyValue = data.remove("paymentTable_ID");
+	    Map<String, Object> conditions = Map.of("paymentTable_ID", primaryKeyValue);
+
+	    try {
+	        databaseService.updateData(tableName, data, conditions);
+	        return ResponseEntity.ok("Data updated successfully.");
+	    } catch (Exception e) {
+	        return ResponseEntity.badRequest().body("Error updating data: " + e.getMessage());
+	    }
 	}
 
-	@PostMapping("/deleteData")
-	public ResponseEntity<String> deleteData(@RequestBody Map<String, Object> request) {
-		String tableName = (String) request.get("tableName");
-		Map<String, Object> conditions = (Map<String, Object>) request.get("conditions");
-		databaseService.deleteData(tableName, conditions);
-		return ResponseEntity.ok("Data deleted successfully.");
-	}
-
+	
 }

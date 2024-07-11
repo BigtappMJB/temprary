@@ -48,14 +48,21 @@ public class DatabaseService {
         List<ColumnInfo> columns = tableMetadata.getColumns();
         for (ColumnInfo column : columns) {
             sql.append(column.getName()).append(" ").append(column.getDataType());
-            if (column.getLength() > 0) {
+            if (column.getDataType().equalsIgnoreCase("VARCHAR") || column.getDataType().equalsIgnoreCase("CHAR")) {
                 sql.append("(").append(column.getLength()).append(")");
             }
-            if (!column.isNullable()) {
-                sql.append(" NOT NULL");
-            }
-            if (column.getDefaultValue() != null && !column.getDefaultValue().isEmpty()) {
-                sql.append(" DEFAULT '").append(column.getDefaultValue()).append("'");
+            if (column.isPrimaryKey()) {
+                sql.append(" PRIMARY KEY");
+                if (column.isAutoIncrement()) {
+                    sql.append(" AUTO_INCREMENT");
+                }
+            } else {
+                if (!column.isNullable()) {
+                    sql.append(" NOT NULL");
+                }
+                if (column.getDefaultValue() != null && !column.getDefaultValue().isEmpty()) {
+                    sql.append(" DEFAULT '").append(column.getDefaultValue()).append("'");
+                }
             }
             sql.append(", ");
         }
@@ -71,16 +78,8 @@ public class DatabaseService {
             sql.append("is_active VARCHAR(5) DEFAULT 'Y', ");
         }
 
-        // Primary key constraint
-        sql.append("PRIMARY KEY (");
-        for (ColumnInfo column : columns) {
-            if (column.isPrimaryKey()) {
-                sql.append(column.getName()).append(", ");
-            }
-        }
-        sql.delete(sql.length() - 2, sql.length()); // Remove the last comma and space
-        sql.append(")");
-
+        // Removing the last comma and space
+        sql.delete(sql.length() - 2, sql.length());
         sql.append(")");
 
         LOG.info("Executing SQL query to create table: {}", sql);
@@ -381,21 +380,41 @@ public class DatabaseService {
 		jdbcTemplate.execute(sql);
 	}
 
-	public void updateData(String tableName, Map<String, Object> data, Map<String, Object> conditions) {
-		StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
-		data.forEach((key, value) -> sql.append(key + " = '" + value + "', "));
-		sql.delete(sql.length() - 2, sql.length()); // Remove the last comma and space
-		sql.append(" WHERE ");
-		conditions.forEach((key, value) -> sql.append(key + " = '" + value + "' AND "));
-		sql.delete(sql.length() - 5, sql.length()); // Remove the last " AND "
-		jdbcTemplate.execute(sql.toString());
-	}
+	 public void updateData(String tableName, Map<String, Object> data, Map<String, Object> conditions) {
+	        // Build SQL for update
+	        StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
+	        List<Object> params = new ArrayList<>();
+	        // Append keys and values for the SET clause
+	        data.forEach((key, value) -> {
+	            sql.append(key).append(" = ?, ");
+	            params.add(value);
+	        });
+	        // Remove the last comma and space
+	        sql.delete(sql.length() - 2, sql.length());
+	        sql.append(" WHERE ");
+	        // Append keys and values for the WHERE clause
+	        conditions.forEach((key, value) -> {
+	            sql.append(key).append(" = ? AND ");
+	            params.add(value);
+	        });
+	        // Remove the last " AND "
+	        sql.delete(sql.length() - 5, sql.length());
 
-	public void deleteData(String tableName, Map<String, Object> conditions) {
-		StringBuilder sql = new StringBuilder("DELETE FROM " + tableName + " WHERE ");
-		conditions.forEach((key, value) -> sql.append(key + " = '" + value + "' AND "));
-		sql.delete(sql.length() - 5, sql.length()); // Remove the last " AND "
-		jdbcTemplate.execute(sql.toString());
-	}
+	        // Execute the update with prepared statement
+	        jdbcTemplate.update(sql.toString(), params.toArray());
+	    }
+
+	 public void deleteData(String tableName, Map<String, Object> conditions) {
+	        if (tableName == null || tableName.isEmpty() || conditions == null || conditions.isEmpty()) {
+	            throw new IllegalArgumentException("Table name and conditions must not be empty.");
+	        }
+	        StringBuilder sql = new StringBuilder("DELETE FROM " + tableName + " WHERE ");
+	        conditions.forEach((key, value) -> {
+	            sql.append(key).append(" = ? AND ");
+	        });
+	        sql.delete(sql.length() - 5, sql.length());
+	        Object[] args = conditions.values().toArray();
+	        jdbcTemplate.update(sql.toString(), args);
+	    }
 
 }
