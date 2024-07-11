@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Drawer,
   List,
@@ -13,7 +13,8 @@ import { Link } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import AddIcon from "@mui/icons-material/Add";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { tableCreationPath } from "../routes/routePath";
+import { tableConfigurationPath, tableCreationPath } from "../routes/routePath";
+import { useLocation } from "react-router-dom";
 
 /**
  * Sidebar component renders a navigation drawer.
@@ -31,6 +32,7 @@ const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
   const navigatorOnClick = () => {
     isMobile && handleDrawerToggle();
   };
+
   return (
     <Drawer
       variant={isMobile ? "temporary" : "persistent"}
@@ -68,6 +70,19 @@ const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
               <AddIcon />
             </ListItemIcon>
             <ListItemText primary="Table Creation" />
+          </ListItem>
+
+          <ListItem
+            button
+            component={Link}
+            onClick={navigatorOnClick}
+            to={tableConfigurationPath}
+            dis
+          >
+            <ListItemIcon>
+              <AddIcon />
+            </ListItemIcon>
+            <ListItemText primary="Table Configuration" />
           </ListItem>
         </List>
       </Box>

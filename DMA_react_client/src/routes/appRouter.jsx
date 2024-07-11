@@ -24,16 +24,17 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import TableCreation from "../pages/TableCreation";
-import { tableCreationPath } from "./routePath";
+import { tableConfigurationPath, tableCreationPath } from "./routePath";
+import TableConfiguration from "../pages/TableConfiguration";
 
 const routesObject = [
   {
-    path: "/",
+    path: tableCreationPath,
     element: <TableCreation />,
   },
   {
-    path: tableCreationPath,
-    element: <TableCreation />,
+    path: tableConfigurationPath,
+    element: <TableConfiguration />,
   },
 ];
 
