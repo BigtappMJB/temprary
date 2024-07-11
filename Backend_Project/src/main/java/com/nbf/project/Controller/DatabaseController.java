@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nbf.project.Model.TableMetadata;
 import com.nbf.project.Service.DatabaseService;
 import com.nbf.project.request.CreateTableRequest;
+import com.nbf.project.request.TableDataRequest;
 import com.nbf.project.request.UpdateColumnRequest;
 
 @RestController
@@ -27,6 +28,7 @@ public class DatabaseController {
 
 	@Autowired
 	private DatabaseService databaseService;
+
 	@PostMapping("/createtable")
 	public String createTable(@RequestBody CreateTableRequest request) {
 		LOG.info("Received request to create table: {}", request.getTableMetadata().getTableName());
@@ -97,6 +99,17 @@ public class DatabaseController {
 	public ResponseEntity<List<String>> getAllTableNames() {
 		List<String> tableNames = databaseService.getAllTableNames();
 		return ResponseEntity.ok(tableNames);
+	}
+
+	@PostMapping("/getDataByTable")
+	public ResponseEntity<List<Map<String, Object>>> getDataByTable(@RequestBody TableDataRequest request) {
+		try {
+			List<Map<String, Object>> data = databaseService.getDataByTable(request.getTableName(),
+					request.getConditions());
+			return ResponseEntity.ok(data);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(null); // Consider a more informative error handling strategy
+		}
 	}
 
 	@PostMapping("/addData")

@@ -3,7 +3,10 @@ package com.nbf.project.Service;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import com.nbf.project.Model.ColumnInfo;
@@ -323,6 +327,46 @@ public class DatabaseService {
     }
 	
 	
+    
+    
+    public List<Map<String, Object>> getDataByTable(String tableName, Map<String, Object> conditions) throws Exception {
+        StringBuilder sql = new StringBuilder("SELECT * FROM ").append(tableName);
+
+        if (conditions != null && !conditions.isEmpty()) {
+            sql.append(" WHERE ");
+            conditions.forEach((key, value) -> {
+                sql.append(key).append(" = ? AND ");
+            });
+            sql.delete(sql.length() - 5, sql.length());
+        }
+
+        Object[] args = conditions != null ? conditions.values().toArray() : new Object[0];
+
+        return jdbcTemplate.query(sql.toString(), args, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return extractData(rs);
+            }
+        });
+    }
+
+    private Map<String, Object> extractData(ResultSet rs) throws SQLException {
+        Map<String, Object> row = new LinkedHashMap<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columns = metaData.getColumnCount();
+        for (int i = 1; i <= columns; i++) {
+            row.put(metaData.getColumnName(i), rs.getObject(i));
+        }
+        return row;
+    }
+
+    
+    
+    
+    
+    
+    
+    /////////////////////////ADD Data for the  tables Methodss ////////////////////
 
 	public void addData(String tableName, Map<String, Object> data) {
 		StringBuilder columns = new StringBuilder();
