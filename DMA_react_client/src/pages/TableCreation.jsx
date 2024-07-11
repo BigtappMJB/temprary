@@ -329,13 +329,13 @@ const CreateTableForm = () => {
             <Typography variant="h6">
               <b>Add columns to Table</b>
             </Typography>
-            <Box display="flex"  justifyContent="space-between" flexWrap="wrap">
+            <Box display="flex" justifyContent="space-between" flexWrap="wrap">
               <FormButton
                 type="button"
                 onClick={addColumnForm}
                 variant="contained"
                 color="primary"
-                style={{ marginRight: "10px" }  }
+                style={{ marginRight: "10px" }}
               >
                 Add Column
               </FormButton>

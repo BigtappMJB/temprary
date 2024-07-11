@@ -18,6 +18,7 @@ import { useMediaQuery } from "@mui/material";
 import { DialogProvider } from "./components/alerts/DialogContent";
 import AlertDialog from "./components/alerts/AlertDialog";
 import AppRouter from "./routes/appRouter";
+import { LoadingProvider } from "./components/loading/LoadingContext";
 
 /**
  * The width of the sidebar in pixels.
@@ -50,7 +51,7 @@ const Main = styled("main", {
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginLeft: open ? drawerWidth : "0",
-  width: open ? "80vw" :"100%",
+  width: open ? "80vw" : "100%",
   [theme.breakpoints.down("sm")]: {
     marginLeft: 0,
   },
@@ -98,26 +99,28 @@ const App = () => {
   }, [isMobile]);
 
   return (
-    <DialogProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div style={{ display: "flex" }}>
-          <Sidebar
-            isMobile={isMobile}
-            open={open}
-            handleDrawerToggle={handleDrawerToggle}
-          />
-          <Main open={open}>
-            <Header open={open} handleDrawerToggle={handleDrawerToggle} />
-            <SubMain>
-              <AppRouter />
-            </SubMain>
-            <Footer />
-          </Main>
-        </div>
-        <AlertDialog />
-      </ThemeProvider>
-    </DialogProvider>
+    <LoadingProvider>
+      <DialogProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <div style={{ display: "flex" }}>
+            <Sidebar
+              isMobile={isMobile}
+              open={open}
+              handleDrawerToggle={handleDrawerToggle}
+            />
+            <Main open={open}>
+              <Header open={open} handleDrawerToggle={handleDrawerToggle} />
+              <SubMain>
+                <AppRouter />
+              </SubMain>
+              <Footer />
+            </Main>
+          </div>
+          <AlertDialog />
+        </ThemeProvider>
+      </DialogProvider>
+    </LoadingProvider>
   );
 };
 

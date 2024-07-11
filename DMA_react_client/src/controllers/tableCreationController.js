@@ -8,6 +8,8 @@ export const tableCreationController = async (formData) => {
       throw new Error("Invalid form data");
     }
 
+    console.log({formData});
+
     // Prepare the body object with sanitized data
     const body = {
       tableMetadata: {
