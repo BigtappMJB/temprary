@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -8,11 +8,12 @@ import {
   Box,
   Grid,
   Button,
+  useMediaQuery,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../generals/validators";
-import { getDataTypesController } from "../controllers/tableCreationController";
+import { useTheme } from "@emotion/react";
 const FormButton = styled(Button)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     width: "100%",
@@ -75,9 +76,17 @@ const Container = styled(Box)(({ theme }) => ({
  *
  * @returns {JSX.Element} The rendered component
  */
-const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
-  const [dataTypes, setDataTypes] = useState([]);
-  const [formSubmitted, setFormSubmitted] = useState(false);
+const SingleColumnsForm = ({
+  action,
+  dataTypes,
+  onColumnSubmit,
+  data,
+  formCancelled,
+}) => {
+  const [readOnly, setReadOnly] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const {
     control,
     handleSubmit,
@@ -106,17 +115,6 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
   const watchIsPrimary = watch("isPrimary");
 
   useEffect(() => {
-    const getDataTypes = async () => {
-      try {
-        setDataTypes(await getDataTypesController());
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getDataTypes();
-  }, []);
-
-  useEffect(() => {
     if (data) {
       reset({
         columnName: data.columnName ?? "",
@@ -132,10 +130,15 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
     }
   }, [data, reset, getValues]);
 
+  useEffect(() => {
+    setReadOnly(action.action === "read");
+  }, [action]);
+
+  
   // Reset form handler
   const handleReset = () => {
     reset({});
-    onClose();
+    formCancelled();
   };
 
   // Effect to sanitize input values
@@ -164,7 +167,9 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
     }
   }, [watchIsForeign, watchIsPrimary, reset, setValue]);
 
-  const onLocalSubmit = () => {};
+  const onLocalSubmit = () => {
+    onColumnSubmit(getValues());
+  };
 
   return (
     <Container component="form" onSubmit={handleSubmit(onLocalSubmit)}>
@@ -182,7 +187,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 helperText={errors.columnName?.message}
                 fullWidth
                 InputProps={{
-                  readOnly: formSubmitted, // Make the field read-only
+                  readOnly: readOnly, // Make the field read-only
                 }}
               />
             )}
@@ -202,7 +207,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 helperText={errors.dataType?.message}
                 fullWidth
                 InputProps={{
-                  readOnly: formSubmitted, // Make the field read-only
+                  readOnly: readOnly, // Make the field read-only
                 }}
               >
                 {dataTypes.map((type) => (
@@ -227,7 +232,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 helperText={errors.length?.message}
                 fullWidth
                 InputProps={{
-                  readOnly: formSubmitted, // Make the field read-only
+                  readOnly: readOnly, // Make the field read-only
                 }}
               />
             )}
@@ -247,7 +252,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 helperText={errors.isPrimary?.message}
                 fullWidth
                 InputProps={{
-                  readOnly: formSubmitted, // Make the field read-only
+                  readOnly: readOnly, // Make the field read-only
                 }}
               >
                 <MenuItem value={true}>Yes</MenuItem>
@@ -270,7 +275,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 helperText={errors.isForeign?.message}
                 fullWidth
                 InputProps={{
-                  readOnly: formSubmitted, // Make the field read-only
+                  readOnly: readOnly, // Make the field read-only
                 }}
               >
                 <MenuItem value={true}>Yes</MenuItem>
@@ -290,7 +295,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 variant="outlined"
                 select
                 InputProps={{
-                  readOnly: formSubmitted || watchIsPrimary === true, // Make the field read-only
+                  readOnly: readOnly || watchIsPrimary === true, // Make the field read-only
                 }}
                 error={!!errors.isMandatory}
                 helperText={errors.isMandatory?.message}
@@ -315,7 +320,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 helperText={errors.defaultValue?.message}
                 fullWidth
                 InputProps={{
-                  readOnly: formSubmitted, // Make the field read-only
+                  readOnly: readOnly, // Make the field read-only
                 }}
               />
             )}
@@ -332,7 +337,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 variant="outlined"
                 select
                 InputProps={{
-                  readOnly: formSubmitted || watchIsForeign === false,
+                  readOnly: readOnly || watchIsForeign === false,
                 }}
                 error={!!errors.fkTableName}
                 helperText={errors.fkTableName?.message}
@@ -356,7 +361,7 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
                 variant="outlined"
                 select
                 InputProps={{
-                  readOnly: formSubmitted || watchIsForeign === false,
+                  readOnly: readOnly || watchIsForeign === false,
                 }}
                 error={!!errors.fkTableFieldName}
                 helperText={errors.fkTableFieldName?.message}
@@ -379,25 +384,28 @@ const SingleColumnsForm = ({ data, onClose, action = "add" }) => {
           md={12}
           lg={12}
         >
-          <Box>
+          {action.action !== "read" && (
             <FormButton
               type="submit"
               variant="contained"
               color="primary"
-              style={{ marginRight: "10px" }}
+              style={{
+                marginRight: !isMobile ? "10px" : "0px",
+                marginBottom: !isMobile ? "0px" : "10px",
+              }}
             >
-              Save
+              {action.action === "add" ? "Add" : "Update"}
             </FormButton>
+          )}
 
-            <FormButton
-              onClick={handleReset}
-              type="button"
-              variant="contained"
-              color="error"
-            >
-              Cancel
-            </FormButton>
-          </Box>
+          <FormButton
+            onClick={handleReset}
+            type="button"
+            variant="contained"
+            color="error"
+          >
+            {action.action !== "read" ? "Cancel" : "Close"}
+          </FormButton>
         </Grid>
       </Grid>
     </Container>

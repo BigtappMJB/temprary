@@ -3,6 +3,7 @@ import {
   deleteColumnsfromExistingTable,
   getTableDefinition,
   getTableList,
+  updateColumnsfromExistingTable,
 } from "../services/apiPath";
 import { get, post } from "../services/apiServices";
 
@@ -43,18 +44,17 @@ export const addColumnsController = async (formData) => {
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
-    console.log({ formData });
     // Prepare the body object with sanitized data
     const body = {
-      tableName: "sample_data",
+      tableName: formData.tableName,
       columns: [
         {
-          name: "name",
-          dataType: "VARCHAR",
-          length: "300",
-          nullable: false,
-          defaultValue: null,
-          primaryKey: false,
+          name: formData?.formData.columnName,
+          dataType: formData?.formData.dataType,
+          length: formData?.formData.length,
+          nullable: formData?.formData.isMandatory,
+          defaultValue: formData?.formData.defaultValue,
+          primaryKey: formData?.formData.isPrimary,
         },
       ],
       includeAuditColumns: false,
@@ -74,20 +74,19 @@ export const updateColumnsController = async (formData) => {
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
-    console.log({ formData });
     // Prepare the body object with sanitized data
     const body = {
-      tableName: "your_table_name",
+      tableName: formData.tableName,
       columnInfo: {
-        name: "your_column_name",
-        dataType: "VARCHAR",
-        nullable: false,
-        length: 255,
-        defaultValue: "default_value",
-        primaryKey: false,
+        name: formData?.formData.columnName,
+        dataType: formData?.formData.dataType,
+        nullable: formData?.formData.isMandatory,
+        length: formData?.formData.length,
+        defaultValue: formData?.formData.defaultValue,
+        primaryKey: formData?.formData.isPrimary,
         createdBy: false,
         createdDate: false,
-        updatedBy: false,
+        updatedBy: new Date(),
         updatedDate: false,
         deletedBy: false,
         deletedDate: false,
@@ -96,7 +95,7 @@ export const updateColumnsController = async (formData) => {
     };
 
     // Send the POST request to the cmd API API endpoint
-    const response = await post(addColumnsfromExistingTable, body);
+    const response = await post(updateColumnsfromExistingTable, body);
     // Return the response data
     return response;
   } catch (error) {

@@ -8,15 +8,15 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { validationFunction } from "../generals/validators";
-import TableColumnForm from "../components/ColumnForm";
-import { useDialog } from "../components/alerts/DialogContent";
-import { tableCreationController } from "../controllers/tableCreationController";
 import {
+  addColumnsController,
   getTableDefinitionController,
   getTableListController,
+  updateColumnsController,
 } from "../controllers/tableConfigurationController";
-import DialogComponent from "../components/DialogComponent";
+import SingleColumnsForm from "../components/SingleColumnsForm";
+import { useDialog } from "../components/alerts/DialogContent";
+import { getDataTypesController } from "../controllers/tableCreationController";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -74,12 +74,6 @@ const Form = styled("form")(({ theme }) => ({
   },
 }));
 
-const FormField = styled(TextField)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-  },
-}));
-
 // const FormButtonContainer = styled(Box)(({ theme }) => ({
 //   display: "flex",
 //   justifyContent: "flex-end",
@@ -103,14 +97,20 @@ const FormButton = styled(Button)(({ theme }) => ({
  * @returns {JSX.Element} The rendered component
  */
 const TableConfiguration = () => {
-  const [tableName, setTableName] = useState("data");
+  const [tableName, setTableName] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
   const [tableList, settableList] = useState([]);
   const [tableDefinition, setTableDefinition] = useState([]);
-  const [dialogOpen, setDialogComponent] = useState(false);
+  const [selectedColumnData, setselectedColumnData] = useState({});
+  const [dataTypes, setDataTypes] = useState([]);
 
-  //   const { openDialog } = useDialog();
+  const [formActions, setFormAction] = useState({
+    display: false,
+    action: null,
+  });
+
+  const { openDialog } = useDialog();
 
   useEffect(() => {
     // inputRef.current.focus();
@@ -121,6 +121,16 @@ const TableConfiguration = () => {
         console.error(error);
       }
     };
+
+    const getDataTypes = async () => {
+      try {
+        setDataTypes(await getDataTypesController());
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getDataTypes();
     gettableList();
   }, []);
 
@@ -148,16 +158,167 @@ const TableConfiguration = () => {
       setTableName(null);
     } else {
       setError(false);
+      setFormAction({
+        display: false,
+        action: null,
+      });
       setTableName(value);
     }
   };
 
   const addColumnForm = () => {
-    setDialogComponent(true);
+    setFormAction({
+      display: true,
+      action: "add",
+    });
   };
 
-  const ondialogClose = () => {
-    setDialogComponent(false);
+  const onFormSubmit = async (formData) => {
+    try {
+      let response;
+      formData = {
+        tableName,
+        formData,
+      };
+      const isAdd = formActions.action === "add";
+      if (isAdd) {
+        response = await addColumnsController(formData);
+      } else {
+        response = await updateColumnsController(formData);
+      }
+      openDialog(
+        "success",
+        `Column ${isAdd ? "Addition" : "Updation"} Success`,
+        response,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          formCancelled();
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      openDialog(
+        "critical",
+        `Column ${
+          formActions.action === "add" ? "Addition" : "Updation"
+        } Failed`,
+        error?.errorMessage,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            return;
+          }
+        }
+      );
+    }
+  };
+
+  const updateColumnForm = () => {
+    setFormAction({
+      display: true,
+      action: "update",
+    });
+  };
+
+  const formCancelled = () => {
+    setselectedColumnData({});
+    if (formActions.action !== "add")
+      setFormAction({
+        display: false,
+        action: null,
+      });
+  };
+
+  const openDeleteDialog = () => {
+    openDialog(
+      "warning",
+      "Are you want to delete this column?",
+      error?.errorMessage,
+      {
+        confirm: {
+          name: "Ok",
+          isNeed: true,
+        },
+        cancel: {
+          name: "Cancel",
+          isNeed: false,
+        },
+      },
+      (confirmed) => {
+        if (confirmed) {
+          deleteColumn();
+          return;
+        }
+      }
+    );
+  };
+
+  const deleteColumn = async () => {
+    try {
+      const formData = {
+        tableName,
+        columnName: selectedColumnData?.columnInfo.columnName,
+      };
+      const response = await addColumnsController(formData);
+
+      openDialog(
+        "success",
+        "Column Deletion Success",
+        response,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          formCancelled();
+        }
+      );
+    } catch (error) {
+      openDialog(
+        "critical",
+        "Delete Column Failed",
+        error?.errorMessage,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            return;
+          }
+        }
+      );
+    }
   };
 
   return (
@@ -188,6 +349,23 @@ const TableConfiguration = () => {
           />
         </Form>
       </Container>
+
+      {formActions.display && (
+        <Container>
+          <Header>
+            <Typography variant="h6">
+              {formActions.action === "add" ? "Add" : "Update"} Column
+            </Typography>
+          </Header>
+          <SingleColumnsForm
+            dataTypes={dataTypes}
+            formCancelled={formCancelled}
+            action={formActions}
+            onColumnSubmit={onFormSubmit}
+            data={selectedColumnData}
+          />
+        </Container>
+      )}
       {tableName && (
         <SecondContainer>
           <SubHeader>
@@ -206,11 +384,6 @@ const TableConfiguration = () => {
               </FormButton>
             </Box>
           </SubHeader>
-          <DialogComponent
-            title={"Add Column"}
-            open={dialogOpen}
-            onClose={ondialogClose}
-          />
         </SecondContainer>
       )}
     </>
