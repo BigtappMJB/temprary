@@ -1,76 +1,197 @@
-import React from 'react';
-import { Box, Button, Typography } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import PageContainer from '../../../components/container/PageContainer';
-import DashboardCard from '../../../components/shared/DashboardCard';
+import { Box, Button, Paper, styled, Typography } from "@mui/material";
+import UserFormComponent from "./components/userFormComponent";
+import { useEffect, useState } from "react";
+import DataTable from "./components/DataTable";
+import {
+  getRolesController,
+  userCreationController,
+  userupdateController,
+} from "./controllers/usersControllers";
+import { useDialog } from "../../utilities/alerts/DialogContent";
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'name', headerName: 'Name', width: 130 },
-  { field: 'email', headerName: 'Email', width: 200 },
-  { field: 'address', headerName: 'Address', width: 200 },
-  { field: 'current_status', headerName: 'Status', width: 130 },
-  { field: 'phone', headerName: 'Phone', width: 130 },
-  { field: 'age', headerName: 'Age', width: 90 },
-  {
-    field: 'actions',
-    headerName: 'Actions',
-    width: 350,
-    renderCell: (params) => (
-      <strong>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{ marginLeft: 16 }}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{ marginLeft: 16 }}
-        >
-          Delete
-        </Button>
-      </strong>
-    ),
+// Styled Components
+const Container = styled(Paper)(({ theme }) => ({
+  paddingBottom: theme.spacing(3),
+  marginBottom: theme.spacing(5),
+  borderRadius: theme.spacing(1),
+  boxShadow: theme.shadows[3],
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(2),
   },
-];
+}));
 
-const rows = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', address: '123 Main St', current_status: 'Active', phone: '123-456-7890', age: 30 },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', address: '456 Elm St', current_status: 'Inactive', phone: '987-654-3210', age: 25 },
-  { id: 3, name: 'John Doe', email: 'john@example.com', address: '123 Main St', current_status: 'Active', phone: '123-456-7890', age: 30 },
-  { id: 3, name: 'Jane Smith', email: 'jane@example.com', address: '456 Elm St', current_status: 'Inactive', phone: '987-654-3210', age: 25 },
-  { id: 3, name: 'John Doe', email: 'john@example.com', address: '123 Main St', current_status: 'Active', phone: '123-456-7890', age: 30 },
-  { id: 3, name: 'Jane Smith', email: 'jane@example.com', address: '456 Elm St', current_status: 'Inactive', phone: '987-654-3210', age: 25 },
-  { id: 3, name: 'John Doe', email: 'john@example.com', address: '123 Main St', current_status: 'Active', phone: '123-456-7890', age: 30 },
-  { id: 3, name: 'Jane Smith', email: 'jane@example.com', address: '456 Elm St', current_status: 'Inactive', phone: '987-654-3210', age: 25 },
-  { id: 3, name: 'John Doe', email: 'john@example.com', address: '123 Main St', current_status: 'Active', phone: '123-456-7890', age: 30 },
-  { id: 3, name: 'Jane Smith', email: 'jane@example.com', address: '456 Elm St', current_status: 'Inactive', phone: '987-654-3210', age: 25 },
-  { id: 3, name: 'John Doe', email: 'john@example.com', address: '123 Main St', current_status: 'Active', phone: '123-456-7890', age: 30 },
-  { id: 3, name: 'Jane Smith', email: 'jane@example.com', address: '456 Elm St', current_status: 'Inactive', phone: '987-654-3210', age: 25 },
-  // Add more rows as needed
-];
+const SecondContainer = styled(Paper)(({ theme }) => ({
+  paddingBottom: theme.spacing(3),
+  marginBottom: theme.spacing(5),
+  borderRadius: theme.spacing(1),
+  boxShadow: theme.shadows[3],
+  // width: "80vw",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(2),
+  },
+}));
 
-const Users = () => {
+const Header = styled(Box)(({ theme }) => ({
+  backgroundColor: "#1e88e5",
+  color: "#fff",
+  padding: theme.spacing(2),
+  borderTopLeftRadius: theme.spacing(1),
+  borderTopRightRadius: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+}));
+
+const SubHeader = styled(Box)(({ theme }) => ({
+  color: "#1e88e5",
+  padding: theme.spacing(2),
+  borderTopLeftRadius: theme.spacing(1),
+  borderTopRightRadius: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+}));
+
+const FormButton = styled(Button)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+  },
+}));
+
+const UsersPage = () => {
+  const [selectedValue, setSelectedValue] = useState({});
+  const [formAction, setFormAction] = useState({
+    display: false,
+    action: "update",
+  });
+
+  useEffect(() => {
+    const getRoles = async () => {
+      const response = await getRolesController();
+      // console.log(response);
+    };
+    getRoles()
+  }, []);
+  const { openDialog } = useDialog();
+
+  const addUser = () => {
+    setFormAction({
+      display: true,
+      action: "add",
+    });
+  };
+
+  const onformSubmit = async (formData) => {
+    try {
+      console.log({ formData });
+      let response = null;
+      const isAdd = formAction.action === "add";
+      if (isAdd) response = await userCreationController(formData);
+      else response = await userupdateController(formData);
+
+      if (response) {
+        openDialog(
+          "success",
+          `User ${isAdd ? "Addition" : "Updation"} Success`,
+          response,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            if (!isAdd) {
+              onFormReset();
+            }
+          }
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      const isAdd = formAction.action === "add";
+      openDialog(
+        "warning",
+        "Warning",
+        `User ${isAdd ? "Addition" : "Updation"} failed`,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            return;
+          }
+        }
+      );
+      return;
+    }
+  };
+
+  const onFormReset = () => {
+    setFormAction({
+      display: false,
+      action: null,
+    });
+  };
+
   return (
-    <PageContainer title="List of Users" description="List of Users">
-      <DashboardCard title="List of Users Page">
-        <Box sx={{ width: '100%' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            checkboxSelection
+    <>
+      {formAction.display && (
+        <Container>
+          <Header>
+            <Typography variant="h6">
+              {formAction.action === "add"
+                ? "Add"
+                : formAction.action === "update"
+                ? "Update"
+                : "Read "}{" "}
+              User
+            </Typography>
+          </Header>
+          <UserFormComponent
+            formAction={formAction}
+            defaultValues={selectedValue}
+            onSubmit={onformSubmit}
+            onReset={onFormReset}
           />
-        </Box>
-      </DashboardCard>
-    </PageContainer>
+        </Container>
+      )}
+
+      <SecondContainer>
+        <SubHeader>
+          <Typography variant="h6">
+            <b>Users List</b>
+          </Typography>
+          <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+            <FormButton
+              type="button"
+              onClick={addUser}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}
+              disabled={formAction.action === "add" && formAction.display}
+            >
+              Add User
+            </FormButton>
+          </Box>
+        </SubHeader>
+        {/* <DataTable /> */}
+      </SecondContainer>
+    </>
   );
 };
 
-export default Users;
+export default UsersPage;
