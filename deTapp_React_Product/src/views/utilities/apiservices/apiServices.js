@@ -1,4 +1,4 @@
-import axios from "../../../config/axios";
+import { pythonInstance, springBootInstance } from "../../../config/axios";
 
 /**
  * Makes a GET request to the specified URL.
@@ -11,9 +11,16 @@ import axios from "../../../config/axios";
  * const userData = await get('https://api.example.com/users/me');
  * console.log(userData); // { id: 1, name: 'John Doe', email: 'johndoe@example.com' }
  */
-const get = async (url) => {
+const get = async (url, serverName) => {
   try {
-    const response = await axios.get(url);
+    let server = null;
+    if (serverName === "python") {
+      server = pythonInstance;
+    } else {
+      server = springBootInstance;
+    }
+
+    const response = await server.get(url);
     return response.data;
   } catch (error) {
     throw handleAxiosError(error);
@@ -33,9 +40,16 @@ const get = async (url) => {
  * const response = await post('https://api.example.com/users', newData);
  * console.log(response); // { id: 2, name: 'Jane Doe', email: 'janedoe@example.com' }
  */
-const post = async (url, data) => {
+const post = async (url, data, serverName) => {
   try {
-    const response = await axios.post(url, data);
+    let server = null;
+    if (serverName === "python") {
+      server = pythonInstance;
+    } else {
+      server = springBootInstance;
+    }
+
+    const response = await server.post(url, data);
     return response.data;
   } catch (error) {
     throw handleAxiosError(error);
@@ -55,9 +69,15 @@ const post = async (url, data) => {
  * const response = await put('https://api.example.com/users/2', updatedData);
  * console.log(response); // { id: 2, name: 'Jane Doe', email: 'janedoe@example.com' }
  */
-const put = async (url, data) => {
+const put = async (url, data, serverName) => {
   try {
-    const response = await axios.put(url, data);
+    let server = null;
+    if (serverName === "python") {
+      server = pythonInstance;
+    } else {
+      server = springBootInstance;
+    }
+    const response = await server.put(url, data);
     return response.data;
   } catch (error) {
     throw handleAxiosError(error);
@@ -75,9 +95,15 @@ const put = async (url, data) => {
  * const response = await remove('https://api.example.com/users/2');
  * console.log(response); // {}
  */
-const remove = async (url) => {
+const remove = async (url, serverName) => {
   try {
-    const response = await axios.delete(url);
+    let server = null;
+    if (serverName === "python") {
+      server = pythonInstance;
+    } else {
+      server = springBootInstance;
+    }
+    const response = await server.delete(url);
     return response.data;
   } catch (error) {
     throw handleAxiosError(error);

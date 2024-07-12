@@ -1,4 +1,7 @@
-import { createTableAPI, getDataTypes } from "../../utilities/apiservices/apiPath";
+import {
+  createTableAPI,
+  getDataTypes,
+} from "../../utilities/apiservices/apiPath";
 import { get, post } from "../../utilities/apiservices/apiServices";
 
 export const tableCreationController = async (formData) => {
@@ -8,7 +11,7 @@ export const tableCreationController = async (formData) => {
       throw new Error("Invalid form data");
     }
 
-    console.log({formData});
+    console.log({ formData });
 
     // Prepare the body object with sanitized data
     const body = {
@@ -26,7 +29,7 @@ export const tableCreationController = async (formData) => {
       },
     };
     // Send the POST request to the cmd API API endpoint
-    const response = await post(createTableAPI, body);
+    const response = await post(createTableAPI, body, "springboot");
     // Return the response data
     return response;
   } catch (error) {
@@ -38,7 +41,7 @@ export const getDataTypesController = async () => {
   try {
     // Prepare the body object with sanitized data
     // Send the GET request to the cmd API API endpoint
-    const response = await get(getDataTypes);
+    const response = await get(getDataTypes, "springboot");
     // Return the response data
     return response;
   } catch (error) {
