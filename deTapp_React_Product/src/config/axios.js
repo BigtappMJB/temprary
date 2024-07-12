@@ -61,9 +61,9 @@ springBootInstance.interceptors.request.use(
 export const pythonInstance = axios.create({
   /**
    * Base URL for the API requests.
-   * This value is taken from the environment variable `REACT_APP_SPRINGBOOT_API_URL`.
+   * This value is taken from the environment variable `REACT_APP_PYTHON_API_URL`.
    */
-  baseURL: process.env.REACT_APP_SPRINGBOOT_API_URL,
+  baseURL: process.env.REACT_APP_PYTHON_API_URL,
   headers: {
     /**
      * Content-Type header set to application/json.
