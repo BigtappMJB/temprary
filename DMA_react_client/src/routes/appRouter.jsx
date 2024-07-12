@@ -24,8 +24,13 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import TableCreation from "../pages/TableCreation";
-import { tableConfigurationPath, tableCreationPath } from "./routePath";
+import {
+  tableConfigurationPath,
+  tableCreationPath,
+  usersPath,
+} from "./routePath";
 import TableConfiguration from "../pages/TableConfiguration";
+import UsersPage from "../pages/Users";
 
 const routesObject = [
   {
@@ -35,6 +40,10 @@ const routesObject = [
   {
     path: tableConfigurationPath,
     element: <TableConfiguration />,
+  },
+  {
+    path: usersPath,
+    element: <UsersPage />,
   },
 ];
 

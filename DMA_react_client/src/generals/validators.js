@@ -11,7 +11,7 @@ export const validationRegex = {
   /**
    * Last name: Only letters, length between 2 and 30
    */
-  lastName: /^[a-zA-Z]{2,30}$/,
+  lastName: /^[a-zA-Z]{1,30}$/,
   /**
    * Date of birth: Date format YYYY-MM-DD
    */
