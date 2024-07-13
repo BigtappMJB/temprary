@@ -1,7 +1,14 @@
 // src/components/FormComponent.js
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button, MenuItem, Grid, styled, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Grid,
+  styled,
+  Box,
+  Autocomplete,
+} from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
@@ -10,7 +17,6 @@ import { errorMessages, validationRegex } from "../../../utilities/Validators";
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  // overflow: "auto",
   padding: theme.spacing(1),
   gap: theme.spacing(1),
   alignItems: "center",
@@ -18,9 +24,10 @@ const Container = styled(Box)(({ theme }) => ({
     "linear-gradient(to bottom, rgba(249, 251, 255, 1), rgba(249, 251, 255, 1), rgba(249, 250, 255, 1))",
 }));
 
+// Schema for form validation using Yup
 const schema = yup.object().shape({
   userId: yup.string().required("User ID is required"),
-  role: yup.string().required("Role is required"),
+  role: yup.object().required("Role is required"),
   firstName: yup
     .string()
     .required("First Name is required")
@@ -39,11 +46,47 @@ const schema = yup.object().shape({
     .required("Mobile No is required"),
 });
 
+/**
+ * UserFormComponent renders a form with fields for user details.
+ * The form is validated using Yup schema and managed with React Hook Form.
+ *
+ * @component
+ * @param {Object} props - The component props
+ * @param {Object} props.formAction - Object containing action type (e.g., 'add', 'read')
+ * @param {Object} props.defaultValues - Default values for the form fields
+ * @param {Function} props.onSubmit - Function to handle form submission
+ * @param {Function} props.onReset - Function to handle form reset
+ * @param {Array} props.rolesList - List of roles to populate the Autocomplete
+ * @example
+ * // Sample usage
+ * const formAction = { action: 'add' };
+ * const defaultValues = {
+ *   USER_ID: '1',
+ *   ROLE: 'admin',
+ *   FIRST_NAME: 'John',
+ *   LAST_NAME: 'Doe',
+ *   EMAIL: 'john.doe@example.com',
+ *   MOBILE: '1234567890'
+ * };
+ * const rolesList = [
+ *   { ID: 'admin', NAME: 'Admin' },
+ *   { ID: 'user', NAME: 'User' }
+ * ];
+ *
+ * <UserFormComponent
+ *   formAction={formAction}
+ *   defaultValues={defaultValues}
+ *   onSubmit={handleSubmit}
+ *   onReset={handleReset}
+ *   rolesList={rolesList}
+ * />
+ */
 const UserFormComponent = ({
   formAction,
   defaultValues,
   onSubmit,
   onReset,
+  rolesList,
 }) => {
   const [readOnly, setReadOnly] = useState(false);
 
@@ -59,25 +102,36 @@ const UserFormComponent = ({
     defaultValues,
   });
 
+  // Effect to set default values and reset the form
   useEffect(() => {
     if (defaultValues) {
+      const role =
+        rolesList.find((role) => role.ID === defaultValues.ROLE) || null;
       reset({
-        columnName: defaultValues.columnName ?? "",
-        defaultValuesType: defaultValues.defaultValuesType ?? "",
-        length: defaultValues.length ?? "",
-        isPrimary: defaultValues.isPrimary ?? false,
-        isForeign: defaultValues.isForeign ?? false,
-        isMandatory: defaultValues.isMandatory ?? false,
-        defaultValue: defaultValues.defaultValue ?? "",
-        fkTableName: defaultValues.fkTableName ?? "",
-        fkTableFieldName: defaultValues.fkTableFieldName ?? "",
+        userId: defaultValues.USER_ID ?? "",
+        role: role,
+        firstName: defaultValues.FIRST_NAME ?? "",
+        lastName: defaultValues.LAST_NAME ?? "",
+        email: defaultValues.EMAIL ?? "",
+        mobileNo: defaultValues.MOBILE ?? "",
       });
     }
-  }, [defaultValues, reset]);
+  }, [defaultValues, reset, rolesList]);
 
+  // Effect to set read-only state and reset form on formAction change
   useEffect(() => {
     setReadOnly(formAction?.action === "read");
-  }, [formAction]);
+    if (formAction.action === "add") {
+      reset({
+        userId: "",
+        role: null,
+        firstName: "",
+        lastName: "",
+        email: "",
+        mobileNo: "",
+      });
+    }
+  }, [formAction, reset]);
 
   // Effect to sanitize input values
   useEffect(() => {
@@ -91,15 +145,34 @@ const UserFormComponent = ({
     sanitizeInputs();
   }, []);
 
-  // Reset form handler
+  /**
+   * Resets the form to its initial state
+   */
   const handleReset = () => {
-    reset({});
     onReset();
+    reset({
+      userId: "",
+      role: null,
+      firstName: "",
+      lastName: "",
+      email: "",
+      mobileNo: "",
+    });
   };
 
+  /**
+   * Submits the form data
+   */
   const onLocalSubmit = () => {
     onSubmit(getValues());
-    reset({});
+    reset({
+      userId: "",
+      role: null,
+      firstName: "",
+      lastName: "",
+      email: "",
+      mobileNo: "",
+    });
   };
 
   return (
@@ -129,21 +202,27 @@ const UserFormComponent = ({
             name="role"
             control={control}
             render={({ field }) => (
-              <TextField
+              <Autocomplete
                 {...field}
-                label="Select Role"
-                select
-                fullWidth
-                variant="outlined"
-                error={!!errors.role}
-                helperText={errors.role?.message}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              >
-                <MenuItem value="Admin">Admin</MenuItem>
-                <MenuItem value="User">User</MenuItem>
-              </TextField>
+                options={rolesList}
+                getOptionLabel={(option) => option.NAME}
+                isOptionEqualToValue={(option, value) => option.ID === value.ID}
+                value={field.value || null}
+                onChange={(_, data) => field.onChange(data)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Role"
+                    fullWidth
+                    error={!!errors.role}
+                    helperText={errors.role?.message}
+                    InputProps={{
+                      ...params.InputProps,
+                      readOnly: readOnly, // Set to true if you want the field to be read-only
+                    }}
+                  />
+                )}
+              />
             )}
           />
         </Grid>

@@ -184,9 +184,6 @@ const CreateTableForm = () => {
       const validationError = validateTableName(tableName);
       setError(validationError);
       if (tableName === "" && validationError) {
-        debugger;
-        console.log("Validator error");
-
         openDialog(
           "warning",
           "Warning",

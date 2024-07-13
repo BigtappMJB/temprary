@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import DataTable from "./components/DataTable";
 import {
   getRolesController,
+  getUserController,
   userCreationController,
+  userdeleteController,
   userupdateController,
 } from "./controllers/usersControllers";
 import { useDialog } from "../../utilities/alerts/DialogContent";
@@ -25,7 +27,6 @@ const SecondContainer = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   borderRadius: theme.spacing(1),
   boxShadow: theme.shadows[3],
-  // width: "80vw",
   [theme.breakpoints.down("sm")]: {
     padding: theme.spacing(2),
   },
@@ -60,22 +61,54 @@ const FormButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+/**
+ * UsersPage component displays a user management interface with a form and a data table.
+ *
+ * @component
+ * @example
+ * return (
+ *   <UsersPage />
+ * )
+ */
 const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
+  const [tableData, setTableData] = useState([]);
+  const [rolesList, setRolesList] = useState([]);
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
   });
 
+  const { openDialog } = useDialog();
+
+  // Fetches user data and updates the table
+  const getTableData = async () => {
+    const response = await getUserController();
+    setTableData(response);
+  };
+
+  // Fetches roles data and updates the roles list
   useEffect(() => {
     const getRoles = async () => {
       const response = await getRolesController();
-      // console.log(response);
+      setRolesList(response);
     };
-    getRoles()
+    getRoles();
+    getTableData();
   }, []);
-  const { openDialog } = useDialog();
 
+  const columns = {
+    ID: "ID",
+    USER_ID: "User ID",
+    FIRST_NAME: "First Name",
+    LAST_NAME: "Last Name",
+    MOBILE: "Mobile No",
+    ROLE: "Role",
+  };
+
+  /**
+   * Initiates the process to add a new user.
+   */
   const addUser = () => {
     setFormAction({
       display: true,
@@ -83,19 +116,25 @@ const UsersPage = () => {
     });
   };
 
+  /**
+   * Handles form submission for adding or updating a user.
+   * @param {Object} formData - The data from the form.
+   */
   const onformSubmit = async (formData) => {
     try {
-      console.log({ formData });
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await userCreationController(formData);
-      else response = await userupdateController(formData);
+      else {
+        formData = { ...formData, ID: selectedValue.ID };
+        response = await userupdateController(formData);
+      }
 
       if (response) {
         openDialog(
           "success",
           `User ${isAdd ? "Addition" : "Updation"} Success`,
-          response,
+          response.message,
           {
             confirm: {
               name: "Ok",
@@ -107,6 +146,7 @@ const UsersPage = () => {
             },
           },
           (confirmed) => {
+            getTableData();
             if (!isAdd) {
               onFormReset();
             }
@@ -114,7 +154,6 @@ const UsersPage = () => {
         );
       }
     } catch (error) {
-      console.log(error);
       const isAdd = formAction.action === "add";
       openDialog(
         "warning",
@@ -136,15 +175,110 @@ const UsersPage = () => {
           }
         }
       );
-      return;
     }
   };
 
+  /**
+   * Resets the form and hides it.
+   */
   const onFormReset = () => {
     setFormAction({
       display: false,
       action: null,
     });
+  };
+
+  /**
+   * Initiates the process to update a user's information.
+   * @param {Object} selectedRow - The selected user's data.
+   */
+  const handleUpdateLogic = (selectedRow) => {
+    setSelectedValue(selectedRow);
+    setFormAction({
+      display: true,
+      action: "update",
+    });
+  };
+
+  /**
+   * Initiates the process to delete a user.
+   * @param {Object} selectedRow - The selected user's data.
+   */
+  const handleDelete = (selectedRow) => {
+    openDialog(
+      "warning",
+      `Delete confirmation`,
+      `Are you sure you want to delete this user "${
+        selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
+      }"?`,
+      {
+        confirm: {
+          name: "Yes",
+          isNeed: true,
+        },
+        cancel: {
+          name: "No",
+          isNeed: true,
+        },
+      },
+      (confirmed) => {
+        if (confirmed) {
+          removeDataFromTable(selectedRow);
+        }
+      }
+    );
+  };
+
+  /**
+   * Removes a user from the table after confirming deletion.
+   * @param {Object} selectedRow - The selected user's data.
+   */
+  const removeDataFromTable = async (selectedRow) => {
+    try {
+      const response = await userdeleteController(selectedRow.ID);
+
+      if (response) {
+        openDialog(
+          "success",
+          `User Deletion Success`,
+          response.message,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            getTableData();
+          }
+        );
+      }
+    } catch (error) {
+      openDialog(
+        "warning",
+        "Warning",
+        `User Deletion failed`,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            return;
+          }
+        }
+      );
+    }
   };
 
   return (
@@ -166,6 +300,7 @@ const UsersPage = () => {
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
+            rolesList={rolesList}
           />
         </Container>
       )}
@@ -188,7 +323,12 @@ const UsersPage = () => {
             </FormButton>
           </Box>
         </SubHeader>
-        {/* <DataTable /> */}
+        <DataTable
+          tableData={tableData}
+          handleUpdateLogic={handleUpdateLogic}
+          handleDelete={handleDelete}
+          columns={columns}
+        />
       </SecondContainer>
     </>
   );
