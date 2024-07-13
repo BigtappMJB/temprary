@@ -89,6 +89,7 @@ const UserFormComponent = ({
   rolesList,
 }) => {
   const [readOnly, setReadOnly] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const {
     control,
@@ -217,10 +218,14 @@ const UserFormComponent = ({
                     fullWidth
                     error={!!errors.role}
                     helperText={errors.role?.message}
-                    InputLabelProps={{ shrink: field.value }}
+                    InputLabelProps={{
+                      shrink: Boolean(field.value || isFocused),
+                    }}
                     InputProps={{
                       ...params.InputProps,
                       readOnly: readOnly, // Set to true if you want the field to be read-only
+                      onFocus: () => setIsFocused(true),
+                      onBlur: () => setIsFocused(false),
                     }}
                   />
                 )}

@@ -1,63 +1,322 @@
-import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { Button, Stack, Typography } from '@mui/material';
-import PageContainer from '../../../components/container/PageContainer';
-import DashboardCard from '../../../components/shared/DashboardCard';
+import { Box, Button, Paper, styled, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import {
+  getRolesController,
+  roleCreationController,
+  roleupdateController,
+  roledeleteController,
+} from "./controllers/rolesControllers";
+import { useDialog } from "../../utilities/alerts/DialogContent";
+import RoleFormComponent from "./components/roleFormComponent";
+import DataTable from "../users/components/DataTable";
 
-const roles = [
-  { id: 1, roleName: 'Admin', description: 'Full access to the system' },
-  { id: 2, roleName: 'User', description: 'Can view and edit own data' },
-  { id: 3, roleName: 'Guest', description: 'Limited access for viewing' },
-];
-
-const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'roleName', headerName: 'Role Name', width: 150 },
-  { field: 'description', headerName: 'Description', width: 400 },
-  {
-    field: 'actions',
-    headerName: 'Actions',
-    width: 350,
-    renderCell: (params) => (
-      <strong>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{ marginLeft: 16 }}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{ marginLeft: 16 }}
-        >
-          Delete
-        </Button>
-      </strong>
-    ),
+// Styled Components
+const Container = styled(Paper)(({ theme }) => ({
+  paddingBottom: theme.spacing(3),
+  marginBottom: theme.spacing(5),
+  borderRadius: theme.spacing(1),
+  boxShadow: theme.shadows[3],
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(2),
   },
-];
+}));
 
+const SecondContainer = styled(Paper)(({ theme }) => ({
+  paddingBottom: theme.spacing(3),
+  marginBottom: theme.spacing(5),
+  borderRadius: theme.spacing(1),
+  boxShadow: theme.shadows[3],
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(2),
+  },
+}));
+
+const Header = styled(Box)(({ theme }) => ({
+  backgroundColor: "#1e88e5",
+  color: "#fff",
+  padding: theme.spacing(2),
+  borderTopLeftRadius: theme.spacing(1),
+  borderTopRightRadius: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+}));
+
+const SubHeader = styled(Box)(({ theme }) => ({
+  color: "#1e88e5",
+  padding: theme.spacing(2),
+  borderTopLeftRadius: theme.spacing(1),
+  borderTopRightRadius: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+}));
+
+const FormButton = styled(Button)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+  },
+}));
+
+/**
+ * Roles component displays a user management interface with a form and a data table.
+ *
+ * @component
+ * @example
+ * return (
+ *   <Roles />
+ * )
+ */
 const Roles = () => {
+  const [selectedValue, setSelectedValue] = useState({});
+  const [tableData, setTableData] = useState([]);
+  const [formAction, setFormAction] = useState({
+    display: false,
+    action: "update",
+  });
+
+  const { openDialog } = useDialog();
+
+  const getRoles = async () => {
+    const response = await getRolesController();
+    setTableData(response);
+  };
+
+  // Fetches roles data and updates the roles list
+  useEffect(() => {
+    getRoles();
+  }, []);
+
+  const columns = {
+    ID: "ID",
+    NAME: "NAME",
+    DESCRIPTION: "DESCRIPTION",
+  };
+
+  /**
+   * Initiates the process to add a new user.
+   */
+  const addRoles = () => {
+    setFormAction({
+      display: true,
+      action: "add",
+    });
+  };
+
+  /**
+   * Handles form submission for adding or updating a user.
+   * @param {Object} formData - The data from the form.
+   */
+  const onformSubmit = async (formData) => {
+    try {
+      let response = null;
+      const isAdd = formAction.action === "add";
+      if (isAdd) response = await roleCreationController(formData);
+      else {
+        formData = { ...formData, ID: selectedValue.ID };
+        response = await roleupdateController(formData);
+      }
+
+      if (response) {
+        openDialog(
+          "success",
+          `Role ${isAdd ? "Addition" : "Updation"} Success`,
+          response.message,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            getRoles();
+            if (!isAdd) {
+              onFormReset();
+            }
+          }
+        );
+      }
+    } catch (error) {
+      const isAdd = formAction.action === "add";
+      openDialog(
+        "warning",
+        "Warning",
+        `Role ${isAdd ? "Addition" : "Updation"} failed`,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            return;
+          }
+        }
+      );
+    }
+  };
+
+  /**
+   * Resets the form and hides it.
+   */
+  const onFormReset = () => {
+    setFormAction({
+      display: false,
+      action: null,
+    });
+  };
+
+  /**
+   * Initiates the process to update a user's information.
+   * @param {Object} selectedRow - The selected user's data.
+   */
+  const handleUpdateLogic = (selectedRow) => {
+    setSelectedValue(selectedRow);
+    setFormAction({
+      display: true,
+      action: "update",
+    });
+  };
+
+  /**
+   * Initiates the process to delete a user.
+   * @param {Object} selectedRow - The selected user's data.
+   */
+  const handleDelete = (selectedRow) => {
+    openDialog(
+      "warning",
+      `Delete confirmation`,
+      `Are you sure you want to delete this role "${selectedRow.NAME}"?`,
+      {
+        confirm: {
+          name: "Yes",
+          isNeed: true,
+        },
+        cancel: {
+          name: "No",
+          isNeed: true,
+        },
+      },
+      (confirmed) => {
+        if (confirmed) {
+          removeDataFromTable(selectedRow);
+        }
+      }
+    );
+  };
+
+  /**
+   * Removes a user from the table after confirming deletion.
+   * @param {Object} selectedRow - The selected user's data.
+   */
+  const removeDataFromTable = async (selectedRow) => {
+    try {
+      const response = await roledeleteController(selectedRow.ID);
+
+      if (response) {
+        openDialog(
+          "success",
+          `Role Deletion Success`,
+          response.message,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            getRoles();
+          }
+        );
+      }
+    } catch (error) {
+      openDialog(
+        "warning",
+        "Warning",
+        `Role Deletion failed`,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            return;
+          }
+        }
+      );
+    }
+  };
+
   return (
-    <PageContainer title="List of Roles" description="List of Roles">
-        <DashboardCard title="List of Roles Page">
-            {/* <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                <Button size="small">
-                    Remove a row
-                </Button>
-                <Button size="small">
-                    Add a row
-                </Button>
-            </Stack> */}
-            <div style={{ height: 400, width: '100%' }}>
-                <DataGrid rows={roles} columns={columns} pageSize={5} checkboxSelection />
-            </div>
-        </DashboardCard>
-    </PageContainer>
+    <>
+      {formAction.display && (
+        <Container>
+          <Header>
+            <Typography variant="h6">
+              {formAction.action === "add"
+                ? "Add"
+                : formAction.action === "update"
+                ? "Update"
+                : "Read "}{" "}
+              Role
+            </Typography>
+          </Header>
+          <RoleFormComponent
+            formAction={formAction}
+            defaultValues={selectedValue}
+            onSubmit={onformSubmit}
+            onReset={onFormReset}
+          />
+        </Container>
+      )}
+
+      <SecondContainer>
+        <SubHeader>
+          <Typography variant="h6">
+            <b>Roles List</b>
+          </Typography>
+          <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+            <FormButton
+              type="button"
+              onClick={addRoles}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}
+              disabled={formAction.action === "add" && formAction.display}
+            >
+              Add Role
+            </FormButton>
+          </Box>
+        </SubHeader>
+        <DataTable
+          tableData={tableData}
+          handleUpdateLogic={handleUpdateLogic}
+          handleDelete={handleDelete}
+          columns={columns}
+        />
+      </SecondContainer>
+    </>
   );
 };
 

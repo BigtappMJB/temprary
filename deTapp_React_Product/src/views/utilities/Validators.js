@@ -92,7 +92,7 @@ export const validationRegex = {
   /**
    * Regex to validate bios (up to 500 characters).
    */
-  bio: /^.{0,500}$/,
+  bio: /^[\s\S]{0,500}$/,
 
   /**
    * Regex to validate table names (start with a letter, up to 128 characters, letters, numbers, and underscores).
@@ -108,6 +108,11 @@ export const validationRegex = {
    * Regex to validate a string containing only numbers.
    */
   isNumbers: /[0-9]+$/,
+
+  /**
+   * Regex to validate a string containing only alphabets.
+   */
+  isLetters: /^[a-zA-Z]+[\s\S]+$/,
 };
 
 /**
@@ -138,11 +143,12 @@ export const errorMessages = {
   securityAnswer: "Security answer must be between 3 and 50 characters long.",
   language: "Language must be between 2 and 20 letters.",
   profilePicture: "Profile picture must be a .jpeg, .jpg, .gif, or .png file.",
-  bio: "Bio can be up to 500 characters long.",
+  bio: "Value can be up to 500 characters long.",
   tableName:
     "Table name must start with a letter and can contain letters, numbers, and underscores (max 128 characters) and check spaces.",
   columnName:
     "Column names must start with a letter or underscore, followed by up to 127 letters, digits, or underscores and check spaces.",
+  isLetters: "Value should contains  only alphabets and should be more than one alphabets.",
 };
 
 /**

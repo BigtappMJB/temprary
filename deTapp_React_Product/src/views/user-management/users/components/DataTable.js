@@ -26,6 +26,12 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   background: "white",
 }));
 
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  wordWrap: "break-word",
+  whiteSpace: "normal",
+  lineHeight: 2,
+  textAlign: "justify",
+}));
 /**
  * DataTable component displays a paginated, sortable, and filterable table.
  * It also provides actions for updating and deleting rows.
@@ -73,7 +79,8 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
 
   const sortedData = useMemo(() => {
     return filteredData.slice().sort((a, b) => {
-      if (order === "original") return tableData.indexOf(a) - tableData.indexOf(b);
+      if (order === "original")
+        return tableData.indexOf(a) - tableData.indexOf(b);
       const getIDKey = Object.keys(columns)[0];
       if (orderBy === getIDKey) {
         return order === "asc"
@@ -92,7 +99,10 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
   }, [filteredData, order, orderBy, columns, tableData]);
 
   const paginatedData = useMemo(() => {
-    return sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    return sortedData.slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
   }, [sortedData, page, rowsPerPage]);
 
   /**
@@ -144,7 +154,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
           <StyledTableHead>
             <TableRow>
               {Object.keys(columns).map((key) => (
-                <TableCell key={key}>
+                <StyledTableCell key={key}>
                   <TableSortLabel
                     active={orderBy === key}
                     direction={orderBy === key ? order : "asc"}
@@ -165,9 +175,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                     placeholder={`Search ${columns[key]}`}
                     fullWidth
                   />
-                </TableCell>
+                </StyledTableCell>
               ))}
-              <TableCell key={"Actions"}>
+              <StyledTableCell key={"Actions"}>
                 <TableSortLabel
                   disabled
                   style={{
@@ -179,7 +189,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                   {"Actions"}
                 </TableSortLabel>
                 <StyledTextField variant="outlined" disabled fullWidth />
-              </TableCell>
+              </StyledTableCell>
             </TableRow>
           </StyledTableHead>
           <TableBody>
@@ -191,7 +201,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                 }}
               >
                 {Object.keys(columns).map((key) => (
-                  <TableCell
+                  <StyledTableCell
                     key={key}
                     style={{
                       textAlign: validationRegex.isNumbers.test(row[key])
@@ -200,9 +210,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                     }}
                   >
                     {row[key]}
-                  </TableCell>
+                  </StyledTableCell>
                 ))}
-                <TableCell
+                <StyledTableCell
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -221,12 +231,12 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                   <Tooltip title="Delete" arrow>
                     <IconButton
                       onClick={() => handleDelete(row)}
-                      sx={{ color: '#ff0000' }}
+                      sx={{ color: "#ff0000" }}
                     >
                       <Delete />
                     </IconButton>
                   </Tooltip>
-                </TableCell>
+                </StyledTableCell>
               </TableRow>
             ))}
           </TableBody>
