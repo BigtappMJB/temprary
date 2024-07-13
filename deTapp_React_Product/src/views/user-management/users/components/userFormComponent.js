@@ -116,7 +116,7 @@ const UserFormComponent = ({
         mobileNo: defaultValues.MOBILE ?? "",
       });
     }
-  }, [defaultValues, reset, rolesList]);
+  }, [defaultValues, reset, rolesList, formAction]);
 
   // Effect to set read-only state and reset form on formAction change
   useEffect(() => {
@@ -190,6 +190,7 @@ const UserFormComponent = ({
                 variant="outlined"
                 error={!!errors.userId}
                 helperText={errors.userId?.message}
+                InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
                 }}
@@ -216,6 +217,7 @@ const UserFormComponent = ({
                     fullWidth
                     error={!!errors.role}
                     helperText={errors.role?.message}
+                    InputLabelProps={{ shrink: field.value }}
                     InputProps={{
                       ...params.InputProps,
                       readOnly: readOnly, // Set to true if you want the field to be read-only
@@ -238,6 +240,7 @@ const UserFormComponent = ({
                 variant="outlined"
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
+                InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
                 }}
@@ -257,6 +260,7 @@ const UserFormComponent = ({
                 variant="outlined"
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
+                InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
                 }}
@@ -276,6 +280,7 @@ const UserFormComponent = ({
                 variant="outlined"
                 error={!!errors.email}
                 helperText={errors.email?.message}
+                InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
                 }}
@@ -295,6 +300,7 @@ const UserFormComponent = ({
                 variant="outlined"
                 error={!!errors.mobileNo}
                 helperText={errors.mobileNo?.message}
+                InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
                 }}
