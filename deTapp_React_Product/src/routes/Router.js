@@ -11,7 +11,6 @@ const Dashboard = Loadable(lazy(() => import('../views/dashboard/Dashboard')))
 const Tablecreation = Loadable(lazy(() => import('../views/table-creation/Tablecreation')))
 const UsersPage = Loadable(lazy(() => import('../views/user-management/users/Users')))
 const Roles = Loadable(lazy(() => import('../views/user-management/roles/Roles')))
-const SamplePage = Loadable(lazy(() => import('../views/sample-page/SamplePage')))
 
 const Error = Loadable(lazy(() => import('../views/authentication/Error')));
 const Register = Loadable(lazy(() => import('../views/authentication/Register')));

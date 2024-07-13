@@ -1,13 +1,15 @@
-// src/components/AlertDialog.js
-
 import React from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useDialog } from "./DialogContent";
 
@@ -70,6 +72,7 @@ const AlertDialog = () => {
   const handleConfirmNo = () => {
     confirmDialog(false); // Return false for 'No'
   };
+
   return (
     <Dialog
       open={dialogOpen}
@@ -90,37 +93,40 @@ const AlertDialog = () => {
           alignItems: "center",
         }}
       >
-        {dialogTitle}
-        <IconButton
-          aria-label="close"
-          onClick={closeDialog}
-          sx={{ position: "absolute", right: 8, top: 8, color: "white" }}
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          width="100%"
         >
-          <CloseIcon />
-        </IconButton>
+          <Typography variant="h6" sx={{ color: "white", pr: 2 }}>
+            {dialogTitle}
+          </Typography>
+          <IconButton
+            aria-label="close"
+            onClick={closeDialog}
+            sx={{ color: "white" }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description" className="pt-2">
+        <DialogContentText
+          id="alert-dialog-description"
+          style={{ paddingTop: "10px" }}
+        >
           {dialogMessage}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         {buttonNeeded?.confirm?.isNeed && (
-          <Button
-            onClick={handleConfirmYes}
-            // variant="contained"
-            color="primary"
-            autoFocus
-          >
+          <Button onClick={handleConfirmYes} color="primary" autoFocus>
             {buttonNeeded?.confirm?.name}
           </Button>
         )}
         {buttonNeeded?.cancel?.isNeed && (
-          <Button
-            onClick={handleConfirmNo}
-            // variant="contained"
-            color="secondary"
-          >
+          <Button onClick={handleConfirmNo} color="secondary">
             {buttonNeeded?.cancel?.name}
           </Button>
         )}

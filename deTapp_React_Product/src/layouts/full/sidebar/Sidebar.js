@@ -1,87 +1,51 @@
-import { useMediaQuery, Box, Drawer } from '@mui/material';
-import Logo from '../shared/logo/Logo';
-import SidebarItems from './SidebarItems';
-import { Upgrade } from './Updrade';
+import { Box, Drawer, IconButton } from "@mui/material";
+import Logo from "../shared/logo/Logo";
+import SidebarItems from "./SidebarItems";
 
-const Sidebar = (props) => {
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-  const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
+/**
+ * Sidebar component renders a navigation drawer.
+ * @param {boolean} isMobile - Determines if the device is mobile.
+ * @param {boolean} open - Controls if the drawer is open.
+ * @param {function} handleDrawerToggle - Function to toggle the drawer open/close.
+ */
+// const Logo = styled("img")(({ theme }) => ({
+//   width: "150px",
+//   margin: "20px auto",
+//   display: "block",
+// }));
 
-  const sidebarWidth = '270px';
-
-  if (lgUp) {
-    return (
-      <Box
-        sx={{
-          width: sidebarWidth,
-          flexShrink: 0,
-        }}
-      >
-        {/* ------------------------------------------- */}
-        {/* Sidebar for desktop */}
-        {/* ------------------------------------------- */}
-        <Drawer
-          anchor="left"
-          open={props.isSidebarOpen}
-          variant="permanent"
-          PaperProps={{
-            sx: {
-              width: sidebarWidth,
-              boxSizing: 'border-box',
-            },
-          }}
-        >
-          {/* ------------------------------------------- */}
-          {/* Sidebar Box */}
-          {/* ------------------------------------------- */}
-          <Box
-            sx={{
-              height: '100%',
-            }}
-          >
-            {/* ------------------------------------------- */}
-            {/* Logo */}
-            {/* ------------------------------------------- */}
-            <Box px={3}>
-              <Logo />
-            </Box>
-            <Box>
-              {/* ------------------------------------------- */}
-              {/* Sidebar Items */}
-              {/* ------------------------------------------- */}
-              <SidebarItems />
-              {/* <Upgrade /> */}
-            </Box>
-            
-          </Box>
-        </Drawer>
-      </Box>
-    );
-  }
-
+const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
+  const navItemClicked = () => {
+    isMobile && handleDrawerToggle()
+  };
   return (
     <Drawer
+      variant={isMobile ? "temporary" : "persistent"}
       anchor="left"
-      open={props.isMobileSidebarOpen}
-      onClose={props.onSidebarClose}
-      variant="temporary"
-      PaperProps={{
-        sx: {
-          width: sidebarWidth,
-          boxShadow: (theme) => theme.shadows[8],
+      open={open}
+      onClose={handleDrawerToggle}
+      ModalProps={{ keepMounted: true }}
+      sx={{
+        width: open ? 250 : "0",
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: open ? 250 : 70,
+          boxSizing: "border-box",
+          transition: "width 0.3s",
         },
       }}
     >
-      {/* ------------------------------------------- */}
-      {/* Logo */}
-      {/* ------------------------------------------- */}
-      <Box px={2}>
+      <Box role="presentation">
+        <IconButton onClick={handleDrawerToggle}>
+          {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+        </IconButton>
         <Logo />
+
+        <SidebarItems navItemClicked={navItemClicked} />
       </Box>
-      {/* ------------------------------------------- */}
-      {/* Sidebar For Mobile */}
-      {/* ------------------------------------------- */}
-      <SidebarItems />
     </Drawer>
   );
 };

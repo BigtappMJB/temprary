@@ -1,61 +1,40 @@
-import React from 'react';
-import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge } from '@mui/material';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Box, AppBar, Toolbar, styled, Stack, IconButton } from "@mui/material";
 
 // components
-import Profile from './Profile';
-import { IconBellRinging, IconMenu } from '@tabler/icons-react';
-import MenuIcon from '@mui/icons-material/Menu';
+import Profile from "./Profile";
+import MenuIcon from "@mui/icons-material/Menu";
 
-const Header = (props) => {
-
+const Header = ({ handleDrawerToggle, open }) => {
   // const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   // const lgDown = useMediaQuery((theme) => theme.breakpoints.down('lg'));
 
-
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
-    boxShadow: 'none',
-    background: theme.palette.primary.main,
-    justifyContent: 'center',
-    backdropFilter: 'blur(4px)',
-    [theme.breakpoints.up('lg')]: {
-      minHeight: '70px',
+    boxShadow: "none",
+    backgroundColor: "#1e88e5",
+    background: "#1e88e5",
+    justifyContent: "center",
+    backdropFilter: "blur(4px)",
+    [theme.breakpoints.up("lg")]: {
+      minHeight: "70px",
     },
   }));
   const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
-    width: '100%',
-    color: theme.palette.text.li,
+    width: "100%",
+    background: "#1e88e5",
   }));
 
   return (
     <AppBarStyled position="sticky" color="default">
       <ToolbarStyled>
         <IconButton
+          edge="start"
           color="inherit"
           aria-label="menu"
-          // eslint-disable-next-line react/prop-types
-          onClick={props.toggleMobileSidebar}
-          sx={{
-            display: {
-              lg: "none",
-              xs: "inline",
-            },
-          }}
+          onClick={handleDrawerToggle}
+          disabled={open}
         >
-          <IconMenu width="20" height="20" />
-        </IconButton>
-
-        <IconButton
-          size="large"
-          color="inherit"
-          
-          sx={{
-            ...(typeof anchorEl2 === 'object' && {
-              color: 'primary.main',
-            }),
-          }}
-        >         
-          <MenuIcon size="21" stroke="1.5" />
+          {!open && <MenuIcon style={{ color: "black" }} />}
         </IconButton>
 
         <Box flexGrow={1} />
@@ -65,10 +44,6 @@ const Header = (props) => {
       </ToolbarStyled>
     </AppBarStyled>
   );
-};
-
-Header.propTypes = {
-  sx: PropTypes.object,
 };
 
 export default Header;

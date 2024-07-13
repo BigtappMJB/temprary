@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import { validationRegex } from "../../../utilities/Validators";
+import { debounce } from "lodash";
 
 // Styled components for the table
 const StyledTableHead = styled(TableHead)(({ theme }) => ({
@@ -55,17 +56,44 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
  * />
  */
 const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
-  const [data, setData] = useState([]);
   const [order, setOrder] = useState("original");
   const [orderBy, setOrderBy] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filter, setFilter] = useState({});
 
-  // Effect to update the data state when tableData changes
-  useEffect(() => {
-    setData(tableData);
-  }, [tableData]);
+  // Memoize filtered and sorted data to optimize performance
+  const filteredData = useMemo(() => {
+    return tableData.filter((row) =>
+      Object.keys(filter).every((key) =>
+        row[key]?.toString().toLowerCase().includes(filter[key].toLowerCase())
+      )
+    );
+  }, [tableData, filter]);
+
+  const sortedData = useMemo(() => {
+    return filteredData.slice().sort((a, b) => {
+      if (order === "original") return tableData.indexOf(a) - tableData.indexOf(b);
+      const getIDKey = Object.keys(columns)[0];
+      if (orderBy === getIDKey) {
+        return order === "asc"
+          ? a[getIDKey] - b[getIDKey]
+          : b[getIDKey] - a[getIDKey];
+      }
+      if (validationRegex.isNumbers.test(a[orderBy])) {
+        return order === "asc"
+          ? a[orderBy] - b[orderBy]
+          : b[orderBy] - a[orderBy];
+      }
+      return order === "asc"
+        ? a[orderBy].localeCompare(b[orderBy])
+        : b[orderBy].localeCompare(a[orderBy]);
+    });
+  }, [filteredData, order, orderBy, columns, tableData]);
+
+  const paginatedData = useMemo(() => {
+    return sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  }, [sortedData, page, rowsPerPage]);
 
   /**
    * Handles sorting request when a table header is clicked.
@@ -100,48 +128,13 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
    * Handles the change in the filter input fields.
    * @param {object} event - The event object.
    */
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilter({ ...filter, [name]: value });
-    setPage(0);
-  };
-
-  // Filter data based on the filter state
-  const filteredData =
-    data.length === 0
-      ? []
-      : data.filter((row) =>
-          Object.keys(filter).every((key) =>
-            row[key]
-              ?.toString()
-              .toLowerCase()
-              .includes(filter[key].toLowerCase())
-          )
-        );
-
-  // Sort data based on filtered rows
-  const sortedData = filteredData.slice().sort((a, b) => {
-    if (order === "original") return data.indexOf(a) - data.indexOf(b);
-    const getIDKey = Object.keys(columns)[0];
-    if (orderBy === getIDKey) {
-      return order === "asc"
-        ? a[getIDKey] - b[getIDKey]
-        : b[getIDKey] - a[getIDKey];
-    }
-    if (validationRegex.isNumbers.test(a[orderBy])) {
-      return order === "asc"
-        ? a[orderBy] - b[orderBy]
-        : b[orderBy] - a[orderBy];
-    }
-    return order === "asc"
-      ? a[orderBy].localeCompare(b[orderBy])
-      : b[orderBy].localeCompare(a[orderBy]);
-  });
-
-  // Paginate data based on the page and rowsPerPage state
-  const paginatedData = sortedData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+  const handleFilterChange = useCallback(
+    debounce((event) => {
+      const { name, value } = event.target;
+      setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+      setPage(0);
+    }, 300),
+    []
   );
 
   return (
@@ -228,7 +221,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                   <Tooltip title="Delete" arrow>
                     <IconButton
                       onClick={() => handleDelete(row)}
-                      color="secondary"
+                      sx={{ color: '#ff0000' }}
                     >
                       <Delete />
                     </IconButton>
