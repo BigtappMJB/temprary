@@ -9,6 +9,7 @@ import {
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import RoleFormComponent from "./components/roleFormComponent";
 import DataTable from "../users/components/DataTable";
+import { useLoading } from "../../../components/Loading/loadingProvider";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -78,13 +79,17 @@ const Roles = () => {
   });
 
   const { openDialog } = useDialog();
+  const { startLoading, stopLoading } = useLoading();
 
   const getRoles = async () => {
     try {
+      startLoading();
       const response = await getRolesController();
       setTableData(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      stopLoading();
     }
   };
 
@@ -114,6 +119,7 @@ const Roles = () => {
    */
   const onformSubmit = async (formData) => {
     try {
+      startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await roleCreationController(formData);
@@ -167,6 +173,8 @@ const Roles = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -225,6 +233,7 @@ const Roles = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
+      startLoading();
       const response = await roledeleteController(selectedRow.ID);
 
       if (response) {
@@ -268,6 +277,8 @@ const Roles = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -275,7 +286,7 @@ const Roles = () => {
     <>
       {formAction.display && (
         <Container>
-           <Header className="panel-header">
+          <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"

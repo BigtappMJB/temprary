@@ -10,6 +10,7 @@ import {
   subMenuUpdateController,
 } from "./controllers/subMenuControllers";
 import { getMenusController } from "../menu/controllers/MenuControllers";
+import { useLoading } from "../../../components/Loading/loadingProvider";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -78,16 +79,20 @@ const UsersPage = () => {
     display: false,
     action: "update",
   });
+  const { startLoading, stopLoading } = useLoading();
 
   const { openDialog } = useDialog();
 
   // Fetches submenu data and updates the table
   const getTableData = async () => {
     try {
+      startLoading();
       const response = await getSubMenusController();
       setTableData(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      stopLoading();
     }
   };
 
@@ -95,10 +100,13 @@ const UsersPage = () => {
   useEffect(() => {
     const getMenus = async () => {
       try {
+        startLoading();
         const response = await getMenusController();
         setRolesList(response);
       } catch (error) {
         console.error(error);
+      } finally {
+        stopLoading();
       }
     };
     getMenus();
@@ -127,6 +135,7 @@ const UsersPage = () => {
    */
   const onformSubmit = async (formData) => {
     try {
+      startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await subMenuCreationController(formData);
@@ -180,6 +189,8 @@ const UsersPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -238,6 +249,7 @@ const UsersPage = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
+      startLoading();
       const response = await subMenuDeleteController(selectedRow.ID);
 
       if (response) {
@@ -281,6 +293,8 @@ const UsersPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -288,7 +302,7 @@ const UsersPage = () => {
     <>
       {formAction.display && (
         <Container>
-           <Header className="panel-header">
+          <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"

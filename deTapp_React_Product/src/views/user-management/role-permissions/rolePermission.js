@@ -13,6 +13,7 @@ import { getRolesController } from "../roles/controllers/rolesControllers";
 import { getMenusController } from "../menu/controllers/MenuControllers";
 import { getSubMenusController } from "../submenu/controllers/subMenuControllers";
 import { getPermissionList } from "../permissions/controllers/permissionControllers";
+import { useLoading } from "../../../components/Loading/loadingProvider";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -87,14 +88,18 @@ const RolePermissionPage = () => {
   });
 
   const { openDialog } = useDialog();
+  const { startLoading, stopLoading } = useLoading();
 
   // Fetches role permission data and updates the table
   const getTableData = async () => {
     try {
+      startLoading();
       const response = await getRolePermissionsController();
       setTableData(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      stopLoading();
     }
   };
 
@@ -102,34 +107,46 @@ const RolePermissionPage = () => {
   useEffect(() => {
     const getRoles = async () => {
       try {
+        startLoading();
         const response = await getRolesController();
         setRolesList(response);
       } catch (error) {
         console.error(error);
+      } finally {
+        stopLoading();
       }
     };
     const getMenus = async () => {
       try {
+        startLoading();
         const response = await getMenusController();
         setMenuList(response);
       } catch (error) {
         console.error(error);
+      } finally {
+        stopLoading();
       }
     };
     const getSubMenus = async () => {
       try {
+        startLoading();
         const response = await getSubMenusController();
         setSubMenuList(response);
       } catch (error) {
         console.error(error);
+      } finally {
+        stopLoading();
       }
     };
     const getPermissions = async () => {
       try {
+        startLoading();
         const response = await getPermissionList();
         setPermissionLevelList(response);
       } catch (error) {
         console.error(error);
+      } finally {
+        stopLoading();
       }
     };
     getRoles();
@@ -162,6 +179,7 @@ const RolePermissionPage = () => {
    */
   const onformSubmit = async (formData) => {
     try {
+      startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await rolePermissionCreationController(formData);
@@ -215,6 +233,8 @@ const RolePermissionPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -273,6 +293,7 @@ const RolePermissionPage = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
+      startLoading();
       const response = await rolePermissionDeleteController(selectedRow.ID);
 
       if (response) {
@@ -316,6 +337,8 @@ const RolePermissionPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -323,7 +346,7 @@ const RolePermissionPage = () => {
     <>
       {formAction.display && (
         <Container>
-           <Header className="panel-header">
+          <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"

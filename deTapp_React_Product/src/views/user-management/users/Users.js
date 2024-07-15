@@ -10,6 +10,7 @@ import {
   userupdateController,
 } from "./controllers/usersControllers";
 import { useDialog } from "../../utilities/alerts/DialogContent";
+import { useLoading } from "../../../components/Loading/loadingProvider";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -74,6 +75,8 @@ const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
   // const [rolesList, setRolesList] = useState([]);
+  const { startLoading, stopLoading } = useLoading();
+
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
@@ -84,10 +87,13 @@ const UsersPage = () => {
   // Fetches user data and updates the table
   const getTableData = async () => {
     try {
+      startLoading();
       const response = await getUserController();
       setTableData(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      stopLoading();
     }
   };
 
@@ -125,6 +131,7 @@ const UsersPage = () => {
    */
   const onformSubmit = async (formData) => {
     try {
+      startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await userCreationController(formData);
@@ -179,6 +186,8 @@ const UsersPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -239,6 +248,7 @@ const UsersPage = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
+      startLoading();
       const response = await userdeleteController(selectedRow.ID);
 
       if (response) {
@@ -282,6 +292,8 @@ const UsersPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 

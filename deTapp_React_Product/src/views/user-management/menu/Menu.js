@@ -9,6 +9,7 @@ import {
   menuDeleteController,
   menuUpdateController,
 } from "./controllers/MenuControllers";
+import { useLoading } from "../../../components/Loading/loadingProvider";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -78,15 +79,18 @@ const Menus = () => {
   });
 
   const { openDialog } = useDialog();
+  const { startLoading, stopLoading } = useLoading();
 
   const getRoles = async () => {
     try {
+      startLoading();
       const response = await getMenusController();
       setTableData(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      stopLoading();
     }
-
   };
 
   // Fetches roles data and updates the roles list
@@ -115,6 +119,7 @@ const Menus = () => {
    */
   const onformSubmit = async (formData) => {
     try {
+      startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await menuCreationController(formData);
@@ -168,6 +173,8 @@ const Menus = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -226,6 +233,7 @@ const Menus = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
+      startLoading();
       const response = await menuDeleteController(selectedRow.ID);
 
       if (response) {
@@ -269,6 +277,8 @@ const Menus = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -276,7 +286,7 @@ const Menus = () => {
     <>
       {formAction.display && (
         <Container>
-           <Header className="panel-header">
+          <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"

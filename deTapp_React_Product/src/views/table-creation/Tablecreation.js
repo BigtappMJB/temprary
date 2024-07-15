@@ -8,6 +8,7 @@ import {
   getDataTypesController,
   tableCreationController,
 } from "./controllers/tableCreationController";
+import { useLoading } from "../../components/Loading/loadingProvider";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -104,6 +105,8 @@ const CreateTableForm = () => {
   const isRemovingForm = useRef(false);
 
   const { openDialog } = useDialog();
+  const { startLoading, stopLoading } = useLoading();
+
   const validateTableName = (name) => {
     if (!name) {
       return "Table name is required";
@@ -145,9 +148,12 @@ const CreateTableForm = () => {
     inputRef.current.focus();
     const getDataTypes = async () => {
       try {
+        startLoading();
         setDataTypes(await getDataTypesController());
       } catch (error) {
         console.error(error);
+      } finally {
+        stopLoading();
       }
     };
     getDataTypes();
@@ -279,7 +285,7 @@ const CreateTableForm = () => {
         );
         return;
       }
-
+      startLoading();
       const finalObject = {
         tableName,
         columnsData: updatedColumnsData,
@@ -343,13 +349,15 @@ const CreateTableForm = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
   return (
     <>
       <Container>
-         <Header className="panel-header">
+        <Header className="panel-header">
           <Typography variant="h6">Create Table</Typography>
         </Header>
         <Form onSubmit={handleSubmit}>
