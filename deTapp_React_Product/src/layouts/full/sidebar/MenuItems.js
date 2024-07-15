@@ -50,6 +50,12 @@ const Menuitems = [
     href: '/menu',
   },
   {
+    id: uniqueId(),
+    title: 'SubMenu',
+    icon: IconUser,
+    href: '/subMenu',
+  },
+  {
     navlabel: true,
     subheader: 'Chat Interface',
   },

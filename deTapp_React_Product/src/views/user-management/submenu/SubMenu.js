@@ -1,9 +1,15 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
+import SubMenuFormComponent from "./components/subMenuFormComponent";
 import { useEffect, useState } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
-import RoleFormComponent from "./components/MenuFormComponent";
 import DataTable from "../users/components/DataTable";
-import { getMenusController, menuCreationController, menudeleteController, menuupdateController } from "./controllers/MenuControllers";
+import {
+  getSubMenusController,
+  subMenuCreationController,
+  subMenudeleteController,
+  subMenuupdateController,
+} from "./controllers/subMenuControllers";
+import { getMenusController } from "../menu/controllers/MenuControllers";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -56,17 +62,18 @@ const FormButton = styled(Button)(({ theme }) => ({
 }));
 
 /**
- * Menus component displays a user management interface with a form and a data table.
+ * UsersPage component displays a submenu management interface with a form and a data table.
  *
  * @component
  * @example
  * return (
- *   <Menus />
+ *   <UsersPage />
  * )
  */
-const Menus = () => {
+const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [menuList, setRolesList] = useState([]);
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
@@ -74,26 +81,33 @@ const Menus = () => {
 
   const { openDialog } = useDialog();
 
-  const getRoles = async () => {
-    const response = await getMenusController();
+  // Fetches submenu data and updates the table
+  const getTableData = async () => {
+    const response = await getSubMenusController();
     setTableData(response);
   };
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    getRoles();
+    const getMenus = async () => {
+      const response = await getMenusController();
+      setRolesList(response);
+    };
+    getMenus();
+    getTableData();
   }, []);
 
   const columns = {
     ID: "ID",
-    NAME: "NAME",
-    DESCRIPTION: "DESCRIPTION",
+    MENU_ID: "Menu ID",
+    MENU_NAME: "Menu NAME",
+    NAME: "SubMenu Name",
   };
 
   /**
-   * Initiates the process to add a new user.
+   * Initiates the process to add a new submenu.
    */
-  const addRoles = () => {
+  const addUser = () => {
     setFormAction({
       display: true,
       action: "add",
@@ -101,23 +115,23 @@ const Menus = () => {
   };
 
   /**
-   * Handles form submission for adding or updating a user.
+   * Handles form submission for adding or updating a submenu.
    * @param {Object} formData - The data from the form.
    */
   const onformSubmit = async (formData) => {
     try {
       let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await menuCreationController(formData);
+      if (isAdd) response = await subMenuCreationController(formData);
       else {
         formData = { ...formData, ID: selectedValue.ID };
-        response = await menuupdateController(formData);
+        response = await subMenuupdateController(formData);
       }
 
       if (response) {
         openDialog(
           "success",
-          `Menu ${isAdd ? "Addition" : "Updation"} Success`,
+          `SubMenu ${isAdd ? "Addition" : "Updation"} Success`,
           response.message,
           {
             confirm: {
@@ -130,7 +144,7 @@ const Menus = () => {
             },
           },
           (confirmed) => {
-            getRoles();
+            getTableData();
             if (!isAdd) {
               onFormReset();
             }
@@ -142,7 +156,7 @@ const Menus = () => {
       openDialog(
         "warning",
         "Warning",
-        `Menu ${isAdd ? "Addition" : "Updation"} failed`,
+        `SubMenu ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -173,8 +187,8 @@ const Menus = () => {
   };
 
   /**
-   * Initiates the process to update a user's information.
-   * @param {Object} selectedRow - The selected user's data.
+   * Initiates the process to update a submenu's information.
+   * @param {Object} selectedRow - The selected submenu's data.
    */
   const handleUpdateLogic = (selectedRow) => {
     setSelectedValue(selectedRow);
@@ -185,14 +199,16 @@ const Menus = () => {
   };
 
   /**
-   * Initiates the process to delete a user.
-   * @param {Object} selectedRow - The selected user's data.
+   * Initiates the process to delete a submenu.
+   * @param {Object} selectedRow - The selected submenu's data.
    */
   const handleDelete = (selectedRow) => {
     openDialog(
       "warning",
       `Delete confirmation`,
-      `Are you sure you want to delete this menu "${selectedRow.NAME}"?`,
+      `Are you sure you want to delete this submenu "${
+        selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
+      }"?`,
       {
         confirm: {
           name: "Yes",
@@ -212,17 +228,17 @@ const Menus = () => {
   };
 
   /**
-   * Removes a user from the table after confirming deletion.
-   * @param {Object} selectedRow - The selected user's data.
+   * Removes a submenu from the table after confirming deletion.
+   * @param {Object} selectedRow - The selected submenu's data.
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
-      const response = await menudeleteController(selectedRow.ID);
+      const response = await subMenudeleteController(selectedRow.ID);
 
       if (response) {
         openDialog(
           "success",
-          `Menu Deletion Success`,
+          `SubMenu Deletion Success`,
           response.message,
           {
             confirm: {
@@ -235,7 +251,7 @@ const Menus = () => {
             },
           },
           (confirmed) => {
-            getRoles();
+            getTableData();
           }
         );
       }
@@ -243,7 +259,7 @@ const Menus = () => {
       openDialog(
         "warning",
         "Warning",
-        `Menu Deletion failed`,
+        `SubMenu Deletion failed`,
         {
           confirm: {
             name: "Ok",
@@ -274,14 +290,15 @@ const Menus = () => {
                 : formAction.action === "update"
                 ? "Update"
                 : "Read "}{" "}
-              Menu
+              SubMenu
             </Typography>
           </Header>
-          <RoleFormComponent
+          <SubMenuFormComponent
             formAction={formAction}
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
+            menuList={menuList}
           />
         </Container>
       )}
@@ -289,18 +306,18 @@ const Menus = () => {
       <SecondContainer>
         <SubHeader>
           <Typography variant="h6">
-            <b>Menus List</b>
+            <b>SubMenus List</b>
           </Typography>
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">
             <FormButton
               type="button"
-              onClick={addRoles}
+              onClick={addUser}
               variant="contained"
               color="primary"
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >
-              Add Menu
+              Add SubMenu
             </FormButton>
           </Box>
         </SubHeader>
@@ -315,4 +332,4 @@ const Menus = () => {
   );
 };
 
-export default Menus;
+export default UsersPage;
