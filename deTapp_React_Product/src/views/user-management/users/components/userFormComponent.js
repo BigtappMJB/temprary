@@ -26,16 +26,16 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for form validation using Yup
 const schema = yup.object().shape({
-  // userId: yup.string().required("User ID is required"),
+  userId: yup.string().required("User name is required"),
   // role: yup.object().required("Role is required"),
   firstName: yup
     .string()
     .required("First Name is required")
-    .matches(validationRegex.firstName, errorMessages.firstName),
+    .matches(validationRegex.isLetters, errorMessages.isLetters),
   lastName: yup
     .string()
     .required("Last Name is required")
-    .matches(validationRegex.lastName, errorMessages.lastName),
+    .matches(validationRegex.isLetters, errorMessages.isLetters),
   email: yup
     .string()
     .required("Email is required")
@@ -107,7 +107,7 @@ const UserFormComponent = ({
       // const role =
       //   rolesList.find((role) => role.ID === defaultValues.ROLE) || null;
       reset({
-        // userId: defaultValues.USER_ID ?? "",
+        userId: defaultValues.USER_ID ?? "",
         // role: role,
         firstName: defaultValues.FIRST_NAME ?? "",
         lastName: defaultValues.LAST_NAME ?? "",
@@ -122,7 +122,7 @@ const UserFormComponent = ({
     setReadOnly(formAction?.action === "read");
     if (formAction.action === "add") {
       reset({
-        // userId: "",
+        userId: "",
         // role: null,
         firstName: "",
         lastName: "",
@@ -150,7 +150,7 @@ const UserFormComponent = ({
   const handleReset = () => {
     onReset();
     reset({
-      // userId: "",
+      userId: "",
       // role: null,
       firstName: "",
       lastName: "",
@@ -165,7 +165,7 @@ const UserFormComponent = ({
   const onLocalSubmit = () => {
     onSubmit(getValues());
     reset({
-      // userId: "",
+      userId: "",
       // role: null,
       firstName: "",
       lastName: "",
@@ -177,14 +177,14 @@ const UserFormComponent = ({
   return (
     <Container component="form" className="panel-bg" onSubmit={handleSubmit(onLocalSubmit)}>
       <Grid container spacing={2}>
-        {/* <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6}>
           <Controller
             name="userId"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="User ID"
+                label="User name"
                 fullWidth
                 variant="outlined"
                 error={!!errors.userId}
@@ -197,7 +197,7 @@ const UserFormComponent = ({
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        {/* <Grid item xs={12} sm={6}>
           <Controller
             name="role"
             control={control}

@@ -14,10 +14,10 @@ export const tableCreationController = async (formData) => {
         column_name: column.columnName,
         data_type: column.dataType,
         // length: column?.length,
-        nullable: column.isMandatory,
+        nullable: !column.isMandatory,
         default: column.defaultValue,
         primary_key: column.isPrimary,
-        auto_increment: column.isPrimary 
+        auto_increment: column.isPrimary,
       })),
       // includeAuditColumns: true,
     };
