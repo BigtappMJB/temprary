@@ -177,7 +177,7 @@ const UserFormComponent = ({
   return (
     <Container component="form" className="panel-bg" onSubmit={handleSubmit(onLocalSubmit)}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        {/* <Grid item xs={12} sm={6}>
           <Controller
             name="userId"
             control={control}
@@ -196,7 +196,7 @@ const UserFormComponent = ({
               />
             )}
           />
-        </Grid>
+        </Grid> */}
         {/* <Grid item xs={12} sm={6}>
           <Controller
             name="role"
