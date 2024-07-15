@@ -305,9 +305,9 @@ const UsersPage = () => {
         </Container>
       )}
 
-      <SecondContainer>
-        <SubHeader>
-          <Typography variant="h6">
+      <SecondContainer  className="common-table">
+        <SubHeader className="table-header">
+          <Typography variant="h6" >
             <b>Users List</b>
           </Typography>
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">
@@ -316,6 +316,7 @@ const UsersPage = () => {
               onClick={addUser}
               variant="contained"
               color="primary"
+              className="primary"
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >

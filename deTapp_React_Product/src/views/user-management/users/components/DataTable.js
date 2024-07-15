@@ -154,9 +154,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
   return (
     <>
       <TableContainer>
-        <Table>
+        <Table >
           <StyledTableHead>
-            <TableRow>
+            <TableRow className="tablename-head" >
               {Object.keys(extendedColumns).map((key) => (
                 <StyledTableCell key={key}>
                   <TableSortLabel
@@ -166,14 +166,16 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                     onClick={() => handleRequestSort(key)}
                     style={{
                       display: "flex",
-                      justifyContent: "center",
+                      justifyContent: "left",
                       fontWeight: "bold",
+                      padding:"3px",
                     }}
                   >
                     {extendedColumns[key]}
                   </TableSortLabel>
 
                   <StyledTextField
+                    className="tablename-search"
                     key={key}
                     name={key}
                     onChange={handleFilterChange}
@@ -191,8 +193,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                   disabled
                   style={{
                     display: "flex",
-                    justifyContent: "center",
+                    justifyContent: "left",
                     fontWeight: "bold",
+                    padding:"3px",
                   }}
                 >
                   {"Actions"}
@@ -201,7 +204,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
               </StyledTableCell>
             </TableRow>
           </StyledTableHead>
-          <TableBody>
+          <TableBody className="tablename-body">
             {paginatedData.map((row, index) => (
               <TableRow
                 key={row.id}
@@ -261,6 +264,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 50, 100]}
         component="div"
+        className="tablename-footer"
         count={filteredData.length}
         rowsPerPage={rowsPerPage}
         page={page}

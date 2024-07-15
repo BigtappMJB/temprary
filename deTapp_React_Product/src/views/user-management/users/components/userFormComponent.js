@@ -311,7 +311,7 @@ const UserFormComponent = ({
             )}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <Box
             display="flex"
             justifyContent="flex-end"
@@ -320,7 +320,7 @@ const UserFormComponent = ({
             gap={2} // Adds space between buttons
           >
             {formAction.action !== "read" && (
-              <Button type="submit" variant="contained" color="primary">
+              <Button type="submit" variant="contained" color="primary" className="primary">
                 {formAction.action === "add" ? "Add" : "Update"}
               </Button>
             )}
@@ -328,7 +328,8 @@ const UserFormComponent = ({
             <Button
               type="button"
               variant="contained"
-              color="secondary"
+              color="primary"
+              className="danger"
               onClick={handleReset}
             >
               {formAction.action !== "read" ? "Cancel" : "Close"}

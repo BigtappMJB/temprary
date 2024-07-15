@@ -30,5 +30,60 @@ main {
 }
 .panel-bg {
   background: #fff !important;
-  padding: 5px 20px !important;
+  padding: 10px 20px !important;
 }
+button {
+  min-width: 100px !important;
+}
+.danger{
+  background-color: #D92D20 !important;
+}
+.primary{
+  background-color: #166eb7 !important;
+}
+.warning{
+  background-color: #f99127 !important;
+}
+input[type="text"] {
+  height: 34px !important;
+  padding: 6px 12px !important;
+  
+}
+.css-mhc70k-MuiGrid-root>.MuiGrid-item {
+  padding: 10px 10px 10px 25px !important;
+  /*  padding-bottom: 15px !important;
+    padding-right: 10px !important;
+    padding-left: 25px !important;
+    padding-top: 25px !important; */
+}
+.table-header {
+  background-color: #ffffff !important;
+  padding: 8px 15px !important;
+  margin-bottom: 0px !important;
+}
+.tablename-head > .MuiInputBase-root > input{
+  height: 34px !important;
+  padding: 0px !important;
+  margin: 0px !important;
+
+}
+.tablename-head th {
+  padding: 5px 10px 10px 10px !important;
+}
+.tablename-head h6 {
+  color: #166eb7 !important;
+}
+.tablename-body td {
+  padding: 5px !important;
+  padding-left: 15px !important;
+}
+.tablename-body td button{
+  min-width: auto !important;
+}
+.tablename-footer {
+  background: #f2f2f2;
+}
+.common-table {
+  padding-bottom: 0px !important;
+}
+
