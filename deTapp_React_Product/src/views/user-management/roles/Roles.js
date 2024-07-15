@@ -90,9 +90,8 @@ const Roles = () => {
   }, []);
 
   const columns = {
-    ID: "ID",
-    NAME: "NAME",
-    DESCRIPTION: "DESCRIPTION",
+    NAME: "Role",
+    DESCRIPTION: "Description",
   };
 
   /**

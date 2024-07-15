@@ -120,11 +120,11 @@ const RolePermissionPage = () => {
   }, []);
 
   const columns = {
-    ID: "ID",
-    ROLE_ID: "Role ID",
-    MENU_ID: "Menu ID",
-    SUB_MENU_ID: "SubMenu ID",
-    PERMISSION_LEVEL: "Permission Level ID",
+  
+    ROLE_NAME: "Role",
+    MENU_NAME: "Menu",
+    SUB_MENU_NAME: "SubMenu",
+    PERMISSION: "Permission",
   };
 
   /**

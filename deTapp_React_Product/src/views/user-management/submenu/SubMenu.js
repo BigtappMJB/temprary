@@ -98,10 +98,9 @@ const UsersPage = () => {
   }, []);
 
   const columns = {
-    ID: "ID",
-    MENU_ID: "Menu ID",
-    // MENU_NAME: "Menu NAME",
-    NAME: "SubMenu Name",
+    MENU_NAME: "Menu",
+    NAME: "SubMenu",
+    DESCRIPTION:"Description"
   };
 
   /**

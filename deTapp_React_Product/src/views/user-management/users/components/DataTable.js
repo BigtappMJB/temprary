@@ -32,6 +32,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   lineHeight: 2,
   textAlign: "justify",
 }));
+
 /**
  * DataTable component displays a paginated, sortable, and filterable table.
  * It also provides actions for updating and deleting rows.
@@ -68,6 +69,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filter, setFilter] = useState({});
 
+  // Add S.NO column to the columns definition
+  const extendedColumns = { sno: "S.No", ...columns };
+
   // Memoize filtered and sorted data to optimize performance
   const filteredData = useMemo(() => {
     return tableData.filter((row) =>
@@ -81,7 +85,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
     return filteredData.slice().sort((a, b) => {
       if (order === "original")
         return tableData.indexOf(a) - tableData.indexOf(b);
-      const getIDKey = Object.keys(columns)[0];
+      const getIDKey = Object.keys(extendedColumns)[0];
       if (orderBy === getIDKey) {
         return order === "asc"
           ? a[getIDKey] - b[getIDKey]
@@ -96,7 +100,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
         ? a[orderBy].localeCompare(b[orderBy])
         : b[orderBy].localeCompare(a[orderBy]);
     });
-  }, [filteredData, order, orderBy, columns, tableData]);
+  }, [filteredData, order, orderBy, extendedColumns, tableData]);
 
   const paginatedData = useMemo(() => {
     return sortedData.slice(
@@ -153,9 +157,10 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
         <Table>
           <StyledTableHead>
             <TableRow>
-              {Object.keys(columns).map((key) => (
+              {Object.keys(extendedColumns).map((key) => (
                 <StyledTableCell key={key}>
                   <TableSortLabel
+                    disabled={key === "sno"}
                     active={orderBy === key}
                     direction={orderBy === key ? order : "asc"}
                     onClick={() => handleRequestSort(key)}
@@ -165,14 +170,18 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                       fontWeight: "bold",
                     }}
                   >
-                    {columns[key]}
+                    {extendedColumns[key]}
                   </TableSortLabel>
+
                   <StyledTextField
                     key={key}
                     name={key}
                     onChange={handleFilterChange}
                     variant="outlined"
-                    placeholder={`Search ${columns[key]}`}
+                    disabled={key === "sno"}
+                    placeholder={
+                      key !== "sno" && `Search ${extendedColumns[key]}`
+                    }
                     fullWidth
                   />
                 </StyledTableCell>
@@ -200,6 +209,13 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                   backgroundColor: index % 2 !== 0 ? "#f2f2f2" : "inherit",
                 }}
               >
+                <StyledTableCell
+                  style={{
+                    textAlign: "center",
+                  }}
+                >
+                  {page * rowsPerPage + index + 1}
+                </StyledTableCell>
                 {Object.keys(columns).map((key) => (
                   <StyledTableCell
                     key={key}

@@ -90,9 +90,8 @@ const Menus = () => {
   }, []);
 
   const columns = {
-    ID: "ID",
-    NAME: "NAME",
-    DESCRIPTION: "DESCRIPTION",
+    NAME: "Menu",
+    DESCRIPTION: "Description",
   };
 
   /**
