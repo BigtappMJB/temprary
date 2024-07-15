@@ -284,7 +284,7 @@ const UsersPage = () => {
     <>
       {formAction.display && (
         <Container>
-          <Header>
+          <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"

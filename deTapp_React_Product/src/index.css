@@ -17,3 +17,18 @@ code {
   width: 200px; /* Adjust the width as needed */
   background-color: "#ffffff";
 }
+.panel-header {
+  background: hsla(215, 84%, 34%, 1);
+  background: linear-gradient(360deg, hsla(215, 84%, 34%, 1) 0%, hsla(215, 57%, 71%, 1) 80%, hsla(215, 100%, 90%, 1) 100%);  
+  background: -moz-linear-gradient(360deg, hsla(215, 84%, 34%, 1) 0%, hsla(215, 57%, 71%, 1) 80%, hsla(215, 100%, 90%, 1) 100%);  
+  background: -webkit-linear-gradient(360deg, hsla(215, 84%, 34%, 1) 0%, hsla(215, 57%, 71%, 1) 80%, hsla(215, 100%, 90%, 1) 100%);  
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#0E4CA1", endColorstr="#8BAEDF", GradientType=1 );
+
+}
+main {
+  background: #fafafd !important;
+}
+.panel-bg {
+  background: #fff !important;
+  padding: 5px 20px !important;
+}
