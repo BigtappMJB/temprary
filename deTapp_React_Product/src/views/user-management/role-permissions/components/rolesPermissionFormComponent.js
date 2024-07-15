@@ -108,13 +108,31 @@ const RolePermissionFormComponent = ({
     handleSubmit,
     reset,
     getValues,
-    watch,
+    // watch,
     formState: { errors },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues,
   });
+
+  //   const watchMenu = watch("menu");
+
+  //   // Effect to update subMenuList and reset subMenu when menu changes
+  //   useEffect(() => {
+  //     if (watchMenu && watchMenu.ID !== defaultValues.MENU_ID) {
+  //       const filteredSubMenus = subMenusList.filter(
+  //         (data) => data.MENU_ID === watchMenu.ID
+  //       );
+  //       setSubMenuList(filteredSubMenus);
+
+  //       // Reset only the 'subMenu' field
+  //       reset((prevValues) => ({
+  //         ...prevValues,
+  //         subMenu: null,
+  //       }));
+  //     }
+  //   }, [watchMenu, subMenusList, reset, defaultValues.MENU_ID]);
 
   // Effect to set default values and reset the form
   useEffect(() => {
