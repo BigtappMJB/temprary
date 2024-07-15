@@ -24,6 +24,10 @@ const SubMenu = Loadable(
   lazy(() => import("../views/user-management/submenu/SubMenu"))
 );
 
+const RolePermission = Loadable(
+  lazy(() => import("../views/user-management/role-permissions/rolePermission"))
+);
+
 const Error = Loadable(lazy(() => import("../views/authentication/Error")));
 const Register = Loadable(
   lazy(() => import("../views/authentication/Register"))
@@ -42,6 +46,7 @@ const Router = [
       { path: "/roles", exact: true, element: <Roles /> },
       { path: "/menu", exact: true, element: <Menu /> },
       { path: "/subMenu", exact: true, element: <SubMenu /> },
+      { path: "/role-permissions", exact: true, element: <RolePermission /> },
 
       { path: "*", element: <Navigate to="/auth/404" /> },
     ],

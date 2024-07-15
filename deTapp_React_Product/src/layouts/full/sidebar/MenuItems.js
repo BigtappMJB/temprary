@@ -44,6 +44,10 @@ const Menuitems = [
     href: '/role-permissions',
   },
   {
+    navlabel: true,
+    subheader: 'Menu Management',
+  },
+  {
     id: uniqueId(),
     title: 'Menu',
     icon: IconUser,
