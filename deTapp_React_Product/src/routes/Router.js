@@ -11,6 +11,9 @@ const Dashboard = Loadable(lazy(() => import('../views/dashboard/Dashboard')))
 const Tablecreation = Loadable(lazy(() => import('../views/table-creation/Tablecreation')))
 const UsersPage = Loadable(lazy(() => import('../views/user-management/users/Users')))
 const Roles = Loadable(lazy(() => import('../views/user-management/roles/Roles')))
+const Menu = Loadable(lazy(() => import('../views/user-management/menu/Menu')))
+
+
 
 const Error = Loadable(lazy(() => import('../views/authentication/Error')));
 const Register = Loadable(lazy(() => import('../views/authentication/Register')));
@@ -26,6 +29,8 @@ const Router = [
       { path: '/table-creation', exact: true, element: <Tablecreation /> },
       { path: '/users', exact: true, element: <UsersPage /> },
       { path: '/roles', exact: true, element: <Roles /> },
+      { path: '/menu', exact: true, element: <Menu /> },
+
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },

@@ -44,6 +44,12 @@ const Menuitems = [
     href: '/role-permissions',
   },
   {
+    id: uniqueId(),
+    title: 'Menu',
+    icon: IconUser,
+    href: '/menu',
+  },
+  {
     navlabel: true,
     subheader: 'Chat Interface',
   },
