@@ -80,8 +80,12 @@ const Roles = () => {
   const { openDialog } = useDialog();
 
   const getRoles = async () => {
-    const response = await getRolesController();
-    setTableData(response);
+    try {
+      const response = await getRolesController();
+      setTableData(response);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Fetches roles data and updates the roles list
@@ -271,7 +275,7 @@ const Roles = () => {
     <>
       {formAction.display && (
         <Container>
-          <Header>
+           <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"
@@ -301,6 +305,7 @@ const Roles = () => {
               onClick={addRoles}
               variant="contained"
               color="primary"
+              className="primary"
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >

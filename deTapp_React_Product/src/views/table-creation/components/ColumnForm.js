@@ -431,7 +431,7 @@ const TableColumnForm = forwardRef(
         {data?.id !== 0 && (
           <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
             <Tooltip title="Delete" arrow>
-              <IconButton sx={{ color: "#ff0000" }} onClick={handleReset}>
+              <IconButton sx={{ color: "#d92d20" }} onClick={handleReset}>
                 <CloseIcon />
               </IconButton>
             </Tooltip>

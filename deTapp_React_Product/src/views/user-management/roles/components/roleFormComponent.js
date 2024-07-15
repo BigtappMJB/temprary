@@ -184,7 +184,7 @@ const RoleFormComponent = ({
             gap={2} // Adds space between buttons
           >
             {formAction.action !== "read" && (
-              <Button type="submit" variant="contained" color="primary">
+              <Button type="submit" variant="contained" color="primary" className="primary">
                 {formAction.action === "add" ? "Add" : "Update"}
               </Button>
             )}
@@ -193,6 +193,7 @@ const RoleFormComponent = ({
               type="button"
               variant="contained"
               color="secondary"
+              className="danger"
               onClick={handleReset}
             >
               {formAction.action !== "read" ? "Cancel" : "Close"}

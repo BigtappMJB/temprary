@@ -154,9 +154,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
   return (
     <>
       <TableContainer>
-        <Table >
+        <Table>
           <StyledTableHead>
-            <TableRow className="tablename-head" >
+            <TableRow className="tablename-head">
               {Object.keys(extendedColumns).map((key) => (
                 <StyledTableCell key={key}>
                   <TableSortLabel
@@ -168,7 +168,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                       display: "flex",
                       justifyContent: "left",
                       fontWeight: "bold",
-                      padding:"3px",
+                      padding: "3px",
                     }}
                   >
                     {extendedColumns[key]}
@@ -182,7 +182,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                     variant="outlined"
                     disabled={key === "sno"}
                     placeholder={
-                      key !== "sno" && `Search ${extendedColumns[key]}`
+                      key !== "sno" ? `Search ${extendedColumns[key]}` : ""
                     }
                     fullWidth
                   />
@@ -195,7 +195,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                     display: "flex",
                     justifyContent: "left",
                     fontWeight: "bold",
-                    padding:"3px",
+                    padding: "3px",
                   }}
                 >
                   {"Actions"}

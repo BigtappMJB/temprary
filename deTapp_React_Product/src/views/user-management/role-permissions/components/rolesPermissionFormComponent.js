@@ -380,6 +380,7 @@ const RolePermissionFormComponent = ({
               type="button"
               variant="contained"
               color="secondary"
+              className="danger"
               onClick={handleReset}
             >
               {formAction.action !== "read" ? "Cancel" : "Close"}

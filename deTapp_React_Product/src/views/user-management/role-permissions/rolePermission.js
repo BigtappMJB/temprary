@@ -90,27 +90,47 @@ const RolePermissionPage = () => {
 
   // Fetches role permission data and updates the table
   const getTableData = async () => {
-    const response = await getRolePermissionsController();
-    setTableData(response);
+    try {
+      const response = await getRolePermissionsController();
+      setTableData(response);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
     const getRoles = async () => {
-      const response = await getRolesController();
-      setRolesList(response);
+      try {
+        const response = await getRolesController();
+        setRolesList(response);
+      } catch (error) {
+        console.error(error);
+      }
     };
     const getMenus = async () => {
-      const response = await getMenusController();
-      setMenuList(response);
+      try {
+        const response = await getMenusController();
+        setMenuList(response);
+      } catch (error) {
+        console.error(error);
+      }
     };
     const getSubMenus = async () => {
-      const response = await getSubMenusController();
-      setSubMenuList(response);
+      try {
+        const response = await getSubMenusController();
+        setSubMenuList(response);
+      } catch (error) {
+        console.error(error);
+      }
     };
     const getPermissions = async () => {
-      const response = await getPermissionList();
-      setPermissionLevelList(response);
+      try {
+        const response = await getPermissionList();
+        setPermissionLevelList(response);
+      } catch (error) {
+        console.error(error);
+      }
     };
     getRoles();
     getMenus();
@@ -120,7 +140,6 @@ const RolePermissionPage = () => {
   }, []);
 
   const columns = {
-  
     ROLE_NAME: "Role",
     MENU_NAME: "Menu",
     SUB_MENU_NAME: "SubMenu",
@@ -304,7 +323,7 @@ const RolePermissionPage = () => {
     <>
       {formAction.display && (
         <Container>
-          <Header>
+           <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"
@@ -338,6 +357,7 @@ const RolePermissionPage = () => {
               onClick={addUser}
               variant="contained"
               color="primary"
+              className="primary"
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >

@@ -88,7 +88,7 @@ export const userCreationController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      userId: formData?.userId.trim(),
+      userId: formData?.userId?.trim() || "",
       firstName: titleCaseFirstWord(formData.firstName.trim()),
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
@@ -141,7 +141,7 @@ export const userupdateController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      userId: formData?.userId.trim(),
+      userId: formData?.userId?.trim() || "",
       firstName: titleCaseFirstWord(formData.firstName.trim()),
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),

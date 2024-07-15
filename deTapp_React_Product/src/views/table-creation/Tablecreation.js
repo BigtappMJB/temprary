@@ -349,7 +349,7 @@ const CreateTableForm = () => {
   return (
     <>
       <Container>
-        <Header>
+         <Header className="panel-header">
           <Typography variant="h6">Create Table</Typography>
         </Header>
         <Form onSubmit={handleSubmit}>
@@ -382,6 +382,7 @@ const CreateTableForm = () => {
                 onClick={addColumnForm}
                 variant="contained"
                 color="primary"
+                className="primary"
                 style={{ marginRight: "10px" }}
               >
                 Add Column

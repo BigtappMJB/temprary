@@ -83,15 +83,23 @@ const UsersPage = () => {
 
   // Fetches submenu data and updates the table
   const getTableData = async () => {
-    const response = await getSubMenusController();
-    setTableData(response);
+    try {
+      const response = await getSubMenusController();
+      setTableData(response);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
     const getMenus = async () => {
-      const response = await getMenusController();
-      setRolesList(response);
+      try {
+        const response = await getMenusController();
+        setRolesList(response);
+      } catch (error) {
+        console.error(error);
+      }
     };
     getMenus();
     getTableData();
@@ -100,7 +108,7 @@ const UsersPage = () => {
   const columns = {
     MENU_NAME: "Menu",
     NAME: "SubMenu",
-    DESCRIPTION:"Description"
+    DESCRIPTION: "Description",
   };
 
   /**
@@ -205,9 +213,7 @@ const UsersPage = () => {
     openDialog(
       "warning",
       `Delete confirmation`,
-      `Are you sure you want to delete this submenu "${
-        selectedRow.NAME
-      }"?`,
+      `Are you sure you want to delete this submenu "${selectedRow.NAME}"?`,
       {
         confirm: {
           name: "Yes",
@@ -282,7 +288,7 @@ const UsersPage = () => {
     <>
       {formAction.display && (
         <Container>
-          <Header>
+           <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"
@@ -313,6 +319,7 @@ const UsersPage = () => {
               onClick={addUser}
               variant="contained"
               color="primary"
+              className="primary"
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >

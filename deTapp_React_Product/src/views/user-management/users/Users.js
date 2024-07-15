@@ -83,8 +83,12 @@ const UsersPage = () => {
 
   // Fetches user data and updates the table
   const getTableData = async () => {
-    const response = await getUserController();
-    setTableData(response);
+    try {
+      const response = await getUserController();
+      setTableData(response);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Fetches roles data and updates the roles list
@@ -98,7 +102,7 @@ const UsersPage = () => {
   }, []);
 
   const columns = {
-    USER_ID: "Username",
+    // USER_ID: "Username",
     FIRST_NAME: "First Name",
     LAST_NAME: "Last Name",
     EMAIL: "Email",
@@ -305,9 +309,9 @@ const UsersPage = () => {
         </Container>
       )}
 
-      <SecondContainer  className="common-table">
+      <SecondContainer className="common-table">
         <SubHeader className="table-header">
-          <Typography variant="h6" >
+          <Typography variant="h6">
             <b>Users List</b>
           </Typography>
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">

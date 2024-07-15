@@ -26,7 +26,7 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for form validation using Yup
 const schema = yup.object().shape({
-  userId: yup.string().required("User name is required"),
+  // userId: yup.string().required("User name is required"),
   // role: yup.object().required("Role is required"),
   firstName: yup
     .string()
@@ -107,7 +107,7 @@ const UserFormComponent = ({
       // const role =
       //   rolesList.find((role) => role.ID === defaultValues.ROLE) || null;
       reset({
-        userId: defaultValues.USER_ID ?? "",
+        // userId: defaultValues.USER_ID ?? "",
         // role: role,
         firstName: defaultValues.FIRST_NAME ?? "",
         lastName: defaultValues.LAST_NAME ?? "",
@@ -150,7 +150,7 @@ const UserFormComponent = ({
   const handleReset = () => {
     onReset();
     reset({
-      userId: "",
+      // userId: "",
       // role: null,
       firstName: "",
       lastName: "",
@@ -311,7 +311,7 @@ const UserFormComponent = ({
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <Box
             display="flex"
             justifyContent="flex-end"
