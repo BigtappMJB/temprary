@@ -152,9 +152,26 @@ const CreateTableForm = () => {
   }, []);
 
   const addColumnForm = () => {
-    const updatedFormData = {
+    const validationError = validateTableName(tableName);
+    setError(validationError);
+    if (validationError) {
+      return;
+    }
+    let updatedFormData = {
       id: columnsData.length,
     };
+    if (columnsData.length === 0) {
+      updatedFormData = {
+        id: columnsData.length,
+        columnName: `${tableName.toLowerCase()}_id`,
+        dataType: "INTEGER",
+        length: "255",
+        isPrimary: true,
+        isMandatory: true,
+        defaultValue: 0,
+        formSubmitted: true,
+      };
+    }
     setFormData((prevFormData) => [...prevFormData, updatedFormData]);
   };
 
@@ -171,7 +188,6 @@ const CreateTableForm = () => {
   const onColumnSubmit = (columnData) => {
     let updatedData = columnsData;
     updatedData[columnData.id] = columnData;
-
     setFormData(updatedData);
   };
 
@@ -247,7 +263,9 @@ const CreateTableForm = () => {
       if (response) {
         const success =
           response.trim().toLowerCase() ===
-          "Table created successfully".trim().toLowerCase();
+          `Table ${tableName.toUpperCase()} successfully created.`
+            .trim()
+            .toLowerCase();
         openDialog(
           success ? "success" : "warning",
           success ? "Success" : "Warning ",
@@ -265,17 +283,19 @@ const CreateTableForm = () => {
           (confirmed) => {
             if (
               response.trim().toLowerCase() ===
-              "Table created successfully".trim().toLowerCase()
+              `Table ${tableName.toUpperCase()} successfully created.`
+                .trim()
+                .toLowerCase()
             ) {
               setTableName("");
-            //   setSubmitted(false);
+              //   setSubmitted(false);
               handleColumnsClear();
             }
           }
         );
       }
     } catch (error) {
-        console.log(error);
+      console.log(error);
       openDialog(
         "critical",
         "Table Creation Failed",

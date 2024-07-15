@@ -228,7 +228,7 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset, dataTypes }) => {
             helperText={errors.isPrimary?.message}
             className="input-field"
             InputProps={{
-              readOnly: formSubmitted, // Make the field read-only
+              readOnly: formSubmitted || data?.id !== 0, // Make the field read-only
             }}
           >
             <MenuItem value={true}>Yes</MenuItem>
@@ -249,7 +249,7 @@ const TableColumnForm = ({ data, onColumnSubmit, onReset, dataTypes }) => {
             helperText={errors.isForeign?.message}
             className="input-field"
             InputProps={{
-              readOnly: formSubmitted, // Make the field read-only
+              readOnly: formSubmitted || data?.id !== 0, // Make the field read-only
             }}
           >
             <MenuItem value={true}>Yes</MenuItem>
