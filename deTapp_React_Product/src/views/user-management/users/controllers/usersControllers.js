@@ -93,7 +93,7 @@ export const userCreationController = async (formData) => {
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role: formData.role?.ID ?? formData.role,
+      role: null,
     };
     // Send the POST request to the user API endpoint
     const response = await post("/master/user", body, "python");
@@ -146,7 +146,7 @@ export const userupdateController = async (formData) => {
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role: formData.role?.ID ?? formData.role,
+      role: null,
     };
     // Send the PUT request to the user API endpoint
     const response = await put(
