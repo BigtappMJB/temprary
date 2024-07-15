@@ -1,0 +1,10 @@
+Flask-Cors
+flask
+mysql
+pytz
+pandas
+mysql-connector-python
+python-dateutil
+requests
+snowflake-connector-python
+python-dotenv
