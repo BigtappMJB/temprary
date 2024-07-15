@@ -38,7 +38,7 @@ const schema = yup.object().shape({
 });
 
 /**
- * SubMenuFormComponentrenders a form with fields for user details.
+ * SubMenuFormComponent renders a form with fields for submenu details.
  * The form is validated using Yup schema and managed with React Hook Form.
  *
  * @component
@@ -47,24 +47,22 @@ const schema = yup.object().shape({
  * @param {Object} props.defaultValues - Default values for the form fields
  * @param {Function} props.onSubmit - Function to handle form submission
  * @param {Function} props.onReset - Function to handle form reset
- * @param {Array} props.menuList - List of roles to populate the Autocomplete
+ * @param {Array} props.menuList - List of menus to populate the Autocomplete
  * @example
  * // Sample usage
  * const formAction = { action: 'add' };
  * const defaultValues = {
- *   USER_ID: '1',
- *   ROLE: 'admin',
- *   FIRST_NAME: 'John',
- *   LAST_NAME: 'Doe',
- *   EMAIL: 'john.doe@example.com',
- *   MOBILE: '1234567890'
+ *   ID: '1',
+ *   MENU_ID: 'admin',
+ *   NAME: 'SubMenu1',
+ *   DESCRIPTION: 'Description for submenu 1'
  * };
  * const menuList = [
- *   { name: 'admin', description: 'Admin' },
+ *   { ID: 'admin', NAME: 'Admin' },
  *   { ID: 'user', NAME: 'User' }
  * ];
  *
- * <UserFormComponent
+ * <SubMenuFormComponent
  *   formAction={formAction}
  *   defaultValues={defaultValues}
  *   onSubmit={handleSubmit}
@@ -97,15 +95,12 @@ const SubMenuFormComponent = ({
   // Effect to set default values and reset the form
   useEffect(() => {
     if (defaultValues) {
-      const role =
-        menuList.find((role) => role.ID === defaultValues.ROLE) || null;
+      const menu =
+        menuList.find((role) => role.ID === defaultValues.MENU_ID) || null;
       reset({
-        userId: defaultValues.USER_ID ?? "",
-        menu: role,
-        firstName: defaultValues.FIRST_NAME ?? "",
-        lastName: defaultValues.LAST_NAME ?? "",
-        email: defaultValues.EMAIL ?? "",
-        mobileNo: defaultValues.MOBILE ?? "",
+        menu: menu,
+        name: defaultValues.NAME ?? "",
+        description: defaultValues.DESCRIPTION ?? "",
       });
     }
   }, [defaultValues, reset, menuList, formAction]);
@@ -140,12 +135,9 @@ const SubMenuFormComponent = ({
   const handleReset = () => {
     onReset();
     reset({
-      userId: "",
-      role: null,
-      firstName: "",
-      lastName: "",
-      email: "",
-      mobileNo: "",
+      menu: null,
+      name: "",
+      description: "",
     });
   };
 
@@ -155,12 +147,9 @@ const SubMenuFormComponent = ({
   const onLocalSubmit = () => {
     onSubmit(getValues());
     reset({
-      userId: "",
-      role: null,
-      firstName: "",
-      lastName: "",
-      email: "",
-      mobileNo: "",
+      menu: null,
+      name: "",
+      description: "",
     });
   };
 
@@ -169,27 +158,7 @@ const SubMenuFormComponent = ({
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Controller
-            name="userId"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="User ID"
-                fullWidth
-                variant="outlined"
-                error={!!errors.userId}
-                helperText={errors.userId?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="role"
+            name="menu"
             control={control}
             render={({ field }) => (
               <Autocomplete
@@ -202,10 +171,10 @@ const SubMenuFormComponent = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Select Role"
+                    label="Select Menu"
                     fullWidth
-                    error={!!errors.role}
-                    helperText={errors.role?.message}
+                    error={!!errors.menu}
+                    helperText={errors.menu?.message}
                     InputLabelProps={{
                       shrink: Boolean(field.value || isFocused),
                     }}
@@ -221,18 +190,19 @@ const SubMenuFormComponent = ({
             )}
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <Controller
-            name="firstName"
+            name="name"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="First Name"
+                label="Name"
                 fullWidth
                 variant="outlined"
-                error={!!errors.firstName}
-                helperText={errors.firstName?.message}
+                error={!!errors.name}
+                helperText={errors.name?.message}
                 InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
@@ -243,16 +213,16 @@ const SubMenuFormComponent = ({
         </Grid>
         <Grid item xs={12} sm={6}>
           <Controller
-            name="lastName"
+            name="description"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Last Name"
+                label="Description"
                 fullWidth
                 variant="outlined"
-                error={!!errors.lastName}
-                helperText={errors.lastName?.message}
+                error={!!errors.description}
+                helperText={errors.description?.message}
                 InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
@@ -261,46 +231,7 @@ const SubMenuFormComponent = ({
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Email ID"
-                fullWidth
-                variant="outlined"
-                error={!!errors.email}
-                helperText={errors.email?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="mobileNo"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Mobile No"
-                fullWidth
-                variant="outlined"
-                error={!!errors.mobileNo}
-                helperText={errors.mobileNo?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
+
         <Grid item xs={12}>
           <Box
             display="flex"

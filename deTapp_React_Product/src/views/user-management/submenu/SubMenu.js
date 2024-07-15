@@ -6,8 +6,8 @@ import DataTable from "../users/components/DataTable";
 import {
   getSubMenusController,
   subMenuCreationController,
-  subMenudeleteController,
-  subMenuupdateController,
+  subMenuDeleteController,
+  subMenuUpdateController,
 } from "./controllers/subMenuControllers";
 import { getMenusController } from "../menu/controllers/MenuControllers";
 
@@ -100,7 +100,7 @@ const UsersPage = () => {
   const columns = {
     ID: "ID",
     MENU_ID: "Menu ID",
-    MENU_NAME: "Menu NAME",
+    // MENU_NAME: "Menu NAME",
     NAME: "SubMenu Name",
   };
 
@@ -125,7 +125,7 @@ const UsersPage = () => {
       if (isAdd) response = await subMenuCreationController(formData);
       else {
         formData = { ...formData, ID: selectedValue.ID };
-        response = await subMenuupdateController(formData);
+        response = await subMenuUpdateController(formData);
       }
 
       if (response) {
@@ -207,7 +207,7 @@ const UsersPage = () => {
       "warning",
       `Delete confirmation`,
       `Are you sure you want to delete this submenu "${
-        selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
+        selectedRow.NAME
       }"?`,
       {
         confirm: {
@@ -233,7 +233,7 @@ const UsersPage = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
-      const response = await subMenudeleteController(selectedRow.ID);
+      const response = await subMenuDeleteController(selectedRow.ID);
 
       if (response) {
         openDialog(

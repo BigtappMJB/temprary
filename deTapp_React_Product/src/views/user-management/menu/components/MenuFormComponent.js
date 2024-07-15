@@ -30,7 +30,7 @@ const schema = yup.object().shape({
 });
 
 /**
- * RoleFormComponent renders a form with fields for user details.
+ * RoleFormComponent renders a form with fields for role details.
  * The form is validated using Yup schema and managed with React Hook Form.
  *
  * @component
@@ -39,15 +39,13 @@ const schema = yup.object().shape({
  * @param {Object} props.defaultValues - Default values for the form fields
  * @param {Function} props.onSubmit - Function to handle form submission
  * @param {Function} props.onReset - Function to handle form reset
- * @param {Array} props.rolesList - List of roles to populate the Autocomplete
  * @example
  * // Sample usage
  * const formAction = { action: 'add' };
  * const defaultValues = {
- *   name: 'role',
- *   role: 'description',
+ *   name: 'Role',
+ *   description: 'Description for role',
  * };
-
  *
  * <RoleFormComponent
  *   formAction={formAction}
@@ -61,7 +59,6 @@ const RoleFormComponent = ({
   defaultValues,
   onSubmit,
   onReset,
-  rolesList,
 }) => {
   const [readOnly, setReadOnly] = useState(false);
 
@@ -85,7 +82,7 @@ const RoleFormComponent = ({
         description: defaultValues.DESCRIPTION ?? "",
       });
     }
-  }, [defaultValues, reset, rolesList, formAction]);
+  }, [defaultValues, reset]);
 
   // Effect to set read-only state and reset form on formAction change
   useEffect(() => {

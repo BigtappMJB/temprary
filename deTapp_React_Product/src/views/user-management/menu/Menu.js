@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import RoleFormComponent from "./components/MenuFormComponent";
 import DataTable from "../users/components/DataTable";
-import { getMenusController, menuCreationController, menudeleteController, menuupdateController } from "./controllers/MenuControllers";
+import {
+  getMenusController,
+  menuCreationController,
+  menuDeleteController,
+  menuUpdateController,
+} from "./controllers/MenuControllers";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -111,7 +116,7 @@ const Menus = () => {
       if (isAdd) response = await menuCreationController(formData);
       else {
         formData = { ...formData, ID: selectedValue.ID };
-        response = await menuupdateController(formData);
+        response = await menuUpdateController(formData);
       }
 
       if (response) {
@@ -217,7 +222,7 @@ const Menus = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
-      const response = await menudeleteController(selectedRow.ID);
+      const response = await menuDeleteController(selectedRow.ID);
 
       if (response) {
         openDialog(
