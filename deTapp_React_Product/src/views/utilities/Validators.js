@@ -113,6 +113,10 @@ export const validationRegex = {
    * Regex to validate a string containing only alphabets.
    */
   isLetters: /^[a-zA-Z]+[\s\S]+$/,
+  /**
+   * Regex to validate a string containing only single words.
+   */
+  isSingleWord: /^[a-zA-Z]+$/,
 };
 
 /**
@@ -148,7 +152,9 @@ export const errorMessages = {
     "Table name must start with a letter and can contain letters, numbers, and underscores (max 128 characters) and check spaces.",
   columnName:
     "Column names must start with a letter or underscore, followed by up to 127 letters, digits, or underscores and check spaces.",
-  isLetters: "Value should contains  only alphabets and should be more than one alphabets.",
+  isLetters:
+    "Value should contains  only alphabets and should be more than one alphabets.",
+  singleWord: "Value only accept alphabets without spaces",
 };
 
 /**

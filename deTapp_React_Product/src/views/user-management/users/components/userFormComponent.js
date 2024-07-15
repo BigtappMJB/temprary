@@ -26,8 +26,8 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for form validation using Yup
 const schema = yup.object().shape({
-  userId: yup.string().required("User ID is required"),
-  role: yup.object().required("Role is required"),
+  // userId: yup.string().required("User ID is required"),
+  // role: yup.object().required("Role is required"),
   firstName: yup
     .string()
     .required("First Name is required")
@@ -61,8 +61,6 @@ const schema = yup.object().shape({
  * // Sample usage
  * const formAction = { action: 'add' };
  * const defaultValues = {
- *   USER_ID: '1',
- *   ROLE: 'admin',
  *   FIRST_NAME: 'John',
  *   LAST_NAME: 'Doe',
  *   EMAIL: 'john.doe@example.com',
@@ -106,11 +104,11 @@ const UserFormComponent = ({
   // Effect to set default values and reset the form
   useEffect(() => {
     if (defaultValues) {
-      const role =
-        rolesList.find((role) => role.ID === defaultValues.ROLE) || null;
+      // const role =
+      //   rolesList.find((role) => role.ID === defaultValues.ROLE) || null;
       reset({
-        userId: defaultValues.USER_ID ?? "",
-        role: role,
+        // userId: defaultValues.USER_ID ?? "",
+        // role: role,
         firstName: defaultValues.FIRST_NAME ?? "",
         lastName: defaultValues.LAST_NAME ?? "",
         email: defaultValues.EMAIL ?? "",
@@ -124,8 +122,8 @@ const UserFormComponent = ({
     setReadOnly(formAction?.action === "read");
     if (formAction.action === "add") {
       reset({
-        userId: "",
-        role: null,
+        // userId: "",
+        // role: null,
         firstName: "",
         lastName: "",
         email: "",
@@ -152,8 +150,8 @@ const UserFormComponent = ({
   const handleReset = () => {
     onReset();
     reset({
-      userId: "",
-      role: null,
+      // userId: "",
+      // role: null,
       firstName: "",
       lastName: "",
       email: "",
@@ -167,8 +165,8 @@ const UserFormComponent = ({
   const onLocalSubmit = () => {
     onSubmit(getValues());
     reset({
-      userId: "",
-      role: null,
+      // userId: "",
+      // role: null,
       firstName: "",
       lastName: "",
       email: "",
@@ -179,7 +177,7 @@ const UserFormComponent = ({
   return (
     <Container component="form" onSubmit={handleSubmit(onLocalSubmit)}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        {/* <Grid item xs={12} sm={6}>
           <Controller
             name="userId"
             control={control}
@@ -232,7 +230,7 @@ const UserFormComponent = ({
               />
             )}
           />
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} sm={6}>
           <Controller
             name="firstName"

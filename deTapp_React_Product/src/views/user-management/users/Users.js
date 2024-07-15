@@ -99,13 +99,10 @@ const UsersPage = () => {
 
   const columns = {
     ID: "ID",
-    USER_ID: "User ID",
     FIRST_NAME: "First Name",
     LAST_NAME: "Last Name",
     MOBILE: "Mobile No",
     EMAIL: "EMAIL",
-
-    ROLE: "Role",
   };
 
   /**
