@@ -28,6 +28,10 @@ const RolePermission = Loadable(
   lazy(() => import("../views/user-management/role-permissions/rolePermission"))
 );
 
+const UserPermission = Loadable(
+  lazy(() => import("../views/user-management/user-permissions/user-permissions"))
+);
+
 const Error = Loadable(lazy(() => import("../views/authentication/Error")));
 const Register = Loadable(
   lazy(() => import("../views/authentication/Register"))
@@ -51,6 +55,8 @@ const Router = [
       { path: "/menu", exact: true, element: <Menu /> },
       { path: "/subMenu", exact: true, element: <SubMenu /> },
       { path: "/role-permissions", exact: true, element: <RolePermission /> },
+      { path: "/user-permissions", exact: true, element: <UserPermission /> },
+
 
       { path: "*", element: <Navigate to="/auth/404" /> },
     ],

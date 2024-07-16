@@ -31,6 +31,12 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
+    title: "User Permission",
+    icon: IconUser,
+    href: "/user-permissions",
+  },
+  {
+    id: uniqueId(),
     title: "Roles",
     icon: IconUser,
     href: "/roles",

@@ -225,3 +225,9 @@ input[type="text"] {
   color: rgb(0, 0, 0);
   opacity: 0.5;
 }
+
+.css-16isonm-MuiButtonBase-root-MuiButton-root.Mui-disabled {
+  color: rgba(0, 0, 0, 0.26) !important;
+  box-shadow: none;
+  background-color: rgba(73, 82, 88, 0.12) !important;
+}
