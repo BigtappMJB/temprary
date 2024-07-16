@@ -305,8 +305,8 @@ const Roles = () => {
         </Container>
       )}
 
-      <SecondContainer>
-        <SubHeader>
+      <SecondContainer className="common-table">
+        <SubHeader className="table-header">
           <Typography variant="h6">
             <b>Roles List</b>
           </Typography>

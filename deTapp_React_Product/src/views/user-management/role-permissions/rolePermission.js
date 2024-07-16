@@ -369,8 +369,8 @@ const RolePermissionPage = () => {
         </Container>
       )}
 
-      <SecondContainer>
-        <SubHeader>
+      <SecondContainer className="common-table">
+      <SubHeader className="table-header">
           <Typography variant="h6">
             <b>Role Permissions List</b>
           </Typography>
