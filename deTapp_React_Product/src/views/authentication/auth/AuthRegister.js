@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -29,10 +29,8 @@ const validationSchema = Yup.object().shape({
   password: Yup.string()
     .required("Password is required")
     .min(8, "Password must be at least 8 characters")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    ),
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 
+          'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
   confirmPassword: Yup.string()
     .required("Confirm password is required")
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
@@ -40,17 +38,32 @@ const validationSchema = Yup.object().shape({
 
 const AuthRegister = ({ title, subtitle, subtext }) => {
   const [apiError, setApiError] = useState(null);
+  const [apiSuccess, setApiSuccess] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    reset,
+    formState: { isSubmitted, errors, isSubmitSuccessful },
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
   const { startLoading, stopLoading } = useLoading();
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({
+        firstname: "",
+        lastname: "",
+        email: "",
+        mobileno: "",
+        password: "",
+        confirmPassword: ""
+      });
+    }
+  }, [isSubmitSuccessful, reset]);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowConfirmPassword = () =>
@@ -62,13 +75,14 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
       setApiError(null);
       const response = await registerController(data);
       console.log("Register successfull", response);
+      
       // Redirect to dashboard on successful registration
+      setApiSuccess("User registration has been successful.");
       // Replace this with your actual redirect logic
-      navigate("/dashboard");
+      //navigate("/dashboard");
     } catch (error) {
-      setApiError(
-        "Failed to register. Please check your details and try again."
-      );
+      setApiSuccess(null);
+      setApiError("Failed to register. Please check your details and try again.");
     } finally {
       stopLoading();
     }
@@ -87,6 +101,11 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
       {apiError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {apiError}
+        </Alert>
+      )}
+      {apiSuccess && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {apiSuccess}
         </Alert>
       )}
 
@@ -209,7 +228,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
                 <CustomTextField
                   {...field}
                   id="password"
-                  type="password"
+                  type={showPassword? 'text' : 'password'}
                   variant="outlined"
                   fullWidth
                   error={!!errors.password}
@@ -248,7 +267,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
                 <CustomTextField
                   {...field}
                   id="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   variant="outlined"
                   fullWidth
                   error={!!errors.confirmPassword}

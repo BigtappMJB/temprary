@@ -65,7 +65,7 @@ const Menuitems = [
     id: uniqueId(),
     title: "Chat",
     icon: IconUser,
-    href: "/auth/login",
+    href: "/chat-interface",
   },
   {
     navlabel: true,

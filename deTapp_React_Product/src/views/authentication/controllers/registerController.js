@@ -20,9 +20,23 @@ export const registerController = async (formData) => {
             throw new Error('Invalid form data');
         }
 
+        // Function to remove all spaces from a string
+        function removeSpaces(str) {
+          return str.replace(/\s+/g, '');
+        }
+
+        // Generating a random 4-digit number
+        function generateRandom4DigitNumber() {
+          return Math.floor(1000 + Math.random() * 9000);
+        }
+
+        let random4DigitNumber = generateRandom4DigitNumber();
+
         // Destructure and sanitize form data
         const { firstname, lastname, email, mobileno, password } = formData;
+        let trimmedVariable = removeSpaces(firstname);
         const sanitizedData = {
+            userId: trimmedVariable+'-'+random4DigitNumber,
             firstName: firstname.trim(),
             lastName: lastname.trim(),
             email: email.trim(),
@@ -37,13 +51,8 @@ export const registerController = async (formData) => {
         // Send the POST request to the user API endpoint
         const response = await post('/master/user', sanitizedData, 'python');
 
-        // Check for a successful response status
-        if (response.status !== 200) {
-            throw new Error(`Registration failed with status: ${response.status}`);
-        }
-
         // Log the successful response
-        console.log('Registration successful:', response.data);
+        console.log('Registration successful:', response);
 
         // Return the response data
         return response.data;

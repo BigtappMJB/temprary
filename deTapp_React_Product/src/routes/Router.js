@@ -33,6 +33,9 @@ const Register = Loadable(
   lazy(() => import("../views/authentication/Register"))
 );
 const Login = Loadable(lazy(() => import("../views/authentication/Login")));
+const ChatInterface = Loadable(
+  lazy(() => import("../views/chat-interface/chat"))
+);
 
 const Router = [
   {
@@ -42,6 +45,7 @@ const Router = [
       { path: "/", element: <Navigate to="/auth/login" /> },
       { path: "/dashboard", exact: true, element: <Dashboard /> },
       { path: "/table-creation", exact: true, element: <Tablecreation /> },
+      { path: "/chat-interface", exact: true, element: <ChatInterface /> },
       { path: "/users", exact: true, element: <UsersPage /> },
       { path: "/roles", exact: true, element: <Roles /> },
       { path: "/menu", exact: true, element: <Menu /> },
