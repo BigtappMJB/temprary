@@ -1,16 +1,15 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
-import UserFormComponent from "./components/userFormComponent";
 import { useEffect, useState } from "react";
-import DataTable from "./components/DataTable";
+import { useLoading } from "../../../components/Loading/loadingProvider";
 import {
   getRolesController,
   getUserController,
-  userCreationController,
-  userdeleteController,
   userupdateController,
-} from "./controllers/usersControllers";
+} from "../users/controllers/usersControllers";
 import { useDialog } from "../../utilities/alerts/DialogContent";
-import { useLoading } from "../../../components/Loading/loadingProvider";
+
+import DataTable from "../users/components/DataTable";
+import UserRoleFormComponent from "./components/userRoleFormComponent";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -61,34 +60,26 @@ const FormButton = styled(Button)(({ theme }) => ({
     width: "100%",
   },
 }));
-
-/**
- * UsersPage component displays a user management interface with a form and a data table.
- *
- * @component
- * @example
- * return (
- *   <UsersPage />
- * )
- */
-const UsersPage = () => {
+const UserRole = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
-  // const [rolesList, setRolesList] = useState([]);
-  const { startLoading, stopLoading } = useLoading();
+  const [userList, setUserList] = useState([]);
+  const [rolesList, setRoleList] = useState([]);
 
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
   });
 
+  const { startLoading, stopLoading } = useLoading();
   const { openDialog } = useDialog();
 
   // Fetches user data and updates the table
-  const getTableData = async () => {
+  const getUserData = async () => {
     try {
       startLoading();
       const response = await getUserController();
+      setUserList(response);
       setTableData(response);
     } catch (error) {
       console.error(error);
@@ -97,22 +88,29 @@ const UsersPage = () => {
     }
   };
 
-  // Fetches roles data and updates the roles list
+  // Fetches user data and updates the table
+  const getRoleData = async () => {
+    try {
+      startLoading();
+      const response = await getRolesController();
+      setRoleList(response);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      stopLoading();
+    }
+  };
+
   useEffect(() => {
-    // const getRoles = async () => {
-    //   const response = await getRolesController();
-    //   setRolesList(response);
-    // };
-    // getRoles();
-    getTableData();
+    getUserData();
+    getRoleData();
   }, []);
 
   const columns = {
     // USER_ID: "Username",
     FIRST_NAME: "First Name",
     LAST_NAME: "Last Name",
-    EMAIL: "Email",
-    MOBILE: "Mobile No",
+    ROLE_NAME: "Role",
   };
 
   /**
@@ -131,25 +129,11 @@ const UsersPage = () => {
    */
   const onformSubmit = async (formData) => {
     try {
-      startLoading();
-      let response = null;
-      const isAdd = formAction.action === "add";
-      if (isAdd) response = await userCreationController(formData);
-      else {
-        formData = {
-          ...formData,
-          ID: selectedValue.ID,
-          userId: selectedValue.USER_ID,
-          role: selectedValue.ROLE,
-        };
-        response = await userupdateController(formData);
-      }
-
-      if (response) {
-        openDialog(
-          "success",
-          `User ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+      if (formData?.alreadyAdded) {
+        return openDialog(
+          "warning",
+          "Warning",
+          `User Role is already assigned.`,
           {
             confirm: {
               name: "Ok",
@@ -161,7 +145,46 @@ const UsersPage = () => {
             },
           },
           (confirmed) => {
-            getTableData();
+            if (confirmed) {
+              return;
+            }
+          }
+        );
+      }
+      const { user, role } = formData;
+      formData = {
+        firstName: user?.FIRST_NAME,
+        lastName: user?.LAST_NAME,
+        email: user?.EMAIL,
+        mobileNo: user?.MOBILE,
+        ID: user?.ID,
+        role: role?.ID,
+      };
+      startLoading();
+      let response = null;
+      const isAdd = formAction.action === "add";
+      if (isAdd) response = await userupdateController(formData);
+      else {
+        response = await userupdateController(formData);
+      }
+
+      if (response) {
+        openDialog(
+          "success",
+          `User Role ${isAdd ? "Addition" : "Updation"} Success`,
+          `User Role Updated successfully`,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            getUserData();
             if (!isAdd) {
               onFormReset();
             }
@@ -174,7 +197,7 @@ const UsersPage = () => {
       openDialog(
         "warning",
         "Warning",
-        `User ${isAdd ? "Addition" : "Updation"} failed`,
+        `User Role ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -223,12 +246,32 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleDelete = (selectedRow) => {
+    if (selectedRow.ROLE === 1 || selectedRow.ROLE === null) {
+      return openDialog(
+        "warning",
+        "Warning",
+        `User ${
+          selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
+        } role hasn't assigned.`,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
     openDialog(
       "warning",
       `Delete confirmation`,
-      `Are you sure you want to delete this user "${
+      `Are you sure you want to remove ${
         selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
-      }"?`,
+      } role ${selectedRow.ROLE_NAME}?`,
       {
         confirm: {
           name: "Yes",
@@ -254,13 +297,22 @@ const UsersPage = () => {
   const removeDataFromTable = async (selectedRow) => {
     try {
       startLoading();
-      const response = await userdeleteController(selectedRow.ID);
-      console.log({ response });
+
+      const formData = {
+        firstName: selectedRow?.FIRST_NAME,
+        lastName: selectedRow?.LAST_NAME,
+        email: selectedRow?.EMAIL,
+        mobileNo: selectedRow?.MOBILE,
+        ID: selectedRow?.ID,
+        role: null,
+      };
+      const response = await userupdateController(formData);
+
       if (response) {
         openDialog(
           "success",
-          `User Deletion Success`,
-          response.message,
+          `User Role Removal Success`,
+          `User Role removed successfully`,
           {
             confirm: {
               name: "Ok",
@@ -272,10 +324,7 @@ const UsersPage = () => {
             },
           },
           (confirmed) => {
-            getTableData();
-          },
-          () => {
-            getTableData();
+            getUserData();
           }
         );
       }
@@ -283,7 +332,7 @@ const UsersPage = () => {
       openDialog(
         "warning",
         "Warning",
-        `User Deletion failed`,
+        `User Role Removal failed`,
         {
           confirm: {
             name: "Ok",
@@ -316,15 +365,16 @@ const UsersPage = () => {
                 : formAction.action === "update"
                 ? "Update"
                 : "Read "}{" "}
-              User
+              User Role
             </Typography>
           </Header>
-          <UserFormComponent
+          <UserRoleFormComponent
             formAction={formAction}
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
-            // rolesList={rolesList}
+            userList={userList}
+            rolesList={rolesList}
           />
         </Container>
       )}
@@ -332,7 +382,7 @@ const UsersPage = () => {
       <SecondContainer className="common-table">
         <SubHeader className="table-header">
           <Typography variant="h6">
-            <b>Users List</b>
+            <b>User Roles List</b>
           </Typography>
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">
             <FormButton
@@ -344,7 +394,7 @@ const UsersPage = () => {
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >
-              Add User
+              Add User Role
             </FormButton>
           </Box>
         </SubHeader>
@@ -359,4 +409,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default UserRole;

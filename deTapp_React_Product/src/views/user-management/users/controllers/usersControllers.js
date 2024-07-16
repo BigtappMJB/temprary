@@ -79,6 +79,18 @@ export const getRolesController = async () => {
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
+
+// Function to remove all spaces from a string
+function removeSpaces(str) {
+  return str.replace(/\s+/g, "");
+}
+
+// Generating a random 4-digit number
+function generateRandom4DigitNumber() {
+  return Math.floor(1000 + Math.random() * 9000);
+}
+
+let random4DigitNumber = generateRandom4DigitNumber();
 export const userCreationController = async (formData) => {
   try {
     // Data Validation and Sanitization
@@ -88,7 +100,7 @@ export const userCreationController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      userId: formData?.userId?.trim() || "",
+      userId: removeSpaces(formData.firstName.trim()) + random4DigitNumber,
       firstName: titleCaseFirstWord(formData.firstName.trim()),
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
@@ -132,13 +144,13 @@ export const userCreationController = async (formData) => {
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
+
 export const userupdateController = async (formData) => {
   try {
     // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
-
     // Prepare the body object with sanitized data
     const body = {
       userId: formData?.userId?.trim() || "",
@@ -146,7 +158,7 @@ export const userupdateController = async (formData) => {
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role: null,
+      role: formData?.role || 1,
     };
     // Send the PUT request to the user API endpoint
     const response = await put(

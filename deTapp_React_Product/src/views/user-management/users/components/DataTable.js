@@ -70,7 +70,8 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
   const [filter, setFilter] = useState({});
 
   // Add S.NO column to the columns definition
-  const extendedColumns = { sno: "S.No", ...columns };
+  // const extendedColumns = { sno: "S.No", ...columns };
+  const extendedColumns = { ...columns };
 
   // Memoize filtered and sorted data to optimize performance
   const filteredData = useMemo(() => {
@@ -85,12 +86,12 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
     return filteredData.slice().sort((a, b) => {
       if (order === "original")
         return tableData.indexOf(a) - tableData.indexOf(b);
-      const getIDKey = Object.keys(extendedColumns)[0];
-      if (orderBy === getIDKey) {
-        return order === "asc"
-          ? a[getIDKey] - b[getIDKey]
-          : b[getIDKey] - a[getIDKey];
-      }
+      // const getIDKey = Object.keys(extendedColumns)[0];
+      // if (orderBy === getIDKey) {
+      //   return order === "asc"
+      //     ? a[getIDKey] - b[getIDKey]
+      //     : b[getIDKey] - a[getIDKey];
+      // }
       if (validationRegex.isNumbers.test(a[orderBy])) {
         return order === "asc"
           ? a[orderBy] - b[orderBy]
@@ -212,13 +213,13 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                   backgroundColor: index % 2 !== 0 ? "#f2f2f2" : "inherit",
                 }}
               >
-                <StyledTableCell
+                {/* <StyledTableCell
                   style={{
                     textAlign: "center",
                   }}
                 >
                   {page * rowsPerPage + index + 1}
-                </StyledTableCell>
+                </StyledTableCell> */}
                 {Object.keys(columns).map((key) => (
                   <StyledTableCell
                     key={key}

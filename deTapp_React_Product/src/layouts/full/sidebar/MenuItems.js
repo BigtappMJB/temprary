@@ -31,9 +31,9 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "User Permission",
+    title: "User Roles",
     icon: IconUser,
-    href: "/user-permissions",
+    href: "/user-roles",
   },
   {
     id: uniqueId(),
