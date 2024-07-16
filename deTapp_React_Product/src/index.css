@@ -79,15 +79,6 @@ main {
 }
 
 /**
- * Styles for buttons
- * 
- * Sets a minimum width for buttons
- */
-button {
-  min-width: 100px !important;
-}
-
-/**
  * Styles for danger buttons
  * 
  * Sets a red background color for danger buttons
@@ -122,6 +113,15 @@ button {
 input[type="text"] {
   height: 34px !important;
   padding: 6px 12px !important;
+}
+
+/**
+ * Styles for buttons
+ * 
+ * Sets a minimum width for buttons
+ */
+ .MuiButton-contained{
+  min-width: 100px !important;
 }
 
 /**
