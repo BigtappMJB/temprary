@@ -384,14 +384,14 @@ const CreateTableForm = () => {
             <Typography variant="h6">
               <b>Add columns to Table</b>
             </Typography>
-            <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+            <Box display="flex" justifyContent="space-between" gap={2}  flexWrap="wrap">
               <FormButton
                 type="button"
                 onClick={addColumnForm}
                 variant="contained"
                 color="primary"
                 className="primary"
-                style={{ marginRight: "10px" }}
+     
               >
                 Add Column
               </FormButton>
@@ -401,7 +401,6 @@ const CreateTableForm = () => {
                 variant="contained"
                 color="primary"
                 className="primary"
-                style={{ marginRight: "10px" }}
                 disabled={columnsData.length === 0}
               >
                 Create Table
