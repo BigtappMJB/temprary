@@ -83,7 +83,7 @@ main {
  * 
  * Sets a minimum width for buttons
  */
-button {
+.MuiButton-contained {
   min-width: 100px !important;
 }
 
