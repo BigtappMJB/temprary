@@ -44,6 +44,10 @@ const Header = styled(Box)(({ theme }) => ({
   alignItems: "center",
 }));
 
+const StyledColumnBox = styled(Box)(({ theme }) => ({
+  overflow: "auto",
+}));
+
 const SubHeader = styled(Box)(({ theme }) => ({
   color: "#1e88e5",
   padding: theme.spacing(2),
@@ -384,14 +388,18 @@ const CreateTableForm = () => {
             <Typography variant="h6">
               <b>Add columns to Table</b>
             </Typography>
-            <Box display="flex" justifyContent="space-between" gap={2}  flexWrap="wrap">
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              gap={2}
+              flexWrap="wrap"
+            >
               <FormButton
                 type="button"
                 onClick={addColumnForm}
                 variant="contained"
                 color="primary"
                 className="primary"
-     
               >
                 Add Column
               </FormButton>
@@ -417,17 +425,19 @@ const CreateTableForm = () => {
               </FormButton> */}
             </Box>
           </SubHeader>
-          {columnsData?.map((data, index) => (
-            <TableColumnForm
-              key={data.id}
-              onColumnSubmit={onColumnSubmit}
-              data={data}
-              ref={(el) => (formRefs.current[index] = el)}
-              onReset={onRemoveForm}
-              dataTypes={dataTypes}
-              isRemovingForm={isRemovingForm} // Pass the flag to the child
-            />
-          ))}
+          <StyledColumnBox>
+            {columnsData?.map((data, index) => (
+              <TableColumnForm
+                key={data.id}
+                onColumnSubmit={onColumnSubmit}
+                data={data}
+                ref={(el) => (formRefs.current[index] = el)}
+                onReset={onRemoveForm}
+                dataTypes={dataTypes}
+                isRemovingForm={isRemovingForm} // Pass the flag to the child
+              />
+            ))}
+          </StyledColumnBox>
         </SecondContainer>
       )}
     </>

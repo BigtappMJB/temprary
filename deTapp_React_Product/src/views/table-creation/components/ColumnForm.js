@@ -69,12 +69,12 @@ const defaultValue = {
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  overflow: "auto",
+
   padding: theme.spacing(2),
   gap: theme.spacing(1),
   alignItems: "center",
-  background:
-    "linear-gradient(to bottom, rgba(249, 251, 255, 1), rgba(249, 251, 255, 1), rgba(249, 250, 255, 1))",
+  // background:
+  //   "linear-gradient(to bottom, rgba(249, 251, 255, 1), rgba(249, 251, 255, 1), rgba(249, 250, 255, 1))",
 }));
 
 /**
@@ -114,7 +114,7 @@ const TableColumnForm = forwardRef(
       getValues,
       watch,
       trigger,
-      formState: { errors, isValid },
+      formState: { errors },
     } = useForm({
       resolver: yupResolver(schema),
       mode: "onChange",
