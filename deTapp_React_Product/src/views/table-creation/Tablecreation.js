@@ -400,6 +400,7 @@ const CreateTableForm = () => {
                 type="button"
                 variant="contained"
                 color="primary"
+                className="primary"
                 style={{ marginRight: "10px" }}
                 disabled={columnsData.length === 0}
               >

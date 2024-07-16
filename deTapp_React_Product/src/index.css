@@ -83,7 +83,7 @@ main {
  * 
  * Sets a minimum width for buttons
  */
-.MuiButton-contained {
+.MuiButton-contained{
   min-width: 100px !important;
 }
 
@@ -222,6 +222,6 @@ input[type="text"] {
  * Sets a gray color and opacity for disabled buttons
  */
 .css-16isonm-MuiButtonBase-root-MuiButton-root.Mui-disabled {
-  color: rgb(0, 0, 0);
-  opacity: 0.5;
+  color: #ffffffb8 !important;
+  opacity: 0.4;
 }
