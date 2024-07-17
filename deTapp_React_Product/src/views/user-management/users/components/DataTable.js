@@ -77,7 +77,10 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
   const filteredData = useMemo(() => {
     return tableData.filter((row) =>
       Object.keys(filter).every((key) =>
-        row[key]?.toString().toLowerCase().includes(filter[key].toLowerCase())
+        (row[key] || "")
+          ?.toString()
+          .toLowerCase()
+          .includes(filter[key].toLowerCase())
       )
     );
   }, [tableData, filter]);
