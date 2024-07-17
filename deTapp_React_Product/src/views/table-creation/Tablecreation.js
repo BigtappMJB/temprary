@@ -328,6 +328,18 @@ const CreateTableForm = () => {
               //   setSubmitted(false);
               handleColumnsClear();
             }
+          },
+          () => {
+            if (
+              response.trim().toLowerCase() ===
+              `Table ${tableName.toUpperCase()} successfully created.`
+                .trim()
+                .toLowerCase()
+            ) {
+              setTableName("");
+              //   setSubmitted(false);
+              handleColumnsClear();
+            }
           }
         );
       }

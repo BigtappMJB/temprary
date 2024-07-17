@@ -88,6 +88,9 @@ const Menus = () => {
       setTableData(response);
     } catch (error) {
       console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
     } finally {
       stopLoading();
     }
@@ -252,6 +255,9 @@ const Menus = () => {
             },
           },
           (confirmed) => {
+            // getRoles();
+          },
+          () => {
             getRoles();
           }
         );

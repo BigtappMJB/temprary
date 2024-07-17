@@ -83,6 +83,9 @@ const UserRole = () => {
       setTableData(response);
     } catch (error) {
       console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
     } finally {
       stopLoading();
     }
@@ -96,6 +99,9 @@ const UserRole = () => {
       setRoleList(response);
     } catch (error) {
       console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
     } finally {
       stopLoading();
     }
@@ -324,6 +330,9 @@ const UserRole = () => {
             },
           },
           (confirmed) => {
+            // getUserData();
+          },
+          () => {
             getUserData();
           }
         );

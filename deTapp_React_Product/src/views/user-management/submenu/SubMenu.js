@@ -91,6 +91,9 @@ const UsersPage = () => {
       setTableData(response);
     } catch (error) {
       console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
     } finally {
       stopLoading();
     }
@@ -105,6 +108,9 @@ const UsersPage = () => {
         setRolesList(response);
       } catch (error) {
         console.error(error);
+        if (error.statusCode === 404) {
+          setTableData([]);
+        }
       } finally {
         stopLoading();
       }
@@ -268,6 +274,9 @@ const UsersPage = () => {
             },
           },
           (confirmed) => {
+            // getTableData();
+          },
+          () => {
             getTableData();
           }
         );

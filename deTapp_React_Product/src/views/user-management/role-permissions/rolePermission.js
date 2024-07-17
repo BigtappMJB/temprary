@@ -98,6 +98,9 @@ const RolePermissionPage = () => {
       setTableData(response);
     } catch (error) {
       console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
     } finally {
       stopLoading();
     }
@@ -112,6 +115,9 @@ const RolePermissionPage = () => {
         setRolesList(response);
       } catch (error) {
         console.error(error);
+        if (error.statusCode === 404) {
+          setTableData([]);
+        }
       } finally {
         stopLoading();
       }
@@ -123,6 +129,9 @@ const RolePermissionPage = () => {
         setMenuList(response);
       } catch (error) {
         console.error(error);
+        if (error.statusCode === 404) {
+          setTableData([]);
+        }
       } finally {
         stopLoading();
       }
@@ -134,6 +143,9 @@ const RolePermissionPage = () => {
         setSubMenuList(response);
       } catch (error) {
         console.error(error);
+        if (error.statusCode === 404) {
+          setTableData([]);
+        }
       } finally {
         stopLoading();
       }
@@ -145,6 +157,9 @@ const RolePermissionPage = () => {
         setPermissionLevelList(response);
       } catch (error) {
         console.error(error);
+        if (error.statusCode === 404) {
+          setTableData([]);
+        }
       } finally {
         stopLoading();
       }
@@ -312,6 +327,9 @@ const RolePermissionPage = () => {
             },
           },
           (confirmed) => {
+            // getTableData();
+          },
+          () => {
             getTableData();
           }
         );
@@ -370,7 +388,7 @@ const RolePermissionPage = () => {
       )}
 
       <SecondContainer className="common-table">
-      <SubHeader className="table-header">
+        <SubHeader className="table-header">
           <Typography variant="h6">
             <b>Role Permissions List</b>
           </Typography>

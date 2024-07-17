@@ -272,7 +272,7 @@ const UsersPage = () => {
             },
           },
           (confirmed) => {
-            getTableData();
+            // getTableData();
           },
           () => {
             getTableData();

@@ -15,6 +15,7 @@ import {
   IconButton,
   Tooltip,
   Autocomplete,
+  Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
@@ -430,11 +431,21 @@ const TableColumnForm = forwardRef(
         />
         {data?.id !== 0 && (
           <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
-            <Tooltip title="Delete" arrow>
+            {/* <Tooltip title="Delete" arrow>
               <IconButton sx={{ color: "#d92d20" }} onClick={handleReset}>
                 <CloseIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
+
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              className="danger"
+              onClick={handleReset}
+            >
+              Delete
+            </Button>
           </Box>
         )}
       </Container>
