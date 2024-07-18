@@ -9,14 +9,9 @@ import { registerController } from "./controllers/registerController";
 import { encodeData } from "../../utilities/securities/encodeDecode";
 import {
   clearCookies,
-  getCookie,
-  removeCookie,
   setCookie,
 } from "../../utilities/cookieServices/cookieServices";
-import {
-  encodedSessionDetailsCookieName,
-  encodedTempUsersCookieName,
-} from "../../utilities/generals";
+import { encodedTempUsersCookieName } from "../../utilities/generals";
 
 /**
  * RegisterPage component for user registration.

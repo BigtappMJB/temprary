@@ -10,13 +10,11 @@ import { useLoading } from "../../../components/Loading/loadingProvider";
 import { loginController } from "./controllers/loginController";
 import {
   clearCookies,
-  getCookie,
-  removeCookie,
   setCookie,
 } from "../../utilities/cookieServices/cookieServices";
 
 import { encodeData } from "../../utilities/securities/encodeDecode";
-import { encodedSessionDetailsCookieName, isForgotPasswordCookieName } from "../../utilities/generals";
+import { encodedSessionDetailsCookieName } from "../../utilities/generals";
 
 /**
  * LoginPage component for user login.
@@ -53,7 +51,7 @@ const LoginPage = () => {
   const formRef = useRef();
 
   useEffect(() => {
-    clearCookies()
+    clearCookies();
   }, []);
 
   /**

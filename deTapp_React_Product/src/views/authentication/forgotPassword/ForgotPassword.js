@@ -11,10 +11,8 @@ import {
   removeCookie,
 } from "../../utilities/cookieServices/cookieServices";
 import {
-  encodedTempUsersCookieName,
   isForgotPasswordCookieName,
 } from "../../utilities/generals";
-import { decodeData } from "../../utilities/securities/encodeDecode";
 import ForgotPasswordFormComponent from "./components/ForgotPasswordFormComponent";
 import { forgotPasswordController } from "./controllers/forgotPasswordController";
 
