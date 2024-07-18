@@ -63,7 +63,7 @@ const ForgotPassword = () => {
       const response = await forgotPasswordController(formData);
       if (response) {
         removeCookie(isForgotPasswordCookieName);
-        navigate("/login");
+        navigate("/auth/login");
       }
     } catch (error) {
       console.log(error);

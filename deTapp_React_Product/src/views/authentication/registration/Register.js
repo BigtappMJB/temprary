@@ -11,7 +11,10 @@ import {
   clearCookies,
   setCookie,
 } from "../../utilities/cookieServices/cookieServices";
-import { encodedTempUsersCookieName } from "../../utilities/generals";
+import {
+  encodedTempUsersCookieName,
+  isUserIdCookieName,
+} from "../../utilities/generals";
 
 /**
  * RegisterPage component for user registration.
@@ -61,6 +64,10 @@ const RegisterPage = () => {
   const storeUserDetailsInCookies = (data) => {
     const encodedData = encodeData(data);
     setCookie({
+      name: isUserIdCookieName,
+      value: encodeData(data?.email),
+    });
+    setCookie({
       name: encodedTempUsersCookieName,
       value: encodedData,
       expires: 24, // 24 hours
@@ -88,6 +95,7 @@ const RegisterPage = () => {
       startLoading();
       setApiError(null);
       storeUserDetailsInCookies(formData);
+
       const response = await registerController(formData);
       if (response) {
         formRef.current.resetForm();

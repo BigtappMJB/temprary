@@ -1,6 +1,9 @@
 import { post } from "../../../utilities/apiservices/apiServices";
 import { getCookie } from "../../../utilities/cookieServices/cookieServices";
-import { encodedTempUsersCookieName } from "../../../utilities/generals";
+import {
+  encodedTempUsersCookieName,
+  isUserIdCookieName,
+} from "../../../utilities/generals";
 import {
   decodeData,
   encodeData,
@@ -37,10 +40,10 @@ export const changePasswordController = async (formData) => {
     }
 
     const { oldPassword, newPassword } = formData;
-    const userDetails = decodeData(getCookie(encodedTempUsersCookieName));
+    const email = decodeData(getCookie(isUserIdCookieName));
     // Prepare the body object with sanitized data
     const body = {
-      email: userDetails?.email,
+      email: email,
       old_password: oldPassword.trim(),
       new_password: encodeData(newPassword.trim()),
     };

@@ -1,8 +1,7 @@
 import { post } from "../../../utilities/apiservices/apiServices";
 import { getCookie } from "../../../utilities/cookieServices/cookieServices";
 import {
-  encodedTempUsersCookieName,
-  isForgotPasswordCookieName,
+  isUserIdCookieName,
 } from "../../../utilities/generals";
 import { decodeData } from "../../../utilities/securities/encodeDecode";
 
@@ -36,11 +35,10 @@ export const emailVerifyCodeController = async (formData) => {
       throw new Error("Invalid form data");
     }
 
-    const userDetails = decodeData(getCookie(encodedTempUsersCookieName));
-    const isForgotPasswordEmail = getCookie(isForgotPasswordCookieName);
+    const email = decodeData(getCookie(isUserIdCookieName));
     // Prepare the body object with sanitized data
     const body = {
-      email: isForgotPasswordEmail ?? userDetails.email,
+      email: email,
       otp: formData?.code,
     };
 

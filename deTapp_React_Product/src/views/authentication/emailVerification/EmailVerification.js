@@ -13,9 +13,9 @@ import {
   setCookie,
 } from "../../utilities/cookieServices/cookieServices";
 import {
-  encodedTempUsersCookieName,
   isDefaultPasswordCookieName,
   isForgotPasswordCookieName,
+  isUserIdCookieName,
 } from "../../utilities/generals";
 import { decodeData } from "../../utilities/securities/encodeDecode";
 
@@ -52,8 +52,7 @@ const EmailVerification = () => {
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
-  const userDetails = decodeData(getCookie(encodedTempUsersCookieName));
-  const isForgotPasswordEmail = getCookie(isForgotPasswordCookieName);
+  const userEmail = decodeData(getCookie(isUserIdCookieName));
   /**
    * Function to handle form submission.
    * It sends the form data to the login controller and handles the response.
@@ -116,8 +115,8 @@ const EmailVerification = () => {
         </Typography>
         <Typography component={"p"} textAlign={"center"}>
           A 6-digit code has been sent to{" "}
-          <a href={"mailto:" + isForgotPasswordEmail ?? userDetails.email}>
-            <b>{isForgotPasswordEmail ?? userDetails.email}</b>
+          <a href={"mailto:" + userEmail}>
+            <b>{userEmail}</b>
           </a>
         </Typography>
       </Box>

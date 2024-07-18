@@ -6,6 +6,8 @@ export const encodedSessionDetailsCookieName = encodeData("sessionsDetails")
 export const encodedTempUsersCookieName = encodeData("tempUsers")
 export const isForgotPasswordCookieName = encodeData("isForgotPassword")
 export const isDefaultPasswordCookieName = encodeData("isDefaultPassword")
+export const isUserIdCookieName = encodeData("isUserEmail")
+
 
 
 

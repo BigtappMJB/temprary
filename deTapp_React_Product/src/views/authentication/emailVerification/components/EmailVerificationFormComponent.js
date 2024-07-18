@@ -37,8 +37,8 @@ import { errorMessages, validationRegex } from "../../../utilities/Validators";
 const validationSchema = Yup.object().shape({
   code: Yup.string()
     .required("Code is required")
-    .matches(validationRegex.isNumbers, "Code should contain only numbers.")
-    .length(6, "Code should contain 6 digits"),
+    // .matches(validationRegex.isNumbers, "Code should contain only numbers.")
+    // .length(6, "Code should contain 6 digits"),
 });
 
 const EmailVerificationFormComponent = React.forwardRef(

@@ -53,14 +53,11 @@ const ChangePassword = () => {
    */
   const onEmailVerification = async (formData) => {
     try {
-      console.log({ formData });
-      const userDetails = decodeData(getCookie(encodedTempUsersCookieName));
-      console.log({ userDetails });
       startLoading();
       setApiError(null); // Reset API error before making a new request
       const response = await changePasswordController(formData);
       if (response) {
-        navigate("/login");
+        window.history.back();
       }
     } catch (error) {
       console.log(error);

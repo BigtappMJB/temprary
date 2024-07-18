@@ -14,7 +14,10 @@ import {
 } from "../../utilities/cookieServices/cookieServices";
 
 import { encodeData } from "../../utilities/securities/encodeDecode";
-import { encodedSessionDetailsCookieName } from "../../utilities/generals";
+import {
+  encodedSessionDetailsCookieName,
+  isUserIdCookieName,
+} from "../../utilities/generals";
 
 /**
  * LoginPage component for user login.
@@ -51,7 +54,7 @@ const LoginPage = () => {
   const formRef = useRef();
 
   useEffect(() => {
-    // clearCookies();
+    clearCookies();
   }, []);
 
   /**
@@ -83,6 +86,10 @@ const LoginPage = () => {
       setApiError(null); // Reset API error before making a new request
       const response = await loginController(formData);
       if (response) {
+        setCookie({
+          name: isUserIdCookieName,
+          value: encodeData(formData?.username),
+        });
         if (formData.rememberMe) {
           rememberMeFunction(formData);
         }

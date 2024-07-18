@@ -1,7 +1,13 @@
 import { post } from "../../../utilities/apiservices/apiServices";
 import { getCookie } from "../../../utilities/cookieServices/cookieServices";
-import { isForgotPasswordCookieName } from "../../../utilities/generals";
-import { encodeData } from "../../../utilities/securities/encodeDecode";
+import {
+  isForgotPasswordCookieName,
+  isUserIdCookieName,
+} from "../../../utilities/generals";
+import {
+  decodeData,
+  encodeData,
+} from "../../../utilities/securities/encodeDecode";
 
 /**
  * forgotPasswordController - Handles the login process by sending user credentials to the API.
@@ -33,7 +39,7 @@ export const forgotPasswordController = async (formData) => {
       throw new Error("Invalid form data");
     }
 
-    const isForgotPasswordEmail = getCookie(isForgotPasswordCookieName);
+    const isForgotPasswordEmail = decodeData(getCookie(isUserIdCookieName));
 
     // Prepare the body object with sanitized data
     const body = {

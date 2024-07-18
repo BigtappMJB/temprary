@@ -18,8 +18,12 @@ import * as Yup from "yup";
 import CustomTextField from "../../../../components/forms/theme-elements/CustomTextField"; // Ensure the correct path
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { setCookie } from "../../../utilities/cookieServices/cookieServices";
-import { isForgotPasswordCookieName } from "../../../utilities/generals";
+import {
+  isForgotPasswordCookieName,
+  isUserIdCookieName,
+} from "../../../utilities/generals";
 import { validationRegex } from "../../../utilities/Validators";
+import { encodeData } from "../../../utilities/securities/encodeDecode";
 
 /**
  * LoginFormComponent handles the login form functionality.
@@ -103,8 +107,15 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
   const handleForgotPassword = () => {
     if (getValues().username && !getFieldState("username").invalid) {
       setCookie({
+        name: isUserIdCookieName,
+        value: encodeData(getValues().username),
+        unit: {
+          h: 24,
+        },
+      });
+      setCookie({
         name: isForgotPasswordCookieName,
-        value: getValues().username,
+        value: encodeData('true'),
         unit: {
           h: 24,
         },
