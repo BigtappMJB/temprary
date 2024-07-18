@@ -21,6 +21,7 @@ class Chat extends Component {
     try {
       const response = await fetch('http://localhost:5000/messages');
       const data = await response.json();
+      console.log(data);
       this.setState({ messages: data });
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -64,8 +65,13 @@ class Chat extends Component {
             <div className="chat-container">
                 <div className="messages">
                 {messages.map((msg, index) => (
-                    <div key={index} className="message">
-                    {msg.message}
+                    <div>
+                        <div key={index} className="right-message">
+                        {msg.message}
+                        </div>
+                        <div key={index} className="left-message">
+                        {msg.message}
+                        </div>
                     </div>
                 ))}
                 </div>
