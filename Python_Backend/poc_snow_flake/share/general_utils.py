@@ -1,6 +1,5 @@
-from dotenv import load_dotenv
 import os
-
+from dotenv import load_dotenv
 
 def load_environment(env):
     dotenv_file = f"environments/.env.{env}"
@@ -10,7 +9,6 @@ def load_environment(env):
     else:
         raise FileNotFoundError(f"{dotenv_file} does not exist")
 
-
 env_var = os.getenv('APP_ENV', 'dev')
 print(f"The default env {env_var}")
 load_environment(env_var)
@@ -19,14 +17,8 @@ sender_mail_config = {
     "username": os.getenv('EMAIL_USERNAME'),
     "password": os.getenv('EMAIL_PASSWORD'),
     "server": os.getenv('SMTP_SERVER'),
-    "port": int(os.getenv('SMTP_PORT'))
-}
-
-receiver_mail_config = {
-    "username": os.getenv('EMAIL_USERNAME'),
-    "password": os.getenv('EMAIL_PASSWORD'),
-    "server": os.getenv('IMAP_SERVER'),
-    "port": int(os.getenv('IMAP_PORT'))
+    "port": int(os.getenv('SMTP_PORT')),
+    "use_tls": os.getenv('MAIL_USE_TLS').lower() == 'true',
 }
 
 llm_config = {
@@ -34,6 +26,7 @@ llm_config = {
 }
 
 shed_time = int(os.getenv('SCHEDULED_IN_SEC'))
+
 
 snow_conf = {
     "user": os.getenv('SNOWFLAKE_USER'),
@@ -44,4 +37,3 @@ snow_conf = {
     "schema": os.getenv('SNOWFLAKE_SCHEMA'),
     "role": os.getenv('SNOWFLAKE_ROLE')
 }
-
