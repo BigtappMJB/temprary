@@ -4,11 +4,7 @@ import {
   Typography,
   Button,
   Stack,
-  Checkbox,
-  Grid,
-  FormControlLabel,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -46,76 +42,94 @@ const validationSchema = Yup.object().shape({
   code: Yup.string().required("Code is required"),
 });
 
-const EmailVerificationFormComponent = React.forwardRef(({ onSubmit }, ref) => {
-  const {
-    handleSubmit,
-    control,
-    getValues,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-  });
+const EmailVerificationFormComponent = React.forwardRef(
+  ({ onSubmit, handleReset }, ref) => {
+    const {
+      handleSubmit,
+      control,
+      getValues,
+      reset,
+      formState: { errors },
+    } = useForm({
+      resolver: yupResolver(validationSchema),
+    });
 
-  /**
-   * Handle form submission.
-   * @param {Object} data - Form data containing code.
-   */
-  const onLocalSubmit = async (data) => {
-    onSubmit(getValues());
-  };
+    /**
+     * Handle form submission.
+     * @param {Object} data - Form data containing code.
+     */
+    const onLocalSubmit = async (data) => {
+      onSubmit(getValues());
+    };
 
-  // Expose a method to reset the form via ref
-  useImperativeHandle(ref, () => ({
-    resetForm: async () => {
-      reset({
-        code: "",
-      });
-    },
-  }));
+    // Expose a method to reset the form via ref
+    useImperativeHandle(ref, () => ({
+      resetForm: async () => {
+        reset({
+          code: "",
+        });
+      },
+    }));
 
-  return (
-    <form onSubmit={handleSubmit(onLocalSubmit)}>
-      <Stack spacing={2}>
-        <Box>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            component="label"
-            htmlFor="code"
-            mb="5px"
-          >
-            Email Verification Code
-          </Typography>
-          <Controller
-            name="code"
-            control={control}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                id="code"
-                variant="outlined"
-                fullWidth
-                error={!!errors.code}
-                helperText={errors.code?.message}
-              />
-            )}
-          />
-        </Box>
-      </Stack>
-      <Box mt={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          size="large"
-          fullWidth
-          type="submit"
+    return (
+      <form onSubmit={handleSubmit(onLocalSubmit)}>
+        <Stack spacing={2}>
+          <Box>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              component="label"
+              htmlFor="code"
+              mb="5px"
+            >
+              Email Verification Code
+            </Typography>
+            <Controller
+              name="code"
+              control={control}
+              render={({ field }) => (
+                <CustomTextField
+                  {...field}
+                  id="code"
+                  variant="outlined"
+                  fullWidth
+                  error={!!errors.code}
+                  helperText={errors.code?.message}
+                />
+              )}
+            />
+          </Box>
+        </Stack>
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+          flexWrap="wrap"
+          mt={2}
+          gap={2} // Adds space between buttons
         >
-          Verify
-        </Button>
-      </Box>
-    </form>
-  );
-});
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className="primary"
+          >
+            Verify
+          </Button>
+
+          <Button
+            type="button"
+            variant="contained"
+            color="primary"
+            className="danger"
+            onClick={handleReset}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </form>
+    );
+  }
+);
 
 export default EmailVerificationFormComponent;

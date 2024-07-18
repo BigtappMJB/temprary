@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, Box, Typography } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 
 // components
 import Logo from "../../../layouts/full/shared/logo/Logo";
@@ -73,6 +73,10 @@ const ChangePassword = () => {
     }
   };
 
+  const handleFormReset = () => {
+    formRef.current.resetForm();
+  };
+
   return (
     <AuthCardComponent
       title="Change Password"
@@ -102,6 +106,7 @@ const ChangePassword = () => {
       {/*  Form Section */}
       <ChangePasswordFormComponent
         onSubmit={onEmailVerification}
+        handleReset={handleFormReset}
         ref={(el) => (formRef.current = el)}
       />
     </AuthCardComponent>

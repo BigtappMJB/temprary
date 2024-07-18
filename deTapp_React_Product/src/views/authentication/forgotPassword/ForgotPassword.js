@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, Box, Typography } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 
 // components
 import Logo from "../../../layouts/full/shared/logo/Logo";
@@ -74,6 +74,10 @@ const ForgotPassword = () => {
     }
   };
 
+  const handleReset = () => {
+    formRef.current.resetForm();
+  };
+
   return (
     <AuthCardComponent
       title="Forgot Password"
@@ -102,6 +106,7 @@ const ForgotPassword = () => {
       {/*  Form Section */}
       <ForgotPasswordFormComponent
         onSubmit={onForgotPassword}
+        handleReset={handleReset}
         ref={(el) => (formRef.current = el)}
       />
     </AuthCardComponent>

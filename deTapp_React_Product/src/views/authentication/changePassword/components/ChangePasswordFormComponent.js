@@ -3,14 +3,10 @@ import {
   Box,
   Typography,
   Button,
-  Stack,
-  Checkbox,
   Grid,
-  FormControlLabel,
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -58,213 +54,215 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref("newPassword"), null], "Passwords must match"),
 });
 
-const ChangePasswordFormComponent = React.forwardRef(({ onSubmit }, ref) => {
-  const [showPassword, setShowPassword] = useState({
-    oldPassword: false,
-    newPassword: false,
-    confirmNewPassword: false,
-  });
-  const {
-    handleSubmit,
-    control,
-    getValues,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-  });
+const ChangePasswordFormComponent = React.forwardRef(
+  ({ onSubmit, handleReset }, ref) => {
+    const [showPassword, setShowPassword] = useState({
+      oldPassword: false,
+      newPassword: false,
+      confirmNewPassword: false,
+    });
+    const {
+      handleSubmit,
+      control,
+      getValues,
+      reset,
+      formState: { errors },
+    } = useForm({
+      resolver: yupResolver(validationSchema),
+    });
 
-  /**
-   * Handle form submission.
-   * @param {Object} data - Form data containing username and password.
-   */
-  const onLocalSubmit = async (data) => {
-    onSubmit(getValues());
-  };
+    /**
+     * Handle form submission.
+     * @param {Object} data - Form data containing username and password.
+     */
+    const onLocalSubmit = async (data) => {
+      onSubmit(getValues());
+    };
 
-  const handleClickShowPassword = (key) => {
-    setShowPassword({ ...showPassword, [key]: !showPassword[key] });
-  };
+    const handleClickShowPassword = (key) => {
+      setShowPassword({ ...showPassword, [key]: !showPassword[key] });
+    };
 
-  // Expose a method to reset the form via ref
-  useImperativeHandle(ref, () => ({
-    resetForm: async () => {
-      reset({
-        oldPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
-      });
-    },
-  }));
+    // Expose a method to reset the form via ref
+    useImperativeHandle(ref, () => ({
+      resetForm: async () => {
+        reset({
+          oldPassword: "",
+          newPassword: "",
+          confirmNewPassword: "",
+        });
+      },
+    }));
 
-  return (
-    <form onSubmit={handleSubmit(onLocalSubmit)}>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            component="label"
-            htmlFor="password"
-            mb="5px"
-          >
-            Current Password
-          </Typography>
-          <Controller
-            name="oldPassword"
-            control={control}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                id="oldPassword"
-                type={showPassword?.oldPassword ? "text" : "password"}
-                variant="outlined"
-                fullWidth
-                error={!!errors.oldPassword}
-                helperText={errors.oldPassword?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() => handleClickShowPassword("oldPassword")}
-                        edge="end"
-                      >
-                        {!showPassword?.oldPassword ? (
-                          <VisibilityOff />
-                        ) : (
-                          <Visibility />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            component="label"
-            htmlFor="password"
-            mb="5px"
-          >
-            New Password
-          </Typography>
-          <Controller
-            name="newPassword"
-            control={control}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                id="newPassword"
-                type={showPassword?.newPassword ? "text" : "password"}
-                variant="outlined"
-                fullWidth
-                error={!!errors.newPassword}
-                helperText={errors.newPassword?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() => handleClickShowPassword("newPassword")}
-                        edge="end"
-                      >
-                        {!showPassword?.newPassword ? (
-                          <VisibilityOff />
-                        ) : (
-                          <Visibility />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            component="label"
-            htmlFor="password"
-            mb="5px"
-          >
-            Confirm Password
-          </Typography>
-          <Controller
-            name="confirmNewPassword"
-            control={control}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                id="confirmNewPassword"
-                type={showPassword?.confirmNewPassword ? "text" : "password"}
-                variant="outlined"
-                fullWidth
-                error={!!errors.confirmNewPassword}
-                helperText={errors.confirmNewPassword?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() =>
-                          handleClickShowPassword("confirmNewPassword")
-                        }
-                        edge="end"
-                      >
-                        {!showPassword?.confirmNewPassword ? (
-                          <VisibilityOff />
-                        ) : (
-                          <Visibility />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={12}>
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            flexWrap="wrap"
-            gap={2} // Adds space between buttons
-          >
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              className="primary"
+    return (
+      <form onSubmit={handleSubmit(onLocalSubmit)}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              component="label"
+              htmlFor="password"
+              mb="5px"
             >
-              Update
-            </Button>
+              Current Password
+            </Typography>
+            <Controller
+              name="oldPassword"
+              control={control}
+              render={({ field }) => (
+                <CustomTextField
+                  {...field}
+                  id="oldPassword"
+                  type={showPassword?.oldPassword ? "text" : "password"}
+                  variant="outlined"
+                  fullWidth
+                  error={!!errors.oldPassword}
+                  helperText={errors.oldPassword?.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => handleClickShowPassword("oldPassword")}
+                          edge="end"
+                        >
+                          {!showPassword?.oldPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Grid>
 
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              className="danger"
-              // onClick={handleReset}
+          <Grid item xs={12}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              component="label"
+              htmlFor="password"
+              mb="5px"
             >
-              Cancel
-            </Button>
-          </Box>
+              New Password
+            </Typography>
+            <Controller
+              name="newPassword"
+              control={control}
+              render={({ field }) => (
+                <CustomTextField
+                  {...field}
+                  id="newPassword"
+                  type={showPassword?.newPassword ? "text" : "password"}
+                  variant="outlined"
+                  fullWidth
+                  error={!!errors.newPassword}
+                  helperText={errors.newPassword?.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => handleClickShowPassword("newPassword")}
+                          edge="end"
+                        >
+                          {!showPassword?.newPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              component="label"
+              htmlFor="password"
+              mb="5px"
+            >
+              Confirm Password
+            </Typography>
+            <Controller
+              name="confirmNewPassword"
+              control={control}
+              render={({ field }) => (
+                <CustomTextField
+                  {...field}
+                  id="confirmNewPassword"
+                  type={showPassword?.confirmNewPassword ? "text" : "password"}
+                  variant="outlined"
+                  fullWidth
+                  error={!!errors.confirmNewPassword}
+                  helperText={errors.confirmNewPassword?.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() =>
+                            handleClickShowPassword("confirmNewPassword")
+                          }
+                          edge="end"
+                        >
+                          {!showPassword?.confirmNewPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={12}>
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="center"
+              flexWrap="wrap"
+              gap={2} // Adds space between buttons
+            >
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className="primary"
+              >
+                Update
+              </Button>
+
+              <Button
+                type="button"
+                variant="contained"
+                color="primary"
+                className="danger"
+                onClick={handleReset}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </form>
-  );
-});
+      </form>
+    );
+  }
+);
 
 export default ChangePasswordFormComponent;

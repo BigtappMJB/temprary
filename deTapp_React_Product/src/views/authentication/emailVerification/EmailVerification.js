@@ -74,6 +74,10 @@ const EmailVerification = () => {
     }
   };
 
+  const handleReset = () => {
+    formRef.current.resetForm();
+  };
+
   return (
     <AuthCardComponent
       title="Email Verification"
@@ -109,6 +113,7 @@ const EmailVerification = () => {
       {/* Login Form Section */}
       <EmailVerificationFormComponent
         onSubmit={onEmailVerification}
+        handleReset={handleReset}
         ref={(el) => (formRef.current = el)}
       />
     </AuthCardComponent>
