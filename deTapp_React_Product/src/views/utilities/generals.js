@@ -1,4 +1,16 @@
+import { encodeData } from "./securities/encodeDecode";
 import { validationRegex } from "./Validators";
+
+
+export const encodedSessionDetailsCookieName = encodeData("sessionsDetails")
+export const encodedTempUsersCookieName = encodeData("tempUsers")
+export const isForgotPasswordCookieName = encodeData("isForgotPassword")
+export const isDefaultPasswordCookieName = encodeData("isDefaultPassword")
+export const isUserIdCookieName = encodeData("isUserEmail")
+
+
+
+
 
 export const allValuesContainNumberInArray = (arr) => {
   const numberRegex = validationRegex.isNumbers;
