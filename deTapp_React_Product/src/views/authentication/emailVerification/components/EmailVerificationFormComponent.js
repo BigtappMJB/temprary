@@ -85,7 +85,16 @@ const EmailVerificationFormComponent = React.forwardRef(({ onSubmit }, ref) => {
             htmlFor="code"
             mb="5px"
           >
-            Verification Code
+            Email Verification Code
+            <Typography
+              variant="caption"
+              component="span"
+              color="textSecondary"
+              fontWeight="normal"
+              ml={1} // Optional: adds a little margin to the left
+            >
+              (Kindly check your given email for verification code)
+            </Typography>
           </Typography>
           <Controller
             name="code"
