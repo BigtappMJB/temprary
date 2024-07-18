@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 
 import CustomTextField from "../../../../components/forms/theme-elements/CustomTextField"; // Ensure the correct path
-import { errorMessages, validationRegex } from "../../../utilities/Validators";
+import { validationRegex } from "../../../utilities/Validators";
 
 /**
  * EmailVerificationFormComponent handles the login form functionality.
@@ -37,8 +37,8 @@ import { errorMessages, validationRegex } from "../../../utilities/Validators";
 const validationSchema = Yup.object().shape({
   code: Yup.string()
     .required("Code is required")
-    // .matches(validationRegex.isNumbers, "Code should contain only numbers.")
-    // .length(6, "Code should contain 6 digits"),
+    .matches(validationRegex.isNumbers, "Code should contain only numbers.")
+    .length(6, "Code should contain 6 digits"),
 });
 
 const EmailVerificationFormComponent = React.forwardRef(

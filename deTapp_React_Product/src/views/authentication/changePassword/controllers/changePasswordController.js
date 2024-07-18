@@ -1,7 +1,6 @@
 import { post } from "../../../utilities/apiservices/apiServices";
 import { getCookie } from "../../../utilities/cookieServices/cookieServices";
 import {
-  encodedTempUsersCookieName,
   isUserIdCookieName,
 } from "../../../utilities/generals";
 import {

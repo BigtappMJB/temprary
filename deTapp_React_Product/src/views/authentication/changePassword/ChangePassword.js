@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Alert, Box } from "@mui/material";
 
 // components
@@ -7,9 +6,6 @@ import Logo from "../../../layouts/full/shared/logo/Logo";
 import AuthCardComponent from "../generalComponents/CardComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { changePasswordController } from "./controllers/changePasswordController";
-import { getCookie } from "../../utilities/cookieServices/cookieServices";
-import { encodedTempUsersCookieName } from "../../utilities/generals";
-import { decodeData } from "../../utilities/securities/encodeDecode";
 import ChangePasswordFormComponent from "./components/ChangePasswordFormComponent";
 
 /**
@@ -42,7 +38,6 @@ import ChangePasswordFormComponent from "./components/ChangePasswordFormComponen
  */
 const ChangePassword = () => {
   const [apiError, setApiError] = useState(null);
-  const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
   /**
