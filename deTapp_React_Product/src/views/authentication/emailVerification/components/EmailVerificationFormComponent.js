@@ -1,15 +1,11 @@
 import React, { useImperativeHandle } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Box, Typography, Button, Stack } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 
 import CustomTextField from "../../../../components/forms/theme-elements/CustomTextField"; // Ensure the correct path
+import { errorMessages, validationRegex } from "../../../utilities/Validators";
 
 /**
  * EmailVerificationFormComponent handles the login form functionality.
@@ -39,7 +35,10 @@ import CustomTextField from "../../../../components/forms/theme-elements/CustomT
 
 // Validation schema
 const validationSchema = Yup.object().shape({
-  code: Yup.string().required("Code is required"),
+  code: Yup.string()
+    .required("Code is required")
+    .matches(validationRegex.isNumbers, "Code should contain only numbers.")
+    .length(6, "Code should contain 6 digits"),
 });
 
 const EmailVerificationFormComponent = React.forwardRef(
@@ -124,7 +123,7 @@ const EmailVerificationFormComponent = React.forwardRef(
             className="danger"
             onClick={handleReset}
           >
-            Cancel
+            Clear
           </Button>
         </Box>
       </form>

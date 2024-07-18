@@ -87,8 +87,8 @@ const RegisterPage = () => {
     try {
       startLoading();
       setApiError(null);
-      const response = await registerController(formData);
       storeUserDetailsInCookies(formData);
+      const response = await registerController(formData);
       if (response) {
         formRef.current.resetForm();
         console.log("Register successful", response);
@@ -99,7 +99,8 @@ const RegisterPage = () => {
       console.log(error);
       setApiSuccess(null);
       setApiError(
-        "Failed to register. Please check your details and try again."
+        error.errorMessage ||
+          "Failed to register. Please check your details and try again."
       );
     } finally {
       stopLoading();

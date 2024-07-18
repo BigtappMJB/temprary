@@ -50,7 +50,7 @@ import { validationRegex } from "../../../utilities/Validators";
 // Validation schema
 const validationSchema = Yup.object().shape({
   username: Yup.string()
-    .required("Username is required")
+    .required("Email is required")
     .matches(validationRegex.email, "Invalid Email"),
   password: Yup.string().required("Password is required"),
   rememberMe: Yup.boolean(),

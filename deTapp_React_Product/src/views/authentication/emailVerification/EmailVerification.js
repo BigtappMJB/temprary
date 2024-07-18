@@ -8,9 +8,13 @@ import AuthCardComponent from "../generalComponents/CardComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { emailVerifyCodeController } from "./controllers/EmailVerificationController";
 import EmailVerificationFormComponent from "./components/EmailVerificationFormComponent";
-import { getCookie } from "../../utilities/cookieServices/cookieServices";
+import {
+  getCookie,
+  setCookie,
+} from "../../utilities/cookieServices/cookieServices";
 import {
   encodedTempUsersCookieName,
+  isDefaultPasswordCookieName,
   isForgotPasswordCookieName,
 } from "../../utilities/generals";
 import { decodeData } from "../../utilities/securities/encodeDecode";
@@ -49,7 +53,6 @@ const EmailVerification = () => {
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
   const userDetails = decodeData(getCookie(encodedTempUsersCookieName));
-  console.log({ userDetails });
   const isForgotPasswordEmail = getCookie(isForgotPasswordCookieName);
   /**
    * Function to handle form submission.
@@ -68,11 +71,17 @@ const EmailVerification = () => {
         if (getCookie(isForgotPasswordCookieName) !== null) {
           navigate("/auth/forgotPassword");
         } else {
-          navigate("/auth/changePassword");
+          setCookie({
+            name: isDefaultPasswordCookieName,
+            value: true,
+            unit: {
+              h: "24",
+            },
+          });
+          navigate("/auth/login");
         }
       }
     } catch (error) {
-      console.log(error);
       setApiError(
         error.errorMessage ||
           "Failed to Verfiy. Please check your verification code."
@@ -84,6 +93,7 @@ const EmailVerification = () => {
 
   const handleReset = () => {
     formRef.current.resetForm();
+    window.history.back();
   };
 
   return (

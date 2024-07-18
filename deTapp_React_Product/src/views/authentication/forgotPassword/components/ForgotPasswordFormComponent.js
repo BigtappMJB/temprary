@@ -209,7 +209,7 @@ const ForgotPasswordFormComponent = React.forwardRef(
                 className="danger"
                 onClick={handleReset}
               >
-                Cancel
+                Clear
               </Button>
             </Box>
           </Grid>

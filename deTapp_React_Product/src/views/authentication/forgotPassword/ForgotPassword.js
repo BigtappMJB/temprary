@@ -10,9 +10,7 @@ import {
   getCookie,
   removeCookie,
 } from "../../utilities/cookieServices/cookieServices";
-import {
-  isForgotPasswordCookieName,
-} from "../../utilities/generals";
+import { isForgotPasswordCookieName } from "../../utilities/generals";
 import ForgotPasswordFormComponent from "./components/ForgotPasswordFormComponent";
 import { forgotPasswordController } from "./controllers/forgotPasswordController";
 
@@ -80,6 +78,7 @@ const ForgotPassword = () => {
 
   const handleReset = () => {
     formRef.current.resetForm();
+    navigate("/auth/login");
   };
 
   return (

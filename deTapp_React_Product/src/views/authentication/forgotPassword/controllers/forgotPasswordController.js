@@ -1,4 +1,7 @@
 import { post } from "../../../utilities/apiservices/apiServices";
+import { getCookie } from "../../../utilities/cookieServices/cookieServices";
+import { isForgotPasswordCookieName } from "../../../utilities/generals";
+import { encodeData } from "../../../utilities/securities/encodeDecode";
 
 /**
  * forgotPasswordController - Handles the login process by sending user credentials to the API.
@@ -30,27 +33,16 @@ export const forgotPasswordController = async (formData) => {
       throw new Error("Invalid form data");
     }
 
-    const { username, password } = formData;
-
-    if (typeof username !== "string" || typeof password !== "string") {
-      throw new Error("Username and password must be strings");
-    }
-
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
-
-    if (!trimmedUsername || !trimmedPassword) {
-      throw new Error("Username and password cannot be empty");
-    }
+    const isForgotPasswordEmail = getCookie(isForgotPasswordCookieName);
 
     // Prepare the body object with sanitized data
     const body = {
-      login_id: trimmedUsername,
-      password: trimmedPassword,
+      email: isForgotPasswordEmail,
+      new_password: encodeData(formData?.newPassword.trim()),
     };
 
     // Send the POST request to the user API endpoint
-    const response = await post("/login", body, "python");
+    const response = await post("/register/reset_password", body, "python");
 
     // Check if response is valid
     if (!response || typeof response !== "object") {
