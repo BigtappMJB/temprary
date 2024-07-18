@@ -6,8 +6,14 @@ import { Alert, Box } from "@mui/material";
 import Logo from "../../../layouts/full/shared/logo/Logo";
 import AuthCardComponent from "../generalComponents/CardComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
-import { getCookie } from "../../utilities/cookieServices/cookieServices";
-import { encodedTempUsersCookieName } from "../../utilities/generals";
+import {
+  getCookie,
+  removeCookie,
+} from "../../utilities/cookieServices/cookieServices";
+import {
+  encodedTempUsersCookieName,
+  isForgotPasswordCookieName,
+} from "../../utilities/generals";
 import { decodeData } from "../../utilities/securities/encodeDecode";
 import ForgotPasswordFormComponent from "./components/ForgotPasswordFormComponent";
 import { forgotPasswordController } from "./controllers/forgotPasswordController";
@@ -45,6 +51,8 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
+  const userEmail = getCookie(isForgotPasswordCookieName);
+  console.log({ userEmail });
 
   /**
    * Handles form submission.
@@ -54,13 +62,11 @@ const ForgotPassword = () => {
    */
   const onForgotPassword = async (formData) => {
     try {
-      console.log({ formData });
-      const userDetails = decodeData(getCookie(encodedTempUsersCookieName));
-      console.log({ userDetails });
       startLoading();
       setApiError(null); // Reset API error before making a new request
       const response = await forgotPasswordController(formData);
       if (response) {
+        removeCookie(isForgotPasswordCookieName);
         navigate("/login");
       }
     } catch (error) {

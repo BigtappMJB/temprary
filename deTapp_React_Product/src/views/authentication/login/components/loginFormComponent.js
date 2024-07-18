@@ -8,14 +8,18 @@ import {
   Grid,
   FormControlLabel,
   IconButton,
+  ButtonBase,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 
 import CustomTextField from "../../../../components/forms/theme-elements/CustomTextField"; // Ensure the correct path
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { setCookie } from "../../../utilities/cookieServices/cookieServices";
+import { isForgotPasswordCookieName } from "../../../utilities/generals";
+import { validationRegex } from "../../../utilities/Validators";
 
 /**
  * LoginFormComponent handles the login form functionality.
@@ -45,7 +49,9 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 // Validation schema
 const validationSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required"),
+  username: Yup.string()
+    .required("Username is required")
+    .matches(validationRegex.email, "Invalid Email"),
   password: Yup.string().required("Password is required"),
   rememberMe: Yup.boolean(),
 });
@@ -55,13 +61,18 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
     handleSubmit,
     control,
     getValues,
+    trigger,
+    getFieldState,
     reset,
     formState: { errors },
   } = useForm({
+    mode: "onChange",
     resolver: yupResolver(validationSchema),
   });
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
 
   /**
    * Handle passwordToggle.
@@ -89,6 +100,21 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
     },
   }));
 
+  const handleForgotPassword = () => {
+    if (getValues().username && !getFieldState("username").invalid) {
+      setCookie({
+        name: isForgotPasswordCookieName,
+        value: getValues().username,
+        unit: {
+          h: 24,
+        },
+      });
+      navigate("/auth/emailVerification");
+    } else {
+      trigger(["username"]);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onLocalSubmit)}>
       <Stack>
@@ -100,7 +126,7 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
             htmlFor="username"
             mb="5px"
           >
-            Username
+            Email
           </Typography>
           <Controller
             name="username"
@@ -176,8 +202,8 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
             </Grid>
             <Grid item xs={12} sm="auto">
               <Typography
-                component={Link}
-                to="/auth/forgotPassword"
+                component={ButtonBase}
+                onClick={handleForgotPassword}
                 fontWeight="500"
                 sx={{
                   textDecoration: "none",

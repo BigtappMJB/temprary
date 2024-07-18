@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Logo from "../../../layouts/full/shared/logo/Logo";
 import AuthCardComponent from "../generalComponents/CardComponent";
 import { Alert, Box, Grid, Typography } from "@mui/material";
@@ -7,8 +7,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { registerController } from "./controllers/registerController";
 import { encodeData } from "../../utilities/securities/encodeDecode";
-import { setCookie } from "../../utilities/cookieServices/cookieServices";
-import { encodedTempUsersCookieName } from "../../utilities/generals";
+import {
+  clearCookies,
+  getCookie,
+  removeCookie,
+  setCookie,
+} from "../../utilities/cookieServices/cookieServices";
+import {
+  encodedSessionDetailsCookieName,
+  encodedTempUsersCookieName,
+} from "../../utilities/generals";
 
 /**
  * RegisterPage component for user registration.
@@ -44,6 +52,10 @@ const RegisterPage = () => {
   const { startLoading, stopLoading } = useLoading();
   const navigate = useNavigate();
   const formRef = useRef();
+
+  useEffect(() => {
+    clearCookies();
+  }, []);
 
   /**
    * Function to handle remember me functionality.

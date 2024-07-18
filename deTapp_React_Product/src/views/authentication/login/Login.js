@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert, Box, Stack, Typography } from "@mui/material";
 
@@ -8,10 +8,15 @@ import AuthCardComponent from "../generalComponents/CardComponent";
 import LoginFormComponent from "./components/loginFormComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { loginController } from "./controllers/loginController";
-import { setCookie } from "../../utilities/cookieServices/cookieServices";
+import {
+  clearCookies,
+  getCookie,
+  removeCookie,
+  setCookie,
+} from "../../utilities/cookieServices/cookieServices";
 
 import { encodeData } from "../../utilities/securities/encodeDecode";
-import { encodedSessionDetailsCookieName } from "../../utilities/generals";
+import { encodedSessionDetailsCookieName, isForgotPasswordCookieName } from "../../utilities/generals";
 
 /**
  * LoginPage component for user login.
@@ -46,6 +51,10 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
+
+  useEffect(() => {
+    clearCookies()
+  }, []);
 
   /**
    * Function to handle remember me functionality.
@@ -99,16 +108,7 @@ const LoginPage = () => {
       <Box display="flex" alignItems="center" justifyContent="center">
         <Logo />
       </Box>
-      {/* <Box paddingY={"15px"} sx={{ lineHeight: "normal" }}>
-        <Typography
-          component={"h1"}
-          fontSize={"22px"}
-          textAlign={"center"}
-          fontWeight={"bold"}
-        >
-          Login
-        </Typography>
-      </Box> */}
+
       {apiError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {apiError}

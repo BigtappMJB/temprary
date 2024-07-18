@@ -9,7 +9,10 @@ import { useLoading } from "../../../components/Loading/loadingProvider";
 import { emailVerifyCodeController } from "./controllers/EmailVerificationController";
 import EmailVerificationFormComponent from "./components/EmailVerificationFormComponent";
 import { getCookie } from "../../utilities/cookieServices/cookieServices";
-import { encodedTempUsersCookieName } from "../../utilities/generals";
+import {
+  encodedTempUsersCookieName,
+  isForgotPasswordCookieName,
+} from "../../utilities/generals";
 import { decodeData } from "../../utilities/securities/encodeDecode";
 
 /**
@@ -47,6 +50,7 @@ const EmailVerification = () => {
   const formRef = useRef();
   const userDetails = decodeData(getCookie(encodedTempUsersCookieName));
   console.log({ userDetails });
+  const isForgotPasswordEmail = getCookie(isForgotPasswordCookieName);
   /**
    * Function to handle form submission.
    * It sends the form data to the login controller and handles the response.
@@ -55,13 +59,17 @@ const EmailVerification = () => {
    */
   const onEmailVerification = async (formData) => {
     try {
-      console.log({ formData });
-
       startLoading();
       setApiError(null); // Reset API error before making a new request
+
       const response = await emailVerifyCodeController(formData);
+
       if (response) {
-        navigate("/dashboard");
+        if (getCookie(isForgotPasswordCookieName) !== null) {
+          navigate("/auth/forgotPassword");
+        } else {
+          navigate("/auth/changePassword");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -98,8 +106,8 @@ const EmailVerification = () => {
         </Typography>
         <Typography component={"p"} textAlign={"center"}>
           A 6-digit code has been sent to{" "}
-          <a href={"mailto:" + userDetails.email}>
-            <b>{userDetails.email}</b>
+          <a href={"mailto:" + isForgotPasswordEmail ?? userDetails.email}>
+            <b>{isForgotPasswordEmail ?? userDetails.email}</b>
           </a>
         </Typography>
       </Box>
