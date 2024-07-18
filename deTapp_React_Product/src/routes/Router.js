@@ -34,9 +34,23 @@ const UserRole = Loadable(
 
 const Error = Loadable(lazy(() => import("../views/authentication/Error")));
 const Register = Loadable(
-  lazy(() => import("../views/authentication/Register"))
+  lazy(() => import("../views/authentication/registration/Register"))
 );
-const Login = Loadable(lazy(() => import("../views/authentication/Login")));
+
+const EmailVerification = Loadable(
+  lazy(() =>
+    import("../views/authentication/emailVerification/EmailVerification")
+  )
+);
+const ChangePassword = Loadable(
+  lazy(() => import("../views/authentication/changePassword/ChangePassword"))
+);
+const ForgotPassword = Loadable(
+  lazy(() => import("../views/authentication/forgotPassword/ForgotPassword"))
+);
+const Login = Loadable(
+  lazy(() => import("../views/authentication/login/Login"))
+);
 const ChatInterface = Loadable(
   lazy(() => import("../views/chat-interface/chat"))
 );
@@ -67,6 +81,10 @@ const Router = [
       { path: "404", element: <Error /> },
       { path: "/auth/register", element: <Register /> },
       { path: "/auth/login", element: <Login /> },
+      { path: "/auth/emailVerification", element: <EmailVerification /> },
+      { path: "/auth/changePassword", element: <ChangePassword /> },
+      { path: "/auth/forgotPassword", element: <ForgotPassword /> },
+
       { path: "*", element: <Navigate to="/auth/404" /> },
     ],
   },

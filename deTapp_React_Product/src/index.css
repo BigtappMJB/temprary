@@ -117,12 +117,23 @@ input[type="text"] {
   border-radius: 8px !important;
 }
 
+/* Hide the built-in eye icon in Edge and Internet Explorer */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Hide the built-in eye icon in WebKit browsers (e.g., Safari) */
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none;
+}
+
 /**
  * Styles for buttons
  * 
  * Sets a minimum width for buttons
  */
- .MuiButton-contained{
+.MuiButton-contained {
   min-width: 100px !important;
 }
 
@@ -233,16 +244,10 @@ input[type="text"] {
   box-shadow: none;
   background-color: rgba(73, 82, 88, 0.12) !important;
 }
-.css-ka7ti6-MuiAutocomplete-root .MuiOutlinedInput-root{
+.css-ka7ti6-MuiAutocomplete-root .MuiOutlinedInput-root {
   padding: 0px !important;
 }
 
 .css-1mkcvpn-MuiInputBase-root-MuiOutlinedInput-root {
   border-radius: 8px !important;
 }
-
-
-
-
-
-
