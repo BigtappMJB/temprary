@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, Box } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 
 // components
 import Logo from "../../../layouts/full/shared/logo/Logo";
@@ -83,6 +83,16 @@ const ForgotPassword = () => {
       <Box display="flex" alignItems="center" justifyContent="center">
         <Logo />
       </Box>
+      {/* <Box paddingY={"15px"} sx={{ lineHeight: "normal" }}>
+        <Typography
+          component={"h1"}
+          fontSize={"22px"}
+          textAlign={"center"}
+          fontWeight={"bold"}
+        >
+          Forgot Password
+        </Typography>
+      </Box> */}
       {apiError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {apiError}

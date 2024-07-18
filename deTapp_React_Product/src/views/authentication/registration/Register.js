@@ -106,6 +106,17 @@ const RegisterPage = () => {
         <Logo />
       </Box>
 
+      {/* <Box paddingY={"15px"} sx={{ lineHeight: "normal" }}>
+        <Typography
+          component={"h1"}
+          fontSize={"22px"}
+          textAlign={"center"}
+          fontWeight={"bold"}
+        >
+          Register
+        </Typography>
+      </Box> */}
+
       {apiError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {apiError}

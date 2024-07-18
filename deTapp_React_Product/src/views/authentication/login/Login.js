@@ -99,6 +99,16 @@ const LoginPage = () => {
       <Box display="flex" alignItems="center" justifyContent="center">
         <Logo />
       </Box>
+      {/* <Box paddingY={"15px"} sx={{ lineHeight: "normal" }}>
+        <Typography
+          component={"h1"}
+          fontSize={"22px"}
+          textAlign={"center"}
+          fontWeight={"bold"}
+        >
+          Login
+        </Typography>
+      </Box> */}
       {apiError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {apiError}
