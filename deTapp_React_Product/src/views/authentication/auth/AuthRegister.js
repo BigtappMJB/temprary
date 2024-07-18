@@ -26,14 +26,14 @@ const validationSchema = Yup.object().shape({
   mobileno: Yup.string()
     .required("Mobile number is required")
     .matches(/^[0-9]{10}$/, "Mobile number must be 10 digits"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 
-          'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
-  confirmPassword: Yup.string()
-    .required("Confirm password is required")
-    .oneOf([Yup.ref("password"), null], "Passwords must match"),
+//   password: Yup.string()
+//     .required("Password is required")
+//     .min(8, "Password must be at least 8 characters")
+//     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 
+//           'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+//   confirmPassword: Yup.string()
+//     .required("Confirm password is required")
+//     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
 const AuthRegister = ({ title, subtitle, subtext }) => {
@@ -46,7 +46,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
     handleSubmit,
     control,
     reset,
-    formState: { isSubmitted, errors, isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful },
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
@@ -59,8 +59,8 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
         lastname: "",
         email: "",
         mobileno: "",
-        password: "",
-        confirmPassword: ""
+        //password: "",
+        //confirmPassword: ""
       });
     }
   }, [isSubmitSuccessful, reset]);
@@ -111,7 +111,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <Typography
               variant="subtitle1"
               fontWeight={600}
@@ -136,7 +136,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <Typography
               variant="subtitle1"
               fontWeight={600}
@@ -161,7 +161,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <Typography
               variant="subtitle1"
               fontWeight={600}
@@ -186,7 +186,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <Typography
               variant="subtitle1"
               fontWeight={600}
@@ -211,7 +211,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={12}>
             <Typography
               variant="subtitle1"
               fontWeight={600}
@@ -250,7 +250,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <Typography
               variant="subtitle1"
               fontWeight={600}
@@ -292,7 +292,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
                 />
               )}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
         <Box mt={3}>
           <Button

@@ -33,7 +33,7 @@ export const registerController = async (formData) => {
         let random4DigitNumber = generateRandom4DigitNumber();
 
         // Destructure and sanitize form data
-        const { firstname, lastname, email, mobileno, password } = formData;
+        const { firstname, lastname, email, mobileno } = formData;
         let trimmedVariable = removeSpaces(firstname);
         const sanitizedData = {
             userId: trimmedVariable+'-'+random4DigitNumber,
@@ -41,7 +41,6 @@ export const registerController = async (formData) => {
             lastName: lastname.trim(),
             email: email.trim(),
             mobile: mobileno.trim(),
-            password: password.trim(),
             role: 1 // Hardcode value Role is 1
         };
 

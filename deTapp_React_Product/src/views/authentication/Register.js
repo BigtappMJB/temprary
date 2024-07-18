@@ -27,13 +27,13 @@ const Register2 = () => (
           item
           xs={12}
           sm={12}
-          lg={6}
-          xl={6}
+          lg={4}
+          xl={3}
           display="flex"
           justifyContent="center"
           alignItems="center"
         >
-          <Card elevation={9} sx={{ p: 4, zIndex: 1, width: '100%', maxWidth: '600px' }}>
+          <Card elevation={9} sx={{ p: 4, zIndex: 1, width: '100%', maxWidth: '500px' }}>
             <Box display="flex" alignItems="center" justifyContent="center">
               <Logo />
             </Box>
