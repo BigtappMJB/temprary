@@ -9,13 +9,16 @@ import LoginFormComponent from "./components/loginFormComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { loginController } from "./controllers/loginController";
 import {
-  clearCookies,
+  getCookie,
+  removeCookie,
   setCookie,
 } from "../../utilities/cookieServices/cookieServices";
 
 import { encodeData } from "../../utilities/securities/encodeDecode";
 import {
   encodedSessionDetailsCookieName,
+  isDefaultPasswordStatusCookieName,
+  isEmailVerifiedStatusCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
 
@@ -49,12 +52,16 @@ import {
  */
 const LoginPage = () => {
   const [apiError, setApiError] = useState(null);
+  const [isDefaultPassword, setIsDefaultPassword] = useState(
+    getCookie(isDefaultPasswordStatusCookieName) !== null
+  );
+
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
 
   useEffect(() => {
-    clearCookies();
+    // clearCookies();
   }, []);
 
   /**
@@ -71,38 +78,76 @@ const LoginPage = () => {
       expires: 24, // 24 hours
     });
   };
-
   /**
-   * Function to handle form submission.
-   * It sends the form data to the login controller and handles the response.
+   * Handles the login process.
    *
-   * @param {Object} formData - The form data containing username, password, and remember me.
+   * This function sends the login credentials to the server for authentication. Based on the response,
+   * it sets necessary cookies, handles email verification and password change requirements, and redirects
+   * the user to the appropriate page.
+   *
+   * @param {Object} formData - The form data containing username, password, and rememberMe flag.
+   * @returns {Promise<void>}
    */
   const onLogin = async (formData) => {
     try {
-      console.log({ formData });
+      // Remove the default password status cookie and reset the state variable
+      removeCookie(isDefaultPasswordStatusCookieName);
+      setIsDefaultPassword(false);
 
+      // Start the loading indicator and reset any existing API errors
       startLoading();
-      setApiError(null); // Reset API error before making a new request
+      setApiError(null);
+
+      // Send the login credentials to the server for authentication
       const response = await loginController(formData);
+
+      // Set a cookie to store the encoded username
+      setCookie({
+        name: isUserIdCookieName,
+        value: encodeData(formData?.username),
+      });
+
       if (response) {
+        // Set a cookie to indicate the email verification status
         setCookie({
-          name: isUserIdCookieName,
-          value: encodeData(formData?.username),
+          name: isEmailVerifiedStatusCookieName,
+          value: encodeData(response?.is_verified ? 1 : 0),
         });
-        if (formData.rememberMe) {
-          rememberMeFunction(formData);
+
+        // Set a cookie to indicate the default password status
+        setCookie({
+          name: isDefaultPasswordStatusCookieName,
+          value: encodeData(response?.is_default_password_changed ? 1 : 0),
+        });
+
+        // Redirect to the email verification page if the email is not verified
+        if (!response?.is_verified) {
+          navigate("/auth/emailVerification");
         }
+
+        // Redirect to the change password page if the default password is not changed
+        if (!response?.is_default_password_changed) {
+          navigate("/auth/changePassword");
+        }
+
+        // Remember the user if the rememberMe flag is set
+        if (formData.rememberMe) {
+          rememberMeFunction(response);
+        }
+
+        // Log the successful login and navigate to the dashboard
         console.log("Login successful:", response);
         navigate("/dashboard");
       }
     } catch (error) {
+      // Log the error and set an appropriate API error message
       console.log(error);
       setApiError(
         error.errorMessage ||
           "Failed to login. Please check your credentials and try again."
       );
     } finally {
+      // Stop the loading indicator
       stopLoading();
     }
   };
@@ -115,8 +160,15 @@ const LoginPage = () => {
       </Box>
 
       {apiError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
           {apiError}
+        </Alert>
+      )}
+
+      {isDefaultPassword && (
+        <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
+          Your email has been verified successfully and one time password has
+          been mailed.
         </Alert>
       )}
 

@@ -90,7 +90,7 @@ const ChangePassword = () => {
         </Typography>
       </Box> */}
       {apiError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
           {apiError}
         </Alert>
       )}

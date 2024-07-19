@@ -134,12 +134,12 @@ const RegisterPage = () => {
       </Box> */}
 
       {apiError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
           {apiError}
         </Alert>
       )}
       {apiSuccess && (
-        <Alert severity="success" sx={{ mb: 2 }}>
+        <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
           {apiSuccess}
         </Alert>
       )}

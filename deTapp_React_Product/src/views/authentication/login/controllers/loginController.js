@@ -1,7 +1,10 @@
 import { post } from "../../../utilities/apiservices/apiServices";
+import { getCookie } from "../../../utilities/cookieServices/cookieServices";
+import { isUserIdCookieName } from "../../../utilities/generals";
+import { decodeData } from "../../../utilities/securities/encodeDecode";
 
 /**
- * loginController - Handles the login process by sending user credentials to the API.
+ * Handles the login process by sending user credentials to the API.
  *
  * @param {Object} formData - The form data containing user credentials.
  * @param {string} formData.username - The username of the user.
@@ -34,30 +37,50 @@ export const loginController = async (formData) => {
 
     const { username, password } = formData;
 
-    if (typeof username !== "string" || typeof password !== "string") {
-      throw new Error("Username and password must be strings");
-    }
-
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
-
-    if (!trimmedUsername || !trimmedPassword) {
-      throw new Error("Username and password cannot be empty");
-    }
-
     // Prepare the body object with sanitized data
     const body = {
-      login_id: trimmedUsername,
-      password: trimmedPassword,
+      login_id: username.trim(),
+      password: password.trim(),
     };
 
     // Send the POST request to the user API endpoint
     const response = await post("/login", body, "python");
 
-    // Check if response is valid
-    if (!response || typeof response !== "object") {
-      throw new Error("Invalid response from the server");
-    }
+    // Return the response data
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Handles the logout process by sending the user's email to the API.
+ *
+ * @returns {Promise<Object>} The response data from the API.
+ * @throws {Error} Throws an error if the API request fails.
+ *
+ * @example
+ *
+ * loginOutController()
+ *   .then(response => {
+ *     console.log('Logout successful:', response);
+ *   })
+ *   .catch(error => {
+ *     console.error('Logout failed:', error.message);
+ *   });
+ */
+export const loginOutController = async () => {
+  try {
+    // Decode the user email from the cookie
+    const email = decodeData(getCookie(isUserIdCookieName));
+
+    // Prepare the body object with the user's email
+    const body = {
+      login_id: email,
+    };
+
+    // Send the POST request to the user API endpoint for logout
+    const response = await post("/register/logout", body, "python");
 
     // Return the response data
     return response;

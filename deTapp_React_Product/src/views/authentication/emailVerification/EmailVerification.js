@@ -13,7 +13,7 @@ import {
   setCookie,
 } from "../../utilities/cookieServices/cookieServices";
 import {
-  isDefaultPasswordCookieName,
+  isDefaultPasswordStatusCookieName,
   isForgotPasswordCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
@@ -54,38 +54,49 @@ const EmailVerification = () => {
   const formRef = useRef();
   const userEmail = decodeData(getCookie(isUserIdCookieName));
   /**
-   * Function to handle form submission.
-   * It sends the form data to the login controller and handles the response.
+   * Handles email verification logic.
    *
-   * @param {Object} formData - The form data containing username, password, and remember me.
+   * This function sends the email verification code to the server for validation.
+   * Depending on the response and the current status of the user, it redirects to the appropriate page.
+   *
+   * @param {Object} formData - The form data containing the email verification code.
+   * @returns {Promise<void>}
    */
   const onEmailVerification = async (formData) => {
     try {
       startLoading();
-      setApiError(null); // Reset API error before making a new request
+      setApiError(null); // Clear any existing API errors before making a new request
 
+      // Send the email verification code to the server for validation
       const response = await emailVerifyCodeController(formData);
 
       if (response) {
-        if (getCookie(isForgotPasswordCookieName) !== null) {
+        // If the user has not changed the default password, redirect to the change password page
+        if (decodeData(getCookie(isDefaultPasswordStatusCookieName)) === 1) {
+          navigate("/auth/changePassword");
+        }
+        // If the user is in the process of password recovery, redirect to the forgot password page
+        else if (getCookie(isForgotPasswordCookieName) !== null) {
           navigate("/auth/forgotPassword");
         } else {
+          // Set a cookie to indicate the user has changed the default password and redirect to the login page
           setCookie({
-            name: isDefaultPasswordCookieName,
+            name: isDefaultPasswordStatusCookieName,
             value: true,
-            unit: {
-              h: "24",
-            },
+            time: 24,
+            unit: "h",
           });
           navigate("/auth/login");
         }
       }
     } catch (error) {
+      // Display an error message if the verification fails
       setApiError(
         error.errorMessage ||
-          "Failed to Verfiy. Please check your verification code."
+          "Failed to verify. Please check your verification code."
       );
     } finally {
+      // Stop the loading indicator
       stopLoading();
     }
   };
@@ -122,12 +133,12 @@ const EmailVerification = () => {
       </Box>
 
       {apiError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
           {apiError}
         </Alert>
       )}
 
-      {/* Login Form Section */}
+      {/* Email Form Section */}
       <EmailVerificationFormComponent
         onSubmit={onEmailVerification}
         handleReset={handleReset}

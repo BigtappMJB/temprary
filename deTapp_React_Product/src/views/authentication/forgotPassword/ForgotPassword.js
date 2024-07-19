@@ -7,7 +7,6 @@ import Logo from "../../../layouts/full/shared/logo/Logo";
 import AuthCardComponent from "../generalComponents/CardComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import {
-  getCookie,
   removeCookie,
 } from "../../utilities/cookieServices/cookieServices";
 import { isForgotPasswordCookieName } from "../../utilities/generals";
@@ -47,8 +46,6 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
-  const userEmail = getCookie(isForgotPasswordCookieName);
-  console.log({ userEmail });
 
   /**
    * Handles form submission.
@@ -101,7 +98,7 @@ const ForgotPassword = () => {
         </Typography>
       </Box> */}
       {apiError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
           {apiError}
         </Alert>
       )}

@@ -251,3 +251,6 @@ input[type="password"]::-webkit-textfield-decoration-container {
 .css-1mkcvpn-MuiInputBase-root-MuiOutlinedInput-root {
   border-radius: 8px !important;
 }
+.css-1e9omt0-MuiPaper-root-MuiAlert-root {
+  align-content: center !important;
+}
