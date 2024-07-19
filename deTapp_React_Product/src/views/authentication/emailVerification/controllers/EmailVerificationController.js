@@ -1,8 +1,6 @@
 import { post } from "../../../utilities/apiservices/apiServices";
 import { getCookie } from "../../../utilities/cookieServices/cookieServices";
-import {
-  isUserIdCookieName,
-} from "../../../utilities/generals";
+import { isUserIdCookieName } from "../../../utilities/generals";
 import { decodeData } from "../../../utilities/securities/encodeDecode";
 
 /**
@@ -49,6 +47,24 @@ export const emailVerifyCodeController = async (formData) => {
     if (!response || typeof response !== "object") {
       throw new Error("Invalid response from the server");
     }
+
+    // Return the response data
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const triggerOTPEmailController = async () => {
+  try {
+    const email = decodeData(getCookie(isUserIdCookieName));
+    // Prepare the body object with sanitized data
+    const body = {
+      email: email,
+    };
+
+    // Send the POST request to the user API endpoint
+    const response = await post("/register/trigger_otp", body, "python");
 
     // Return the response data
     return response;

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Box, Typography } from "@mui/material";
 
@@ -6,7 +6,10 @@ import { Alert, Box, Typography } from "@mui/material";
 import Logo from "../../../layouts/full/shared/logo/Logo";
 import AuthCardComponent from "../generalComponents/CardComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
-import { emailVerifyCodeController } from "./controllers/EmailVerificationController";
+import {
+  emailVerifyCodeController,
+  triggerOTPEmailController,
+} from "./controllers/EmailVerificationController";
 import EmailVerificationFormComponent from "./components/EmailVerificationFormComponent";
 import {
   getCookie,
@@ -58,6 +61,23 @@ const EmailVerification = () => {
   const isNotVerify =
     decodeData(getCookie(isEmailVerifiedStatusCookieName)) === 0;
 
+  const triggerOTPEmail = useCallback(async () => {
+    try {
+      startLoading();
+      await triggerOTPEmailController();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      stopLoading();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (getCookie(isForgotPasswordCookieName) !== null) {
+      triggerOTPEmail();
+    }
+  }, [triggerOTPEmail]);
+
   /**
    * Handles email verification logic.
    *
@@ -79,10 +99,12 @@ const EmailVerification = () => {
         // If the user has not changed the default password, redirect to the change password page
         if (decodeData(getCookie(isDefaultPasswordStatusCookieName)) === 0) {
           navigate("/auth/changePassword");
+          return;
         }
         // If the user is in the process of password recovery, redirect to the forgot password page
         else if (getCookie(isForgotPasswordCookieName) !== null) {
           navigate("/auth/forgotPassword");
+          return;
         } else {
           // Set a cookie to indicate the user has changed the default password and redirect to the login page
           setCookie({
