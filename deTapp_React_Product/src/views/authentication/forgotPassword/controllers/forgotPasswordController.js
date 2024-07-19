@@ -43,7 +43,7 @@ export const forgotPasswordController = async (formData) => {
     // Prepare the body object with sanitized data
     const body = {
       email: isForgotPasswordEmail,
-      new_password: encodeData(formData?.newPassword.trim()),
+      new_password: (formData?.newPassword.trim()),
     };
 
     // Send the POST request to the user API endpoint
