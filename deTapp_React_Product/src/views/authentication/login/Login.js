@@ -17,6 +17,7 @@ import {
 import { encodeData } from "../../utilities/securities/encodeDecode";
 import {
   encodedSessionDetailsCookieName,
+  isDefaultPasswordChangedCookieName,
   isDefaultPasswordStatusCookieName,
   isEmailVerifiedForDefaultPasswordCookieName,
   isEmailVerifiedStatusCookieName,
@@ -56,13 +57,21 @@ const LoginPage = () => {
   const [isDefaultPassword, setIsDefaultPassword] = useState(
     getCookie(isEmailVerifiedForDefaultPasswordCookieName) !== null
   );
+  const [isDefaultPasswordUpdated, setisDefaultPasswordUpdated] = useState(
+    getCookie(isDefaultPasswordChangedCookieName) !== null
+  );
 
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
 
   useEffect(() => {
-    // clearCookies();
+    // clearCookies()
+    // Cleanup function to clear the interval
+    return () => {
+      removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
+      removeCookie(isDefaultPasswordChangedCookieName);
+    };
   }, []);
 
   /**
@@ -93,6 +102,8 @@ const LoginPage = () => {
     try {
       // Remove the default password status cookie and reset the state variable
       removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
+      removeCookie(isDefaultPasswordChangedCookieName);
+
       setIsDefaultPassword(false);
 
       // Start the loading indicator and reset any existing API errors
@@ -169,6 +180,11 @@ const LoginPage = () => {
         <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
           Your email has been verified successfully and one time password has
           been mailed.
+        </Alert>
+      )}
+      {isDefaultPasswordUpdated && (
+        <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
+          Your password has been updated successfully.
         </Alert>
       )}
 

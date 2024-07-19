@@ -7,6 +7,8 @@ import AuthCardComponent from "../generalComponents/CardComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { changePasswordController } from "./controllers/changePasswordController";
 import ChangePasswordFormComponent from "./components/ChangePasswordFormComponent";
+import { setCookie } from "../../utilities/cookieServices/cookieServices";
+import { isDefaultPasswordChangedCookieName } from "../../utilities/generals";
 
 /**
  * ChangePassword component for user login.
@@ -52,6 +54,13 @@ const ChangePassword = () => {
       setApiError(null); // Reset API error before making a new request
       const response = await changePasswordController(formData);
       if (response) {
+        setCookie({
+          name: isDefaultPasswordChangedCookieName,
+          value: true,
+          unit: {
+            m: "15",
+          },
+        });
         window.history.back();
       }
     } catch (error) {
