@@ -21,6 +21,7 @@ import {
   isDefaultPasswordStatusCookieName,
   isEmailVerifiedForDefaultPasswordCookieName,
   isEmailVerifiedStatusCookieName,
+  isForgotPasswordCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
 
@@ -57,7 +58,7 @@ const LoginPage = () => {
   const [isDefaultPassword, setIsDefaultPassword] = useState(
     getCookie(isEmailVerifiedForDefaultPasswordCookieName) !== null
   );
-  const [isDefaultPasswordUpdated, setisDefaultPasswordUpdated] = useState(
+  const [isDefaultPasswordUpdated] = useState(
     getCookie(isDefaultPasswordChangedCookieName) !== null
   );
 
@@ -71,6 +72,8 @@ const LoginPage = () => {
     return () => {
       removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
       removeCookie(isDefaultPasswordChangedCookieName);
+      removeCookie(isForgotPasswordCookieName);
+
     };
   }, []);
 

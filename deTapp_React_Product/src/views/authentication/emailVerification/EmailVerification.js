@@ -73,7 +73,10 @@ const EmailVerification = () => {
   }, []);
 
   useEffect(() => {
-    if (getCookie(isForgotPasswordCookieName) !== null) {
+    if (
+      getCookie(isForgotPasswordCookieName) !== null ||
+      decodeData(getCookie(isEmailVerifiedStatusCookieName)) === 0
+    ) {
       triggerOTPEmail();
     }
   }, [triggerOTPEmail]);
