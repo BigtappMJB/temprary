@@ -14,6 +14,8 @@ import {
 } from "../../utilities/cookieServices/cookieServices";
 import {
   isDefaultPasswordStatusCookieName,
+  isEmailVerifiedForDefaultPasswordCookieName,
+  isEmailVerifiedStatusCookieName,
   isForgotPasswordCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
@@ -53,6 +55,9 @@ const EmailVerification = () => {
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
   const userEmail = decodeData(getCookie(isUserIdCookieName));
+  const isNotVerify =
+    decodeData(getCookie(isEmailVerifiedStatusCookieName)) === 0;
+
   /**
    * Handles email verification logic.
    *
@@ -72,7 +77,7 @@ const EmailVerification = () => {
 
       if (response) {
         // If the user has not changed the default password, redirect to the change password page
-        if (decodeData(getCookie(isDefaultPasswordStatusCookieName)) === 1) {
+        if (decodeData(getCookie(isDefaultPasswordStatusCookieName)) === 0) {
           navigate("/auth/changePassword");
         }
         // If the user is in the process of password recovery, redirect to the forgot password page
@@ -81,7 +86,7 @@ const EmailVerification = () => {
         } else {
           // Set a cookie to indicate the user has changed the default password and redirect to the login page
           setCookie({
-            name: isDefaultPasswordStatusCookieName,
+            name: isEmailVerifiedForDefaultPasswordCookieName,
             value: true,
             time: 24,
             unit: "h",
@@ -131,6 +136,13 @@ const EmailVerification = () => {
           </a>
         </Typography>
       </Box>
+
+      {isNotVerify && (
+        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
+          Your email haven't been verifed.Kindly verify the email and login
+          again.
+        </Alert>
+      )}
 
       {apiError && (
         <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>

@@ -36,6 +36,14 @@ export const isEmailVerifiedStatusCookieName = encodeData(
 );
 
 /**
+ * Encoded cookie name for displaying email alert for default Password
+ * @example isEmailVerifiedForDefaultPasswordCookieName => "encoded_isEmailVerifiedForDefault"
+ */
+export const isEmailVerifiedForDefaultPasswordCookieName = encodeData(
+  "isEmailVerifiedForDefault"
+);
+
+/**
  * Encoded cookie name for user ID
  * @example isUserIdCookieName => "encoded_isUserEmail"
  */

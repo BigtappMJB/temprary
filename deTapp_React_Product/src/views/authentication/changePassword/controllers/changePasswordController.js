@@ -44,7 +44,7 @@ export const changePasswordController = async (formData) => {
     const body = {
       email: email,
       old_password: oldPassword.trim(),
-      new_password: encodeData(newPassword.trim()),
+      new_password: (newPassword.trim()),
     };
 
     // Send the POST request to the user API endpoint

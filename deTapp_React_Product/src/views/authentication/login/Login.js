@@ -18,6 +18,7 @@ import { encodeData } from "../../utilities/securities/encodeDecode";
 import {
   encodedSessionDetailsCookieName,
   isDefaultPasswordStatusCookieName,
+  isEmailVerifiedForDefaultPasswordCookieName,
   isEmailVerifiedStatusCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
@@ -53,7 +54,7 @@ import {
 const LoginPage = () => {
   const [apiError, setApiError] = useState(null);
   const [isDefaultPassword, setIsDefaultPassword] = useState(
-    getCookie(isDefaultPasswordStatusCookieName) !== null
+    getCookie(isEmailVerifiedForDefaultPasswordCookieName) !== null
   );
 
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ const LoginPage = () => {
   const onLogin = async (formData) => {
     try {
       // Remove the default password status cookie and reset the state variable
-      removeCookie(isDefaultPasswordStatusCookieName);
+      removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
       setIsDefaultPassword(false);
 
       // Start the loading indicator and reset any existing API errors
@@ -100,7 +101,6 @@ const LoginPage = () => {
 
       // Send the login credentials to the server for authentication
       const response = await loginController(formData);
-
       // Set a cookie to store the encoded username
       setCookie({
         name: isUserIdCookieName,
@@ -119,15 +119,16 @@ const LoginPage = () => {
           name: isDefaultPasswordStatusCookieName,
           value: encodeData(response?.is_default_password_changed ? 1 : 0),
         });
-
         // Redirect to the email verification page if the email is not verified
         if (!response?.is_verified) {
           navigate("/auth/emailVerification");
+          return;
         }
 
         // Redirect to the change password page if the default password is not changed
         if (!response?.is_default_password_changed) {
           navigate("/auth/changePassword");
+          return;
         }
 
         // Remember the user if the rememberMe flag is set
@@ -136,7 +137,6 @@ const LoginPage = () => {
         }
 
         // Log the successful login and navigate to the dashboard
-        console.log("Login successful:", response);
         navigate("/dashboard");
       }
     } catch (error) {

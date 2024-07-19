@@ -99,7 +99,6 @@ const RegisterPage = () => {
       const response = await registerController(formData);
       if (response) {
         formRef.current.resetForm();
-        console.log("Register successful", response);
         setApiSuccess("User registration has been successful.");
         navigate("/auth/emailVerification");
       }

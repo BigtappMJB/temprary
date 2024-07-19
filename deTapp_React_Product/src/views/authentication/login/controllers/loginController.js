@@ -39,7 +39,7 @@ export const loginController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      login_id: username.trim(),
+      email: username.trim(),
       password: password.trim(),
     };
 
