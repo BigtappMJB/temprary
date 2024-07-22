@@ -9,6 +9,7 @@ import {
   FormControlLabel,
   IconButton,
   ButtonBase,
+  Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
@@ -76,6 +77,7 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
     resolver: yupResolver(validationSchema),
   });
 
+  const [apiError, setApiError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
@@ -113,6 +115,10 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
       navigate("/auth/forgotPassword");
     } catch (error) {
       console.error(error);
+      setApiError(
+        error.errorMessage ||
+          "Failed to login. Please check your credentials and try again."
+      );
     } finally {
       stopLoading();
     }
@@ -141,118 +147,125 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onLocalSubmit)}>
-      <Stack>
-        <Box>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            component="label"
-            htmlFor="username"
-            mb="5px"
-          >
-            Email
-          </Typography>
-          <Controller
-            name="username"
-            control={control}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                id="username"
-                variant="outlined"
-                fullWidth
-                error={!!errors.username}
-                helperText={errors.username?.message}
-              />
-            )}
-          />
-        </Box>
-        <Box mt="25px">
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            component="label"
-            htmlFor="password"
-            mb="5px"
-          >
-            Password
-          </Typography>
-          <Controller
-            name="password"
-            control={control}
-            render={({ field }) => (
-              <Box position="relative">
+    <>
+      {apiError && (
+        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
+          {apiError}
+        </Alert>
+      )}
+      <form onSubmit={handleSubmit(onLocalSubmit)}>
+        <Stack>
+          <Box>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              component="label"
+              htmlFor="username"
+              mb="5px"
+            >
+              Email
+            </Typography>
+            <Controller
+              name="username"
+              control={control}
+              render={({ field }) => (
                 <CustomTextField
                   {...field}
-                  id="password"
-                  type={showPassword ? "text" : "password"}
+                  id="username"
                   variant="outlined"
                   fullWidth
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
+                  error={!!errors.username}
+                  helperText={errors.username?.message}
                 />
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => handleTogglePassword()}
-                  edge="end"
-                  sx={{ position: "absolute", right: 8, top: 8 }}
-                >
-                  {!showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </Box>
-            )}
-          />
-        </Box>
-
-        <Box mt={3}>
-          <Grid
-            container
-            spacing={1}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item xs={12} sm="auto">
-              <Controller
-                name="rememberMe"
-                control={control}
-                defaultValue={true}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={<Checkbox {...field} defaultChecked />}
-                    label="Remember Me"
+              )}
+            />
+          </Box>
+          <Box mt="25px">
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              component="label"
+              htmlFor="password"
+              mb="5px"
+            >
+              Password
+            </Typography>
+            <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <Box position="relative">
+                  <CustomTextField
+                    {...field}
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    variant="outlined"
+                    fullWidth
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
                   />
-                )}
-              />
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => handleTogglePassword()}
+                    edge="end"
+                    sx={{ position: "absolute", right: 8, top: 8 }}
+                  >
+                    {!showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </Box>
+              )}
+            />
+          </Box>
+
+          <Box mt={3}>
+            <Grid
+              container
+              spacing={1}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid item xs={12} sm="auto">
+                <Controller
+                  name="rememberMe"
+                  control={control}
+                  defaultValue={true}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} defaultChecked />}
+                      label="Remember Me"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm="auto">
+                <Typography
+                  component={ButtonBase}
+                  onClick={handleForgotPassword}
+                  fontWeight="500"
+                  sx={{
+                    textDecoration: "none",
+                    color: "primary.main",
+                  }}
+                >
+                  Forgot Password?
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm="auto">
-              <Typography
-                component={ButtonBase}
-                onClick={handleForgotPassword}
-                fontWeight="500"
-                sx={{
-                  textDecoration: "none",
-                  color: "primary.main",
-                }}
-              >
-                Forgot Password?
-              </Typography>
-            </Grid>
-          </Grid>
+          </Box>
+        </Stack>
+        <Box>
+          <Button
+            color="primary"
+            variant="contained"
+            size="large"
+            fullWidth
+            type="submit"
+          >
+            Sign In
+          </Button>
         </Box>
-      </Stack>
-      <Box>
-        <Button
-          color="primary"
-          variant="contained"
-          size="large"
-          fullWidth
-          type="submit"
-        >
-          Sign In
-        </Button>
-      </Box>
-    </form>
+      </form>
+    </>
   );
 });
 
