@@ -1,12 +1,13 @@
+import hashlib
 from flask import Blueprint, request, jsonify, current_app
 from flask_mail import Mail, Message
 from core.registration_helper import generate_otp, generate_default_password, insert_user, get_user_by_email, \
     update_user_password_and_verify, update_user_password
 from share.general_utils import sender_mail_config
 import smtplib
+from datetime import datetime
 
 registration_bp = Blueprint('registration_controller', __name__)
-
 mail = Mail()
 
 @registration_bp.record_once
@@ -56,16 +57,18 @@ def register():
     data = request.json
     email = data.get('email')
     first_name = data.get('first_name')
+    middle_name = data.get('middle_name')  # Added middle name
     last_name = data.get('last_name')
     mobile = data.get('mobile')
     role = 701  # Default role from the roles table
+    created_date = datetime.now()
 
     if get_user_by_email(email):
         return jsonify({"error": "User already exists"}), 400
 
     otp = generate_otp()
     if send_otp_email(email, otp):
-        insert_user(email, first_name, last_name, mobile, role, otp)
+        insert_user(email, first_name, middle_name, last_name, mobile, role, otp, created_date)
         return jsonify({"message": "OTP sent to email successfully"}), 200
     else:
         return jsonify({"error": "Failed to send OTP"}), 500
@@ -77,13 +80,21 @@ def verify_otp():
     email = data.get('email')
     otp = data.get('otp')
     user = get_user_by_email(email)
-    if not user or user[7] != otp:  # Assuming the password field is used to store the OTP temporarily
-        return jsonify({"error": "Invalid OTP or email"}), 400
 
-    default_password = generate_default_password(length=6)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+
+    if user['password'] != otp:  # Assuming the password field is used to store the OTP temporarily
+        return jsonify(
+            {"error": "The OTP you have entered is incorrect. Please check the OTP email for the valid code."}), 400
+
+    # Update IS_VERIFIED to true
+    default_password = generate_default_password(length=8)
     update_user_password_and_verify(email, default_password)
     send_default_password(email, default_password)
-    return jsonify({"message": "OTP verified, default password sent to  mail"}), 200
+    return jsonify({"message": "OTP verified, default password sent to mail"}), 200
+
 
 # Route for Changing Password
 @registration_bp.route('/change_password', methods=['POST'])
@@ -93,11 +104,28 @@ def change_password():
     old_password = data.get('old_password')
     new_password = data.get('new_password')
 
+    current_app.logger.info(f"Request received to change password for email: {email}")
+
     user = get_user_by_email(email)
-    if not user or user[7] != old_password:  # Assuming the password is stored at index 7
-        return jsonify({"error": "Invalid email or password"}), 400
+    if not user:
+        current_app.logger.error(f"User not found for email: {email}")
+        return jsonify({"error": "User not found"}), 404
+
+    current_app.logger.info(f"User found: {user}")
+
+    # Compare the provided old password with the stored password directly
+    current_app.logger.info(f"Provided old password: {old_password}")
+    current_app.logger.info(f"Stored password: {user['password']}")
+
+    if user['password'] != old_password:  # Direct comparison without hashing
+        current_app.logger.error(f"Invalid email or password for email: {email}")
+        return jsonify({"error": "Invalid default/Current password"}), 400
+
+    current_app.logger.info(f"Old password verified for email: {email}")
 
     update_user_password(email, new_password)
+    current_app.logger.info(f"Password updated successfully for email: {email}")
+
     return jsonify({"message": "Password updated successfully"}), 200
 
 @registration_bp.route('/reset_password', methods=['POST'])
@@ -116,5 +144,3 @@ def reset_password():
     # Assuming index 7 is no longer relevant, as no OTP check is required
     update_user_password(email, new_password)
     return jsonify({"message": "Password reset successfully"}), 200
-
-
