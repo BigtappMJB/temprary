@@ -29,12 +29,12 @@ const Menuitems = [
     icon: IconUser,
     href: "/users",
   },
-  {
-    id: uniqueId(),
-    title: "User Roles",
-    icon: IconUser,
-    href: "/user-roles",
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: "User Roles",
+  //   icon: IconUser,
+  //   href: "/user-roles",
+  // },
   {
     id: uniqueId(),
     title: "Roles",

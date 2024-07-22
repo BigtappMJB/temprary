@@ -97,7 +97,6 @@ export const userCreationController = async (formData) => {
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
-
     // Prepare the body object with sanitized data
     const body = {
       userId: removeSpaces(formData.firstName.trim()) + random4DigitNumber,
@@ -105,7 +104,7 @@ export const userCreationController = async (formData) => {
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role: null,
+      role: formData?.role.ID,
     };
     // Send the POST request to the user API endpoint
     const response = await post("/master/user", body, "python");

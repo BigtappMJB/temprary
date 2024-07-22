@@ -84,7 +84,6 @@ const Router = [
       { path: "/auth/emailVerification", element: <EmailVerification /> },
       { path: "/auth/changePassword", element: <ChangePassword /> },
       { path: "/auth/forgotPassword", element: <ForgotPassword /> },
-
       { path: "*", element: <Navigate to="/auth/404" /> },
     ],
   },
