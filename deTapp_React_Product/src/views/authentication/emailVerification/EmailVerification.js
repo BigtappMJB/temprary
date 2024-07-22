@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Box, Typography } from "@mui/material";
 
@@ -8,7 +8,6 @@ import AuthCardComponent from "../generalComponents/CardComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import {
   emailVerifyCodeController,
-  triggerOTPEmailController,
 } from "./controllers/EmailVerificationController";
 import EmailVerificationFormComponent from "./components/EmailVerificationFormComponent";
 import {
