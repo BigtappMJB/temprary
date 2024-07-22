@@ -207,7 +207,8 @@ const LoginPage = () => {
           value: encodeData(1),
         });
 
-        await triggerOTPEmail();
+        // await triggerOTPEmail();
+        navigate("/dashboard");
         // Log the successful login and navigate to the dashboard
       }
     } catch (error) {
