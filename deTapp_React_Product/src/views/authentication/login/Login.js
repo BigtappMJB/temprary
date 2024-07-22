@@ -76,6 +76,7 @@ const LoginPage = () => {
       removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
       removeCookie(isDefaultPasswordChangedCookieName);
       removeCookie(isForgotPasswordCookieName);
+      removeCookie(isDashboardRedirectCookieName);
     };
   }, []);
 
@@ -95,43 +96,43 @@ const LoginPage = () => {
   };
 
   /**
- * Triggers the sending of an OTP email.
- *
- * This function calls the `triggerOTPEmailController` to send an OTP email to the user. Upon success,
- * it sets a cookie indicating that the user should be redirected to the dashboard, and navigates
- * the user to the email verification page. If an error occurs during the process, it logs the error
- * to the console.
- *
- * @example
- * // Call this function to trigger the OTP email and handle navigation
- * triggerOTPEmail()
- *   .then(() => {
- *     console.log('OTP email triggered successfully and user redirected to email verification page.');
- *   })
- *   .catch((error) => {
- *     console.error('Failed to trigger OTP email:', error);
- *   });
- *
- * @returns {Promise<void>} A promise that resolves when the OTP email process is complete.
- */
-const triggerOTPEmail = async () => {
-  try {
-    // Call the controller to trigger the OTP email
-    await triggerOTPEmailController();
+   * Triggers the sending of an OTP email.
+   *
+   * This function calls the `triggerOTPEmailController` to send an OTP email to the user. Upon success,
+   * it sets a cookie indicating that the user should be redirected to the dashboard, and navigates
+   * the user to the email verification page. If an error occurs during the process, it logs the error
+   * to the console.
+   *
+   * @example
+   * // Call this function to trigger the OTP email and handle navigation
+   * triggerOTPEmail()
+   *   .then(() => {
+   *     console.log('OTP email triggered successfully and user redirected to email verification page.');
+   *   })
+   *   .catch((error) => {
+   *     console.error('Failed to trigger OTP email:', error);
+   *   });
+   *
+   * @returns {Promise<void>} A promise that resolves when the OTP email process is complete.
+   */
+  const triggerOTPEmail = async () => {
+    try {
+      // Call the controller to trigger the OTP email
+      await triggerOTPEmailController();
 
-    // Set a cookie indicating that the user should be redirected to the dashboard
-    setCookie({
-      name: isDashboardRedirectCookieName,
-      value: encodeData(1),
-    });
+      // Set a cookie indicating that the user should be redirected to the dashboard
+      setCookie({
+        name: isDashboardRedirectCookieName,
+        value: encodeData(1),
+      });
 
-    // Navigate the user to the email verification page
-    navigate("/auth/emailVerification");
-  } catch (error) {
-    // Log any errors that occur during the OTP email process
-    console.error('Error triggering OTP email:', error);
-  }
-};
+      // Navigate the user to the email verification page
+      navigate("/auth/emailVerification");
+    } catch (error) {
+      // Log any errors that occur during the OTP email process
+      console.error("Error triggering OTP email:", error);
+    }
+  };
 
   /**
    * Handles the login process.
