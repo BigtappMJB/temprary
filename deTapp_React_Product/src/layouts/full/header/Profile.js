@@ -30,11 +30,13 @@ const Profile = () => {
   const handleLogOut = async () => {
     try {
       startLoading();
-      const response = await loginOutController();
-      if (response) {
-        clearCookies();
-        navigate("/auth/forgotPassword");
-      }
+      // const response = await loginOutController();
+      clearCookies();
+      navigate("/auth/login");
+      // if (response) {
+      //   clearCookies();
+      //   navigate("/auth/login");
+      // }
     } catch (error) {
       console.error(error);
     } finally {
