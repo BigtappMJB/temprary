@@ -24,6 +24,8 @@ import {
 } from "../../../utilities/generals";
 import { validationRegex } from "../../../utilities/Validators";
 import { encodeData } from "../../../utilities/securities/encodeDecode";
+import { triggerOTPEmailController } from "../../emailVerification/controllers/EmailVerificationController";
+import { useLoading } from "../../../../components/Loading/loadingProvider";
 
 /**
  * LoginFormComponent handles the login form functionality.
@@ -77,6 +79,7 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+  const { startLoading, stopLoading } = useLoading();
 
   /**
    * Handle passwordToggle.
@@ -103,6 +106,17 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
       });
     },
   }));
+  const triggerOTPEmail = async () => {
+    try {
+      startLoading();
+      await triggerOTPEmailController();
+      navigate("/auth/forgotPassword");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      stopLoading();
+    }
+  };
 
   const handleForgotPassword = () => {
     if (getValues().username && !getFieldState("username").invalid) {
@@ -120,7 +134,7 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
           h: 24,
         },
       });
-      navigate("/auth/forgotPassword");
+      triggerOTPEmail();
     } else {
       trigger(["username"]);
     }

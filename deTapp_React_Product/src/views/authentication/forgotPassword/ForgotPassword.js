@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, Box } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 
 // components
 import Logo from "../../../layouts/full/shared/logo/Logo";
@@ -16,7 +16,6 @@ import {
 } from "../../utilities/generals";
 import ForgotPasswordFormComponent from "./components/ForgotPasswordFormComponent";
 import { forgotPasswordController } from "./controllers/forgotPasswordController";
-import { triggerOTPEmailController } from "../emailVerification/controllers/EmailVerificationController";
 import { decodeData } from "../../utilities/securities/encodeDecode";
 
 /**
@@ -49,45 +48,17 @@ import { decodeData } from "../../utilities/securities/encodeDecode";
  */
 const ForgotPassword = () => {
   const [apiError, setApiError] = useState(null);
-  const [optMailStatus, setoptMailStatus] = useState();
-
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef();
   const userEmail = decodeData(getCookie(isUserIdCookieName));
-  const hasTriggeredRef = useRef(false);
+
   /**
    * Handles form submission.
    * It sends the form data to the password recovery controller and handles the response.
    *
    * @param {Object} formData - The form data containing email and other required fields.
    */
-
-  const triggerOTPEmail = useCallback(async () => {
-    try {
-      startLoading();
-      await triggerOTPEmailController();
-      setoptMailStatus(1);
-      localStorage.setItem("otpMailStatus", "success");
-    } catch (error) {
-      setoptMailStatus(0);
-      console.error(error);
-      localStorage.removeItem("otpMailStatus");
-    } finally {
-      stopLoading();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!hasTriggeredRef.current) {
-      const storedStatus = localStorage.getItem("otpMailStatus");
-      if (storedStatus !== "success") {
-        hasTriggeredRef.current = true;
-        triggerOTPEmail();
-      }
-    }
-  }, [triggerOTPEmail]);
-
   const onForgotPassword = async (formData) => {
     try {
       startLoading();
@@ -122,31 +93,23 @@ const ForgotPassword = () => {
       <Box display="flex" alignItems="center" justifyContent="center">
         <Logo />
       </Box>
-      {/* <Box paddingY={"15px"} sx={{ lineHeight: "normal" }}>
+
+      <Box paddingY={"15px"} sx={{ lineHeight: "normal" }}>
         <Typography
           component={"h1"}
-          fontSize={"22px"}
+          fontSize={"20px"}
           textAlign={"center"}
           fontWeight={"bold"}
         >
-          Forgot Password
+          Check your Email
         </Typography>
-      </Box> */}
-      {optMailStatus === 0 && (
-        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
-          "There is an issue in generating OTP.Kindly retry it or contact system
-          administrator"
-        </Alert>
-      )}
-
-      {optMailStatus === 1 && (
-        <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
+        <Typography component={"p"} textAlign={"center"}>
           A 6-digit code has been sent to{" "}
           <a href={"mailto:" + userEmail}>
             <b>{userEmail}</b>
           </a>
-        </Alert>
-      )}
+        </Typography>
+      </Box>
       {apiError && (
         <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
           {apiError}

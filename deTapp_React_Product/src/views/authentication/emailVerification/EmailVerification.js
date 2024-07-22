@@ -61,26 +61,6 @@ const EmailVerification = () => {
   const isNotVerify =
     decodeData(getCookie(isEmailVerifiedStatusCookieName)) === 0;
 
-  const triggerOTPEmail = useCallback(async () => {
-    try {
-      startLoading();
-      await triggerOTPEmailController();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      stopLoading();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (
-      getCookie(isForgotPasswordCookieName) !== null ||
-      decodeData(getCookie(isEmailVerifiedStatusCookieName)) === 0
-    ) {
-      // triggerOTPEmail();
-    }
-  }, [triggerOTPEmail]);
-
   /**
    * Handles email verification logic.
    *
