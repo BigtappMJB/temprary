@@ -1,5 +1,10 @@
+from datetime import datetime
+
 import snowflake.connector
 import base64
+
+from flask import current_app
+
 from share.general_utils import snow_conf as conf
 
 
@@ -15,45 +20,56 @@ def get_snowflake_connection():
     return conn
 
 
-def get_user_by_id_or_email(user_identifier):
+def get_user_by_email(email):
     try:
-        # Establish the Snowflake connection
         conn = get_snowflake_connection()
-
-        # Create a cursor object
         cursor = conn.cursor()
-
-        # Prepare the SQL query
         query = """
-        SELECT user_id, first_name, last_name, email, mobile, role, password
-        FROM users
-        WHERE user_id = %s OR email = %s
+        SELECT first_name, last_name, email, mobile, role, password, is_default_password_changed, is_verified, last_login_datetime
+        FROM NBF_CIA.PUBLIC.USERS
+        WHERE email = %s
         """
-
-        # Execute the query
-        cursor.execute(query, (user_identifier, user_identifier))
-
-        # Fetch one result
+        cursor.execute(query, (email,))
         user = cursor.fetchone()
-
-        # Check if a user was found
         if user:
-            # Convert the result to a dictionary for easier access
             return {
-                "user_id": user[0],
-                "first_name": user[1],
-                "last_name": user[2],
-                "email": user[3],
-                "mobile": user[4],
-                "role": user[5],
-                "password": user[6]  # Assuming password is stored here, adjust as necessary
+                "first_name": user[0],
+                "last_name": user[1],
+                "email": user[2],
+                "mobile": user[3],
+                "role": user[4],
+                "password": user[5],
+                "is_default_password_changed": user[6],
+                "is_verified": user[7],
+                "last_login_datetime": user[8].strftime('%Y-%m-%d %H:%M:%S') if user[8] else None
             }
         else:
             return None
-
     except Exception as e:
         print(f"Error fetching user: {e}")
         return None
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def update_last_login(email):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        # Ensure the datetime format is correct
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        current_app.logger.info(f"Updating last login datetime for email: {email} to {current_time}")
+
+        cursor.execute(f"""
+            UPDATE NBF_CIA.PUBLIC.USERS
+            SET LAST_LOGIN_DATETIME = '{current_time}'
+            WHERE EMAIL = '{email}'
+        """)
+        conn.commit()
+        current_app.logger.info(f"Last login datetime updated for email: {email}")
+    except Exception as e:
+        current_app.logger.error(f"Error updating last login datetime for email {email}: {e}")
     finally:
         cursor.close()
         conn.close()
