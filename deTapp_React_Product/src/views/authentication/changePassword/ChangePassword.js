@@ -64,7 +64,7 @@ const ChangePassword = () => {
         window.history.back();
       }
     } catch (error) {
-      console.log(error);
+      // console.error(error);
       setApiError(
         error.errorMessage ||
           "Failed to change your password. Please check your details."

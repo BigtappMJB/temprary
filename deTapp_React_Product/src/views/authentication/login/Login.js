@@ -169,7 +169,7 @@ const LoginPage = () => {
       }
     } catch (error) {
       // Log the error and set an appropriate API error message
-      console.log(error);
+      // console.error(error);
       setApiError(
         error.errorMessage ||
           "Failed to login. Please check your credentials and try again."

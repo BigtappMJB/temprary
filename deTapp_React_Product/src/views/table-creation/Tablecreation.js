@@ -344,7 +344,7 @@ const CreateTableForm = () => {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       openDialog(
         "critical",
         "Table Creation Failed",
