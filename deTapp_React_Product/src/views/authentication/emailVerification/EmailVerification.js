@@ -16,6 +16,7 @@ import {
   setCookie,
 } from "../../utilities/cookieServices/cookieServices";
 import {
+  isDashboardRedirectCookieName,
   isDefaultPasswordStatusCookieName,
   isEmailVerifiedForDefaultPasswordCookieName,
   isEmailVerifiedStatusCookieName,
@@ -79,6 +80,11 @@ const EmailVerification = () => {
       const response = await emailVerifyCodeController(formData);
 
       if (response) {
+        // If the user has not changed the default password, redirect to the change password page
+        if (decodeData(getCookie(isDashboardRedirectCookieName)) === 1) {
+          navigate("/dashboard");
+          return;
+        }
         // If the user has not changed the default password, redirect to the change password page
         if (decodeData(getCookie(isDefaultPasswordStatusCookieName)) === 0) {
           navigate("/auth/changePassword");

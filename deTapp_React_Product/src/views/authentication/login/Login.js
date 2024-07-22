@@ -17,6 +17,7 @@ import {
 import { encodeData } from "../../utilities/securities/encodeDecode";
 import {
   encodedSessionDetailsCookieName,
+  isDashboardRedirectCookieName,
   isDefaultPasswordChangedCookieName,
   isDefaultPasswordStatusCookieName,
   isEmailVerifiedForDefaultPasswordCookieName,
@@ -25,6 +26,7 @@ import {
   isLoginSuccessCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
+import { triggerOTPEmailController } from "../emailVerification/controllers/EmailVerificationController";
 
 /**
  * LoginPage component for user login.
@@ -91,6 +93,24 @@ const LoginPage = () => {
       expires: 24, // 24 hours
     });
   };
+
+  const triggerOTPEmail = async () => {
+    try {
+      startLoading();
+      await triggerOTPEmailController();
+      setCookie({
+        name: isDashboardRedirectCookieName,
+        value: encodeData(1),
+      });
+
+      navigate("/auth/emailVerification");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      // stopLoading();
+    }
+  };
+
   /**
    * Handles the login process.
    *
@@ -164,8 +184,8 @@ const LoginPage = () => {
           value: encodeData(1),
         });
 
+        triggerOTPEmail();
         // Log the successful login and navigate to the dashboard
-        navigate("/dashboard");
       }
     } catch (error) {
       // Log the error and set an appropriate API error message

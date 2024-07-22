@@ -58,10 +58,16 @@ export const isDefaultPasswordChangedCookieName = encodeData(
 export const isUserIdCookieName = encodeData("isUserEmail");
 
 /**
- * Encoded cookie name for user ID
+ * Encoded cookie name for for loginStatus
  * @example isLoginSuccess => "encoded_isLoginSuccess"
  */
 export const isLoginSuccessCookieName = encodeData("isLoginSuccess");
+
+/**
+ * Encoded cookie name for to redirect dashboard
+ * @example isLoginSuccess => "encoded_isDashboardRedirect"
+ */
+export const isDashboardRedirectCookieName = encodeData("isDashboardRedirect");
 
 /**
  * Checks if all values in an array contain at least one number

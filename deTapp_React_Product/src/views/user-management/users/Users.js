@@ -74,7 +74,7 @@ const FormButton = styled(Button)(({ theme }) => ({
 const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
-  // const [rolesList, setRolesList] = useState([]);
+  const [rolesList, setRolesList] = useState([]);
   const { startLoading, stopLoading } = useLoading();
 
   const [formAction, setFormAction] = useState({
@@ -99,11 +99,11 @@ const UsersPage = () => {
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    // const getRoles = async () => {
-    //   const response = await getRolesController();
-    //   setRolesList(response);
-    // };
-    // getRoles();
+    const getRoles = async () => {
+      const response = await getRolesController();
+      setRolesList(response);
+    };
+    getRoles();
     getTableData();
   }, []);
 
@@ -324,7 +324,7 @@ const UsersPage = () => {
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
-            // rolesList={rolesList}
+            rolesList={rolesList}
           />
         </Container>
       )}

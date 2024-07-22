@@ -27,7 +27,7 @@ const Container = styled(Box)(({ theme }) => ({
 // Schema for form validation using Yup
 const schema = yup.object().shape({
   // userId: yup.string().required("User name is required"),
-  // role: yup.object().required("Role is required"),
+  role: yup.object().required("Role is required"),
   firstName: yup
     .string()
     .required("First Name is required")
@@ -197,7 +197,7 @@ const UserFormComponent = ({
             )}
           />
         </Grid> */}
-        {/* <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6}>
           <Controller
             name="role"
             control={control}
@@ -230,7 +230,7 @@ const UserFormComponent = ({
               />
             )}
           />
-        </Grid> */}
+        </Grid>
         <Grid item xs={12} sm={6}>
           <Controller
             name="firstName"
