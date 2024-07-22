@@ -64,7 +64,7 @@ export const triggerOTPEmailController = async () => {
     };
 
     // Send the POST request to the user API endpoint
-    const response = await post("/register/trigger_otp", body, "python");
+    const response = await post("/register/generate_otp", body, "python");
 
     // Return the response data
     return response;

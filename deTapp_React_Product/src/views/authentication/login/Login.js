@@ -22,6 +22,7 @@ import {
   isEmailVerifiedForDefaultPasswordCookieName,
   isEmailVerifiedStatusCookieName,
   isForgotPasswordCookieName,
+  isLoginSuccessCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
 
@@ -58,7 +59,7 @@ const LoginPage = () => {
   const [isDefaultPassword, setIsDefaultPassword] = useState(
     getCookie(isEmailVerifiedForDefaultPasswordCookieName) !== null
   );
-  const [isDefaultPasswordUpdated] = useState(
+  const [isDefaultPasswordUpdated, setIsDefaultPasswordUpdated] = useState(
     getCookie(isDefaultPasswordChangedCookieName) !== null
   );
 
@@ -73,7 +74,6 @@ const LoginPage = () => {
       removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
       removeCookie(isDefaultPasswordChangedCookieName);
       removeCookie(isForgotPasswordCookieName);
-
     };
   }, []);
 
@@ -106,7 +106,8 @@ const LoginPage = () => {
       // Remove the default password status cookie and reset the state variable
       removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
       removeCookie(isDefaultPasswordChangedCookieName);
-
+      removeCookie(isDefaultPasswordUpdated);
+      setIsDefaultPasswordUpdated(false);
       setIsDefaultPassword(false);
 
       // Start the loading indicator and reset any existing API errors
@@ -133,6 +134,13 @@ const LoginPage = () => {
           name: isDefaultPasswordStatusCookieName,
           value: encodeData(response?.is_default_password_changed ? 1 : 0),
         });
+
+        // Set a cookie to indicate the default password status
+        setCookie({
+          name: isDefaultPasswordStatusCookieName,
+          value: encodeData(response?.is_default_password_changed ? 1 : 0),
+        });
+
         // Redirect to the email verification page if the email is not verified
         if (!response?.is_verified) {
           navigate("/auth/emailVerification");
@@ -149,6 +157,12 @@ const LoginPage = () => {
         if (formData.rememberMe) {
           rememberMeFunction(response);
         }
+
+        // Set a cookie to indicate the default password status
+        setCookie({
+          name: isLoginSuccessCookieName,
+          value: encodeData(1),
+        });
 
         // Log the successful login and navigate to the dashboard
         navigate("/dashboard");

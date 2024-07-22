@@ -43,7 +43,7 @@ function setCookie({ name, value, time, unit }) {
   }
 
   // Set the cookie with the provided name, value, and expiration time
-  document.cookie = name + "=" + JSON.stringify(value) + expires + "; path=/;Secure";
+  document.cookie = name + "=" + JSON.stringify(value) + expires + "; path=/;";
 }
 
 /**

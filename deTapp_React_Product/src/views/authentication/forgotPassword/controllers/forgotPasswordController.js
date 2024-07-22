@@ -1,8 +1,6 @@
 import { post } from "../../../utilities/apiservices/apiServices";
 import { getCookie } from "../../../utilities/cookieServices/cookieServices";
-import {
-  isUserIdCookieName,
-} from "../../../utilities/generals";
+import { isUserIdCookieName } from "../../../utilities/generals";
 import {
   decodeData,
   encodeData,
@@ -43,7 +41,8 @@ export const forgotPasswordController = async (formData) => {
     // Prepare the body object with sanitized data
     const body = {
       email: isForgotPasswordEmail,
-      new_password: (formData?.newPassword.trim()),
+      otp: formData?.code.trim(),
+      new_password: formData?.newPassword.trim(),
     };
 
     // Send the POST request to the user API endpoint

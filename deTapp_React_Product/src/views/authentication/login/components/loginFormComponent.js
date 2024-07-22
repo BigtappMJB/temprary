@@ -115,12 +115,12 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
       });
       setCookie({
         name: isForgotPasswordCookieName,
-        value: encodeData('true'),
+        value: encodeData("true"),
         unit: {
           h: 24,
         },
       });
-      navigate("/auth/emailVerification");
+      navigate("/auth/forgotPassword");
     } else {
       trigger(["username"]);
     }

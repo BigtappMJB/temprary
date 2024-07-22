@@ -58,6 +58,12 @@ export const isDefaultPasswordChangedCookieName = encodeData(
 export const isUserIdCookieName = encodeData("isUserEmail");
 
 /**
+ * Encoded cookie name for user ID
+ * @example isLoginSuccess => "encoded_isLoginSuccess"
+ */
+export const isLoginSuccessCookieName = encodeData("isLoginSuccess");
+
+/**
  * Checks if all values in an array contain at least one number
  * @param {array} arr - The input array
  * @returns {boolean} true if all values contain a number, false otherwise

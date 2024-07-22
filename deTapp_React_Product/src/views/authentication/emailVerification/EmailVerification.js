@@ -77,7 +77,7 @@ const EmailVerification = () => {
       getCookie(isForgotPasswordCookieName) !== null ||
       decodeData(getCookie(isEmailVerifiedStatusCookieName)) === 0
     ) {
-      triggerOTPEmail();
+      // triggerOTPEmail();
     }
   }, [triggerOTPEmail]);
 
