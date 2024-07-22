@@ -64,6 +64,10 @@ const LoginPage = () => {
   const [isDefaultPasswordUpdated, setIsDefaultPasswordUpdated] = useState(
     getCookie(isDefaultPasswordChangedCookieName) !== null
   );
+  const [isForgotPasswordUpdated, setForgotPasswordUpdated] = useState(
+    getCookie(isForgotPasswordCookieName) !== null
+  );
+  console.log(getCookie(isForgotPasswordCookieName));
 
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
@@ -75,7 +79,7 @@ const LoginPage = () => {
     return () => {
       removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
       removeCookie(isDefaultPasswordChangedCookieName);
-      removeCookie(isForgotPasswordCookieName);
+      // removeCookie(isForgotPasswordCookieName);
       removeCookie(isDashboardRedirectCookieName);
     };
   }, []);
@@ -115,24 +119,24 @@ const LoginPage = () => {
    *
    * @returns {Promise<void>} A promise that resolves when the OTP email process is complete.
    */
-  const triggerOTPEmail = async () => {
-    try {
-      // Call the controller to trigger the OTP email
-      await triggerOTPEmailController();
+  // const triggerOTPEmail = async () => {
+  //   try {
+  //     // Call the controller to trigger the OTP email
+  //     await triggerOTPEmailController();
 
-      // Set a cookie indicating that the user should be redirected to the dashboard
-      setCookie({
-        name: isDashboardRedirectCookieName,
-        value: encodeData(1),
-      });
+  //     // Set a cookie indicating that the user should be redirected to the dashboard
+  //     setCookie({
+  //       name: isDashboardRedirectCookieName,
+  //       value: encodeData(1),
+  //     });
 
-      // Navigate the user to the email verification page
-      navigate("/auth/emailVerification");
-    } catch (error) {
-      // Log any errors that occur during the OTP email process
-      console.error("Error triggering OTP email:", error);
-    }
-  };
+  //     // Navigate the user to the email verification page
+  //     navigate("/auth/emailVerification");
+  //   } catch (error) {
+  //     // Log any errors that occur during the OTP email process
+  //     console.error("Error triggering OTP email:", error);
+  //   }
+  // };
 
   /**
    * Handles the login process.
@@ -149,9 +153,11 @@ const LoginPage = () => {
       // Remove the default password status cookie and reset the state variable
       removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
       removeCookie(isDefaultPasswordChangedCookieName);
+      removeCookie(isForgotPasswordCookieName);
       removeCookie(isDefaultPasswordUpdated);
       setIsDefaultPasswordUpdated(false);
       setIsDefaultPassword(false);
+      setForgotPasswordUpdated(false);
 
       // Start the loading indicator and reset any existing API errors
       startLoading();
@@ -246,6 +252,12 @@ const LoginPage = () => {
       {isDefaultPasswordUpdated && (
         <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
           Your password has been updated successfully.
+        </Alert>
+      )}
+
+      {isForgotPasswordUpdated && (
+        <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
+          Your password has been reseted successfully.
         </Alert>
       )}
 

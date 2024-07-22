@@ -65,7 +65,7 @@ const ForgotPassword = () => {
       setApiError(null); // Reset API error before making a new request
       const response = await forgotPasswordController(formData);
       if (response) {
-        removeCookie(isForgotPasswordCookieName);
+        // removeCookie(isForgotPasswordCookieName);
         navigate("/auth/login");
       }
     } catch (error) {
