@@ -175,7 +175,11 @@ const UserFormComponent = ({
   };
 
   return (
-    <Container component="form" className="panel-bg" onSubmit={handleSubmit(onLocalSubmit)}>
+    <Container
+      component="form"
+      className="panel-bg"
+      onSubmit={handleSubmit(onLocalSubmit)}
+    >
       <Grid container spacing={2}>
         {/* <Grid item xs={12} sm={6}>
           <Controller
@@ -205,8 +209,8 @@ const UserFormComponent = ({
               <Autocomplete
                 {...field}
                 options={rolesList}
-                getOptionLabel={(option) => option.NAME}
-                isOptionEqualToValue={(option, value) => option.ID === value.ID}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={field.value || null}
                 onChange={(_, data) => field.onChange(data)}
                 renderInput={(params) => (
@@ -320,7 +324,12 @@ const UserFormComponent = ({
             gap={2} // Adds space between buttons
           >
             {formAction.action !== "read" && (
-              <Button type="submit" variant="contained" color="primary" className="primary">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className="primary"
+              >
                 {formAction.action === "add" ? "Add" : "Update"}
               </Button>
             )}

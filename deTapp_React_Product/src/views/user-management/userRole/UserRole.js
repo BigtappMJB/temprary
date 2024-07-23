@@ -2,7 +2,6 @@ import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import {
-  getRolesController,
   getUserController,
   userupdateController,
 } from "../users/controllers/usersControllers";
@@ -10,6 +9,7 @@ import { useDialog } from "../../utilities/alerts/DialogContent";
 
 import DataTable from "../users/components/DataTable";
 import UserRoleFormComponent from "./components/userRoleFormComponent";
+import { getRolesController } from "../roles/controllers/rolesControllers";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({

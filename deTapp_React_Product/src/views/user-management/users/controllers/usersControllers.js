@@ -30,29 +30,6 @@ export const getUserController = async () => {
 };
 
 /**
- * Fetches the list of roles from the API.
- *
- * @async
- * @function getRolesController
- * @returns {Promise<Object>} - The response data from the API.
- * @throws {Error} - If the API request fails.
- * @example
- * getRolesController()
- *   .then(response => console.log(response))
- *   .catch(error => console.error(error));
- */
-export const getRolesController = async () => {
-  try {
-    // Send the GET request to the role API endpoint
-    const response = await get("/master/role", "python");
-    // Return the response data
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-/**
  * Creates a new user with the given form data.
  *
  * @async
@@ -104,7 +81,7 @@ export const userCreationController = async (formData) => {
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role: formData?.role.ID,
+      role: formData?.role.id,
     };
     // Send the POST request to the user API endpoint
     const response = await post("/master/user", body, "python");
@@ -157,7 +134,7 @@ export const userupdateController = async (formData) => {
       lastName: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role: formData?.role || 1,
+      role: formData?.role.id || 1,
     };
     // Send the PUT request to the user API endpoint
     const response = await put(

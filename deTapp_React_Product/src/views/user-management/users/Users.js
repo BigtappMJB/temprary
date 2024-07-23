@@ -3,7 +3,6 @@ import UserFormComponent from "./components/userFormComponent";
 import { useEffect, useState } from "react";
 import DataTable from "./components/DataTable";
 import {
-  getRolesController,
   getUserController,
   userCreationController,
   userdeleteController,
@@ -11,6 +10,7 @@ import {
 } from "./controllers/usersControllers";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
+import { getRolesController } from "../roles/controllers/rolesControllers";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
