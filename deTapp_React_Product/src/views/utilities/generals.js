@@ -17,7 +17,7 @@ export const encodedTempUsersCookieName = encodeData("tempUsers");
  * Encoded cookie name for forgot password status
  * @example isForgotPasswordCookieName => "encoded_isForgotPassword"
  */
-export const isForgotPasswordCookieName = ("isForgotPassword");
+export const isForgotPasswordCookieName = "isForgotPassword";
 
 /**
  * Encoded cookie name for default password status
@@ -101,3 +101,9 @@ export const titleCaseFirstWord = (sentence) => {
   }
   return words.join(" ");
 };
+
+export const ScrollToTopButton = () =>
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth", // for smooth scrolling
+  });

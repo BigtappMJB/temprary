@@ -10,6 +10,7 @@ import { useDialog } from "../../utilities/alerts/DialogContent";
 import RoleFormComponent from "./components/roleFormComponent";
 import DataTable from "../users/components/DataTable";
 import { useLoading } from "../../../components/Loading/loadingProvider";
+import { ScrollToTopButton } from "../../utilities/generals";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -203,6 +204,7 @@ const Roles = () => {
    */
   const handleUpdateLogic = (selectedRow) => {
     setSelectedValue(selectedRow);
+    ScrollToTopButton();
     setFormAction({
       display: true,
       action: "update",
