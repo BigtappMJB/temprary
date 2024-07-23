@@ -21,7 +21,7 @@ import { titleCaseFirstWord } from "../../../utilities/generals";
 export const getRolesController = async () => {
   try {
     // Send the GET request to the role API endpoint
-    const response = await get("/master/role", "python");
+    const response = await get("/role/Allroles", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -61,7 +61,7 @@ export const roleCreationController = async (formData) => {
       description: titleCaseFirstWord(formData.description.trim()),
     };
     // Send the POST request to the role API endpoint
-    const response = await post("/master/role", body, "python");
+    const response = await post("/role/roles", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -104,7 +104,7 @@ export const roleupdateController = async (formData) => {
     };
     // Send the PUT request to the role API endpoint
     const response = await put(
-      `/master/role?id=${formData.ID}`,
+      `/role/updaterole/${formData.ID}`,
       body,
       "python"
     );
@@ -135,7 +135,7 @@ export const roledeleteController = async (roleId) => {
       throw new Error("Invalid role ID");
     }
     // Send the DELETE request to the role API endpoint
-    const response = await remove(`/master/role?id=${roleId}`, "python");
+    const response = await remove(`role/deleteroles/${roleId}`, "python");
     // Return the response data
     return response;
   } catch (error) {
