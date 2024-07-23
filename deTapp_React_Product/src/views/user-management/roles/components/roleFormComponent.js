@@ -81,8 +81,8 @@ const RoleFormComponent = ({
   useEffect(() => {
     if (defaultValues) {
       reset({
-        name: defaultValues.NAME ?? "",
-        description: defaultValues.DESCRIPTION ?? "",
+        name: defaultValues.name ?? "",
+        description: defaultValues.description ?? "",
       });
     }
   }, [defaultValues, reset, rolesList, formAction]);
@@ -133,7 +133,11 @@ const RoleFormComponent = ({
   };
 
   return (
-    <Container component="form" className="panel-bg" onSubmit={handleSubmit(onLocalSubmit)}>
+    <Container
+      component="form"
+      className="panel-bg"
+      onSubmit={handleSubmit(onLocalSubmit)}
+    >
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Controller
@@ -184,7 +188,12 @@ const RoleFormComponent = ({
             gap={2} // Adds space between buttons
           >
             {formAction.action !== "read" && (
-              <Button type="submit" variant="contained" color="primary" className="primary">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className="primary"
+              >
                 {formAction.action === "add" ? "Add" : "Update"}
               </Button>
             )}

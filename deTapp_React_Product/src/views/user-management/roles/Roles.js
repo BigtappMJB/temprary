@@ -1,5 +1,5 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getRolesController,
   roleCreationController,
@@ -80,12 +80,14 @@ const Roles = () => {
 
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
+  const hasFetchedRoles = useRef(false);
 
   const getRoles = async () => {
     try {
       startLoading();
       const response = await getRolesController();
       setTableData(response);
+      // debugger;
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {
@@ -98,12 +100,15 @@ const Roles = () => {
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    getRoles();
+    if (!hasFetchedRoles.current) {
+      getRoles();
+      hasFetchedRoles.current = true;
+    }
   }, []);
 
   const columns = {
-    NAME: "Role",
-    DESCRIPTION: "Description",
+    name: "Role",
+    description: "Description",
   };
 
   /**
@@ -127,7 +132,7 @@ const Roles = () => {
       const isAdd = formAction.action === "add";
       if (isAdd) response = await roleCreationController(formData);
       else {
-        formData = { ...formData, ID: selectedValue.ID };
+        formData = { ...formData, ID: selectedValue.id };
         response = await roleupdateController(formData);
       }
 
@@ -135,7 +140,8 @@ const Roles = () => {
         openDialog(
           "success",
           `Role ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+          response.message ||
+            `Role has been ${isAdd ? "addded" : "updated"} successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -211,7 +217,7 @@ const Roles = () => {
     openDialog(
       "warning",
       `Delete confirmation`,
-      `Are you sure you want to delete this role "${selectedRow.NAME}"?`,
+      `Are you sure you want to delete this role "${selectedRow.name}"?`,
       {
         confirm: {
           name: "Yes",
@@ -237,13 +243,14 @@ const Roles = () => {
   const removeDataFromTable = async (selectedRow) => {
     try {
       startLoading();
-      const response = await roledeleteController(selectedRow.ID);
+      const response = await roledeleteController(selectedRow.id);
 
       if (response) {
         openDialog(
           "success",
           `Role Deletion Success`,
-          response.message,
+          response.message || `Role has been deleted successfully  `,
+
           {
             confirm: {
               name: "Ok",
