@@ -268,7 +268,7 @@ const Roles = () => {
             },
           },
           (confirmed) => {
-            // getRoles();
+            confirmed && getRoles();
           },
           () => {
             getRoles();
