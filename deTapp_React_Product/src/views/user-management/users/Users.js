@@ -92,6 +92,7 @@ const UsersPage = () => {
       setTableData(response);
     } catch (error) {
       console.error(error);
+      setTableData([]);
     } finally {
       stopLoading();
     }

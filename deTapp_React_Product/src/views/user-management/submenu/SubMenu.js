@@ -1,6 +1,6 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import SubMenuFormComponent from "./components/subMenuFormComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import DataTable from "../users/components/DataTable";
 import {
@@ -11,6 +11,7 @@ import {
 } from "./controllers/subMenuControllers";
 import { getMenusController } from "../menu/controllers/MenuControllers";
 import { useLoading } from "../../../components/Loading/loadingProvider";
+import { ScrollToTopButton } from "../../utilities/generals";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -80,6 +81,7 @@ const UsersPage = () => {
     action: "update",
   });
   const { startLoading, stopLoading } = useLoading();
+  const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
 
@@ -116,7 +118,10 @@ const UsersPage = () => {
       }
     };
     getMenus();
-    getTableData();
+    if (!hasFetchedRoles.current) {
+      getTableData();
+      hasFetchedRoles.current = true;
+    }
   }, []);
 
   const columns = {
@@ -154,7 +159,8 @@ const UsersPage = () => {
         openDialog(
           "success",
           `SubMenu ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+          response.message ||
+            `Submenu has been ${isAdd ? "addded" : "updated"} successfully`,
           {
             confirm: {
               name: "Ok",
@@ -216,6 +222,7 @@ const UsersPage = () => {
    */
   const handleUpdateLogic = (selectedRow) => {
     setSelectedValue(selectedRow);
+    ScrollToTopButton();
     setFormAction({
       display: true,
       action: "update",
@@ -256,13 +263,17 @@ const UsersPage = () => {
   const removeDataFromTable = async (selectedRow) => {
     try {
       startLoading();
+      setFormAction({
+        display: false,
+        action: null,
+      });
       const response = await subMenuDeleteController(selectedRow.ID);
 
       if (response) {
         openDialog(
           "success",
           `SubMenu Deletion Success`,
-          response.message,
+          response.message || `SubMenu has been deleted successfully  `,
           {
             confirm: {
               name: "Ok",

@@ -61,7 +61,7 @@ export const rolePermissionCreationController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      role_id: formData.role?.ID,
+      role_id: formData.role?.id,
       menu_id: formData.menu?.ID,
       submenu_id: formData.subMenu?.ID,
       permission_level: formData.permission?.ID,
@@ -109,7 +109,7 @@ export const rolePermissionUpdateController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      role_id: formData.role?.ID,
+      role_id: formData.role?.id,
       menu_id: formData.menu?.ID,
       submenu_id: formData.subMenu?.ID,
       permission_level: formData.permission?.ID,

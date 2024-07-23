@@ -1,5 +1,5 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import RoleFormComponent from "./components/MenuFormComponent";
 import DataTable from "../users/components/DataTable";
@@ -10,6 +10,7 @@ import {
   menuUpdateController,
 } from "./controllers/MenuControllers";
 import { useLoading } from "../../../components/Loading/loadingProvider";
+import { ScrollToTopButton } from "../../utilities/generals";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -80,6 +81,7 @@ const Menus = () => {
 
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
+  const hasFetchedRoles = useRef(false);
 
   const getRoles = async () => {
     try {
@@ -98,7 +100,10 @@ const Menus = () => {
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    getRoles();
+    if (!hasFetchedRoles.current) {
+      getRoles();
+      hasFetchedRoles.current = true;
+    }
   }, []);
 
   const columns = {
@@ -135,7 +140,9 @@ const Menus = () => {
         openDialog(
           "success",
           `Menu ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+          response.message ||
+            `Menu has been ${isAdd ? "addded" : "updated"} successfully`,
+
           {
             confirm: {
               name: "Ok",
@@ -197,6 +204,7 @@ const Menus = () => {
    */
   const handleUpdateLogic = (selectedRow) => {
     setSelectedValue(selectedRow);
+    ScrollToTopButton();
     setFormAction({
       display: true,
       action: "update",
@@ -237,13 +245,17 @@ const Menus = () => {
   const removeDataFromTable = async (selectedRow) => {
     try {
       startLoading();
+      setFormAction({
+        display: false,
+        action: null,
+      });
       const response = await menuDeleteController(selectedRow.ID);
 
       if (response) {
         openDialog(
           "success",
           `Menu Deletion Success`,
-          response.message,
+          response.message || `Menu has been deleted successfully  `,
           {
             confirm: {
               name: "Ok",

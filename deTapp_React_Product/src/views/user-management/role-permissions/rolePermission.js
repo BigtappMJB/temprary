@@ -1,5 +1,5 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import {
   getRolePermissionsController,
@@ -14,6 +14,7 @@ import { getMenusController } from "../menu/controllers/MenuControllers";
 import { getSubMenusController } from "../submenu/controllers/subMenuControllers";
 import { getPermissionList } from "../permissions/controllers/permissionControllers";
 import { useLoading } from "../../../components/Loading/loadingProvider";
+import { ScrollToTopButton } from "../../utilities/generals";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -86,6 +87,7 @@ const RolePermissionPage = () => {
     display: false,
     action: "update",
   });
+  const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
@@ -168,7 +170,10 @@ const RolePermissionPage = () => {
     getMenus();
     getSubMenus();
     getPermissions();
-    getTableData();
+    if (!hasFetchedRoles.current) {
+      getTableData();
+      hasFetchedRoles.current = true;
+    }
   }, []);
 
   const columns = {
@@ -207,7 +212,10 @@ const RolePermissionPage = () => {
         openDialog(
           "success",
           `Role Permission ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+          response.message ||
+            `Role Permission has been ${
+              isAdd ? "addded" : "updated"
+            } successfully`,
           {
             confirm: {
               name: "Ok",
@@ -269,6 +277,7 @@ const RolePermissionPage = () => {
    */
   const handleUpdateLogic = (selectedRow) => {
     setSelectedValue(selectedRow);
+    ScrollToTopButton();
     setFormAction({
       display: true,
       action: "update",
@@ -315,7 +324,7 @@ const RolePermissionPage = () => {
         openDialog(
           "success",
           `Role Permission Deletion Success`,
-          response.message,
+          response.message || `Role Permission has been deleted successfully`,
           {
             confirm: {
               name: "Ok",

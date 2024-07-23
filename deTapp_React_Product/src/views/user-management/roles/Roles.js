@@ -245,6 +245,10 @@ const Roles = () => {
   const removeDataFromTable = async (selectedRow) => {
     try {
       startLoading();
+      setFormAction({
+        display: false,
+        action: null,
+      });
       const response = await roledeleteController(selectedRow.id);
 
       if (response) {

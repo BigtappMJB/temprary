@@ -143,7 +143,7 @@ const RolePermissionFormComponent = ({
         subMenusList.find((data) => data.ID === defaultValues.SUB_MENU_ID) ||
         null;
       const role =
-        rolesList.find((data) => data.ID === defaultValues.ROLE_ID) || null;
+        rolesList.find((data) => data.id === defaultValues.ROLE_ID) || null;
       const permission =
         permissionLevelList.find(
           (data) => data.ID === defaultValues.PERMISSION_LEVEL
@@ -227,8 +227,8 @@ const RolePermissionFormComponent = ({
               <Autocomplete
                 {...field}
                 options={rolesList}
-                getOptionLabel={(option) => option.NAME}
-                isOptionEqualToValue={(option, value) => option.ID === value.ID}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={field.value || null}
                 onChange={(_, data) => field.onChange(data)}
                 renderInput={(params) => (
