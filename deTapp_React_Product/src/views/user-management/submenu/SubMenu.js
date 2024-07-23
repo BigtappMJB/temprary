@@ -296,7 +296,7 @@ const UsersPage = () => {
       openDialog(
         "warning",
         "Warning",
-        `SubMenu Deletion failed`,
+        error.errorMessage || `SubMenu Deletion failed`,
         {
           confirm: {
             name: "Ok",

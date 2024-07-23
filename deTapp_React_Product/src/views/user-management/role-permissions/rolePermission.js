@@ -118,7 +118,7 @@ const RolePermissionPage = () => {
       } catch (error) {
         console.error(error);
         if (error.statusCode === 404) {
-          setTableData([]);
+          setRolesList([]);
         }
       } finally {
         stopLoading();
@@ -132,7 +132,7 @@ const RolePermissionPage = () => {
       } catch (error) {
         console.error(error);
         if (error.statusCode === 404) {
-          setTableData([]);
+          setMenuList([]);
         }
       } finally {
         stopLoading();
@@ -146,7 +146,7 @@ const RolePermissionPage = () => {
       } catch (error) {
         console.error(error);
         if (error.statusCode === 404) {
-          setTableData([]);
+          setSubMenuList([]);
         }
       } finally {
         stopLoading();
@@ -160,20 +160,20 @@ const RolePermissionPage = () => {
       } catch (error) {
         console.error(error);
         if (error.statusCode === 404) {
-          setTableData([]);
+          setPermissionLevelList([]);
         }
       } finally {
         stopLoading();
       }
     };
-    getRoles();
-    getMenus();
-    getSubMenus();
-    getPermissions();
     if (!hasFetchedRoles.current) {
       getTableData();
       hasFetchedRoles.current = true;
     }
+    getRoles();
+    getMenus();
+    getSubMenus();
+    getPermissions();
   }, []);
 
   const columns = {

@@ -279,7 +279,7 @@ const Roles = () => {
       openDialog(
         "warning",
         "Warning",
-        `Role Deletion failed`,
+        error.errorMessage || `Role Deletion failed`,
         {
           confirm: {
             name: "Ok",

@@ -275,10 +275,11 @@ const Menus = () => {
         );
       }
     } catch (error) {
+      console.error(error);
       openDialog(
         "warning",
         "Warning",
-        `Menu Deletion failed`,
+        error.errorMessage || `Menu Deletion failed`,
         {
           confirm: {
             name: "Ok",
