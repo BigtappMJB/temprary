@@ -21,7 +21,7 @@ import { titleCaseFirstWord } from "../../../utilities/generals";
 export const getUserController = async () => {
   try {
     // Send the GET request to the user API endpoint
-    const response = await get("/master/user", "python");
+    const response = await get("/master/Allusers", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -35,7 +35,6 @@ export const getUserController = async () => {
  * @async
  * @function userCreationController
  * @param {Object} formData - The form data for the new user.
- * @param {string} formData.userId - The user ID.
  * @param {string} formData.firstName - The first name.
  * @param {string} formData.lastName - The last name.
  * @param {string} formData.email - The email address.
@@ -45,7 +44,7 @@ export const getUserController = async () => {
  * @throws {Error} - If the form data is invalid or the API request fails.
  * @example
  * const formData = {
- *   userId: "123",
+
  *   firstName: "John",
  *   lastName: "Doe",
  *   email: "john.doe@example.com",
@@ -57,17 +56,6 @@ export const getUserController = async () => {
  *   .catch(error => console.error(error));
  */
 
-// Function to remove all spaces from a string
-function removeSpaces(str) {
-  return str.replace(/\s+/g, "");
-}
-
-// Generating a random 4-digit number
-function generateRandom4DigitNumber() {
-  return Math.floor(1000 + Math.random() * 9000);
-}
-
-let random4DigitNumber = generateRandom4DigitNumber();
 export const userCreationController = async (formData) => {
   try {
     // Data Validation and Sanitization
@@ -76,12 +64,12 @@ export const userCreationController = async (formData) => {
     }
     // Prepare the body object with sanitized data
     const body = {
-      userId: removeSpaces(formData.firstName.trim()) + random4DigitNumber,
-      firstName: titleCaseFirstWord(formData.firstName.trim()),
-      lastName: titleCaseFirstWord(formData?.lastName.trim()),
+      first_name: titleCaseFirstWord(formData.firstName.trim()),
+      middle_name: "",
+      last_name: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role: formData?.role.id,
+      role_id: formData?.role.id,
     };
     // Send the POST request to the user API endpoint
     const response = await post("/master/user", body, "python");
@@ -129,12 +117,12 @@ export const userupdateController = async (formData) => {
     }
     // Prepare the body object with sanitized data
     const body = {
-      userId: formData?.userId?.trim() || "",
-      firstName: titleCaseFirstWord(formData.firstName.trim()),
-      lastName: titleCaseFirstWord(formData?.lastName.trim()),
+      first_name: titleCaseFirstWord(formData.firstName.trim()),
+      middle_name: "",
+      last_name: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role: formData?.role.id || 1,
+      role_id: formData?.role.id,
     };
     // Send the PUT request to the user API endpoint
     const response = await put(

@@ -1,6 +1,6 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import UserFormComponent from "./components/userFormComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DataTable from "./components/DataTable";
 import {
   getUserController,
@@ -11,6 +11,7 @@ import {
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { getRolesController } from "../roles/controllers/rolesControllers";
+import { ScrollToTopButton } from "../../utilities/generals";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -81,6 +82,7 @@ const UsersPage = () => {
     display: false,
     action: "update",
   });
+  const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
 
@@ -92,7 +94,9 @@ const UsersPage = () => {
       setTableData(response);
     } catch (error) {
       console.error(error);
-      setTableData([]);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
     } finally {
       stopLoading();
     }
@@ -101,11 +105,22 @@ const UsersPage = () => {
   // Fetches roles data and updates the roles list
   useEffect(() => {
     const getRoles = async () => {
-      const response = await getRolesController();
-      setRolesList(response);
+      try {
+        const response = await getRolesController();
+        setRolesList(response);
+      } catch (error) {
+        console.error(error);
+        if (error.statusCode === 404) {
+          setRolesList([]);
+        }
+      }
     };
-    getRoles();
-    getTableData();
+
+    if (!hasFetchedRoles.current) {
+      getRoles();
+      getTableData();
+      hasFetchedRoles.current = true;
+    }
   }, []);
 
   const columns = {
@@ -114,6 +129,7 @@ const UsersPage = () => {
     LAST_NAME: "Last Name",
     EMAIL: "Email",
     MOBILE: "Mobile No",
+    ROLE_NAME: "Role",
   };
 
   /**
@@ -150,7 +166,8 @@ const UsersPage = () => {
         openDialog(
           "success",
           `User ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+          response.message ||
+            `User has been ${isAdd ? "addded" : "updated"} successfully`,
           {
             confirm: {
               name: "Ok",
@@ -213,6 +230,7 @@ const UsersPage = () => {
    */
   const handleUpdateLogic = (selectedRow) => {
     setSelectedValue(selectedRow);
+    ScrollToTopButton();
     setFormAction({
       display: true,
       action: "update",
@@ -261,7 +279,7 @@ const UsersPage = () => {
         openDialog(
           "success",
           `User Deletion Success`,
-          response.message,
+          response.message || `User has been deleted successfully  `,
           {
             confirm: {
               name: "Ok",
