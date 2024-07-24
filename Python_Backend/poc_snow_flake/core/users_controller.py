@@ -1,7 +1,6 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 
 from core.user_helper import *
-
 users_bp = Blueprint('users_controller', __name__)
 
 
@@ -12,7 +11,6 @@ def make_response(data, status_code):
 
 @users_bp.route('/user', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def user():
-    global response, status_code
     if request.method == 'POST':
         data = request.get_json()
         response, status_code = create_user(data)
@@ -20,12 +18,8 @@ def user():
         user_id = request.args.get('id')
         if user_id:
             response, status_code = get_user(user_id)
-            if status_code is 200:
-                response = json.loads(response)
         else:
             response, status_code = get_all_users()
-            if status_code is 200:
-                response = json.loads(response)
     elif request.method == 'PUT':
         user_id = request.args.get('id')
         data = request.get_json()
@@ -34,85 +28,58 @@ def user():
         user_id = request.args.get('id')
         response, status_code = delete_user(user_id)
 
-    return make_response(response, status_code)
+    return jsonify(response), status_code
 
 
-@users_bp.route('/role', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def role():
-    if request.method == 'POST':
-        data = request.get_json()
-        response, status_code = create_role(data)
-    elif request.method == 'GET':
-        role_id = request.args.get('id')
-        if role_id:
-            response, status_code = get_role(role_id)
-            if status_code is 200:
-                response = json.loads(response)
-        else:
-            response, status_code = get_all_roles()
-            if status_code is 200:
-                response = json.loads(response)
-    elif request.method == 'PUT':
-        role_id = request.args.get('id')
-        data = request.get_json()
-        response, status_code = update_role(role_id, data)
-    elif request.method == 'DELETE':
-        role_id = request.args.get('id')
-        response, status_code = delete_role(role_id)
-
-    return make_response(response, status_code)
-
+@users_bp.route('/Allusers', methods=['GET'])
+def get_all_users():
+    try:
+        users = fetch_all_users()
+        return jsonify(users), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @users_bp.route('/menu', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def menu():
     if request.method == 'POST':
         data = request.get_json()
-        response, status_code = create_menu(data)
+        result, status_code = create_menu(data)
     elif request.method == 'GET':
         menu_id = request.args.get('id')
         if menu_id:
-            response, status_code = get_menu(menu_id)
-            if status_code is 200:
-                response = json.loads(response)
+            result, status_code = get_menu(menu_id)
         else:
-            response, status_code = get_all_menus()
-            if status_code is 200:
-                response = json.loads(response)
+            result, status_code = get_all_menus()
     elif request.method == 'PUT':
         menu_id = request.args.get('id')
         data = request.get_json()
-        response, status_code = update_menu(menu_id, data)
+        result, status_code = update_menu(menu_id, data)
     elif request.method == 'DELETE':
         menu_id = request.args.get('id')
-        response, status_code = delete_menu(menu_id)
+        result, status_code = delete_menu(menu_id)
 
-    return make_response(response, status_code)
+    return jsonify(result), status_code
 
-
-@users_bp.route('/subMenu', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def sub_menu():
+@users_bp.route('/submenu', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def submenu():
     if request.method == 'POST':
         data = request.get_json()
-        response, status_code = create_sub_menu(data)
+        result, status_code = create_sub_menu(data)
     elif request.method == 'GET':
-        sub_menu_id = request.args.get('id')
-        if sub_menu_id:
-            response, status_code = get_sub_menu(sub_menu_id)
-            if status_code is 200:
-                response = json.loads(response)
+        submenu_id = request.args.get('id')
+        if submenu_id:
+            result, status_code = get_sub_menu(submenu_id)
         else:
-            response, status_code = get_all_sub_menus()
-            if status_code is 200:
-                response = json.loads(response)
+            result, status_code = get_all_sub_menus()
     elif request.method == 'PUT':
-        sub_menu_id = request.args.get('id')
+        submenu_id = request.args.get('id')
         data = request.get_json()
-        response, status_code = update_sub_menu(sub_menu_id, data)
+        result, status_code = update_sub_menu(submenu_id, data)
     elif request.method == 'DELETE':
-        sub_menu_id = request.args.get('id')
-        response, status_code = delete_sub_menu(sub_menu_id)
+        submenu_id = request.args.get('id')
+        result, status_code = delete_sub_menu(submenu_id)
 
-    return make_response(response, status_code)
+    return jsonify(result), status_code
 
 
 @users_bp.route('/tableConfigurator', methods=['GET', 'POST'])
@@ -164,9 +131,6 @@ def permission():
 
 @users_bp.route('/rolePermission', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def role_permission():
-    global response
-    global status_code
-
     if request.method == 'POST':
         data = request.get_json()
         response, status_code = create_role_permission(data)
@@ -174,12 +138,8 @@ def role_permission():
         role_permission_id = request.args.get('id')
         if role_permission_id:
             response, status_code = get_role_permission(role_permission_id)
-            if status_code is 200:
-                response = json.loads(response)
         else:
             response, status_code = get_all_role_permissions()
-            if status_code is 200:
-                response = json.loads(response)
     elif request.method == 'PUT':
         role_permission_id = request.args.get('id')
         data = request.get_json()
@@ -188,4 +148,5 @@ def role_permission():
         role_permission_id = request.args.get('id')
         response, status_code = delete_role_permission(role_permission_id)
 
-    return response, status_code
+    return jsonify(response), status_code
+

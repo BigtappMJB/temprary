@@ -8,6 +8,7 @@ login_bp = Blueprint('login_controller', __name__)
 
 
 @login_bp.route('/login', methods=['POST'])
+@login_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
     email = data.get('email')
@@ -23,8 +24,15 @@ def login():
 
     current_app.logger.info(f"User found: {user}")
 
+    # Strip leading/trailing whitespace from passwords
+    provided_password = password.strip()
+    stored_password = user['password'].strip()
+
+    current_app.logger.info(f"Provided password (stripped): '{provided_password}'")
+    current_app.logger.info(f"Stored password (stripped): '{stored_password}'")
+
     # Validate the password
-    if user['password'] != password:
+    if stored_password != provided_password:
         current_app.logger.error(f"Incorrect password for email: {email}")
         return jsonify({"error": "The password you entered is incorrect. Please check your password and try again."}), 401
 
@@ -33,8 +41,8 @@ def login():
     # Update the last login datetime
     update_last_login(email)
 
-    # Check permissions based on role
-    permissions = get_permissions_by_role(user['role'])
+    # Check permissions based on role_id
+    permissions = get_permissions_by_role(user['role_id'])
     current_app.logger.info(f"Permissions for email {email}: {permissions}")
 
     return jsonify({
@@ -44,6 +52,7 @@ def login():
         "is_verified": user['is_verified'],
         "last_login_datetime": user['last_login_datetime']
     }), 200
+
 
 
 @login_bp.route('/logout', methods=['POST'])
