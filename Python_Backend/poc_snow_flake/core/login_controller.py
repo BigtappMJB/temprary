@@ -8,7 +8,6 @@ login_bp = Blueprint('login_controller', __name__)
 
 
 @login_bp.route('/login', methods=['POST'])
-@login_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
     email = data.get('email')
@@ -41,8 +40,8 @@ def login():
     # Update the last login datetime
     update_last_login(email)
 
-    # Check permissions based on role_id
-    permissions = get_permissions_by_role(user['role_id'])
+    # Check permissions based on email
+    permissions = get_permissions_by_email(email)
     current_app.logger.info(f"Permissions for email {email}: {permissions}")
 
     return jsonify({

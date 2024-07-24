@@ -94,16 +94,57 @@ def get_permissions_by_role(role_id):
         conn = get_snowflake_connection()
         cursor = conn.cursor()
         query = """
-        SELECT p.permission_level
-        FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp
-        JOIN NBF_CIA.PUBLIC.PERMISSIONS p ON rp.permission_id = p.id
-        WHERE rp.role_id = %s
-        """
+        SELECT pl.LEVEL
+FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp
+JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+WHERE rp.ROLE_ID = %s"""
         cursor.execute(query, (role_id,))
         permissions = cursor.fetchall()
         return [permission[0] for permission in permissions]
     except Exception as e:
         current_app.logger.error(f"Error fetching permissions for role_id {role_id}: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_permissions_by_email(email):
+    try:
+        conn = get_snowflake_connection()
+        cursor = conn.cursor()
+        query = """SELECT 
+            r.NAME AS role_name,
+            pl.LEVEL AS permission_level,
+            m.NAME AS menu_name,
+            sm.NAME AS submenu_name
+        FROM 
+            NBF_CIA.PUBLIC.USERS u
+        JOIN 
+            NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
+        JOIN 
+            NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
+        JOIN 
+            NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+        JOIN 
+            NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
+        LEFT JOIN 
+            NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
+        WHERE 
+            u.EMAIL = %s"""
+        cursor.execute(query, (email,))
+        permissions = cursor.fetchall()
+        # Return a list of dictionaries with permission details
+        return [
+            {
+                "role_name": permission[0],
+                "permission_level": permission[1],
+                "menu_name": permission[2],
+                "submenu_name": permission[3]
+            }
+            for permission in permissions
+        ]
+    except Exception as e:
+        current_app.logger.error(f"Error fetching permissions for email {email}: {e}")
         return []
     finally:
         cursor.close()
