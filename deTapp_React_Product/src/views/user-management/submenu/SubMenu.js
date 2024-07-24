@@ -128,6 +128,7 @@ const UsersPage = () => {
     MENU_NAME: "Menu",
     NAME: "SubMenu",
     DESCRIPTION: "Description",
+    ROUTE: "Route Path",
   };
 
   /**

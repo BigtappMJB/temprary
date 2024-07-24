@@ -189,6 +189,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                       key !== "sno" ? `Search ${extendedColumns[key]}` : ""
                     }
                     fullWidth
+                    sx={{
+                      display: paginatedData?.length === 0 ? "none" : "block",
+                    }}
                   />
                 </StyledTableCell>
               ))}
@@ -204,7 +207,15 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                 >
                   {"Actions"}
                 </TableSortLabel>
-                <StyledTextField variant="outlined" disabled fullWidth />
+                <StyledTextField
+                  sx={{
+                    display: paginatedData?.length === 0 ? "none" : "block",
+                    visibility: "hidden",
+                  }}
+                  variant="outlined"
+                  disabled
+                  fullWidth
+                />
               </StyledTableCell>
             </TableRow>
           </StyledTableHead>
@@ -266,6 +277,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
         </Table>
       </TableContainer>
       <TablePagination
+        sx={{
+          display: paginatedData?.length === 0 ? "none" : "block",
+        }}
         rowsPerPageOptions={[10, 25, 50, 100]}
         component="div"
         className="tablename-footer"

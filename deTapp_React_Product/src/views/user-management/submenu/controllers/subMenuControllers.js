@@ -62,6 +62,7 @@ export const subMenuCreationController = async (formData) => {
       menu_id: formData?.menu.ID,
       name: titleCaseFirstWord(formData.name.trim()),
       description: titleCaseFirstWord(formData.description.trim()),
+      route: formData?.path.trim(),
     };
     // Send the POST request to the submenu API endpoint
     const response = await post("/master/submenu", body, "python");
@@ -108,6 +109,7 @@ export const subMenuUpdateController = async (formData) => {
       menu_id: formData?.menu.ID,
       name: titleCaseFirstWord(formData.name.trim()),
       description: titleCaseFirstWord(formData.description.trim()),
+      route: formData?.path.trim(),
     };
     // Send the PUT request to the submenu API endpoint
     const response = await put(
