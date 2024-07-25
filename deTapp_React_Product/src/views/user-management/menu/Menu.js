@@ -123,7 +123,7 @@ const Menus = () => {
       const permissionList = submenuDetails?.permission_level
         .split(",")
         .map((ele) => ele.trim().toLowerCase());
-      
+
       setPermissionLevels({
         create: permissionList.includes("create"),
         edit: permissionList.includes("edit"),
@@ -135,7 +135,6 @@ const Menus = () => {
       hasFetchedRoles.current = true;
     }
   }, []);
-  console.log({ permissionLevels });
   const columns = {
     NAME: "Menu",
     DESCRIPTION: "Description",

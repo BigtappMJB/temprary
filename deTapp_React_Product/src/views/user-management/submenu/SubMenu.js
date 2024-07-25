@@ -11,7 +11,13 @@ import {
 } from "./controllers/subMenuControllers";
 import { getMenusController } from "../menu/controllers/MenuControllers";
 import { useLoading } from "../../../components/Loading/loadingProvider";
-import { ScrollToTopButton } from "../../utilities/generals";
+import {
+  getCurrentPathName,
+  getSubmenuDetails,
+  ScrollToTopButton,
+} from "../../utilities/generals";
+import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -75,11 +81,18 @@ const FormButton = styled(Button)(({ theme }) => ({
 const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
-  const [menuList, setRolesList] = useState([]);
+  const [menuLists, setRolesList] = useState([]);
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
   });
+  const [permissionLevels, setPermissionLevels] = useState({
+    create: null,
+    edit: null,
+    view: null,
+    delete: null,
+  });
+
   const { startLoading, stopLoading } = useLoading();
   const hasFetchedRoles = useRef(false);
 
@@ -100,6 +113,7 @@ const UsersPage = () => {
       stopLoading();
     }
   };
+  const { menuList } = useLoginProvider();
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
@@ -119,6 +133,22 @@ const UsersPage = () => {
     };
     getMenus();
     if (!hasFetchedRoles.current) {
+      const submenuDetails = getSubmenuDetails(
+        menuList,
+        getCurrentPathName(),
+        "path"
+      );
+      const permissionList = submenuDetails?.permission_level
+        .split(",")
+        .map((ele) => ele.trim().toLowerCase());
+
+      setPermissionLevels({
+        create: permissionList.includes("create"),
+        edit: permissionList.includes("edit"),
+        view: permissionList.includes("view"),
+        delete: permissionList.includes("delete"),
+      });
+
       getTableData();
       hasFetchedRoles.current = true;
     }
@@ -135,10 +165,30 @@ const UsersPage = () => {
    * Initiates the process to add a new submenu.
    */
   const addUser = () => {
-    setFormAction({
-      display: true,
-      action: "add",
-    });
+    if (permissionLevels.create)
+      setFormAction({
+        display: true,
+        action: "add",
+      });
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -222,12 +272,32 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected submenu's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    setSelectedValue(selectedRow);
-    ScrollToTopButton();
-    setFormAction({
-      display: true,
-      action: "update",
-    });
+    if (permissionLevels.edit) {
+      setSelectedValue(selectedRow);
+      ScrollToTopButton();
+      setFormAction({
+        display: true,
+        action: "update",
+      });
+    } else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -235,26 +305,46 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected submenu's data.
    */
   const handleDelete = (selectedRow) => {
-    openDialog(
-      "warning",
-      `Delete confirmation`,
-      `Are you sure you want to delete this submenu "${selectedRow.NAME}"?`,
-      {
-        confirm: {
-          name: "Yes",
-          isNeed: true,
+    if (permissionLevels.delete)
+      openDialog(
+        "warning",
+        `Delete confirmation`,
+        `Are you sure you want to delete this submenu "${selectedRow.NAME}"?`,
+        {
+          confirm: {
+            name: "Yes",
+            isNeed: true,
+          },
+          cancel: {
+            name: "No",
+            isNeed: true,
+          },
         },
-        cancel: {
-          name: "No",
-          isNeed: true,
-        },
-      },
-      (confirmed) => {
-        if (confirmed) {
-          removeDataFromTable(selectedRow);
+        (confirmed) => {
+          if (confirmed) {
+            removeDataFromTable(selectedRow);
+          }
         }
-      }
-    );
+      );
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -338,7 +428,7 @@ const UsersPage = () => {
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
-            menuList={menuList}
+            menuList={menuLists}
           />
         </Container>
       )}
@@ -362,12 +452,16 @@ const UsersPage = () => {
             </FormButton>
           </Box>
         </SubHeader>
-        <DataTable
-          tableData={tableData}
-          handleUpdateLogic={handleUpdateLogic}
-          handleDelete={handleDelete}
-          columns={columns}
-        />
+        {permissionLevels.view ? (
+          <DataTable
+            tableData={tableData}
+            handleUpdateLogic={handleUpdateLogic}
+            handleDelete={handleDelete}
+            columns={columns}
+          />
+        ) : (
+          <TableErrorDisplay />
+        )}
       </SecondContainer>
     </>
   );
