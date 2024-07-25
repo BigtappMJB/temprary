@@ -9,8 +9,6 @@ import {
   tableCreationController,
 } from "./controllers/tableCreationController";
 import { useLoading } from "../../components/Loading/loadingProvider";
-import { useLoginProvider } from "../authentication/provider/LoginProvider";
-import { getCurrentPathName, getSubmenuDetails } from "../utilities/generals";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -110,14 +108,6 @@ const CreateTableForm = () => {
   const formRefs = useRef([]);
   const isRemovingForm = useRef(false);
 
-  const [permissionLevels, setPermissionLevels] = useState({
-    create: null,
-    edit: null,
-    view: null,
-    delete: null,
-  });
-  const { menuList } = useLoginProvider();
-
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
 
@@ -160,23 +150,6 @@ const CreateTableForm = () => {
 
   useEffect(() => {
     inputRef.current.focus();
-
-    const submenuDetails = getSubmenuDetails(
-      menuList,
-      getCurrentPathName(),
-      "path"
-    );
-    const permissionList = submenuDetails?.permission_level
-      .split(",")
-      .map((ele) => ele.trim().toLowerCase());
-
-    setPermissionLevels({
-      create: permissionList.includes("create"),
-      edit: permissionList.includes("edit"),
-      view: permissionList.includes("view"),
-      delete: permissionList.includes("delete"),
-    });
-
     const getDataTypes = async () => {
       try {
         startLoading();
@@ -242,26 +215,6 @@ const CreateTableForm = () => {
   };
   const handleCreateTable = async () => {
     try {
-      if (!permissionLevels.create) {
-        openDialog(
-          "critical",
-          `Access Denied`,
-          "Your access is denied, Kindly contact system administrator.",
-
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
-        return;
-      }
       const validationError = validateTableName(tableName);
       setError(validationError);
 

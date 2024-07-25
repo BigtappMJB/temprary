@@ -359,6 +359,10 @@ const UsersPage = () => {
   const removeDataFromTable = async (selectedRow) => {
     try {
       startLoading();
+      setFormAction({
+        display: false,
+        action: null,
+      });
       const response = await userdeleteController(selectedRow.ID);
 
       if (response) {

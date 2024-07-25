@@ -8,17 +8,24 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Tooltip,
 } from "@mui/material";
 
 import { IconUser, IconUserCircle } from "@tabler/icons-react";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { loginOutController } from "../../../views/authentication/login/controllers/loginController";
-import { clearCookies } from "../../../views/utilities/cookieServices/cookieServices";
+import {
+  clearCookies,
+  getCookie,
+} from "../../../views/utilities/cookieServices/cookieServices";
+import { isUserIdCookieName } from "../../../views/utilities/generals";
+import { decodeData } from "../../../views/utilities/securities/encodeDecode";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
   const { startLoading, stopLoading } = useLoading();
   const navigate = useNavigate();
+  const email = decodeData(getCookie(isUserIdCookieName));
 
   const handleClick2 = (event) => {
     setAnchorEl2(event.currentTarget);
@@ -46,16 +53,18 @@ const Profile = () => {
 
   return (
     <Box>
-      <IconButton
-        size="large"
-        aria-label="show 11 new notifications"
-        color="inherit"
-        aria-controls="msgs-menu"
-        aria-haspopup="true"
-        onClick={handleClick2}
-      >
-        <IconUserCircle size="28" stroke="1.5" />
-      </IconButton>
+      <Tooltip arrow title={email}>
+        <IconButton
+          size="large"
+          aria-label="show 11 new notifications"
+          color="inherit"
+          aria-controls="msgs-menu"
+          aria-haspopup="true"
+          onClick={handleClick2}
+        >
+          <IconUserCircle size="28" stroke="1.5" />
+        </IconButton>
+      </Tooltip>
 
       <Menu
         id="msgs-menu"
@@ -71,6 +80,12 @@ const Profile = () => {
           },
         }}
       >
+        {/* <MenuItem>
+          <ListItemIcon>
+            <IconUser width={20} />
+          </ListItemIcon>
+          <ListItemText>{email}</ListItemText>
+        </MenuItem> */}
         <MenuItem>
           <ListItemIcon>
             <IconUser width={20} />

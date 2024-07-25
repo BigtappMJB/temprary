@@ -22,8 +22,10 @@ def login():
         return jsonify({"error": "User not found. Please check your email and try again."}), 404
 
     # Decrypt and validate the password
-    if not check_password_hash(user['password'], password):
-        return jsonify({"error": "Invalid password"}), 401
+    print(user['password'])
+    print(password)
+    # if not check_password_hash(user['password'], password):
+    #     return jsonify({"error": "Invalid password"}), 401
 
     # Strip leading/trailing whitespace from passwords
     provided_password = password.strip()

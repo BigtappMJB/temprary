@@ -128,7 +128,7 @@ const RolePermissionPage = () => {
       try {
         startLoading();
         const response = await getRolesController();
-        
+
         setRolesList(response);
       } catch (error) {
         console.error(error);
@@ -190,7 +190,7 @@ const RolePermissionPage = () => {
       const permissionList = submenuDetails?.permission_level
         .split(",")
         .map((ele) => ele.trim().toLowerCase());
-      
+
       setPermissionLevels({
         create: permissionList.includes("create"),
         edit: permissionList.includes("edit"),
@@ -409,6 +409,10 @@ const RolePermissionPage = () => {
   const removeDataFromTable = async (selectedRow) => {
     try {
       startLoading();
+      setFormAction({
+        display: false,
+        action: null,
+      });
       const response = await rolePermissionDeleteController(selectedRow.ID);
 
       if (response) {
