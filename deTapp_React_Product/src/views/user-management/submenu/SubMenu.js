@@ -1,6 +1,6 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import SubMenuFormComponent from "./components/subMenuFormComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import DataTable from "../users/components/DataTable";
 import {
@@ -10,6 +10,14 @@ import {
   subMenuUpdateController,
 } from "./controllers/subMenuControllers";
 import { getMenusController } from "../menu/controllers/MenuControllers";
+import { useLoading } from "../../../components/Loading/loadingProvider";
+import {
+  getCurrentPathName,
+  getSubmenuDetails,
+  ScrollToTopButton,
+} from "../../utilities/generals";
+import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -73,44 +81,114 @@ const FormButton = styled(Button)(({ theme }) => ({
 const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
-  const [menuList, setRolesList] = useState([]);
+  const [menuLists, setRolesList] = useState([]);
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
   });
+  const [permissionLevels, setPermissionLevels] = useState({
+    create: null,
+    edit: null,
+    view: null,
+    delete: null,
+  });
+
+  const { startLoading, stopLoading } = useLoading();
+  const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
 
   // Fetches submenu data and updates the table
   const getTableData = async () => {
-    const response = await getSubMenusController();
-    setTableData(response);
+    try {
+      startLoading();
+      const response = await getSubMenusController();
+      setTableData(response);
+    } catch (error) {
+      console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
+    } finally {
+      stopLoading();
+    }
   };
+  const { menuList } = useLoginProvider();
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
     const getMenus = async () => {
-      const response = await getMenusController();
-      setRolesList(response);
+      try {
+        startLoading();
+        const response = await getMenusController();
+        setRolesList(response);
+      } catch (error) {
+        console.error(error);
+        if (error.statusCode === 404) {
+          setTableData([]);
+        }
+      } finally {
+        stopLoading();
+      }
     };
     getMenus();
-    getTableData();
+    if (!hasFetchedRoles.current) {
+      const submenuDetails = getSubmenuDetails(
+        menuList,
+        getCurrentPathName(),
+        "path"
+      );
+      const permissionList = submenuDetails?.permission_level
+        .split(",")
+        .map((ele) => ele.trim().toLowerCase());
+
+      setPermissionLevels({
+        create: permissionList.includes("create"),
+        edit: permissionList.includes("edit"),
+        view: permissionList.includes("view"),
+        delete: permissionList.includes("delete"),
+      });
+
+      getTableData();
+      hasFetchedRoles.current = true;
+    }
   }, []);
 
   const columns = {
     MENU_NAME: "Menu",
     NAME: "SubMenu",
-    DESCRIPTION:"Description"
+    DESCRIPTION: "Description",
+    ROUTE: "Route Path",
   };
 
   /**
    * Initiates the process to add a new submenu.
    */
   const addUser = () => {
-    setFormAction({
-      display: true,
-      action: "add",
-    });
+    if (permissionLevels.create)
+      setFormAction({
+        display: true,
+        action: "add",
+      });
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -119,6 +197,7 @@ const UsersPage = () => {
    */
   const onformSubmit = async (formData) => {
     try {
+      startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await subMenuCreationController(formData);
@@ -131,7 +210,8 @@ const UsersPage = () => {
         openDialog(
           "success",
           `SubMenu ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+          response.message ||
+            `Submenu has been ${isAdd ? "addded" : "updated"} successfully`,
           {
             confirm: {
               name: "Ok",
@@ -172,6 +252,8 @@ const UsersPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -190,11 +272,32 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected submenu's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    setSelectedValue(selectedRow);
-    setFormAction({
-      display: true,
-      action: "update",
-    });
+    if (permissionLevels.edit) {
+      setSelectedValue(selectedRow);
+      ScrollToTopButton();
+      setFormAction({
+        display: true,
+        action: "update",
+      });
+    } else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -202,28 +305,46 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected submenu's data.
    */
   const handleDelete = (selectedRow) => {
-    openDialog(
-      "warning",
-      `Delete confirmation`,
-      `Are you sure you want to delete this submenu "${
-        selectedRow.NAME
-      }"?`,
-      {
-        confirm: {
-          name: "Yes",
-          isNeed: true,
+    if (permissionLevels.delete)
+      openDialog(
+        "warning",
+        `Delete confirmation`,
+        `Are you sure you want to delete this submenu "${selectedRow.NAME}"?`,
+        {
+          confirm: {
+            name: "Yes",
+            isNeed: true,
+          },
+          cancel: {
+            name: "No",
+            isNeed: true,
+          },
         },
-        cancel: {
-          name: "No",
-          isNeed: true,
-        },
-      },
-      (confirmed) => {
-        if (confirmed) {
-          removeDataFromTable(selectedRow);
+        (confirmed) => {
+          if (confirmed) {
+            removeDataFromTable(selectedRow);
+          }
         }
-      }
-    );
+      );
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -232,13 +353,18 @@ const UsersPage = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
+      startLoading();
+      setFormAction({
+        display: false,
+        action: null,
+      });
       const response = await subMenuDeleteController(selectedRow.ID);
 
       if (response) {
         openDialog(
           "success",
           `SubMenu Deletion Success`,
-          response.message,
+          response.message || `SubMenu has been deleted successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -250,6 +376,9 @@ const UsersPage = () => {
             },
           },
           (confirmed) => {
+            // getTableData();
+          },
+          () => {
             getTableData();
           }
         );
@@ -258,7 +387,7 @@ const UsersPage = () => {
       openDialog(
         "warning",
         "Warning",
-        `SubMenu Deletion failed`,
+        error.errorMessage || `SubMenu Deletion failed`,
         {
           confirm: {
             name: "Ok",
@@ -275,6 +404,8 @@ const UsersPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -282,7 +413,7 @@ const UsersPage = () => {
     <>
       {formAction.display && (
         <Container>
-          <Header>
+          <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"
@@ -297,7 +428,7 @@ const UsersPage = () => {
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
-            menuList={menuList}
+            menuList={menuLists}
           />
         </Container>
       )}
@@ -313,6 +444,7 @@ const UsersPage = () => {
               onClick={addUser}
               variant="contained"
               color="primary"
+              className="primary"
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >
@@ -320,12 +452,16 @@ const UsersPage = () => {
             </FormButton>
           </Box>
         </SubHeader>
-        <DataTable
-          tableData={tableData}
-          handleUpdateLogic={handleUpdateLogic}
-          handleDelete={handleDelete}
-          columns={columns}
-        />
+        {permissionLevels.view ? (
+          <DataTable
+            tableData={tableData}
+            handleUpdateLogic={handleUpdateLogic}
+            handleDelete={handleDelete}
+            columns={columns}
+          />
+        ) : (
+          <TableErrorDisplay />
+        )}
       </SecondContainer>
     </>
   );

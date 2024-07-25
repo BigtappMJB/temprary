@@ -8,6 +8,7 @@ import {
   getDataTypesController,
   tableCreationController,
 } from "./controllers/tableCreationController";
+import { useLoading } from "../../components/Loading/loadingProvider";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -41,6 +42,10 @@ const Header = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
+}));
+
+const StyledColumnBox = styled(Box)(({ theme }) => ({
+  overflow: "auto",
 }));
 
 const SubHeader = styled(Box)(({ theme }) => ({
@@ -100,8 +105,12 @@ const CreateTableForm = () => {
   const inputRef = useRef(null);
   const [columnsData, setFormData] = useState([]);
   const [dataTypes, setDataTypes] = useState([]);
+  const formRefs = useRef([]);
+  const isRemovingForm = useRef(false);
 
   const { openDialog } = useDialog();
+  const { startLoading, stopLoading } = useLoading();
+
   const validateTableName = (name) => {
     if (!name) {
       return "Table name is required";
@@ -143,9 +152,12 @@ const CreateTableForm = () => {
     inputRef.current.focus();
     const getDataTypes = async () => {
       try {
+        startLoading();
         setDataTypes(await getDataTypesController());
       } catch (error) {
         console.error(error);
+      } finally {
+        stopLoading();
       }
     };
     getDataTypes();
@@ -153,6 +165,8 @@ const CreateTableForm = () => {
 
   const addColumnForm = () => {
     const validationError = validateTableName(tableName);
+    isRemovingForm.current = false;
+
     setError(validationError);
     if (validationError) {
       return;
@@ -169,13 +183,14 @@ const CreateTableForm = () => {
         isPrimary: true,
         isMandatory: true,
         defaultValue: 0,
-        formSubmitted: true,
+        validated: true,
       };
     }
     setFormData((prevFormData) => [...prevFormData, updatedFormData]);
   };
 
   const onRemoveForm = (id) => {
+    isRemovingForm.current = true;
     const updatedFormData = columnsData
       .filter((form) => form.id !== id)
       .map((form, index) => ({
@@ -186,19 +201,23 @@ const CreateTableForm = () => {
   };
 
   const onColumnSubmit = (columnData) => {
-    let updatedData = columnsData;
-    updatedData[columnData.id] = columnData;
-    setFormData(updatedData);
+    if (!isRemovingForm.current) {
+      let updatedData = columnsData;
+      updatedData[columnData.id] = columnData;
+      setFormData(updatedData);
+    } else {
+      isRemovingForm.current = true;
+    }
   };
 
   const handleColumnsClear = () => {
     setFormData([]);
   };
-
   const handleCreateTable = async () => {
     try {
       const validationError = validateTableName(tableName);
       setError(validationError);
+
       if (tableName === "" && validationError) {
         openDialog(
           "warning",
@@ -220,25 +239,38 @@ const CreateTableForm = () => {
             }
           }
         );
-
         return;
       }
-      const finalObject = {
-        tableName,
-        columnsData,
+
+      const validateColumnForms = async () => {
+        const updatedColumnsData = await Promise.all(
+          columnsData.map(async (column, index) => {
+            if (!column?.validated) {
+              // Assuming ColumnForm is a component that has a method to trigger validation
+              const isUpdatedDetails = await formRefs.current[
+                index
+              ].triggerValidation(); // Implement triggerColumnValidation
+              return isUpdatedDetails;
+            }
+            return column;
+          })
+        );
+        return updatedColumnsData;
       };
 
-      const noOfFormSubmitted = columnsData.filter(
-        (column) => column?.formSubmitted
+      const updatedColumnsData = await validateColumnForms();
+
+      const noOfFormValidated = updatedColumnsData.filter(
+        (column) => column?.validated
       ).length;
-      const totalForms = columnsData.length;
-      let error = totalForms !== noOfFormSubmitted;
+      const totalForms = updatedColumnsData.length;
+      const error = totalForms !== noOfFormValidated;
 
       if (error) {
         openDialog(
           "warning",
           "Warning",
-          "Columns are not saved properly.",
+          "Columns are not validated properly.",
           {
             confirm: {
               name: "Ok",
@@ -257,6 +289,11 @@ const CreateTableForm = () => {
         );
         return;
       }
+      startLoading();
+      const finalObject = {
+        tableName,
+        columnsData: updatedColumnsData,
+      };
 
       const response = await tableCreationController(finalObject);
 
@@ -291,11 +328,23 @@ const CreateTableForm = () => {
               //   setSubmitted(false);
               handleColumnsClear();
             }
+          },
+          () => {
+            if (
+              response.trim().toLowerCase() ===
+              `Table ${tableName.toUpperCase()} successfully created.`
+                .trim()
+                .toLowerCase()
+            ) {
+              setTableName("");
+              //   setSubmitted(false);
+              handleColumnsClear();
+            }
           }
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       openDialog(
         "critical",
         "Table Creation Failed",
@@ -316,13 +365,15 @@ const CreateTableForm = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
   return (
     <>
       <Container>
-        <Header>
+        <Header className="panel-header">
           <Typography variant="h6">Create Table</Typography>
         </Header>
         <Form onSubmit={handleSubmit}>
@@ -349,13 +400,18 @@ const CreateTableForm = () => {
             <Typography variant="h6">
               <b>Add columns to Table</b>
             </Typography>
-            <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              gap={2}
+              flexWrap="wrap"
+            >
               <FormButton
                 type="button"
                 onClick={addColumnForm}
                 variant="contained"
                 color="primary"
-                style={{ marginRight: "10px" }}
+                className="primary"
               >
                 Add Column
               </FormButton>
@@ -364,7 +420,7 @@ const CreateTableForm = () => {
                 type="button"
                 variant="contained"
                 color="primary"
-                style={{ marginRight: "10px" }}
+                className="primary"
                 disabled={columnsData.length === 0}
               >
                 Create Table
@@ -381,15 +437,19 @@ const CreateTableForm = () => {
               </FormButton> */}
             </Box>
           </SubHeader>
-          {columnsData?.map((data) => (
-            <TableColumnForm
-              key={data.id}
-              onColumnSubmit={onColumnSubmit}
-              data={data}
-              onReset={onRemoveForm}
-              dataTypes={dataTypes}
-            />
-          ))}
+          <StyledColumnBox>
+            {columnsData?.map((data, index) => (
+              <TableColumnForm
+                key={data.id}
+                onColumnSubmit={onColumnSubmit}
+                data={data}
+                ref={(el) => (formRefs.current[index] = el)}
+                onReset={onRemoveForm}
+                dataTypes={dataTypes}
+                isRemovingForm={isRemovingForm} // Pass the flag to the child
+              />
+            ))}
+          </StyledColumnBox>
         </SecondContainer>
       )}
     </>

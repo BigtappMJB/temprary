@@ -1,5 +1,5 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getRolesController,
   roleCreationController,
@@ -9,6 +9,14 @@ import {
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import RoleFormComponent from "./components/roleFormComponent";
 import DataTable from "../users/components/DataTable";
+import { useLoading } from "../../../components/Loading/loadingProvider";
+import {
+  getCurrentPathName,
+  getSubmenuDetails,
+  ScrollToTopButton,
+} from "../../utilities/generals";
+import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -76,32 +84,89 @@ const Roles = () => {
     display: false,
     action: "update",
   });
+  const [permissionLevels, setPermissionLevels] = useState({
+    create: null,
+    edit: null,
+    view: null,
+    delete: null,
+  });
 
   const { openDialog } = useDialog();
-
+  const { startLoading, stopLoading } = useLoading();
+  const hasFetchedRoles = useRef(false);
+  const { menuList } = useLoginProvider();
   const getRoles = async () => {
-    const response = await getRolesController();
-    setTableData(response);
+    try {
+      startLoading();
+      const response = await getRolesController();
+      setTableData(response);
+      // debugger;
+    } catch (error) {
+      console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
+    } finally {
+      stopLoading();
+    }
   };
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    getRoles();
+    if (!hasFetchedRoles.current) {
+      const submenuDetails = getSubmenuDetails(
+        menuList,
+        getCurrentPathName(),
+        "path"
+      );
+      const permissionList = submenuDetails?.permission_level
+        .split(",")
+        .map((ele) => ele.trim().toLowerCase());
+      
+      setPermissionLevels({
+        create: permissionList.includes("create"),
+        edit: permissionList.includes("edit"),
+        view: permissionList.includes("view"),
+        delete: permissionList.includes("delete"),
+      });
+      getRoles();
+      hasFetchedRoles.current = true;
+    }
   }, []);
 
   const columns = {
-    NAME: "Role",
-    DESCRIPTION: "Description",
+    name: "Role",
+    description: "Description",
   };
 
   /**
    * Initiates the process to add a new user.
    */
   const addRoles = () => {
-    setFormAction({
-      display: true,
-      action: "add",
-    });
+    if (permissionLevels.create)
+      setFormAction({
+        display: true,
+        action: "add",
+      });
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -110,11 +175,12 @@ const Roles = () => {
    */
   const onformSubmit = async (formData) => {
     try {
+      startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await roleCreationController(formData);
       else {
-        formData = { ...formData, ID: selectedValue.ID };
+        formData = { ...formData, ID: selectedValue.id };
         response = await roleupdateController(formData);
       }
 
@@ -122,7 +188,8 @@ const Roles = () => {
         openDialog(
           "success",
           `Role ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+          response.message ||
+            `Role has been ${isAdd ? "addded" : "updated"} successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -163,6 +230,8 @@ const Roles = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -181,11 +250,32 @@ const Roles = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    setSelectedValue(selectedRow);
-    setFormAction({
-      display: true,
-      action: "update",
-    });
+    if (permissionLevels.edit) {
+      setSelectedValue(selectedRow);
+      ScrollToTopButton();
+      setFormAction({
+        display: true,
+        action: "update",
+      });
+    } else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -193,26 +283,45 @@ const Roles = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleDelete = (selectedRow) => {
-    openDialog(
-      "warning",
-      `Delete confirmation`,
-      `Are you sure you want to delete this role "${selectedRow.NAME}"?`,
-      {
-        confirm: {
-          name: "Yes",
-          isNeed: true,
+    if (permissionLevels.delete)
+      openDialog(
+        "warning",
+        `Delete confirmation`,
+        `Are you sure you want to delete this role "${selectedRow.name}"?`,
+        {
+          confirm: {
+            name: "Yes",
+            isNeed: true,
+          },
+          cancel: {
+            name: "No",
+            isNeed: true,
+          },
         },
-        cancel: {
-          name: "No",
-          isNeed: true,
-        },
-      },
-      (confirmed) => {
-        if (confirmed) {
-          removeDataFromTable(selectedRow);
+        (confirmed) => {
+          if (confirmed) {
+            removeDataFromTable(selectedRow);
+          }
         }
-      }
-    );
+      );
+    else
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
   };
 
   /**
@@ -221,13 +330,19 @@ const Roles = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
-      const response = await roledeleteController(selectedRow.ID);
+      startLoading();
+      setFormAction({
+        display: false,
+        action: null,
+      });
+      const response = await roledeleteController(selectedRow.id);
 
       if (response) {
         openDialog(
           "success",
           `Role Deletion Success`,
-          response.message,
+          response.message || `Role has been deleted successfully  `,
+
           {
             confirm: {
               name: "Ok",
@@ -239,6 +354,9 @@ const Roles = () => {
             },
           },
           (confirmed) => {
+            confirmed && getRoles();
+          },
+          () => {
             getRoles();
           }
         );
@@ -247,7 +365,7 @@ const Roles = () => {
       openDialog(
         "warning",
         "Warning",
-        `Role Deletion failed`,
+        error.errorMessage || `Role Deletion failed`,
         {
           confirm: {
             name: "Ok",
@@ -264,6 +382,8 @@ const Roles = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -271,7 +391,7 @@ const Roles = () => {
     <>
       {formAction.display && (
         <Container>
-          <Header>
+          <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"
@@ -290,8 +410,8 @@ const Roles = () => {
         </Container>
       )}
 
-      <SecondContainer>
-        <SubHeader>
+      <SecondContainer className="common-table">
+        <SubHeader className="table-header">
           <Typography variant="h6">
             <b>Roles List</b>
           </Typography>
@@ -301,6 +421,7 @@ const Roles = () => {
               onClick={addRoles}
               variant="contained"
               color="primary"
+              className="primary"
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >
@@ -308,12 +429,16 @@ const Roles = () => {
             </FormButton>
           </Box>
         </SubHeader>
-        <DataTable
-          tableData={tableData}
-          handleUpdateLogic={handleUpdateLogic}
-          handleDelete={handleDelete}
-          columns={columns}
-        />
+        {permissionLevels.view ? (
+          <DataTable
+            tableData={tableData}
+            handleUpdateLogic={handleUpdateLogic}
+            handleDelete={handleDelete}
+            columns={columns}
+          />
+        ) : (
+          <TableErrorDisplay />
+        )}
       </SecondContainer>
     </>
   );

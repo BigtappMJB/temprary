@@ -1,5 +1,11 @@
+from datetime import datetime
+
 import snowflake.connector
 import base64
+import json
+
+from flask import current_app
+
 from share.general_utils import snow_conf as conf
 
 
@@ -15,45 +21,59 @@ def get_snowflake_connection():
     return conn
 
 
-def get_user_by_id_or_email(user_identifier):
+def get_user_by_email(email):
     try:
-        # Establish the Snowflake connection
         conn = get_snowflake_connection()
-
-        # Create a cursor object
         cursor = conn.cursor()
-
-        # Prepare the SQL query
         query = """
-        SELECT user_id, first_name, last_name, email, mobile, role, password
-        FROM users
-        WHERE user_id = %s OR email = %s
+        SELECT first_name, middle_name, last_name, email, mobile, role_id, password, is_default_password_changed, is_verified, last_login_datetime, otp
+        FROM NBF_CIA.PUBLIC.USERS
+        WHERE email = %s
         """
-
-        # Execute the query
-        cursor.execute(query, (user_identifier, user_identifier))
-
-        # Fetch one result
+        cursor.execute(query, (email,))
         user = cursor.fetchone()
-
-        # Check if a user was found
         if user:
-            # Convert the result to a dictionary for easier access
             return {
-                "user_id": user[0],
-                "first_name": user[1],
+                "first_name": user[0],
+                "middle_name": user[1],
                 "last_name": user[2],
                 "email": user[3],
                 "mobile": user[4],
-                "role": user[5],
-                "password": user[6]  # Assuming password is stored here, adjust as necessary
+                "role_id": user[5],
+                "password": user[6],
+                "is_default_password_changed": user[7],
+                "is_verified": user[8],
+                "last_login_datetime": user[9].strftime('%Y-%m-%d %H:%M:%S') if user[9] else None,
+                "otp": user[10]
             }
         else:
             return None
-
     except Exception as e:
-        print(f"Error fetching user: {e}")
+        current_app.logger.error(f"Error fetching user: {e}")
         return None
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+def update_last_login(email):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        # Ensure the datetime format is correct
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        current_app.logger.info(f"Updating last login datetime for email: {email} to {current_time}")
+
+        cursor.execute(f"""
+            UPDATE NBF_CIA.PUBLIC.USERS
+            SET LAST_LOGIN_DATETIME = '{current_time}'
+            WHERE EMAIL = '{email}'
+        """)
+        conn.commit()
+        current_app.logger.info(f"Last login datetime updated for email: {email}")
+    except Exception as e:
+        current_app.logger.error(f"Error updating last login datetime for email {email}: {e}")
     finally:
         cursor.close()
         conn.close()
@@ -70,51 +90,113 @@ def check_password_hash(db_password, req_password):
     return decoded_db == decoded_req
 
 
-def get_permissions_by_role(role):
+def get_permissions_by_role(role_id):
     try:
-        # Establish the Snowflake connection
         conn = get_snowflake_connection()
-
-        # Create a cursor object
         cursor = conn.cursor()
-
-        # Prepare the SQL query to fetch menu and submenu permissions
         query = """
-        SELECT m.id, m.name, s.id, s.name, p.level
-        FROM role_permission rp
-        JOIN menus m ON rp.menu_id = m.id
-        JOIN sub_menus s ON rp.sub_menu_id = s.id
-        JOIN permission_level p ON rp.permission_level = p.id
-        WHERE rp.role_id = %s;
+            SELECT pl.LEVEL
+            FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp
+            JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+            WHERE rp.ROLE_ID = %s
         """
-
-        # Execute the query
-        cursor.execute(query, (role,))
-
-        # Fetch all results
-        results = cursor.fetchall()
-
-        permissions = {}
-        for menu_id, menu_name, submenu_id, submenu_name, permission_level in results:
-            if menu_id not in permissions:
-                permissions[menu_id] = {"menu_name": menu_name, "submenus": []}
-            permissions[menu_id]["submenus"].append(
-                {"submenu_id": submenu_id, "submenu_name": submenu_name, "permission_level": permission_level})
-
-        # Convert the dictionary to the list format
-        permissions_list = [{"menu_id": menu_id, "menu_name": data["menu_name"], "submenus": data["submenus"]} for
-                            menu_id, data in permissions.items()]
-
-        # `permissions_list` will be in the desired format
-
-        return permissions_list
-
+        cursor.execute(query, (role_id,))
+        permissions = cursor.fetchall()
+        return [permission[0] for permission in permissions]
     except Exception as e:
-        print(f"Error fetching permissions: {e}")
+        current_app.logger.error(f"Error fetching permissions for role_id {role_id}: {e}")
         return []
     finally:
         cursor.close()
         conn.close()
+
+def get_permissions_by_email(email):
+    try:
+        conn = get_snowflake_connection()
+        cursor = conn.cursor()
+        
+        select_query = """WITH MenuData AS (
+            SELECT 
+                r.NAME AS role_name,
+                pl.LEVEL AS permission_level,
+                m.NAME AS menu_name,
+                sm.NAME AS submenu_name,
+                sm.ROUTE AS submenu_path
+            FROM 
+                NBF_CIA.PUBLIC.USERS u
+            JOIN 
+                NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
+            JOIN 
+                NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
+            JOIN 
+                NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+            JOIN 
+                NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
+            LEFT JOIN 
+                NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
+            WHERE 
+                u.EMAIL = %s ORDER BY sm.NAME ASC 
+        ),
+        AggregatedData AS (
+            SELECT
+                role_name,
+                menu_name,
+                ARRAY_AGG(OBJECT_CONSTRUCT('submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)) AS submenus
+            FROM
+                MenuData
+            GROUP BY
+                role_name, menu_name
+        )
+        SELECT
+            OBJECT_CONSTRUCT(
+                'menu_name', menu_name,
+                'role_name', role_name,
+                'submenus', submenus
+            ) AS menu_data
+        FROM AggregatedData;
+        """
+        # query = """SELECT 
+        #     r.NAME AS role_name,
+        #     pl.LEVEL AS permission_level,
+        #     m.NAME AS menu_name,
+        #     sm.NAME AS submenu_name,
+        #     sm.ROUTE AS submenu_path
+        # FROM 
+        #     NBF_CIA.PUBLIC.USERS u
+        # JOIN 
+        #     NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
+        # JOIN 
+        #     NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
+        # JOIN 
+        #     NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+        # JOIN 
+        #     NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
+        # LEFT JOIN 
+        #     NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
+        # WHERE 
+        #     u.EMAIL = %s"""
+        cursor.execute(select_query, (email,))
+        permissions = cursor.fetchall()
+        # Return a list of dictionaries with permission details
+        return [json.loads(result[0]) for result in permissions]
+        # return [
+        #     {
+        #         "role_name": permission[0],
+        #         "permission_level": permission[1],
+        #         "menu_name": permission[2],
+        #         "submenu_name": permission[3],
+        #         "submenu_path": permission[4]
+                
+        #     }
+        #     for permission in permissions
+        # ]
+    except Exception as e:
+        current_app.logger.error(f"Error fetching permissions for email {email}: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 def update_password(data, user_id):

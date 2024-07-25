@@ -130,8 +130,11 @@ const handleAxiosError = (error) => {
     errorMessage = error.response.statusText || errorMessage;
 
     // You can also include more detailed information if available
-    if (error.response.data && error.response.data.message) {
-      errorMessage = error.response.data.message;
+    const customErrorMessage =
+      error.response.data &&
+      (error.response.data.message || error.response.data.error);
+    if (customErrorMessage) {
+      errorMessage = customErrorMessage;
     }
   } else if (error.request) {
     // Request was made but no response was received

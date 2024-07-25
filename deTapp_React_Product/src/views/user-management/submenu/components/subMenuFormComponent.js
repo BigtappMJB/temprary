@@ -35,6 +35,7 @@ const schema = yup.object().shape({
     .string()
     .required("Description is required")
     .matches(validationRegex.bio, errorMessages.bio),
+  path: yup.string().required("path is required"),
 });
 
 /**
@@ -101,6 +102,7 @@ const SubMenuFormComponent = ({
         menu: menu,
         name: defaultValues.NAME ?? "",
         description: defaultValues.DESCRIPTION ?? "",
+        path: defaultValues.ROUTE ?? "",
       });
     }
   }, [defaultValues, reset, menuList, formAction]);
@@ -113,6 +115,7 @@ const SubMenuFormComponent = ({
         menu: null,
         name: "",
         description: "",
+        path: "",
       });
     }
   }, [formAction, reset]);
@@ -138,6 +141,7 @@ const SubMenuFormComponent = ({
       menu: null,
       name: "",
       description: "",
+      path: "",
     });
   };
 
@@ -150,6 +154,7 @@ const SubMenuFormComponent = ({
       menu: null,
       name: "",
       description: "",
+      path: "",
     });
   };
 
@@ -198,7 +203,7 @@ const SubMenuFormComponent = ({
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Name"
+                label="Enter Submenu Name"
                 fullWidth
                 variant="outlined"
                 error={!!errors.name}
@@ -218,11 +223,32 @@ const SubMenuFormComponent = ({
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Description"
+                label="Enter description"
                 fullWidth
                 variant="outlined"
                 error={!!errors.description}
                 helperText={errors.description?.message}
+                InputLabelProps={{ shrink: field.value }}
+                InputProps={{
+                  readOnly: readOnly, // Make the field read-only
+                }}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="path"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Enter route path"
+                fullWidth
+                variant="outlined"
+                error={!!errors.path}
+                helperText={errors.path?.message}
                 InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
@@ -241,7 +267,12 @@ const SubMenuFormComponent = ({
             gap={2} // Adds space between buttons
           >
             {formAction.action !== "read" && (
-              <Button type="submit" variant="contained" color="primary">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className="primary"
+              >
                 {formAction.action === "add" ? "Add" : "Update"}
               </Button>
             )}
@@ -250,6 +281,7 @@ const SubMenuFormComponent = ({
               type="button"
               variant="contained"
               color="secondary"
+              className="danger"
               onClick={handleReset}
             >
               {formAction.action !== "read" ? "Cancel" : "Close"}

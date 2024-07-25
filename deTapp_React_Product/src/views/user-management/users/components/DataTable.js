@@ -70,13 +70,17 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
   const [filter, setFilter] = useState({});
 
   // Add S.NO column to the columns definition
-  const extendedColumns = { sno: "S.No", ...columns };
+  // const extendedColumns = { sno: "S.No", ...columns };
+  const extendedColumns = { ...columns };
 
   // Memoize filtered and sorted data to optimize performance
   const filteredData = useMemo(() => {
     return tableData.filter((row) =>
       Object.keys(filter).every((key) =>
-        row[key]?.toString().toLowerCase().includes(filter[key].toLowerCase())
+        (row[key] || "")
+          ?.toString()
+          .toLowerCase()
+          .includes(filter[key].toLowerCase())
       )
     );
   }, [tableData, filter]);
@@ -85,12 +89,12 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
     return filteredData.slice().sort((a, b) => {
       if (order === "original")
         return tableData.indexOf(a) - tableData.indexOf(b);
-      const getIDKey = Object.keys(extendedColumns)[0];
-      if (orderBy === getIDKey) {
-        return order === "asc"
-          ? a[getIDKey] - b[getIDKey]
-          : b[getIDKey] - a[getIDKey];
-      }
+      // const getIDKey = Object.keys(extendedColumns)[0];
+      // if (orderBy === getIDKey) {
+      //   return order === "asc"
+      //     ? a[getIDKey] - b[getIDKey]
+      //     : b[getIDKey] - a[getIDKey];
+      // }
       if (validationRegex.isNumbers.test(a[orderBy])) {
         return order === "asc"
           ? a[orderBy] - b[orderBy]
@@ -156,7 +160,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
       <TableContainer>
         <Table>
           <StyledTableHead>
-            <TableRow>
+            <TableRow className="tablename-head">
               {Object.keys(extendedColumns).map((key) => (
                 <StyledTableCell key={key}>
                   <TableSortLabel
@@ -166,23 +170,28 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                     onClick={() => handleRequestSort(key)}
                     style={{
                       display: "flex",
-                      justifyContent: "center",
+                      justifyContent: "left",
                       fontWeight: "bold",
+                      padding: "3px",
                     }}
                   >
                     {extendedColumns[key]}
                   </TableSortLabel>
 
                   <StyledTextField
+                    className="tablename-search"
                     key={key}
                     name={key}
                     onChange={handleFilterChange}
                     variant="outlined"
                     disabled={key === "sno"}
                     placeholder={
-                      key !== "sno" && `Search ${extendedColumns[key]}`
+                      key !== "sno" ? `Search ${extendedColumns[key]}` : ""
                     }
                     fullWidth
+                    // sx={{
+                    //   display: paginatedData?.length === 0 ? "none" : "block",
+                    // }}
                   />
                 </StyledTableCell>
               ))}
@@ -191,17 +200,26 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                   disabled
                   style={{
                     display: "flex",
-                    justifyContent: "center",
+                    justifyContent: "left",
                     fontWeight: "bold",
+                    padding: "3px",
                   }}
                 >
                   {"Actions"}
                 </TableSortLabel>
-                <StyledTextField variant="outlined" disabled fullWidth />
+                <StyledTextField
+                  sx={{
+                    display: paginatedData?.length === 0 ? "none" : "block",
+                    visibility: "hidden",
+                  }}
+                  variant="outlined"
+                  disabled
+                  fullWidth
+                />
               </StyledTableCell>
             </TableRow>
           </StyledTableHead>
-          <TableBody>
+          <TableBody className="tablename-body">
             {paginatedData.map((row, index) => (
               <TableRow
                 key={row.id}
@@ -209,13 +227,13 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                   backgroundColor: index % 2 !== 0 ? "#f2f2f2" : "inherit",
                 }}
               >
-                <StyledTableCell
+                {/* <StyledTableCell
                   style={{
                     textAlign: "center",
                   }}
                 >
                   {page * rowsPerPage + index + 1}
-                </StyledTableCell>
+                </StyledTableCell> */}
                 {Object.keys(columns).map((key) => (
                   <StyledTableCell
                     key={key}
@@ -259,8 +277,12 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
         </Table>
       </TableContainer>
       <TablePagination
+        sx={{
+          display: paginatedData?.length === 0 ? "none" : "block",
+        }}
         rowsPerPageOptions={[10, 25, 50, 100]}
         component="div"
+        className="tablename-footer"
         count={filteredData.length}
         rowsPerPage={rowsPerPage}
         page={page}

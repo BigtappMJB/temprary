@@ -1,83 +1,87 @@
-import {
-  IconLayoutDashboard, IconLogin, IconUser
-} from '@tabler/icons-react';
+import { IconLayoutDashboard, IconLogin, IconUser } from "@tabler/icons-react";
 
-import { uniqueId } from 'lodash';
+import { uniqueId } from "lodash";
 
 const Menuitems = [
   {
     navlabel: true,
-    subheader: 'Home',
+    subheader: "Home",
   },
   {
     id: uniqueId(),
-    title: 'Dashboard',
+    title: "Dashboard",
     icon: IconLayoutDashboard,
-    href: '/dashboard',
+    href: "/dashboard",
   },
   {
     id: uniqueId(),
-    title: 'Table creation',
+    title: "Table creation",
     icon: IconLayoutDashboard,
-    href: '/table-creation',
+    href: "/table-creation",
   },
   {
     navlabel: true,
-    subheader: 'User Management',
+    subheader: "User Management",
   },
   {
     id: uniqueId(),
-    title: 'Users',
+    title: "Users",
     icon: IconUser,
-    href: '/users',
+    href: "/users",
+  },
+  // {
+  //   id: uniqueId(),
+  //   title: "User Roles",
+  //   icon: IconUser,
+  //   href: "/user-roles",
+  // },
+  {
+    id: uniqueId(),
+    title: "Roles",
+    icon: IconUser,
+    href: "/roles",
   },
   {
     id: uniqueId(),
-    title: 'Roles',
+    title: "Role Permissions",
     icon: IconUser,
-    href: '/roles',
-  },
-  {
-    id: uniqueId(),
-    title: 'Role Permissons',
-    icon: IconUser,
-    href: '/role-permissions',
+    href: "/role-permissions",
   },
   {
     navlabel: true,
-    subheader: 'Menu Management',
+    subheader: "Menu Management",
   },
   {
     id: uniqueId(),
-    title: 'Menu',
+    title: "Menu",
     icon: IconUser,
-    href: '/menu',
+    href: "/menu",
   },
   {
     id: uniqueId(),
-    title: 'SubMenu',
+    title: "SubMenu",
     icon: IconUser,
-    href: '/subMenu',
+    href: "/subMenu",
   },
   {
     navlabel: true,
-    subheader: 'Chat Interface',
+    subheader: "Chat Interface",
   },
   {
     id: uniqueId(),
-    title: 'Chat',
+    title: "Chat",
     icon: IconUser,
-    href: '/auth/login',
+    href: "/chat-interface",
   },
   {
     navlabel: true,
-    subheader: 'Logout',
+    subheader: "Logout",
   },
   {
     id: uniqueId(),
-    title: 'Logout',
+    title: "Logout",
     icon: IconLogin,
-    href: '/auth/login',
+    href: "/auth/login",
   },
 ];
 

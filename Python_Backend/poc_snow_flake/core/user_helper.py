@@ -1,10 +1,14 @@
 import json
-from flask import jsonify
+import random
+import string
+from datetime import datetime
+
+from flask import jsonify, current_app
 import snowflake.connector
 from share.general_utils import snow_conf as conf
 
 from share.snow_flake_conf import set_connections_get, set_connections_post, data_type
-
+from core.registration_controller import send_default_password
 
 def create_table(params):
     query_part = [f"CREATE TABLE IF NOT EXISTS {params['table_name']} ("]
@@ -65,37 +69,52 @@ def get_snowflake_connection():
     return conn
 
 
+def generate_default_password(length=8):
+    """Generate a random default password."""
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choice(characters) for i in range(length))
+
 def create_user(data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     default_pass = "V2VsY29tZUAxMjMk"
     try:
+        # Generate default password
+        default_password = generate_default_password()
+
+        # Send default password to user's email using existing email method
+        send_default_password(data['email'], default_password)
+
+        # Insert the new user into the USERS table
         cursor.execute(
-            "INSERT INTO users (user_id, first_name, last_name, email, mobile, role, password) VALUES (%s, %s, %s, %s, %s, %s)",
-            (data['userId'], data['firstName'], data['lastName'], data['email'], data['mobile'], data['role'], default_pass)
+            "INSERT INTO NBF_CIA.PUBLIC.USERS (FIRST_NAME, MIDDLE_NAME, LAST_NAME, EMAIL, MOBILE, ROLE_ID, PASSWORD, IS_VERIFIED, IS_DEFAULT_PASSWORD_CHANGED, CREATED_DATE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)",
+            (data['first_name'], data['middle_name'], data['last_name'], data['email'], data['mobile'], data['role_id'], default_password, True, False)
         )
         conn.commit()
         return {"message": "User created successfully"}, 201
     except Exception as e:
+        current_app.logger.error(f"Error occurred while creating user: {e}")
         return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
-
 
 def get_user(user_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "SELECT u.*, r.name as role_name FROM users u LEFT JOIN roles r ON r.id = u.role WHERE u.id = %s ORDER BY u.id DESC",
+            "SELECT u.*, r.name as role_name FROM NBF_CIA.PUBLIC.USERS u LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID WHERE u.ID = %s ORDER BY u.ID DESC",
             (user_id,))
         user = cursor.fetchone()
         if user:
             column_names = [description[0] for description in cursor.description]
-            data = [dict(zip(column_names, user))]
-            json_data = json.dumps(data, indent=4)
-            return json_data, 200
+            user_dict = dict(zip(column_names, user))
+            # Convert datetime objects to strings
+            for key, value in user_dict.items():
+                if isinstance(value, datetime):
+                    user_dict[key] = value.isoformat()
+            return user_dict, 200
         else:
             return {"message": "User not found"}, 404
     except Exception as e:
@@ -104,13 +123,12 @@ def get_user(user_id):
         cursor.close()
         conn.close()
 
-
 def get_all_users():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "SELECT u.*, r.name as role_name FROM users u LEFT JOIN roles r ON r.id = u.role ORDER BY u.id DESC")
+            "SELECT u.*, r.name as role_name FROM NBF_CIA.PUBLIC.USERS u LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID ORDER BY u.ID DESC")
         users = cursor.fetchall()
         column_names = [description[0] for description in cursor.description]
         data = [dict(zip(column_names, row)) for row in users]
@@ -122,17 +140,14 @@ def get_all_users():
         cursor.close()
         conn.close()
 
-
 def update_user(user_id, data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        print(data['role'])
         cursor.execute(
-            "UPDATE users SET user_id = %s, first_name = %s, last_name = %s, mobile = %s, email = %s, role = %s WHERE id = %s",
-            (data['userId'], data['firstName'], data['lastName'], data['mobile'], data['email'], data['role'], user_id)
+            "UPDATE NBF_CIA.PUBLIC.USERS SET FIRST_NAME = %s, MIDDLE_NAME = %s, LAST_NAME = %s, MOBILE = %s, EMAIL = %s, ROLE_ID = %s WHERE ID = %s",
+            (data['first_name'], data['middle_name'], data['last_name'], data['mobile'], data['email'], data['role_id'], user_id)
         )
-
         conn.commit()
         return {"message": "User updated successfully"}, 200
     except Exception as e:
@@ -141,12 +156,11 @@ def update_user(user_id, data):
         cursor.close()
         conn.close()
 
-
 def delete_user(user_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.USERS WHERE ID = %s", (user_id,))
         conn.commit()
         return {"message": "User deleted successfully"}, 200
     except Exception as e:
@@ -155,90 +169,24 @@ def delete_user(user_id):
         cursor.close()
         conn.close()
 
-
-def create_role(data):
+def fetch_all_users():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO roles (name, description) VALUES (%s, %s)",
-            (data['name'], data['description'])
-        )
-        conn.commit()
-        return {"message": "Role created successfully"}, 201
-    except Exception as e:
-        return {"error": str(e)}, 500
-    finally:
-        cursor.close()
-        conn.close()
-
-
-def get_role(role_id):
-    conn = get_snowflake_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM roles WHERE id = %s", (role_id,))
-        role = cursor.fetchone()
-        if role:
-            column_names = [description[0] for description in cursor.description]
-            data = [dict(zip(column_names, role))]
-            json_data = json.dumps(data, indent=4)
-            return json_data, 200
-        else:
-            return {"message": "Role not found"}, 404
-    except Exception as e:
-        return {"error": str(e)}, 500
-    finally:
-        cursor.close()
-        conn.close()
-
-
-def get_all_roles():
-    conn = get_snowflake_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM roles")
-        roles = cursor.fetchall()
+            "SELECT u.*, r.name as role_name FROM NBF_CIA.PUBLIC.USERS u LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID ORDER BY u.ID DESC")
+        users = cursor.fetchall()
         column_names = [description[0] for description in cursor.description]
-        data = [dict(zip(column_names, row)) for row in roles]
-        json_data = json.dumps(data, indent=4)
-        return json_data, 200
+        data = [dict(zip(column_names, row)) for row in users]
+        return data
     except Exception as e:
-        return {"error": str(e)}, 500
+        raise e
     finally:
         cursor.close()
         conn.close()
 
 
-def update_role(role_id, data):
-    conn = get_snowflake_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute(
-            "UPDATE roles SET name = %s, description = %s WHERE id = %s",
-            (data['name'], data['description'], role_id)
-        )
-        conn.commit()
-        return {"message": "Role updated successfully"}, 200
-    except Exception as e:
-        return {"error": str(e)}, 500
-    finally:
-        cursor.close()
-        conn.close()
 
-
-def delete_role(role_id):
-    conn = get_snowflake_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("DELETE FROM roles WHERE id = %s", (role_id,))
-        conn.commit()
-        return {"message": "Role deleted successfully"}, 200
-    except Exception as e:
-        return {"error": str(e)}, 500
-    finally:
-        cursor.close()
-        conn.close()
 
 
 def create_menu(data):
@@ -246,7 +194,7 @@ def create_menu(data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO menus (name, description) VALUES (%s, %s)",
+            "INSERT INTO NBF_CIA.PUBLIC.MENUS (NAME, DESCRIPTION) VALUES (%s, %s)",
             (data['name'], data['description'])
         )
         conn.commit()
@@ -257,18 +205,16 @@ def create_menu(data):
         cursor.close()
         conn.close()
 
-
 def get_menu(menu_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM menus WHERE id = %s", (menu_id,))
+        cursor.execute("SELECT * FROM NBF_CIA.PUBLIC.MENUS WHERE ID = %s", (menu_id,))
         menu = cursor.fetchone()
         if menu:
             column_names = [desc[0] for desc in cursor.description]
             menu_dict = dict(zip(column_names, menu))
-            json_data = json.dumps(menu_dict, indent=4)
-            return json_data, 200
+            return menu_dict, 200
         else:
             return {"message": "Menu not found"}, 404
     except Exception as e:
@@ -277,18 +223,16 @@ def get_menu(menu_id):
         cursor.close()
         conn.close()
 
-
 def get_all_menus():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM menus")
+        cursor.execute("SELECT * FROM NBF_CIA.PUBLIC.MENUS")
         menus = cursor.fetchall()
         if menus:
             column_names = [desc[0] for desc in cursor.description]
             menus_list = [dict(zip(column_names, menu)) for menu in menus]
-            json_data = json.dumps(menus_list, indent=4)
-            return json_data, 200
+            return menus_list, 200
         else:
             return {"message": "No menus found"}, 404
     except Exception as e:
@@ -297,13 +241,12 @@ def get_all_menus():
         cursor.close()
         conn.close()
 
-
 def update_menu(menu_id, data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE menus SET name = %s, description = %s WHERE id = %s",
+            "UPDATE NBF_CIA.PUBLIC.MENUS SET NAME = %s, DESCRIPTION = %s WHERE ID = %s",
             (data['name'], data['description'], menu_id)
         )
         conn.commit()
@@ -319,7 +262,15 @@ def delete_menu(menu_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM menus WHERE id = %s", (menu_id,))
+        # Check if there are any submenus associated with this menu
+        cursor.execute("SELECT COUNT(*) FROM NBF_CIA.PUBLIC.SUB_MENUS WHERE MENU_ID = %s", (menu_id,))
+        sub_menu_count = cursor.fetchone()[0]
+
+        if sub_menu_count > 0:
+            return {"error": "Cannot delete menu with associated submenus"}, 400
+
+        # If no submenus are associated, proceed to delete the menu
+        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.MENUS WHERE ID = %s", (menu_id,))
         conn.commit()
         return {"message": "Menu deleted successfully"}, 200
     except Exception as e:
@@ -333,90 +284,108 @@ def create_sub_menu(data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
+        # Insert a new submenu into the SUB_MENUS table
         cursor.execute(
-            "INSERT INTO sub_menus (menu_id, name, description) VALUES (%s, %s, %s)",
-            (data['menu_id'], data['name'], data['description'])
+            "INSERT INTO NBF_CIA.PUBLIC.SUB_MENUS (MENU_ID, NAME, DESCRIPTION, ROUTE) VALUES (%s, %s, %s, %s)",
+            (data['menu_id'], data['name'], data['description'], data['route'])
         )
         conn.commit()
         return {"message": "SubMenu created successfully"}, 201
     except Exception as e:
+        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
-
 
 def get_sub_menu(sub_menu_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
+        # Select a submenu along with its associated menu name by ID
         cursor.execute(
-            "SELECT sm.*, m.name as menu_name FROM sub_menus sm LEFT JOIN menus m ON m.id = sm.id  WHERE sm.id = %s",
-            (sub_menu_id,))
+            "SELECT sm.*, m.NAME as menu_name FROM NBF_CIA.PUBLIC.SUB_MENUS sm LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.ID = sm.MENU_ID WHERE sm.ID = %s",
+            (sub_menu_id,)
+        )
         sub_menu = cursor.fetchone()
         if sub_menu:
+            # Create a dictionary with the submenu data if found
             column_names = [desc[0] for desc in cursor.description]
             sub_menu_dict = dict(zip(column_names, sub_menu))
-            json_data = json.dumps(sub_menu_dict, indent=4)
-            return json_data, 200
+            return sub_menu_dict, 200
         else:
+            # Return message and status code 404 if submenu is not found
             return {"message": "SubMenu not found"}, 404
     except Exception as e:
+        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
-
 
 def get_all_sub_menus():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT sm.*, m.name as menu_name FROM sub_menus sm LEFT JOIN menus m ON m.id = sm.id ")
+        # Select all submenus along with their associated menu names
+        cursor.execute("SELECT sm.*, m.NAME as menu_name FROM NBF_CIA.PUBLIC.SUB_MENUS sm LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.ID = sm.MENU_ID")
         sub_menus = cursor.fetchall()
         if sub_menus:
+            # Create a list of dictionaries with all submenus data if found
             column_names = [desc[0] for desc in cursor.description]
             sub_menus_list = [dict(zip(column_names, sub_menu)) for sub_menu in sub_menus]
-            json_data = json.dumps(sub_menus_list, indent=4)
-            return json_data, 200
+            return sub_menus_list, 200
         else:
+            # Return message and status code 404 if no submenus are found
             return {"message": "No sub_menus found"}, 404
     except Exception as e:
+        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
-
 
 def update_sub_menu(sub_menu_id, data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
+        # Update the submenu details based on the given ID
         cursor.execute(
-            "UPDATE sub_menus SET menu_id = %s, name = %s, description = %s WHERE id = %s",
-            (data['menu_id'], data['name'], data['description'], sub_menu_id)
+            "UPDATE NBF_CIA.PUBLIC.SUB_MENUS SET MENU_ID = %s, NAME = %s, DESCRIPTION = %s, ROUTE = %s WHERE ID = %s",
+            (data['menu_id'], data['name'], data['description'], data['route'], sub_menu_id)
         )
         conn.commit()
         return {"message": "SubMenu updated successfully"}, 200
     except Exception as e:
+        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
-
 
 def delete_sub_menu(sub_menu_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM sub_menus WHERE id = %s", (sub_menu_id,))
+        # Check if the submenu is mapped to any role permission
+        cursor.execute("SELECT COUNT(*) FROM NBF_CIA.PUBLIC.ROLE_PERMISSION WHERE SUB_MENU_ID = %s", (sub_menu_id,))
+        count = cursor.fetchone()[0]
+
+        if count > 0:
+            return {"message": "SubMenu is mapped to role permission and cannot be deleted"}, 400
+
+        # Delete the submenu based on the given ID
+        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.SUB_MENUS WHERE ID = %s", (sub_menu_id,))
         conn.commit()
         return {"message": "SubMenu deleted successfully"}, 200
     except Exception as e:
+        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
+
+
 
 
 def create_permission(data):
@@ -460,7 +429,7 @@ def get_all_permissions():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM permission_level")
+        cursor.execute("SELECT * FROM PERMISSION_LEVEL")
         permissions = cursor.fetchall()
         if permissions:
             column_names = [desc[0] for desc in cursor.description]
@@ -512,7 +481,7 @@ def create_role_permission(data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO role_permission (role_id, menu_id, sub_menu_id, permission_level) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO NBF_CIA.PUBLIC.ROLE_PERMISSION (ROLE_ID, MENU_ID, SUB_MENU_ID, PERMISSION_LEVEL) VALUES (%s, %s, %s, %s)",
             (data['role_id'], data['menu_id'], data['submenu_id'], data['permission_level'])
         )
         conn.commit()
@@ -523,39 +492,30 @@ def create_role_permission(data):
         cursor.close()
         conn.close()
 
-
 def get_role_permission(role_permission_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""
         SELECT rp.*, r.name as role_name, m.name as menu_name, sm.name AS sub_menu_name, p.level AS permission 
-        FROM role_permission rp 
-        LEFT JOIN roles r ON r.id = rp.role_id
-        LEFT JOIN menus m ON m.id = rp.menu_id 
-        LEFT JOIN sub_menus sm ON sm.id = rp.sub_menu_id 
-        LEFT JOIN permission_level p ON p.id = rp.permission_level
+        FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp 
+        LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.id = rp.role_id
+        LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.id = rp.menu_id 
+        LEFT JOIN NBF_CIA.PUBLIC.SUB_MENUS sm ON sm.id = rp.sub_menu_id 
+        LEFT JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL p ON p.id = rp.permission_level
         WHERE rp.id = %s""", (role_permission_id,))
 
         role_permission = cursor.fetchone()
         if role_permission is None:
-            return "Role permission not found", 404
-        elif role_permission:
-            column_names = [desc[0] for desc in cursor.description]
-            print(column_names)
-            role_permission_dict = dict(zip(column_names, role_permission))
-            print(role_permission_dict)
-            json_data = json.dumps(role_permission_dict, indent=4)
-            print(json_data)
-            return json_data, 200
-        else:
             return {"message": "Role permission not found"}, 404
+        column_names = [desc[0] for desc in cursor.description]
+        role_permission_dict = dict(zip(column_names, role_permission))
+        return role_permission_dict, 200
     except Exception as e:
         return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
-
 
 def get_all_role_permissions():
     conn = get_snowflake_connection()
@@ -563,19 +523,18 @@ def get_all_role_permissions():
     try:
         cursor.execute("""
         SELECT rp.*, r.name as role_name, m.name as menu_name, sm.name AS sub_menu_name, p.level AS permission 
-        FROM role_permission rp 
-        LEFT JOIN roles r ON r.id = rp.role_id
-        LEFT JOIN menus m ON m.id = rp.menu_id 
-        LEFT JOIN sub_menus sm ON sm.id = rp.sub_menu_id 
-        LEFT JOIN permission_level p ON p.id = rp.permission_level
+        FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp 
+        LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.id = rp.role_id
+        LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.id = rp.menu_id 
+        LEFT JOIN NBF_CIA.PUBLIC.SUB_MENUS sm ON sm.id = rp.sub_menu_id 
+        LEFT JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL p ON p.id = rp.permission_level
         ORDER BY rp.id DESC
         """)
         role_permissions = cursor.fetchall()
         if role_permissions:
             column_names = [desc[0] for desc in cursor.description]
             role_permissions_list = [dict(zip(column_names, role_permission)) for role_permission in role_permissions]
-            json_data = json.dumps(role_permissions_list, indent=4)
-            return json_data, 200
+            return role_permissions_list, 200
         else:
             return {"message": "No role permissions found"}, 404
     except Exception as e:
@@ -584,13 +543,12 @@ def get_all_role_permissions():
         cursor.close()
         conn.close()
 
-
 def update_role_permission(role_permission_id, data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE role_permission SET role_id = %s, menu_id = %s, sub_menu_id = %s, permission_level = %s WHERE id = %s",
+            "UPDATE NBF_CIA.PUBLIC.ROLE_PERMISSION SET ROLE_ID = %s, MENU_ID = %s, SUB_MENU_ID = %s, PERMISSION_LEVEL = %s WHERE ID = %s",
             (data['role_id'], data['menu_id'], data['submenu_id'], data['permission_level'], role_permission_id)
         )
         conn.commit()
@@ -601,12 +559,11 @@ def update_role_permission(role_permission_id, data):
         cursor.close()
         conn.close()
 
-
 def delete_role_permission(role_permission_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM role_permission WHERE id = %s", (role_permission_id,))
+        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.ROLE_PERMISSION WHERE ID = %s", (role_permission_id,))
         conn.commit()
         return {"message": "Role permission deleted successfully"}, 200
     except Exception as e:

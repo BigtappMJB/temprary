@@ -1,6 +1,6 @@
 // src/contexts/DialogContext.js
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 /**
  * Creates a context for managing dialogs in the application.
@@ -27,6 +27,7 @@ export const DialogProvider = ({ children }) => {
   const [dialogType, setDialogType] = useState("primary");
   const [dialogCallback, setDialogCallback] = useState(null);
   const [buttonNeeded, setButtonNeeded] = useState({});
+  const [onClose, setOnClose] = useState(null);
 
   /**
    * Opens a dialog with the specified type, title, message, and callback.
@@ -36,14 +37,30 @@ export const DialogProvider = ({ children }) => {
    * @param {string} message The message to display in the dialog.
    * @param {function} callback The callback function to call when the dialog is confirmed.
    */
-  const openDialog = (type, title, message, buttonNeeded, callback) => {
+  const openDialog = (
+    type,
+    title,
+    message,
+    buttonNeeded,
+    callback,
+    onClose
+  ) => {
     setDialogType(type);
     setDialogTitle(title);
     setDialogMessage(message);
     setDialogCallback(() => callback);
     setButtonNeeded(buttonNeeded);
     setDialogOpen(true);
+    setOnClose(onClose);
   };
+
+  useEffect(() => {
+    return () => {
+      if (onClose) {
+        onClose();
+      }
+    };
+  }, [onClose]);
 
   /**
    * Closes the current dialog.

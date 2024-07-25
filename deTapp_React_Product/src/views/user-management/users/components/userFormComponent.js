@@ -26,8 +26,8 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for form validation using Yup
 const schema = yup.object().shape({
-  userId: yup.string().required("User name is required"),
-  // role: yup.object().required("Role is required"),
+  // userId: yup.string().required("User name is required"),
+  role: yup.object().required("Role is required"),
   firstName: yup
     .string()
     .required("First Name is required")
@@ -104,11 +104,12 @@ const UserFormComponent = ({
   // Effect to set default values and reset the form
   useEffect(() => {
     if (defaultValues) {
-      // const role =
-      //   rolesList.find((role) => role.ID === defaultValues.ROLE) || null;
+      const role =
+        rolesList.find((role) => role.id === defaultValues.ROLE_ID) || null;
+      
       reset({
-        userId: defaultValues.USER_ID ?? "",
-        // role: role,
+        // userId: defaultValues.USER_ID ?? "",
+        role: role,
         firstName: defaultValues.FIRST_NAME ?? "",
         lastName: defaultValues.LAST_NAME ?? "",
         email: defaultValues.EMAIL ?? "",
@@ -123,7 +124,7 @@ const UserFormComponent = ({
     if (formAction.action === "add") {
       reset({
         userId: "",
-        // role: null,
+        role: null,
         firstName: "",
         lastName: "",
         email: "",
@@ -150,8 +151,8 @@ const UserFormComponent = ({
   const handleReset = () => {
     onReset();
     reset({
-      userId: "",
-      // role: null,
+      // userId: "",
+      role: null,
       firstName: "",
       lastName: "",
       email: "",
@@ -166,7 +167,7 @@ const UserFormComponent = ({
     onSubmit(getValues());
     reset({
       userId: "",
-      // role: null,
+      role: null,
       firstName: "",
       lastName: "",
       email: "",
@@ -175,9 +176,13 @@ const UserFormComponent = ({
   };
 
   return (
-    <Container component="form" onSubmit={handleSubmit(onLocalSubmit)}>
+    <Container
+      component="form"
+      className="panel-bg"
+      onSubmit={handleSubmit(onLocalSubmit)}
+    >
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        {/* <Grid item xs={12} sm={6}>
           <Controller
             name="userId"
             control={control}
@@ -196,41 +201,8 @@ const UserFormComponent = ({
               />
             )}
           />
-        </Grid>
-        {/* <Grid item xs={12} sm={6}>
-          <Controller
-            name="role"
-            control={control}
-            render={({ field }) => (
-              <Autocomplete
-                {...field}
-                options={rolesList}
-                getOptionLabel={(option) => option.NAME}
-                isOptionEqualToValue={(option, value) => option.ID === value.ID}
-                value={field.value || null}
-                onChange={(_, data) => field.onChange(data)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Role"
-                    fullWidth
-                    error={!!errors.role}
-                    helperText={errors.role?.message}
-                    InputLabelProps={{
-                      shrink: Boolean(field.value || isFocused),
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      readOnly: readOnly, // Set to true if you want the field to be read-only
-                      onFocus: () => setIsFocused(true),
-                      onBlur: () => setIsFocused(false),
-                    }}
-                  />
-                )}
-              />
-            )}
-          />
         </Grid> */}
+
         <Grid item xs={12} sm={6}>
           <Controller
             name="firstName"
@@ -311,7 +283,41 @@ const UserFormComponent = ({
             )}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="role"
+            control={control}
+            render={({ field }) => (
+              <Autocomplete
+                {...field}
+                options={rolesList}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                value={field.value || null}
+                onChange={(_, data) => field.onChange(data)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Role"
+                    fullWidth
+                    error={!!errors.role}
+                    helperText={errors.role?.message}
+                    InputLabelProps={{
+                      shrink: Boolean(field.value || isFocused),
+                    }}
+                    InputProps={{
+                      ...params.InputProps,
+                      readOnly: readOnly, // Set to true if you want the field to be read-only
+                      onFocus: () => setIsFocused(true),
+                      onBlur: () => setIsFocused(false),
+                    }}
+                  />
+                )}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} sm={12}>
           <Box
             display="flex"
             justifyContent="flex-end"
@@ -320,7 +326,12 @@ const UserFormComponent = ({
             gap={2} // Adds space between buttons
           >
             {formAction.action !== "read" && (
-              <Button type="submit" variant="contained" color="primary">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className="primary"
+              >
                 {formAction.action === "add" ? "Add" : "Update"}
               </Button>
             )}
@@ -328,7 +339,8 @@ const UserFormComponent = ({
             <Button
               type="button"
               variant="contained"
-              color="secondary"
+              color="primary"
+              className="danger"
               onClick={handleReset}
             >
               {formAction.action !== "read" ? "Cancel" : "Close"}

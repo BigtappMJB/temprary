@@ -4,6 +4,7 @@ import SidebarItems from "./SidebarItems";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useLoginProvider } from "../../../views/authentication/provider/LoginProvider";
 
 /**
  * Sidebar component renders a navigation drawer.
@@ -19,8 +20,11 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
   const navItemClicked = () => {
-    isMobile && handleDrawerToggle()
+    isMobile && handleDrawerToggle();
   };
+
+
+  
   return (
     <Drawer
       variant={isMobile ? "temporary" : "persistent"}

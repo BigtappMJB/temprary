@@ -1,13 +1,27 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, MenuItem, Box, IconButton, Tooltip } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
+import {
+  TextField,
+  MenuItem,
+  Box,
+  IconButton,
+  Tooltip,
+  Autocomplete,
+  Button,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../utilities/Validators";
+import debounce from "lodash/debounce";
 
 // Define validation schema using Yup
 const schema = yup.object().shape({
@@ -40,321 +54,403 @@ const schema = yup.object().shape({
   }),
 });
 
+const defaultValue = {
+  columnName: "",
+  dataType: "",
+  length: "",
+  isPrimary: false,
+  isForeign: false,
+  isMandatory: false,
+  defaultValue: "",
+  fkTableName: "",
+  fkTableFieldName: "",
+};
+
 // Styled Box for the container with overflow handling
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  overflow: "auto",
-  padding: theme.spacing(1),
+
+  padding: theme.spacing(2),
   gap: theme.spacing(1),
   alignItems: "center",
-  background:
-    "linear-gradient(to bottom, rgba(249, 251, 255, 1), rgba(249, 251, 255, 1), rgba(249, 250, 255, 1))",
+  // background:
+  //   "linear-gradient(to bottom, rgba(249, 251, 255, 1), rgba(249, 251, 255, 1), rgba(249, 250, 255, 1))",
 }));
 
 /**
  * TableColumnForm component
  *
  * This component renders a form for table column configuration with real-time validation
- * and sanitization of input values.
+ * and sanitization of input values. It updates the parent component with the form values
+ * whenever the form or any field changes.
  *
  * @param {Object} props - React props
  * @param {Object} props.data - Data for the form
  * @param {Function} props.onColumnSubmit - Function to handle form submission
  * @param {Function} props.onReset - Function to handle form reset
- * @param {Function} props.dataTypes - Array of DataTypes
+ * @param {Array<string>} props.dataTypes - Array of DataTypes
+ *
+ * @example
+ * // Example usage of TableColumnForm
+ * <TableColumnForm
+ *   data={data}
+ *   onColumnSubmit={handleColumnSubmit}
+ *   onReset={handleReset}
+ *   dataTypes={['string', 'number', 'boolean']}
+ * />
  *
  * @returns {JSX.Element} The rendered component
  */
-const TableColumnForm = ({ data, onColumnSubmit, onReset, dataTypes }) => {
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const {
-    control,
-    handleSubmit,
-    reset,
-    getValues,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    mode: "onChange",
-    defaultValues: {
-      columnName: "",
-      dataType: "",
-      length: "",
-      isPrimary: false,
-      isForeign: false,
-      isMandatory: false,
-      defaultValue: "",
-      fkTableName: "",
-      fkTableFieldName: "",
-    },
-  });
 
-  const watchIsForeign = watch("isForeign");
-  const watchIsPrimary = watch("isPrimary");
+const TableColumnForm = forwardRef(
+  ({ data, onColumnSubmit, onReset, dataTypes, isRemovingForm }, ref) => {
+    const [isFocused, setIsFocused] = useState({
+      dataType: false,
+    });
+    const {
+      control,
+      handleSubmit,
+      reset,
+      getValues,
+      watch,
+      trigger,
+      formState: { errors },
+    } = useForm({
+      resolver: yupResolver(schema),
+      mode: "onChange",
+      defaultValues: defaultValue,
+    });
 
-  const onLocalSubmit = useCallback(() => {
-    const fullValue = {
-      id: data.id,
-      formSubmitted: true,
-      ...getValues(),
-    };
-    setFormSubmitted(true);
-    onColumnSubmit(fullValue);
-  }, [data.id, getValues, onColumnSubmit]);
+    const watchIsForeign = watch("isForeign");
+    const watchIsPrimary = watch("isPrimary");
 
-  useEffect(() => {
-    if (data) {
-      reset({
-        columnName: data.columnName ?? "",
-        dataType: data.dataType ?? "",
-        length: data.length ?? "",
-        isPrimary: data.isPrimary ?? false,
-        isForeign: data.isForeign ?? false,
-        isMandatory: data.isMandatory ?? false,
-        defaultValue: data.defaultValue ?? "",
-        fkTableName: data.fkTableName ?? "",
-        fkTableFieldName: data.fkTableFieldName ?? "",
-      });
+    const updateParent = useCallback(async () => {
+      const fullValue = {
+        id: data.id,
+        validated: false,
+        ...getValues(),
+      };
+      onColumnSubmit(fullValue);
+    }, [data.id, getValues, onColumnSubmit]);
 
-      data?.formSubmitted && onLocalSubmit();
-    }
-  }, [data, reset, getValues, onLocalSubmit]);
+    useCallback(debounce(updateParent, 300), [updateParent]);
 
-  // Reset form handler
-  const handleReset = () => {
-    reset({});
-    if (onReset) onReset(data.id);
-  };
+    // Expose a method to trigger validation via ref
+    useImperativeHandle(ref, () => ({
+      triggerValidation: async () => {
+        const isValid = await trigger();
+        const values = getValues();
+        return { ...values, validated: isValid };
+      },
+    }));
 
-  // Effect to sanitize input values
-  useEffect(() => {
-    const sanitizeInputs = () => {
-      const inputs = document.querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.value = DOMPurify.sanitize(input.value);
-      });
+    useEffect(() => {
+      if (data) {
+        reset({
+          columnName: data.columnName ?? "",
+          dataType: data.dataType ?? "",
+          length: data.length ?? "",
+          isPrimary: data.isPrimary ?? false,
+          isForeign: data.isForeign ?? false,
+          isMandatory: data.isMandatory ?? false,
+          defaultValue: data.defaultValue ?? "",
+          fkTableName: data.fkTableName ?? "",
+          fkTableFieldName: data.fkTableFieldName ?? "",
+        });
+      }
+    }, [data, reset]);
+
+    // Reset form handler
+    const handleReset = (event) => {
+      // event.stopPropagation();
+      reset(defaultValue);
+      if (onReset) onReset(data.id);
     };
 
-    sanitizeInputs();
-  }, []);
+    // Effect to sanitize input values
+    useEffect(() => {
+      const sanitizeInputs = () => {
+        const inputs = document.querySelectorAll("input");
+        inputs.forEach((input) => {
+          input.value = DOMPurify.sanitize(input.value);
+        });
+      };
 
-  useEffect(() => {
-    if (watchIsForeign === false) {
-      reset((values) => ({
-        ...values,
-        fkTableName: "",
-        fkTableFieldName: "",
-      }));
-    }
+      sanitizeInputs();
+    }, []);
 
-    if (watchIsPrimary === true) {
-      setValue("isMandatory", true);
-    }
-  }, [watchIsForeign, watchIsPrimary, reset, setValue]);
+    useEffect(() => {
+      if (watchIsForeign === false) {
+        reset((values) => ({
+          ...values,
+          fkTableName: "",
+          fkTableFieldName: "",
+        }));
+      }
 
-  return (
-    <Container component="form" onSubmit={handleSubmit(onLocalSubmit)}>
-      <Controller
-        name="columnName"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Column Name"
-            variant="outlined"
-            error={!!errors.columnName}
-            helperText={errors.columnName?.message}
-            className="input-field"
-            InputProps={{
-              readOnly: formSubmitted, // Make the field read-only
-            }}
+      if (watchIsPrimary === true) {
+        reset((values) => ({
+          ...values,
+          isMandatory: true,
+        }));
+      }
+    }, [watchIsForeign, watchIsPrimary, reset]);
+
+    // Watch for changes and update parent on change
+    useEffect(() => {
+      const subscription = watch(() => {
+        updateParent();
+      });
+      return () => subscription.unsubscribe();
+    }, [watch, updateParent]);
+
+    return (
+      <Container component="form" onSubmit={handleSubmit(updateParent)}>
+        <Controller
+          name="columnName"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Column Name"
+              variant="outlined"
+              error={!!errors.columnName}
+              helperText={errors.columnName?.message}
+              className="input-field"
+              InputProps={{
+                readOnly: data?.id === 0, // Make the field read-only
+              }}
+            />
+          )}
+        />
+        {data?.id === 0 ? (
+          <Controller
+            name="dataType"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Data Type"
+                variant="outlined"
+                select
+                error={!!errors.dataType}
+                helperText={errors.dataType?.message}
+                className="input-field"
+                InputProps={{
+                  readOnly: data?.id === 0, // Make the field read-only
+                }}
+              >
+                {dataTypes.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+          />
+        ) : (
+          <Controller
+            name="dataType"
+            control={control}
+            render={({ field }) => (
+              <Autocomplete
+                {...field}
+                options={dataTypes}
+                getOptionLabel={(option) => option}
+                isOptionEqualToValue={(option, value) => option === value}
+                value={field.value || null}
+                onChange={(_, data) => field.onChange(data)}
+                className="input-field"
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select datatype"
+                    fullWidth
+                    error={!!errors.dataType}
+                    helperText={errors.dataType?.message}
+                    className="input-field"
+                    InputLabelProps={{
+                      shrink: Boolean(field.value || isFocused.dataType),
+                    }}
+                    InputProps={{
+                      ...params.InputProps,
+                      readOnly: data?.id === 0, // Make the field read-only
+                      onFocus: () =>
+                        setIsFocused({ ...isFocused, dataType: true }),
+                      onBlur: () =>
+                        setIsFocused({ ...isFocused, dataType: false }),
+                    }}
+                    disabled={data?.id === 0} // Disable the input to make it read-only
+                  />
+                )}
+              />
+            )}
           />
         )}
-      />
-      <Controller
-        name="dataType"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Data Type"
-            variant="outlined"
-            select
-            error={!!errors.dataType}
-            helperText={errors.dataType?.message}
-            className="input-field"
-            InputProps={{
-              readOnly: formSubmitted, // Make the field read-only
-            }}
-          >
-            {dataTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
-              </MenuItem>
-            ))}
-          </TextField>
+        <Controller
+          name="length"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Length"
+              variant="outlined"
+              error={!!errors.length}
+              helperText={errors.length?.message}
+              className="input-field"
+              InputProps={{
+                readOnly: data?.id === 0, // Make the field read-only
+              }}
+            />
+          )}
+        />
+        <Controller
+          name="isPrimary"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Is Primary"
+              variant="outlined"
+              select
+              error={!!errors.isPrimary}
+              helperText={errors.isPrimary?.message}
+              className="input-field"
+              InputProps={{
+                readOnly: true, // Make the field read-only
+              }}
+            >
+              <MenuItem value={true}>Yes</MenuItem>
+              <MenuItem value={false}>No</MenuItem>
+            </TextField>
+          )}
+        />
+        <Controller
+          name="isForeign"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Is Foreign Key"
+              variant="outlined"
+              select
+              error={!!errors.isForeign}
+              helperText={errors.isForeign?.message}
+              className="input-field"
+              InputProps={{
+                readOnly: data?.id === 0, // Make the field read-only
+              }}
+            >
+              <MenuItem value={true}>Yes</MenuItem>
+              <MenuItem value={false}>No</MenuItem>
+            </TextField>
+          )}
+        />
+        <Controller
+          name="isMandatory"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Mandatory"
+              variant="outlined"
+              select
+              error={!!errors.isMandatory}
+              helperText={errors.isMandatory?.message}
+              className="input-field"
+              InputProps={{
+                readOnly: data?.id === 0, // Make the field read-only
+              }}
+            >
+              <MenuItem value={true}>Yes</MenuItem>
+              <MenuItem value={false}>No</MenuItem>
+            </TextField>
+          )}
+        />
+        <Controller
+          name="defaultValue"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Default Value"
+              variant="outlined"
+              error={!!errors.defaultValue}
+              helperText={errors.defaultValue?.message}
+              className="input-field"
+              InputProps={{
+                readOnly: data?.id === 0, // Make the field read-only
+              }}
+            />
+          )}
+        />
+        <Controller
+          name="fkTableName"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="FK Table ID"
+              variant="outlined"
+              select
+              error={!!errors.fkTableName}
+              helperText={errors.fkTableName?.message}
+              className="input-field"
+              InputProps={{
+                readOnly: data?.id === 0, // Make the field read-only
+              }}
+            >
+              <MenuItem value="string">String</MenuItem>
+              <MenuItem value="number">Number</MenuItem>
+              <MenuItem value="boolean">Boolean</MenuItem>
+            </TextField>
+          )}
+        />
+        <Controller
+          name="fkTableFieldName"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="FK Table Field Name"
+              variant="outlined"
+              select
+              error={!!errors.fkTableFieldName}
+              helperText={errors.fkTableFieldName?.message}
+              className="input-field"
+              InputProps={{
+                readOnly: data?.id === 0, // Make the field read-only
+              }}
+            >
+              <MenuItem value="string">String</MenuItem>
+              <MenuItem value="number">Number</MenuItem>
+              <MenuItem value="boolean">Boolean</MenuItem>
+            </TextField>
+          )}
+        />
+        {data?.id !== 0 && (
+          <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
+            {/* <Tooltip title="Delete" arrow>
+              <IconButton sx={{ color: "#d92d20" }} onClick={handleReset}>
+                <CloseIcon />
+              </IconButton>
+            </Tooltip> */}
+
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              className="danger"
+              onClick={handleReset}
+            >
+              Delete
+            </Button>
+          </Box>
         )}
-      />
-      <Controller
-        name="length"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Length"
-            variant="outlined"
-            error={!!errors.length}
-            helperText={errors.length?.message}
-            className="input-field"
-            InputProps={{
-              readOnly: formSubmitted, // Make the field read-only
-            }}
-          />
-        )}
-      />
-      <Controller
-        name="isPrimary"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Is Primary"
-            variant="outlined"
-            select
-            error={!!errors.isPrimary}
-            helperText={errors.isPrimary?.message}
-            className="input-field"
-            InputProps={{
-              readOnly: formSubmitted || data?.id !== 0, // Make the field read-only
-            }}
-          >
-            <MenuItem value={true}>Yes</MenuItem>
-            <MenuItem value={false}>No</MenuItem>
-          </TextField>
-        )}
-      />
-      <Controller
-        name="isForeign"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Is Foreign Key"
-            variant="outlined"
-            select
-            error={!!errors.isForeign}
-            helperText={errors.isForeign?.message}
-            className="input-field"
-            InputProps={{
-              readOnly: formSubmitted || data?.id !== 0, // Make the field read-only
-            }}
-          >
-            <MenuItem value={true}>Yes</MenuItem>
-            <MenuItem value={false}>No</MenuItem>
-          </TextField>
-        )}
-      />
-      <Controller
-        name="isMandatory"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Mandatory"
-            variant="outlined"
-            select
-            InputProps={{
-              readOnly: formSubmitted || watchIsPrimary === true, // Make the field read-only
-            }}
-            error={!!errors.isMandatory}
-            helperText={errors.isMandatory?.message}
-            className="input-field"
-          >
-            <MenuItem value={true}>Yes</MenuItem>
-            <MenuItem value={false}>No</MenuItem>
-          </TextField>
-        )}
-      />
-      <Controller
-        name="defaultValue"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Default Value"
-            variant="outlined"
-            error={!!errors.defaultValue}
-            helperText={errors.defaultValue?.message}
-            className="input-field"
-            InputProps={{
-              readOnly: formSubmitted, // Make the field read-only
-            }}
-          />
-        )}
-      />
-      <Controller
-        name="fkTableName"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="FK Table ID"
-            variant="outlined"
-            select
-            InputProps={{
-              readOnly: formSubmitted || watchIsForeign === false,
-            }}
-            error={!!errors.fkTableName}
-            helperText={errors.fkTableName?.message}
-            className="input-field"
-          >
-            <MenuItem value="string">String</MenuItem>
-            <MenuItem value="number">Number</MenuItem>
-            <MenuItem value="boolean">Boolean</MenuItem>
-          </TextField>
-        )}
-      />
-      <Controller
-        name="fkTableFieldName"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="FK Table Field Name"
-            variant="outlined"
-            select
-            InputProps={{
-              readOnly: formSubmitted || watchIsForeign === false,
-            }}
-            error={!!errors.fkTableFieldName}
-            helperText={errors.fkTableFieldName?.message}
-            className="input-field"
-          >
-            <MenuItem value="string">String</MenuItem>
-            <MenuItem value="number">Number</MenuItem>
-            <MenuItem value="boolean">Boolean</MenuItem>
-          </TextField>
-        )}
-      />
-      {!formSubmitted && (
-        <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
-          <Tooltip title={data?.formSubmitted ? "Update" : "Save"}>
-            <IconButton type="submit" color="primary">
-              {data?.formSubmitted ? <CheckIcon /> : <CheckIcon />}
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton color="secondary" onClick={handleReset}>
-              <CloseIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      )}
-    </Container>
-  );
-};
+      </Container>
+    );
+  }
+);
 
 export default TableColumnForm;

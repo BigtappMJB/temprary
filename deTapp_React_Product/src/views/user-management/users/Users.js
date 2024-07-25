@@ -1,15 +1,23 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import UserFormComponent from "./components/userFormComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DataTable from "./components/DataTable";
 import {
-  getRolesController,
   getUserController,
   userCreationController,
   userdeleteController,
   userupdateController,
 } from "./controllers/usersControllers";
 import { useDialog } from "../../utilities/alerts/DialogContent";
+import { useLoading } from "../../../components/Loading/loadingProvider";
+import { getRolesController } from "../roles/controllers/rolesControllers";
+import {
+  getCurrentPathName,
+  getSubmenuDetails,
+  ScrollToTopButton,
+} from "../../utilities/generals";
+import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -73,46 +81,114 @@ const FormButton = styled(Button)(({ theme }) => ({
 const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
-  // const [rolesList, setRolesList] = useState([]);
+  const [rolesList, setRolesList] = useState([]);
+  const { startLoading, stopLoading } = useLoading();
+
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
   });
 
+  const [permissionLevels, setPermissionLevels] = useState({
+    create: null,
+    edit: null,
+    view: null,
+    delete: null,
+  });
+  const hasFetchedRoles = useRef(false);
+
   const { openDialog } = useDialog();
 
   // Fetches user data and updates the table
   const getTableData = async () => {
-    const response = await getUserController();
-    setTableData(response);
+    try {
+      startLoading();
+      const response = await getUserController();
+      setTableData(response);
+    } catch (error) {
+      console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
+    } finally {
+      stopLoading();
+    }
   };
+  const { menuList } = useLoginProvider();
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    // const getRoles = async () => {
-    //   const response = await getRolesController();
-    //   setRolesList(response);
-    // };
-    // getRoles();
-    getTableData();
+    const getRoles = async () => {
+      try {
+        const response = await getRolesController();
+        setRolesList(response);
+      } catch (error) {
+        console.error(error);
+        if (error.statusCode === 404) {
+          setRolesList([]);
+        }
+      }
+    };
+
+    if (!hasFetchedRoles.current) {
+      const submenuDetails = getSubmenuDetails(
+        menuList,
+        getCurrentPathName(),
+        "path"
+      );
+      const permissionList = submenuDetails?.permission_level
+        .split(",")
+        .map((ele) => ele.trim().toLowerCase());
+
+      setPermissionLevels({
+        create: permissionList.includes("create"),
+        edit: permissionList.includes("edit"),
+        view: permissionList.includes("view"),
+        delete: permissionList.includes("delete"),
+      });
+      getRoles();
+      getTableData();
+      hasFetchedRoles.current = true;
+    }
   }, []);
 
   const columns = {
-    USER_ID: "Username",
+    // USER_ID: "Username",
     FIRST_NAME: "First Name",
     LAST_NAME: "Last Name",
     EMAIL: "Email",
     MOBILE: "Mobile No",
+    ROLE_NAME: "Role",
   };
 
   /**
    * Initiates the process to add a new user.
    */
   const addUser = () => {
-    setFormAction({
-      display: true,
-      action: "add",
-    });
+    if (permissionLevels.create)
+      setFormAction({
+        display: true,
+        action: "add",
+      });
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -121,11 +197,15 @@ const UsersPage = () => {
    */
   const onformSubmit = async (formData) => {
     try {
+      startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
       if (isAdd) response = await userCreationController(formData);
       else {
-        formData = { ...formData, ID: selectedValue.ID };
+        formData = {
+          ...formData,
+          ID: selectedValue.ID,
+        };
         response = await userupdateController(formData);
       }
 
@@ -133,7 +213,8 @@ const UsersPage = () => {
         openDialog(
           "success",
           `User ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message,
+          response.message ||
+            `User has been ${isAdd ? "addded" : "updated"} successfully`,
           {
             confirm: {
               name: "Ok",
@@ -175,6 +256,8 @@ const UsersPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -193,11 +276,32 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    setSelectedValue(selectedRow);
-    setFormAction({
-      display: true,
-      action: "update",
-    });
+    if (permissionLevels.edit) {
+      setSelectedValue(selectedRow);
+      ScrollToTopButton();
+      setFormAction({
+        display: true,
+        action: "update",
+      });
+    } else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -205,28 +309,47 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleDelete = (selectedRow) => {
-    openDialog(
-      "warning",
-      `Delete confirmation`,
-      `Are you sure you want to delete this user "${
-        selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
-      }"?`,
-      {
-        confirm: {
-          name: "Yes",
-          isNeed: true,
+    if (permissionLevels.delete)
+      openDialog(
+        "warning",
+        `Delete confirmation`,
+        `Are you sure you want to delete this user "${
+          selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
+        }"?`,
+        {
+          confirm: {
+            name: "Yes",
+            isNeed: true,
+          },
+          cancel: {
+            name: "No",
+            isNeed: true,
+          },
         },
-        cancel: {
-          name: "No",
-          isNeed: true,
-        },
-      },
-      (confirmed) => {
-        if (confirmed) {
-          removeDataFromTable(selectedRow);
+        (confirmed) => {
+          if (confirmed) {
+            removeDataFromTable(selectedRow);
+          }
         }
-      }
-    );
+      );
+    else
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
   };
 
   /**
@@ -235,13 +358,14 @@ const UsersPage = () => {
    */
   const removeDataFromTable = async (selectedRow) => {
     try {
+      startLoading();
       const response = await userdeleteController(selectedRow.ID);
 
       if (response) {
         openDialog(
           "success",
           `User Deletion Success`,
-          response.message,
+          response.message || `User has been deleted successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -253,6 +377,9 @@ const UsersPage = () => {
             },
           },
           (confirmed) => {
+            // getTableData();
+          },
+          () => {
             getTableData();
           }
         );
@@ -278,6 +405,8 @@ const UsersPage = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
   };
 
@@ -285,7 +414,7 @@ const UsersPage = () => {
     <>
       {formAction.display && (
         <Container>
-          <Header>
+          <Header className="panel-header">
             <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"
@@ -300,13 +429,13 @@ const UsersPage = () => {
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
-            // rolesList={rolesList}
+            rolesList={rolesList}
           />
         </Container>
       )}
 
-      <SecondContainer>
-        <SubHeader>
+      <SecondContainer className="common-table">
+        <SubHeader className="table-header">
           <Typography variant="h6">
             <b>Users List</b>
           </Typography>
@@ -316,6 +445,7 @@ const UsersPage = () => {
               onClick={addUser}
               variant="contained"
               color="primary"
+              className="primary"
               style={{ marginRight: "10px" }}
               disabled={formAction.action === "add" && formAction.display}
             >
@@ -323,12 +453,16 @@ const UsersPage = () => {
             </FormButton>
           </Box>
         </SubHeader>
-        <DataTable
-          tableData={tableData}
-          handleUpdateLogic={handleUpdateLogic}
-          handleDelete={handleDelete}
-          columns={columns}
-        />
+        {permissionLevels.view ? (
+          <DataTable
+            tableData={tableData}
+            handleUpdateLogic={handleUpdateLogic}
+            handleDelete={handleDelete}
+            columns={columns}
+          />
+        ) : (
+          <TableErrorDisplay />
+        )}
       </SecondContainer>
     </>
   );

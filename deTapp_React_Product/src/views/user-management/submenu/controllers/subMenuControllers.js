@@ -21,7 +21,7 @@ import { titleCaseFirstWord } from "../../../utilities/generals";
 export const getSubMenusController = async () => {
   try {
     // Send the GET request to the submenu API endpoint
-    const response = await get("/master/subMenu", "python");
+    const response = await get("/master/submenu", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -62,9 +62,10 @@ export const subMenuCreationController = async (formData) => {
       menu_id: formData?.menu.ID,
       name: titleCaseFirstWord(formData.name.trim()),
       description: titleCaseFirstWord(formData.description.trim()),
+      route: formData?.path.trim(),
     };
     // Send the POST request to the submenu API endpoint
-    const response = await post("/master/subMenu", body, "python");
+    const response = await post("/master/submenu", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -108,10 +109,11 @@ export const subMenuUpdateController = async (formData) => {
       menu_id: formData?.menu.ID,
       name: titleCaseFirstWord(formData.name.trim()),
       description: titleCaseFirstWord(formData.description.trim()),
+      route: formData?.path.trim(),
     };
     // Send the PUT request to the submenu API endpoint
     const response = await put(
-      `/master/subMenu?id=${formData.ID}`,
+      `/master/submenu?id=${formData.ID}`,
       body,
       "python"
     );
@@ -142,7 +144,7 @@ export const subMenuDeleteController = async (subMenuID) => {
       throw new Error("Invalid form data");
     }
     // Send the DELETE request to the submenu API endpoint
-    const response = await remove(`/master/subMenu?id=${subMenuID}`, "python");
+    const response = await remove(`/master/submenu?id=${subMenuID}`, "python");
     // Return the response data
     return response;
   } catch (error) {
