@@ -18,19 +18,18 @@ export const LoginProvider = ({ children }) => {
   const [isLoginStatus, setLoginStatus] = useState(false);
   const [menuList, setMenuList] = useState(() => {
     // Load menuList from localStorage if it exists
-    return decodeData(getCookie(isPermissionDetailsCookieName)) ?? [];
+    return getCookie(isPermissionDetailsCookieName) !== null
+      ? decodeData(getCookie(isPermissionDetailsCookieName))
+      : [];
   });
 
   // Function to set loading state to true
   const setLoginStatusFunction = (value) => setLoginStatus(value);
 
-
-
   // Function to set loading state to false
   const setMenuListFunction = (value) => {
     setMenuList(value);
   };
-
 
   return (
     <LoginContext.Provider
@@ -39,7 +38,6 @@ export const LoginProvider = ({ children }) => {
         menuList,
         setLoginStatusFunction,
         setMenuListFunction,
-     
       }}
     >
       {children}

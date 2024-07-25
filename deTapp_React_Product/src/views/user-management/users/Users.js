@@ -139,7 +139,7 @@ const UsersPage = () => {
       const permissionList = submenuDetails?.permission_level
         .split(",")
         .map((ele) => ele.trim().toLowerCase());
-      
+
       setPermissionLevels({
         create: permissionList.includes("create"),
         edit: permissionList.includes("edit"),
@@ -205,8 +205,6 @@ const UsersPage = () => {
         formData = {
           ...formData,
           ID: selectedValue.ID,
-          userId: selectedValue.USER_ID,
-          role: selectedValue.ROLE,
         };
         response = await userupdateController(formData);
       }
@@ -362,7 +360,7 @@ const UsersPage = () => {
     try {
       startLoading();
       const response = await userdeleteController(selectedRow.ID);
-      
+
       if (response) {
         openDialog(
           "success",

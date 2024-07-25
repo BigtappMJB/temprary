@@ -9,7 +9,7 @@ const SidebarItems = ({ navItemClicked }) => {
   const { menuList } = useLoginProvider();
   // Transform API data to match the required structure
   const transformApiData = (data) => {
-    return data.map((menu, index) => ({
+    return data && data?.map((menu, index) => ({
       id: index,
       subheader: menu.menu_name,
       children: menu.submenus.map((submenu, subIndex) => ({

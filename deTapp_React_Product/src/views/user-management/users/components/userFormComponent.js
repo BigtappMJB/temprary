@@ -104,11 +104,12 @@ const UserFormComponent = ({
   // Effect to set default values and reset the form
   useEffect(() => {
     if (defaultValues) {
-      // const role =
-      //   rolesList.find((role) => role.ID === defaultValues.ROLE) || null;
+      const role =
+        rolesList.find((role) => role.id === defaultValues.ROLE_ID) || null;
+      
       reset({
         // userId: defaultValues.USER_ID ?? "",
-        // role: role,
+        role: role,
         firstName: defaultValues.FIRST_NAME ?? "",
         lastName: defaultValues.LAST_NAME ?? "",
         email: defaultValues.EMAIL ?? "",
@@ -123,7 +124,7 @@ const UserFormComponent = ({
     if (formAction.action === "add") {
       reset({
         userId: "",
-        // role: null,
+        role: null,
         firstName: "",
         lastName: "",
         email: "",
@@ -151,7 +152,7 @@ const UserFormComponent = ({
     onReset();
     reset({
       // userId: "",
-      // role: null,
+      role: null,
       firstName: "",
       lastName: "",
       email: "",
@@ -166,7 +167,7 @@ const UserFormComponent = ({
     onSubmit(getValues());
     reset({
       userId: "",
-      // role: null,
+      role: null,
       firstName: "",
       lastName: "",
       email: "",
@@ -201,40 +202,7 @@ const UserFormComponent = ({
             )}
           />
         </Grid> */}
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="role"
-            control={control}
-            render={({ field }) => (
-              <Autocomplete
-                {...field}
-                options={rolesList}
-                getOptionLabel={(option) => option.name}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                value={field.value || null}
-                onChange={(_, data) => field.onChange(data)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Role"
-                    fullWidth
-                    error={!!errors.role}
-                    helperText={errors.role?.message}
-                    InputLabelProps={{
-                      shrink: Boolean(field.value || isFocused),
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      readOnly: readOnly, // Set to true if you want the field to be read-only
-                      onFocus: () => setIsFocused(true),
-                      onBlur: () => setIsFocused(false),
-                    }}
-                  />
-                )}
-              />
-            )}
-          />
-        </Grid>
+
         <Grid item xs={12} sm={6}>
           <Controller
             name="firstName"
@@ -311,6 +279,40 @@ const UserFormComponent = ({
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
                 }}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="role"
+            control={control}
+            render={({ field }) => (
+              <Autocomplete
+                {...field}
+                options={rolesList}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                value={field.value || null}
+                onChange={(_, data) => field.onChange(data)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Role"
+                    fullWidth
+                    error={!!errors.role}
+                    helperText={errors.role?.message}
+                    InputLabelProps={{
+                      shrink: Boolean(field.value || isFocused),
+                    }}
+                    InputProps={{
+                      ...params.InputProps,
+                      readOnly: readOnly, // Set to true if you want the field to be read-only
+                      onFocus: () => setIsFocused(true),
+                      onBlur: () => setIsFocused(false),
+                    }}
+                  />
+                )}
               />
             )}
           />
