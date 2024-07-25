@@ -189,9 +189,9 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                       key !== "sno" ? `Search ${extendedColumns[key]}` : ""
                     }
                     fullWidth
-                    sx={{
-                      display: paginatedData?.length === 0 ? "none" : "block",
-                    }}
+                    // sx={{
+                    //   display: paginatedData?.length === 0 ? "none" : "block",
+                    // }}
                   />
                 </StyledTableCell>
               ))}
