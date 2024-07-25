@@ -57,6 +57,7 @@ const ChatInterface = Loadable(
 const PageNotReady = Loadable(
   lazy(() => import("../views/pageNotReady/PageNotReady"))
 );
+const CMDPage = Loadable(lazy(() => import("../views/cmd/CMDPage")));
 
 const Router = [
   {
@@ -73,6 +74,7 @@ const Router = [
       { path: "/subMenu", exact: true, element: <SubMenu /> },
       { path: "/role-permissions", exact: true, element: <RolePermission /> },
       { path: "/user-roles", exact: true, element: <UserRole /> },
+      { path: "/cmd", exact: true, element: <CMDPage /> },
 
       { path: "*", element: <PageNotReady /> },
     ],

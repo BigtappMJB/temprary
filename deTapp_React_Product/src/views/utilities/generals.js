@@ -1,4 +1,3 @@
-import { useLocation } from "react-router";
 import { encodeData } from "./securities/encodeDecode";
 import { validationRegex } from "./Validators";
 

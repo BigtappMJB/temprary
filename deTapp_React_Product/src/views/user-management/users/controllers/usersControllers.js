@@ -115,7 +115,6 @@ export const userupdateController = async (formData) => {
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
-    console.log({formData});
     // Prepare the body object with sanitized data
     const body = {
       first_name: titleCaseFirstWord(formData.firstName.trim()),
