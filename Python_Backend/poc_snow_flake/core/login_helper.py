@@ -116,44 +116,48 @@ def get_permissions_by_email(email):
         cursor = conn.cursor()
         
         select_query = """WITH MenuData AS (
-            SELECT 
-                r.NAME AS role_name,
-                pl.LEVEL AS permission_level,
-                m.NAME AS menu_name,
-                sm.NAME AS submenu_name,
-                sm.ROUTE AS submenu_path
-            FROM 
-                NBF_CIA.PUBLIC.USERS u
-            JOIN 
-                NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
-            JOIN 
-                NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
-            JOIN 
-                NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
-            JOIN 
-                NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
-            LEFT JOIN 
-                NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
-            WHERE 
-                u.EMAIL = %s ORDER BY sm.NAME ASC 
-        ),
-        AggregatedData AS (
-            SELECT
-                role_name,
-                menu_name,
-                ARRAY_AGG(OBJECT_CONSTRUCT('submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)) AS submenus
-            FROM
-                MenuData
-            GROUP BY
-                role_name, menu_name
-        )
-        SELECT
-            OBJECT_CONSTRUCT(
-                'menu_name', menu_name,
-                'role_name', role_name,
-                'submenus', submenus
-            ) AS menu_data
-        FROM AggregatedData;
+    SELECT 
+        r.NAME AS role_name,
+        pl.LEVEL AS permission_level,
+        m.NAME AS menu_name,
+        sm.NAME AS submenu_name,
+        sm.ROUTE AS submenu_path
+    FROM 
+        NBF_CIA.PUBLIC.USERS u
+    JOIN 
+        NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
+    JOIN 
+        NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
+    JOIN 
+        NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+    JOIN 
+        NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
+    LEFT JOIN 
+        NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
+    WHERE 
+        u.EMAIL = %s AND pl.ID != 301
+    ORDER BY 
+        sm.NAME ASC  
+),
+AggregatedData AS (
+    SELECT
+        role_name,
+        menu_name,
+        ARRAY_AGG(OBJECT_CONSTRUCT('submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)) AS submenus
+    FROM
+        MenuData
+    GROUP BY
+        role_name, menu_name
+)
+SELECT
+    OBJECT_CONSTRUCT(
+        'menu_name', menu_name,
+        'role_name', role_name,
+        'submenus', submenus
+    ) AS menu_data
+FROM 
+    AggregatedData;
+
         """
         # query = """SELECT 
         #     r.NAME AS role_name,
