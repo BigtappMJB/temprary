@@ -112,11 +112,11 @@ def permission():
         permission_id = request.args.get('id')
         if permission_id:
             response, status_code = get_permission(permission_id)
-            if status_code is 200:
+            if status_code == 200:
                 response = json.loads(response)
         else:
             response, status_code = get_all_permissions()
-            if status_code is 200:
+            if status_code == 200:
                 response = json.loads(response)
     elif request.method == 'PUT':
         permission_id = request.args.get('id')

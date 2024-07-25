@@ -2,6 +2,7 @@ from datetime import datetime
 
 import snowflake.connector
 import base64
+import json
 
 from flask import current_app
 
@@ -112,37 +113,82 @@ def get_permissions_by_email(email):
     try:
         conn = get_snowflake_connection()
         cursor = conn.cursor()
-        query = """SELECT 
-            r.NAME AS role_name,
-            pl.LEVEL AS permission_level,
-            m.NAME AS menu_name,
-            sm.NAME AS submenu_name
-        FROM 
-            NBF_CIA.PUBLIC.USERS u
-        JOIN 
-            NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
-        JOIN 
-            NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
-        JOIN 
-            NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
-        JOIN 
-            NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
-        LEFT JOIN 
-            NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
-        WHERE 
-            u.EMAIL = %s"""
-        cursor.execute(query, (email,))
+        
+        select_query = """WITH MenuData AS (
+    SELECT 
+        r.NAME AS role_name,
+        pl.LEVEL AS permission_level,
+        m.NAME AS menu_name,
+        sm.NAME AS submenu_name,
+        sm.ROUTE AS submenu_path
+    FROM 
+        NBF_CIA.PUBLIC.USERS u
+    JOIN 
+        NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
+    JOIN 
+        NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
+    JOIN 
+        NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+    JOIN 
+        NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
+    LEFT JOIN 
+        NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
+    WHERE 
+        u.EMAIL = %s ORDER BY sm.NAME ASC 
+),
+AggregatedData AS (
+    SELECT
+        role_name,
+        menu_name,
+        ARRAY_AGG(OBJECT_CONSTRUCT('submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)) AS submenus
+    FROM
+        MenuData
+    GROUP BY
+        role_name, menu_name
+)
+SELECT
+    OBJECT_CONSTRUCT(
+        'menu_name', menu_name,
+        'role_name', role_name,
+        'submenus', submenus
+    ) AS menu_data
+FROM
+    AggregatedData;"""
+        # query = """SELECT 
+        #     r.NAME AS role_name,
+        #     pl.LEVEL AS permission_level,
+        #     m.NAME AS menu_name,
+        #     sm.NAME AS submenu_name,
+        #     sm.ROUTE AS submenu_path
+        # FROM 
+        #     NBF_CIA.PUBLIC.USERS u
+        # JOIN 
+        #     NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
+        # JOIN 
+        #     NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
+        # JOIN 
+        #     NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+        # JOIN 
+        #     NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
+        # LEFT JOIN 
+        #     NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
+        # WHERE 
+        #     u.EMAIL = %s"""
+        cursor.execute(select_query, (email,))
         permissions = cursor.fetchall()
         # Return a list of dictionaries with permission details
-        return [
-            {
-                "role_name": permission[0],
-                "permission_level": permission[1],
-                "menu_name": permission[2],
-                "submenu_name": permission[3]
-            }
-            for permission in permissions
-        ]
+        return [json.loads(result[0]) for result in permissions]
+        # return [
+        #     {
+        #         "role_name": permission[0],
+        #         "permission_level": permission[1],
+        #         "menu_name": permission[2],
+        #         "submenu_name": permission[3],
+        #         "submenu_path": permission[4]
+                
+        #     }
+        #     for permission in permissions
+        # ]
     except Exception as e:
         current_app.logger.error(f"Error fetching permissions for email {email}: {e}")
         return []

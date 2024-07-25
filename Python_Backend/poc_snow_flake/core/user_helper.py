@@ -412,7 +412,7 @@ def get_all_permissions():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM permission_level")
+        cursor.execute("SELECT * FROM PERMISSION_LEVEL")
         permissions = cursor.fetchall()
         if permissions:
             column_names = [desc[0] for desc in cursor.description]
