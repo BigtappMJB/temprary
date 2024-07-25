@@ -120,13 +120,11 @@ def table_configurator():
     response = "ssd"
     status_code = 200
     if request.method == 'POST':
-        # print("POST method is called in Table Configurator")
         data = request.get_json()
         response, status_code = create_table(data)
+        print(f"The type is {type(response)}")
     elif request.method == 'GET':
         param_type = request.args.get('type')
-        print(f"type is {param_type}")
-        print("GET method is called in Table Configurator")
         if param_type == 'dataType':
             response, status_code = get_data_type()
 

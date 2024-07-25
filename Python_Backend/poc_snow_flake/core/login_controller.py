@@ -17,8 +17,8 @@ def login():
         return jsonify({"error": "User not found"}), 404
 
     # Decrypt and validate the password
-    # if not check_password_hash(user['password'], password):
-    #     return jsonify({"error": "Invalid password"}), 401
+    if not check_password_hash(user['password'], password):
+        return jsonify({"error": "Invalid password"}), 401
 
     # Check permissions based on role
     print(user['role'])

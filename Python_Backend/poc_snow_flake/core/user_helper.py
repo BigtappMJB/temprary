@@ -8,29 +8,45 @@ from share.snow_flake_conf import set_connections_get, set_connections_post, dat
 
 def create_table(params):
     query_part = [f"CREATE TABLE IF NOT EXISTS {params['table_name']} ("]
+    try:
+        for column in params['columns']:
+            print(column['default'])
+            if column['column_name']:
+                query_part.append(f"{column['column_name']}")
+            if column['data_type']:
+                if column['length']:
+                    query_part.append(f"{column['data_type']}({column['length']})")
+                else:
+                    query_part.append(f"{column['data_type']}")
+            if bool(column['auto_increment']):
+                query_part.append(f"AUTOINCREMENT")
+            if column['primary_key']:
+                query_part.append(f"PRIMARY KEY")
+            if column['default']:
+                query_part.append(f"DEFAULT '{column['default']}'")
+            if column['nullable']:
+                query_part.append(f" NOT NULL")
+            query_part.append(",")
+        for re_check in params.get('columns', []):
+            if re_check['foreign_keys']:
+                foreign_key = re_check['foreign_keys']
+                query_part.append(
+                    f"FOREIGN KEY ({re_check['column_name']}) REFERENCES {foreign_key['table']}({foreign_key['ref_column']})")
+                query_part.append(",")
+        query_part.pop()
+        query_part.append(");")
 
-    for column in params['columns']:
-        if column['column_name']:
-            query_part.append(f"{column['column_name']}")
-        if column['data_type']:
-            query_part.append(f"{column['data_type']}")
-        if bool(column['auto_increment']):
-            query_part.append(f"AUTOINCREMENT")
-        if column['primary_key']:
-            query_part.append(f"PRIMARY KEY")
-        if column['default']:
-            query_part.append(f"DEFAULT {column['default']}")
-        if column['nullable']:
-            query_part.append(f" NOT NULL")
-        query_part.append(",")
-    query_part.pop()
-    query_part.append(");")
+        create_table_query = " ".join(query_part)
+        print(create_table_query)
 
-    create_table_query = " ".join(query_part)
-    print(create_table_query)
-
-    # Calling the connections
-    return set_connections_post(create_table_query)
+        # Calling the connections
+        return set_connections_post(create_table_query)
+    except snowflake.connector.Error as error:
+        print("here is the error")
+        return json.dumps({"error": str(error)}), 501
+    except Exception as error:
+        print("here is the error 2")
+        return json.dumps({"error": str(error)}), 501
 
 
 def get_data_type():
@@ -52,10 +68,11 @@ def get_snowflake_connection():
 def create_user(data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
+    default_pass = "V2VsY29tZUAxMjMk"
     try:
         cursor.execute(
-            "INSERT INTO users (user_id, first_name, last_name, email, mobile, role) VALUES (%s, %s, %s, %s, %s, %s)",
-            (data['userId'], data['firstName'], data['lastName'], data['email'], data['mobile'], data['role'])
+            "INSERT INTO users (user_id, first_name, last_name, email, mobile, role, password) VALUES (%s, %s, %s, %s, %s, %s)",
+            (data['userId'], data['firstName'], data['lastName'], data['email'], data['mobile'], data['role'], default_pass)
         )
         conn.commit()
         return {"message": "User created successfully"}, 201
