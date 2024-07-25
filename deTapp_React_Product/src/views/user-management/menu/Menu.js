@@ -1,4 +1,4 @@
-import { Box, Button, Paper, styled, Typography } from "@mui/material";
+import { Box, Button, Paper, styled, Tooltip, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import RoleFormComponent from "./components/MenuFormComponent";
@@ -10,7 +10,13 @@ import {
   menuUpdateController,
 } from "./controllers/MenuControllers";
 import { useLoading } from "../../../components/Loading/loadingProvider";
-import { ScrollToTopButton } from "../../utilities/generals";
+import {
+  getCurrentPathName,
+  getSubmenuDetails,
+  ScrollToTopButton,
+} from "../../utilities/generals";
+import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -79,6 +85,13 @@ const Menus = () => {
     action: "update",
   });
 
+  const [permissionLevels, setPermissionLevels] = useState({
+    create: null,
+    edit: null,
+    view: null,
+    delete: null,
+  });
+
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
   const hasFetchedRoles = useRef(false);
@@ -98,14 +111,31 @@ const Menus = () => {
     }
   };
 
+  const { menuList } = useLoginProvider();
   // Fetches roles data and updates the roles list
   useEffect(() => {
     if (!hasFetchedRoles.current) {
+      const submenuDetails = getSubmenuDetails(
+        menuList,
+        getCurrentPathName(),
+        "path"
+      );
+      const permissionList = submenuDetails?.permission_level
+        .split(",")
+        .map((ele) => ele.trim().toLowerCase());
+      
+      setPermissionLevels({
+        create: permissionList.includes("create"),
+        edit: permissionList.includes("edit"),
+        view: permissionList.includes("view"),
+        delete: permissionList.includes("delete"),
+      });
+
       getRoles();
       hasFetchedRoles.current = true;
     }
   }, []);
-
+  console.log({ permissionLevels });
   const columns = {
     NAME: "Menu",
     DESCRIPTION: "Description",
@@ -115,10 +145,30 @@ const Menus = () => {
    * Initiates the process to add a new user.
    */
   const addRoles = () => {
-    setFormAction({
-      display: true,
-      action: "add",
-    });
+    if (permissionLevels.create)
+      setFormAction({
+        display: true,
+        action: "add",
+      });
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -203,12 +253,32 @@ const Menus = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    setSelectedValue(selectedRow);
-    ScrollToTopButton();
-    setFormAction({
-      display: true,
-      action: "update",
-    });
+    if (permissionLevels.edit) {
+      setSelectedValue(selectedRow);
+      ScrollToTopButton();
+      setFormAction({
+        display: true,
+        action: "update",
+      });
+    } else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -216,26 +286,46 @@ const Menus = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleDelete = (selectedRow) => {
-    openDialog(
-      "warning",
-      `Delete confirmation`,
-      `Are you sure you want to delete this menu "${selectedRow.NAME}"?`,
-      {
-        confirm: {
-          name: "Yes",
-          isNeed: true,
+    if (permissionLevels.delete) {
+      openDialog(
+        "warning",
+        `Delete confirmation`,
+        `Are you sure you want to delete this menu "${selectedRow.NAME}"?`,
+        {
+          confirm: {
+            name: "Yes",
+            isNeed: true,
+          },
+          cancel: {
+            name: "No",
+            isNeed: true,
+          },
         },
-        cancel: {
-          name: "No",
-          isNeed: true,
-        },
-      },
-      (confirmed) => {
-        if (confirmed) {
-          removeDataFromTable(selectedRow);
+        (confirmed) => {
+          if (confirmed) {
+            removeDataFromTable(selectedRow);
+          }
         }
-      }
-    );
+      );
+    } else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -330,25 +420,34 @@ const Menus = () => {
             <b>Menus List</b>
           </Typography>
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">
-            <FormButton
-              type="button"
-              onClick={addRoles}
-              variant="contained"
-              color="primary"
-              className="primary"
-              style={{ marginRight: "10px" }}
-              disabled={formAction.action === "add" && formAction.display}
+            <Tooltip
+              title={permissionLevels.create ? "" : "Access denied"}
+              arrow
             >
-              Add Menu
-            </FormButton>
+              <FormButton
+                type="button"
+                onClick={addRoles}
+                variant="contained"
+                color="primary"
+                className="primary"
+                style={{ marginRight: "10px" }}
+                disabled={formAction.action === "add" && formAction.display}
+              >
+                Add Menu
+              </FormButton>
+            </Tooltip>
           </Box>
         </SubHeader>
-        <DataTable
-          tableData={tableData}
-          handleUpdateLogic={handleUpdateLogic}
-          handleDelete={handleDelete}
-          columns={columns}
-        />
+        {permissionLevels.view ? (
+          <DataTable
+            tableData={tableData}
+            handleUpdateLogic={handleUpdateLogic}
+            handleDelete={handleDelete}
+            columns={columns}
+          />
+        ) : (
+          <TableErrorDisplay />
+        )}
       </SecondContainer>
     </>
   );

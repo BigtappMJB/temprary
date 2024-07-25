@@ -6,7 +6,7 @@ import Router from "./routes/Router";
 import { DialogProvider } from "./views/utilities/alerts/DialogContent";
 import { baselightTheme } from "./theme/DefaultColors";
 import AlertDialog from "./views/utilities/alerts/AlertDialog";
-import { LoadingProvider, useLoading } from "./components/Loading/loadingProvider";
+import { LoadingProvider } from "./components/Loading/loadingProvider";
 import LoadingScreen from "./components/Loading/LoaderComponent";
 
 function App() {

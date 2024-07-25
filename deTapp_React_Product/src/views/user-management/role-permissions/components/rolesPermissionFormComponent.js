@@ -135,6 +135,8 @@ const RolePermissionFormComponent = ({
   //   }, [watchMenu, subMenusList, reset, defaultValues.MENU_ID]);
 
   // Effect to set default values and reset the form
+
+  console.log({rolesList});
   useEffect(() => {
     if (defaultValues) {
       const menu =

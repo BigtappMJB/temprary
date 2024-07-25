@@ -1,3 +1,4 @@
+import { useLocation } from "react-router";
 import { encodeData } from "./securities/encodeDecode";
 import { validationRegex } from "./Validators";
 
@@ -26,6 +27,12 @@ export const isForgotPasswordCookieName = "isForgotPassword";
 export const isDefaultPasswordStatusCookieName = encodeData(
   "isDefaultPasswordStatus"
 );
+
+/**
+ * Encoded cookie name for storing permissionDetails
+ * @example isPermissionDetailsCookieName => "encoded_isPermissionDetails"
+ */
+export const isPermissionDetailsCookieName = encodeData("isPermissionDetails");
 
 /**
  * Encoded cookie name for email verification status
@@ -107,3 +114,21 @@ export const ScrollToTopButton = () =>
     top: 0,
     behavior: "smooth", // for smooth scrolling
   });
+
+export const getCurrentPathName = () => {
+  const hash = window.location.hash;
+  return hash ? hash.substring(1) : "/";
+};
+export const getSubmenuDetails = (menuList, identifier, type = "path") => {
+  for (const menu of menuList) {
+    for (const submenu of menu.submenus) {
+      if (
+        (type === "path" && submenu.submenu_path === identifier) ||
+        (type === "name" && submenu.submenu_name === identifier)
+      ) {
+        return submenu;
+      }
+    }
+  }
+  return null;
+};

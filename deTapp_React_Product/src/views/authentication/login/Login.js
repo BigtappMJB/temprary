@@ -24,9 +24,10 @@ import {
   isEmailVerifiedStatusCookieName,
   isForgotPasswordCookieName,
   isLoginSuccessCookieName,
+  isPermissionDetailsCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
-import { triggerOTPEmailController } from "../emailVerification/controllers/EmailVerificationController";
+import { useLoginProvider } from "../provider/LoginProvider";
 
 /**
  * LoginPage component for user login.
@@ -71,6 +72,7 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
+  const { setLoginStatusFunction, setMenuListFunction } = useLoginProvider();
   const formRef = useRef();
 
   useEffect(() => {
@@ -155,6 +157,7 @@ const LoginPage = () => {
       removeCookie(isDefaultPasswordChangedCookieName);
       removeCookie(isForgotPasswordCookieName);
       removeCookie(isDefaultPasswordUpdated);
+      removeCookie(isPermissionDetailsCookieName);
       setIsDefaultPasswordUpdated(false);
       setIsDefaultPassword(false);
       setForgotPasswordUpdated(false);
@@ -207,10 +210,18 @@ const LoginPage = () => {
           rememberMeFunction(response);
         }
 
-        // Set a cookie to indicate the default password status
+        // Set a cookie to indicate the loginStatus status
         setCookie({
           name: isLoginSuccessCookieName,
           value: encodeData(1),
+        });
+
+        setLoginStatusFunction(true);
+        setMenuListFunction(response?.permissions);
+        // Set a cookie to store permissionList
+        setCookie({
+          name: isPermissionDetailsCookieName,
+          value: encodeData(response?.permissions),
         });
 
         // await triggerOTPEmail();

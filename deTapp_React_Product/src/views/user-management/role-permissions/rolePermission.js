@@ -14,7 +14,13 @@ import { getMenusController } from "../menu/controllers/MenuControllers";
 import { getSubMenusController } from "../submenu/controllers/subMenuControllers";
 import { getPermissionList } from "../permissions/controllers/permissionControllers";
 import { useLoading } from "../../../components/Loading/loadingProvider";
-import { ScrollToTopButton } from "../../utilities/generals";
+import {
+  getCurrentPathName,
+  getSubmenuDetails,
+  ScrollToTopButton,
+} from "../../utilities/generals";
+import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
+import { useLoginProvider } from "../../authentication/provider/LoginProvider";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -87,6 +93,13 @@ const RolePermissionPage = () => {
     display: false,
     action: "update",
   });
+  const [permissionLevels, setPermissionLevels] = useState({
+    create: null,
+    edit: null,
+    view: null,
+    delete: null,
+  });
+
   const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
@@ -107,6 +120,7 @@ const RolePermissionPage = () => {
       stopLoading();
     }
   };
+  const { menuList } = useLoginProvider();
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
@@ -114,6 +128,7 @@ const RolePermissionPage = () => {
       try {
         startLoading();
         const response = await getRolesController();
+        
         setRolesList(response);
       } catch (error) {
         console.error(error);
@@ -167,13 +182,29 @@ const RolePermissionPage = () => {
       }
     };
     if (!hasFetchedRoles.current) {
+      const submenuDetails = getSubmenuDetails(
+        menuList,
+        getCurrentPathName(),
+        "path"
+      );
+      const permissionList = submenuDetails?.permission_level
+        .split(",")
+        .map((ele) => ele.trim().toLowerCase());
+      
+      setPermissionLevels({
+        create: permissionList.includes("create"),
+        edit: permissionList.includes("edit"),
+        view: permissionList.includes("view"),
+        delete: permissionList.includes("delete"),
+      });
+
       getTableData();
+      getRoles();
+      getMenus();
+      getSubMenus();
+      getPermissions();
       hasFetchedRoles.current = true;
     }
-    getRoles();
-    getMenus();
-    getSubMenus();
-    getPermissions();
   }, []);
 
   const columns = {
@@ -187,10 +218,30 @@ const RolePermissionPage = () => {
    * Initiates the process to add a new role permission.
    */
   const addUser = () => {
-    setFormAction({
-      display: true,
-      action: "add",
-    });
+    if (permissionLevels.create)
+      setFormAction({
+        display: true,
+        action: "add",
+      });
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -276,12 +327,32 @@ const RolePermissionPage = () => {
    * @param {Object} selectedRow - The selected role permission's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    setSelectedValue(selectedRow);
-    ScrollToTopButton();
-    setFormAction({
-      display: true,
-      action: "update",
-    });
+    if (permissionLevels.edit) {
+      setSelectedValue(selectedRow);
+      ScrollToTopButton();
+      setFormAction({
+        display: true,
+        action: "update",
+      });
+    } else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -289,26 +360,46 @@ const RolePermissionPage = () => {
    * @param {Object} selectedRow - The selected role permission's data.
    */
   const handleDelete = (selectedRow) => {
-    openDialog(
-      "warning",
-      `Delete confirmation`,
-      `Are you sure you want to delete this role permission ?`,
-      {
-        confirm: {
-          name: "Yes",
-          isNeed: true,
+    if (permissionLevels.delete)
+      openDialog(
+        "warning",
+        `Delete confirmation`,
+        `Are you sure you want to delete this role permission ?`,
+        {
+          confirm: {
+            name: "Yes",
+            isNeed: true,
+          },
+          cancel: {
+            name: "No",
+            isNeed: true,
+          },
         },
-        cancel: {
-          name: "No",
-          isNeed: true,
-        },
-      },
-      (confirmed) => {
-        if (confirmed) {
-          removeDataFromTable(selectedRow);
+        (confirmed) => {
+          if (confirmed) {
+            removeDataFromTable(selectedRow);
+          }
         }
-      }
-    );
+      );
+    else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
   };
 
   /**
@@ -415,12 +506,16 @@ const RolePermissionPage = () => {
             </FormButton>
           </Box>
         </SubHeader>
-        <DataTable
-          tableData={tableData}
-          handleUpdateLogic={handleUpdateLogic}
-          handleDelete={handleDelete}
-          columns={columns}
-        />
+        {permissionLevels.view ? (
+          <DataTable
+            tableData={tableData}
+            handleUpdateLogic={handleUpdateLogic}
+            handleDelete={handleDelete}
+            columns={columns}
+          />
+        ) : (
+          <TableErrorDisplay />
+        )}
       </SecondContainer>
     </>
   );
