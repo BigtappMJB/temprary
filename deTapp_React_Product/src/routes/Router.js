@@ -54,6 +54,9 @@ const Login = Loadable(
 const ChatInterface = Loadable(
   lazy(() => import("../views/chat-interface/chat"))
 );
+const PageNotReady = Loadable(
+  lazy(() => import("../views/pageNotReady/PageNotReady"))
+);
 
 const Router = [
   {
@@ -71,7 +74,7 @@ const Router = [
       { path: "/role-permissions", exact: true, element: <RolePermission /> },
       { path: "/user-roles", exact: true, element: <UserRole /> },
 
-      { path: "*", element: <Navigate to="/auth/404" /> },
+      { path: "*", element: <PageNotReady /> },
     ],
   },
   {
