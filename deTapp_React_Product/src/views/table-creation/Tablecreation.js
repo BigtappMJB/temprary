@@ -426,7 +426,7 @@ const CreateTableForm = () => {
                 Create Table
               </FormButton>
 
-              {/* <FormButton
+              <FormButton
                 onClick={handleColumnsClear}
                 type="button"
                 variant="contained"
@@ -434,7 +434,7 @@ const CreateTableForm = () => {
                 disabled={columnsData.length === 0}
               >
                 Clear
-              </FormButton> */}
+              </FormButton>
             </Box>
           </SubHeader>
           <StyledColumnBox>

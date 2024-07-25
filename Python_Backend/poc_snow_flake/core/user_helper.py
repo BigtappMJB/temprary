@@ -18,10 +18,10 @@ def create_table(params):
             if column['column_name']:
                 query_part.append(f"{column['column_name']}")
             if column['data_type']:
-                if column['length']:
-                    query_part.append(f"{column['data_type']}({column['length']})")
-                else:
-                    query_part.append(f"{column['data_type']}")
+                # if column['length']:
+                #     query_part.append(f"{column['data_type']}({column['length']})")
+                # else:
+                query_part.append(f"{column['data_type']}")
             if bool(column['auto_increment']):
                 query_part.append(f"AUTOINCREMENT")
             if column['primary_key']:

@@ -18,6 +18,7 @@ export const tableCreationController = async (formData) => {
         default: column.defaultValue,
         primary_key: column.isPrimary,
         auto_increment: column.isPrimary,
+        foreign_keys:false,
       })),
       // includeAuditColumns: true,
     };
