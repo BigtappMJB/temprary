@@ -68,7 +68,6 @@ const LoginPage = () => {
   const [isForgotPasswordUpdated, setForgotPasswordUpdated] = useState(
     getCookie(isForgotPasswordCookieName) !== null
   );
-  console.log(getCookie(isForgotPasswordCookieName));
 
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
