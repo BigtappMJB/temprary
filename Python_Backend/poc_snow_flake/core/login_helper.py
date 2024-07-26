@@ -137,7 +137,7 @@ def get_permissions_by_email(email):
     WHERE 
         u.EMAIL = %s AND pl.ID != 301
     ORDER BY 
-        sm.NAME ASC  
+        sm.NAME DESC  
 ),
 AggregatedData AS (
     SELECT
