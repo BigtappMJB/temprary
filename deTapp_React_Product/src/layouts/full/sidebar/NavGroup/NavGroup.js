@@ -13,8 +13,8 @@ const NavGroup = ({ item }) => {
     color: theme.palette.text.primary,
     lineHeight: "26px",
     padding: "3px 12px",
+    textTransform:"none"
   }));
-
   return <ListSubheaderStyle>{item.subheader}</ListSubheaderStyle>;
 };
 

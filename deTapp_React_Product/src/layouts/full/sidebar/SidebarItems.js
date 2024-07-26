@@ -23,17 +23,18 @@ const SidebarItems = ({ navItemClicked }) => {
       }))
     );
   };
-  const dashobardSubItem = {
-    id: -1,
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: People,
-  };
+  // const dashobardSubItem = {
+  //   id: -1,
+  //   title: "Dashboard",
+  //   href: "/dashboard",
+  //   icon: People,
+  // };
   const MenuItems = transformApiData(menuList);
+  console.log({ MenuItems });
   return (
     <Box sx={{ px: 3 }}>
       <List sx={{ pt: 0 }} className="sidebarNav">
-        <React.Fragment key={dashobardSubItem.id}>
+        {/* <React.Fragment key={dashobardSubItem.id}>
           <NavGroup item={"Dashboard"} />
 
           <NavItem
@@ -41,7 +42,7 @@ const SidebarItems = ({ navItemClicked }) => {
             item={dashobardSubItem}
             key={dashobardSubItem.id}
           />
-        </React.Fragment>
+        </React.Fragment> */}
         {MenuItems.map((item) => (
           <React.Fragment key={item.id}>
             <NavGroup item={item} />

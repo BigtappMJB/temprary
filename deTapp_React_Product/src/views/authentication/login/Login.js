@@ -223,8 +223,11 @@ const LoginPage = () => {
           value: encodeData(response?.permissions),
         });
 
+        console.log(response?.permissions[0].submenus[0].submenu_path);
+        const firstSubMenuPath =
+          response?.permissions[0].submenus[0].submenu_path;
         // await triggerOTPEmail();
-        navigate("/dashboard");
+        navigate(firstSubMenuPath);
         // Log the successful login and navigate to the dashboard
       }
     } catch (error) {
