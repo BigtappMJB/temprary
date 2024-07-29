@@ -4,9 +4,11 @@ import NavItem from "./NavItem";
 import NavGroup from "./NavGroup/NavGroup";
 import { People } from "@mui/icons-material";
 import { useLoginProvider } from "../../../views/authentication/provider/LoginProvider";
+import { useNavigate } from "react-router";
 
 const SidebarItems = ({ navItemClicked }) => {
   const { menuList } = useLoginProvider();
+  const navigte = useNavigate();
   // Transform API data to match the required structure
   const transformApiData = (data) => {
     return (
@@ -30,6 +32,13 @@ const SidebarItems = ({ navItemClicked }) => {
   //   icon: People,
   // };
   const MenuItems = transformApiData(menuList);
+  const handleMenuClick = (item) => {
+    if (item.children.length === 1) {
+      navigte(item.children[0].href); // Redirect to the first submenu page
+    } else {
+      navItemClicked(item);
+    }
+  };
   return (
     <Box sx={{ px: 3 }}>
       <List sx={{ pt: 0 }} className="sidebarNav">
@@ -44,14 +53,18 @@ const SidebarItems = ({ navItemClicked }) => {
         </React.Fragment> */}
         {MenuItems.map((item) => (
           <React.Fragment key={item.id}>
-            <NavGroup item={item} />
-            {item.children.map((subItem) => (
-              <NavItem
-                onClick={navItemClicked}
-                item={subItem}
-                key={subItem.id}
-              />
-            ))}
+            <NavGroup
+              item={item}
+              onClick={() => item.children[0].href && handleMenuClick(item)}
+            />
+            {item.children.length > 1 &&
+              item.children.map((subItem) => (
+                <NavItem
+                  onClick={navItemClicked}
+                  item={subItem}
+                  key={subItem.id}
+                />
+              ))}
           </React.Fragment>
         ))}
       </List>
