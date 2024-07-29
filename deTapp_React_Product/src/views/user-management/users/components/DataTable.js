@@ -62,7 +62,13 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
  *   columns={columns}
  * />
  */
-const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns,permissionLevels }) => {
+const DataTable = ({
+  handleDelete,
+  handleUpdateLogic,
+  tableData,
+  columns,
+  permissionLevels,
+}) => {
   const [order, setOrder] = useState("original");
   const [orderBy, setOrderBy] = useState("");
   const [page, setPage] = useState(0);
@@ -123,7 +129,6 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns,permiss
     setOrder(isDesc ? "original" : isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
-
 
   /**
    * Handles the change of the page in the table pagination.
@@ -196,7 +201,14 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns,permiss
                   />
                 </StyledTableCell>
               ))}
-              <StyledTableCell key={"Actions"}>
+              <StyledTableCell
+                key={"Actions"}
+                className={`${
+                  permissionLevels?.edit || permissionLevels?.delete
+                    ? ""
+                    : "custom-disabled"
+                }`}
+              >
                 <TableSortLabel
                   disabled
                   style={{
@@ -255,7 +267,13 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns,permiss
                     flexWrap: "wrap",
                   }}
                 >
-                  <Tooltip title="Edit" arrow  className={`${permissionLevels?.edit ? '' : 'custom-disabled'}`}>
+                  <Tooltip
+                    title="Edit"
+                    arrow
+                    className={`${
+                      permissionLevels?.edit ? "" : "custom-disabled"
+                    }`}
+                  >
                     <IconButton
                       onClick={() => handleUpdateLogic(row)}
                       color="primary"
@@ -263,7 +281,13 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns,permiss
                       <Edit />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Delete" arrow className={`${permissionLevels?.delete ? '' : 'custom-disabled'}`}>
+                  <Tooltip
+                    title="Delete"
+                    arrow
+                    className={`${
+                      permissionLevels?.delete ? "" : "custom-disabled"
+                    }`}
+                  >
                     <IconButton
                       onClick={() => handleDelete(row)}
                       sx={{ color: "#ff0000" }}

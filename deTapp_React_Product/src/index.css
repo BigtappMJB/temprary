@@ -257,6 +257,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
 
 .custom-disabled {
   cursor: not-allowed !important;
+  display: none !important;
   opacity: 0.5 !important;
   pointer-events: none; /* Disables click events */
 }
