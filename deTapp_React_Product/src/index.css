@@ -254,3 +254,9 @@ input[type="password"]::-webkit-textfield-decoration-container {
 .css-1e9omt0-MuiPaper-root-MuiAlert-root {
   align-content: center !important;
 }
+
+.custom-disabled {
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
+  pointer-events: none; /* Disables click events */
+}

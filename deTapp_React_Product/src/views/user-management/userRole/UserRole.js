@@ -401,7 +401,9 @@ const UserRole = () => {
               color="primary"
               className="primary"
               style={{ marginRight: "10px" }}
+              // className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
               disabled={formAction.action === "add" && formAction.display}
+           
             >
               Add User Role
             </FormButton>

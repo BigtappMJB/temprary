@@ -9,6 +9,8 @@ import {
   tableCreationController,
 } from "./controllers/tableCreationController";
 import { useLoading } from "../../components/Loading/loadingProvider";
+import { useLoginProvider } from "../authentication/provider/LoginProvider";
+import { getCurrentPathName, getSubmenuDetails } from "../utilities/generals";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -108,6 +110,15 @@ const CreateTableForm = () => {
   const formRefs = useRef([]);
   const isRemovingForm = useRef(false);
 
+  const [permissionLevels, setPermissionLevels] = useState({
+    create: null,
+    edit: null,
+    view: null,
+    delete: null,
+  });
+  const { menuList } = useLoginProvider();
+
+
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
 
@@ -149,6 +160,21 @@ const CreateTableForm = () => {
   };
 
   useEffect(() => {
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
+
+    setPermissionLevels({
+      create: permissionList.includes("create"),
+      edit: permissionList.includes("edit"),
+      view: permissionList.includes("view"),
+      delete: permissionList.includes("delete"),
+    });
     inputRef.current.focus();
     const getDataTypes = async () => {
       try {
@@ -420,7 +446,8 @@ const CreateTableForm = () => {
                 type="button"
                 variant="contained"
                 color="primary"
-                className="primary"
+                className={`${permissionLevels.create ? "primary" : "custom-disabled"}`}
+           
                 disabled={columnsData.length === 0}
               >
                 Create Table

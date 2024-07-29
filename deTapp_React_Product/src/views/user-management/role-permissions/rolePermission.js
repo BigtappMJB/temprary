@@ -218,7 +218,7 @@ const RolePermissionPage = () => {
    * Initiates the process to add a new role permission.
    */
   const addUser = () => {
-    if (permissionLevels.create)
+    if (permissionLevels?.create)
       setFormAction({
         display: true,
         action: "add",
@@ -327,7 +327,7 @@ const RolePermissionPage = () => {
    * @param {Object} selectedRow - The selected role permission's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    if (permissionLevels.edit) {
+    if (permissionLevels?.edit) {
       setSelectedValue(selectedRow);
       ScrollToTopButton();
       setFormAction({
@@ -360,7 +360,7 @@ const RolePermissionPage = () => {
    * @param {Object} selectedRow - The selected role permission's data.
    */
   const handleDelete = (selectedRow) => {
-    if (permissionLevels.delete)
+    if (permissionLevels?.delete)
       openDialog(
         "warning",
         `Delete confirmation`,
@@ -504,18 +504,21 @@ const RolePermissionPage = () => {
               color="primary"
               className="primary"
               style={{ marginRight: "10px" }}
+              className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
               disabled={formAction.action === "add" && formAction.display}
+           
             >
               Add Role Permission
             </FormButton>
           </Box>
         </SubHeader>
-        {permissionLevels.view ? (
+        {permissionLevels?.view ? (
           <DataTable
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-            columns={columns}
+              columns={columns}
+            permissionLevels={permissionLevels}
           />
         ) : (
           <TableErrorDisplay />

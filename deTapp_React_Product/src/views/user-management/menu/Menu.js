@@ -144,7 +144,7 @@ const Menus = () => {
    * Initiates the process to add a new user.
    */
   const addRoles = () => {
-    if (permissionLevels.create)
+    if (permissionLevels?.create)
       setFormAction({
         display: true,
         action: "add",
@@ -252,7 +252,7 @@ const Menus = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    if (permissionLevels.edit) {
+    if (permissionLevels?.edit) {
       setSelectedValue(selectedRow);
       ScrollToTopButton();
       setFormAction({
@@ -285,7 +285,7 @@ const Menus = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleDelete = (selectedRow) => {
-    if (permissionLevels.delete) {
+    if (permissionLevels?.delete) {
       openDialog(
         "warning",
         `Delete confirmation`,
@@ -420,7 +420,7 @@ const Menus = () => {
           </Typography>
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">
             <Tooltip
-              title={permissionLevels.create ? "" : "Access denied"}
+              title={permissionLevels?.create ? "" : "Access denied"}
               arrow
             >
               <FormButton
@@ -430,19 +430,22 @@ const Menus = () => {
                 color="primary"
                 className="primary"
                 style={{ marginRight: "10px" }}
-                disabled={formAction.action === "add" && formAction.display}
+                className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
+              disabled={formAction.action === "add" && formAction.display}
+           
               >
                 Add Menu
               </FormButton>
             </Tooltip>
           </Box>
         </SubHeader>
-        {permissionLevels.view ? (
+        {permissionLevels?.view ? (
           <DataTable
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-            columns={columns}
+              columns={columns}
+            permissionLevels={permissionLevels}
           />
         ) : (
           <TableErrorDisplay />

@@ -165,7 +165,7 @@ const UsersPage = () => {
    * Initiates the process to add a new submenu.
    */
   const addUser = () => {
-    if (permissionLevels.create)
+    if (permissionLevels?.create)
       setFormAction({
         display: true,
         action: "add",
@@ -272,7 +272,7 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected submenu's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    if (permissionLevels.edit) {
+    if (permissionLevels?.edit) {
       setSelectedValue(selectedRow);
       ScrollToTopButton();
       setFormAction({
@@ -305,7 +305,7 @@ const UsersPage = () => {
    * @param {Object} selectedRow - The selected submenu's data.
    */
   const handleDelete = (selectedRow) => {
-    if (permissionLevels.delete)
+    if (permissionLevels?.delete)
       openDialog(
         "warning",
         `Delete confirmation`,
@@ -444,20 +444,22 @@ const UsersPage = () => {
               onClick={addUser}
               variant="contained"
               color="primary"
-              className="primary"
               style={{ marginRight: "10px" }}
+              className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
               disabled={formAction.action === "add" && formAction.display}
+           
             >
               Add SubMenu
             </FormButton>
           </Box>
         </SubHeader>
-        {permissionLevels.view ? (
+        {permissionLevels?.view ? (
           <DataTable
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-            columns={columns}
+              columns={columns}
+            permissionLevels={permissionLevels}
           />
         ) : (
           <TableErrorDisplay />

@@ -151,7 +151,7 @@ const CMDPage = () => {
    * Initiates the process to add a new user.
    */
   const addUser = () => {
-    if (permissionLevels.create)
+    if (permissionLevels?.create)
       setFormAction({
         display: true,
         action: "add",
@@ -262,7 +262,7 @@ const CMDPage = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleUpdateLogic = (selectedRow) => {
-    if (permissionLevels.edit) {
+    if (permissionLevels?.edit) {
       setSelectedValue(selectedRow);
       ScrollToTopButton();
       setFormAction({
@@ -295,7 +295,7 @@ const CMDPage = () => {
    * @param {Object} selectedRow - The selected user's data.
    */
   const handleDelete = (selectedRow) => {
-    if (permissionLevels.delete)
+    if (permissionLevels?.delete)
       openDialog(
         "warning",
         `Delete confirmation`,
@@ -435,18 +435,21 @@ const CMDPage = () => {
               color="primary"
               className="primary"
               style={{ marginRight: "10px" }}
+              className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
               disabled={formAction.action === "add" && formAction.display}
+           
             >
               Add CMD
             </FormButton>
           </Box>
         </SubHeader>
-        {permissionLevels.view ? (
+        {permissionLevels?.view ? (
           <DataTable
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-            columns={columns}
+              columns={columns}
+            permissionLevels={permissionLevels}
           />
         ) : (
           <TableErrorDisplay />

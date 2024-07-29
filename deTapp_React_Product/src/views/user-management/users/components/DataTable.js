@@ -62,7 +62,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
  *   columns={columns}
  * />
  */
-const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
+const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns,permissionLevels }) => {
   const [order, setOrder] = useState("original");
   const [orderBy, setOrderBy] = useState("");
   const [page, setPage] = useState(0);
@@ -123,6 +123,8 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
     setOrder(isDesc ? "original" : isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
+
+  console.log({permissionLevels});
 
   /**
    * Handles the change of the page in the table pagination.
@@ -254,7 +256,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                     flexWrap: "wrap",
                   }}
                 >
-                  <Tooltip title="Edit" arrow>
+                  <Tooltip title="Edit" arrow  className={`${permissionLevels?.edit ? '' : 'custom-disabled'}`}>
                     <IconButton
                       onClick={() => handleUpdateLogic(row)}
                       color="primary"
@@ -262,7 +264,7 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns }) => {
                       <Edit />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Delete" arrow>
+                  <Tooltip title="Delete" arrow className={`${permissionLevels?.delete ? '' : 'custom-disabled'}`}>
                     <IconButton
                       onClick={() => handleDelete(row)}
                       sx={{ color: "#ff0000" }}
