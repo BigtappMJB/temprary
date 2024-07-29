@@ -120,6 +120,8 @@ def get_permissions_by_email(email):
         r.NAME AS role_name,
         pl.LEVEL AS permission_level,
         m.NAME AS menu_name,
+        m.ID AS menu_id,
+        sm.ID AS submenu_Id,
         sm.NAME AS submenu_name,
         sm.ROUTE AS submenu_path
     FROM 
@@ -137,26 +139,33 @@ def get_permissions_by_email(email):
     WHERE 
         u.EMAIL = %s AND pl.ID != 301
     ORDER BY 
-        sm.NAME DESC  
+        m.ID  ASC  
 ),
 AggregatedData AS (
     SELECT
         role_name,
         menu_name,
-        ARRAY_AGG(OBJECT_CONSTRUCT('submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)) AS submenus
+        menu_id,
+        ARRAY_AGG(OBJECT_CONSTRUCT('submenu_Id',submenu_Id,'submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)
+        ) AS submenus
     FROM
-        MenuData
+       (
+        SELECT *
+        FROM MenuData
+        ORDER BY menu_id ASC, submenu_id ASC
+    ) AS ordered_data
     GROUP BY
-        role_name, menu_name
+        role_name, menu_name,menu_id 
 )
 SELECT
     OBJECT_CONSTRUCT(
+        'menu_id', menu_id,
         'menu_name', menu_name,
         'role_name', role_name,
         'submenus', submenus
     ) AS menu_data
 FROM 
-    AggregatedData;
+    AggregatedData ORDER BY menu_id ASC;
 
         """
         # query = """SELECT 

@@ -124,7 +124,6 @@ const DataTable = ({ handleDelete, handleUpdateLogic, tableData, columns,permiss
     setOrderBy(property);
   };
 
-  console.log({permissionLevels});
 
   /**
    * Handles the change of the page in the table pagination.

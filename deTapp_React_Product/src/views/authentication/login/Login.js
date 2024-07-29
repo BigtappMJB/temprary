@@ -222,7 +222,7 @@ const LoginPage = () => {
           name: isPermissionDetailsCookieName,
           value: encodeData(response?.permissions),
         });
-
+        console.log(response?.permissions);
         console.log(response?.permissions[0].submenus[0].submenu_path);
         const firstSubMenuPath =
           response?.permissions[0].submenus[0].submenu_path;
@@ -232,7 +232,7 @@ const LoginPage = () => {
       }
     } catch (error) {
       // Log the error and set an appropriate API error message
-      // console.error(error);
+      console.error(error);
       setApiError(
         error.errorMessage ||
           "Failed to login. Please check your credentials and try again."
