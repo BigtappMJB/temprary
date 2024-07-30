@@ -24,6 +24,7 @@ import {
   isEmailVerifiedStatusCookieName,
   isForgotPasswordCookieName,
   isLoginSuccessCookieName,
+  isLoginTokenCookieName,
   isPermissionDetailsCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
@@ -157,6 +158,7 @@ const LoginPage = () => {
       removeCookie(isForgotPasswordCookieName);
       removeCookie(isDefaultPasswordUpdated);
       removeCookie(isPermissionDetailsCookieName);
+      removeCookie(isLoginTokenCookieName)
       setIsDefaultPasswordUpdated(false);
       setIsDefaultPassword(false);
       setForgotPasswordUpdated(false);
@@ -222,12 +224,16 @@ const LoginPage = () => {
           name: isPermissionDetailsCookieName,
           value: encodeData(response?.permissions),
         });
-        console.log(response?.permissions);
-        console.log(response?.permissions[0].submenus[0].submenu_path);
+
+        // Set a cookie to store permissionList
+        setCookie({
+          name: isLoginTokenCookieName,
+          value: encodeData(response?.token),
+        });
         const firstSubMenuPath =
-          response?.permissions[0].submenus[0].submenu_path;
+          response?.permissions[0]?.submenus[0]?.submenu_path;
         // await triggerOTPEmail();
-        navigate(firstSubMenuPath);
+        navigate(firstSubMenuPath || "/dashboard");
         // Log the successful login and navigate to the dashboard
       }
     } catch (error) {

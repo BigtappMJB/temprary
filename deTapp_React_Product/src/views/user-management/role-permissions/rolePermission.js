@@ -94,10 +94,10 @@ const RolePermissionPage = () => {
     action: "update",
   });
   const [permissionLevels, setPermissionLevels] = useState({
-    create: null,
-    edit: null,
-    view: null,
-    delete: null,
+    create: true,
+    edit: true,
+    view: true,
+    delete: true,
   });
 
   const hasFetchedRoles = useRef(false);
@@ -191,12 +191,12 @@ const RolePermissionPage = () => {
         .split(",")
         .map((ele) => ele.trim().toLowerCase());
 
-      setPermissionLevels({
-        create: permissionList.includes("create"),
-        edit: permissionList.includes("edit"),
-        view: permissionList.includes("view"),
-        delete: permissionList.includes("delete"),
-      });
+      // setPermissionLevels({
+      //   create: permissionList.includes("create"),
+      //   edit: permissionList.includes("edit"),
+      //   view: permissionList.includes("view"),
+      //   delete: permissionList.includes("delete"),
+      // });
 
       getTableData();
       getRoles();
@@ -502,11 +502,11 @@ const RolePermissionPage = () => {
               onClick={addUser}
               variant="contained"
               color="primary"
-              className="primary"
               style={{ marginRight: "10px" }}
-              className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
+              className={`${
+                permissionLevels?.create ? "primary" : "custom-disabled"
+              }`}
               disabled={formAction.action === "add" && formAction.display}
-           
             >
               Add Role Permission
             </FormButton>
@@ -517,7 +517,7 @@ const RolePermissionPage = () => {
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-              columns={columns}
+            columns={columns}
             permissionLevels={permissionLevels}
           />
         ) : (
