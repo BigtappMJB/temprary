@@ -10,9 +10,11 @@ const isAuthenticated = () => {
 };
 console.log(isAuthenticated());
 export const ProtectedRoute = ( element ) => {
-  return isAuthenticated() ? element : <Navigate to="/auth/login" />;
+  // return isAuthenticated() ? element : <Navigate to="/auth/login" />;
+  return element
 };
 
 export const LoginProtectedRoute = ({ element }) => {
-  return isAuthenticated() ? <Navigate to="/dashboard" /> : element;
+  // return isAuthenticated() ? <Navigate to="/dashboard" /> : element;
+  return element
 };

@@ -1,7 +1,6 @@
 import React, { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import Loadable from "../layouts/full/shared/loadable/Loadable";
-import { LoginProtectedRoute, ProtectedRoute } from "./ProtectedRoute";
 
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import("../layouts/full/FullLayout")));
@@ -66,16 +65,16 @@ const Router = [
     element: <FullLayout />,
     children: [
       { path: "/", element: <Navigate to="/auth/login" /> },
-      { path: "/dashboard", exact: true, element: ProtectedRoute(<Dashboard />) },
-      { path: "/table-creation", exact: true, element: ProtectedRoute(<Tablecreation />) },
-      { path: "/chat-interface", exact: true, element: ProtectedRoute(<ChatInterface />) },
-      { path: "/users", exact: true, element: ProtectedRoute(<UsersPage />) },
-      { path: "/roles", exact: true, element: ProtectedRoute(<Roles />) },
-      { path: "/menu", exact: true, element: ProtectedRoute(<Menu />) },
-      { path: "/subMenu", exact: true, element: ProtectedRoute(<SubMenu />) },
-      { path: "/role-permissions", exact: true, element: ProtectedRoute(<RolePermission />) },
-      { path: "/user-roles", exact: true, element: ProtectedRoute(<UserRole />) },
-      { path: "/cmd", exact: true, element: ProtectedRoute(<CMDPage />) },
+      { path: "/dashboard", exact: true, element: <Dashboard /> },
+      { path: "/table-creation", exact: true, element: <Tablecreation /> },
+      { path: "/chat-interface", exact: true, element: <ChatInterface /> },
+      { path: "/users", exact: true, element: <UsersPage /> },
+      { path: "/roles", exact: true, element: <Roles /> },
+      { path: "/menu", exact: true, element: <Menu /> },
+      { path: "/subMenu", exact: true, element: <SubMenu /> },
+      { path: "/role-permissions", exact: true, element: <RolePermission /> },
+      { path: "/user-roles", exact: true, element: <UserRole /> },
+      { path: "/cmd", exact: true, element: <CMDPage /> },
 
       { path: "*", element: <PageNotReady /> },
     ],
@@ -86,7 +85,7 @@ const Router = [
     children: [
       { path: "404", element: <Error /> },
       { path: "/auth/register", element: <Register /> },
-      { path: "/auth/login", element: (<Login />) },
+      { path: "/auth/login", element: <Login /> },
       { path: "/auth/emailVerification", element: <EmailVerification /> },
       { path: "/auth/changePassword", element: <ChangePassword /> },
       { path: "/auth/forgotPassword", element: <ForgotPassword /> },
