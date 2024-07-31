@@ -429,7 +429,7 @@ def get_all_permissions():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM PERMISSION_LEVEL")
+        cursor.execute("SELECT * FROM NBF_CIA.PUBLIC.PERMISSION_LEVEL")
         permissions = cursor.fetchall()
         if permissions:
             column_names = [desc[0] for desc in cursor.description]
@@ -450,7 +450,7 @@ def update_permission(permission_id, data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE permission_level SET level = %s WHERE id = %s",
+            "UPDATE NBF_CIA.PUBLIC.PERMISSION_LEVEL SET level = %s WHERE id = %s",
             (data['level'], permission_id)
         )
         conn.commit()
@@ -466,7 +466,7 @@ def delete_permission(permission_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM permission_level WHERE id = %s", (permission_id,))
+        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.PERMISSION_LEVEL WHERE id = %s", (permission_id,))
         conn.commit()
         return {"message": "Permission deleted successfully"}, 200
     except Exception as e:

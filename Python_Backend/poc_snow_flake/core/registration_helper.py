@@ -63,13 +63,16 @@ def get_user_by_email(email):
     try:
         conn = get_snowflake_connection()
         cursor = conn.cursor()
+        email = email.strip().lower()  # Normalize email
         query = """
         SELECT first_name, middle_name, last_name, email, mobile, role_id, password, is_default_password_changed, is_verified, last_login_datetime, otp
         FROM NBF_CIA.PUBLIC.USERS
         WHERE email = %s
         """
+        current_app.logger.info(f"Executing query: {query} with email: {email}")
         cursor.execute(query, (email,))
         user = cursor.fetchone()
+        current_app.logger.info(f"Query result: {user}")
         if user:
             return {
                 "first_name": user[0],
@@ -77,7 +80,7 @@ def get_user_by_email(email):
                 "last_name": user[2],
                 "email": user[3],
                 "mobile": user[4],
-                "role": user[5],
+                "role_id": user[5],
                 "password": user[6],
                 "is_default_password_changed": user[7],
                 "is_verified": user[8],
@@ -92,6 +95,7 @@ def get_user_by_email(email):
     finally:
         cursor.close()
         conn.close()
+
 
 
 

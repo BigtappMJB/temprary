@@ -124,7 +124,7 @@ def permission():
         permission_id = request.args.get('id')
         response, status_code = delete_permission(permission_id)
 
-    return response, status_code
+    return jsonify(response), status_code
 
 
 @users_bp.route('/rolePermission', methods=['GET', 'POST', 'PUT', 'DELETE'])

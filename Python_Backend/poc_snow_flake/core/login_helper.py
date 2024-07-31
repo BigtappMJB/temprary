@@ -1,25 +1,30 @@
-from datetime import datetime
-
+import os
+from datetime import datetime, timedelta
+import jwt
 import snowflake.connector
 import base64
 import json
-
 from flask import current_app
+from dotenv import load_dotenv
 
-from share.general_utils import snow_conf as conf
+# Load environment variables from .env file
+load_dotenv()
 
+# JWT configuration from environment variables
+JWT_SECRET = os.getenv('JWT_SECRET_KEY', 'default_secret_key')  # Replace 'default_secret_key' with a secure key
+JWT_ALGORITHM = os.getenv('JWT_ALGORITHM', 'HS256')
+JWT_EXP_DELTA_SECONDS = int(os.getenv('JWT_EXP_DELTA_SECONDS', 3600))
 
 def get_snowflake_connection():
     conn = snowflake.connector.connect(
-        user=conf.get('user'),
-        password=conf.get('password'),
-        account=conf.get('account'),
-        warehouse=conf.get('warehouse'),
-        database=conf.get('database'),
-        schema=conf.get('schema')
+        user=os.getenv('SNOWFLAKE_USER'),
+        password=os.getenv('SNOWFLAKE_PASSWORD'),
+        account=os.getenv('SNOWFLAKE_ACCOUNT'),
+        warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
+        database=os.getenv('SNOWFLAKE_DATABASE'),
+        schema=os.getenv('SNOWFLAKE_SCHEMA')
     )
     return conn
-
 
 def get_user_by_email(email):
     try:
@@ -55,13 +60,10 @@ def get_user_by_email(email):
         cursor.close()
         conn.close()
 
-
-
 def update_last_login(email):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        # Ensure the datetime format is correct
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         current_app.logger.info(f"Updating last login datetime for email: {email} to {current_time}")
 
@@ -78,28 +80,23 @@ def update_last_login(email):
         cursor.close()
         conn.close()
 
-
 def decrypt_password(encoded_password):
     decoded_bytes = base64.b64decode(encoded_password)
     return decoded_bytes.decode('utf-8')
 
-
 def check_password_hash(db_password, req_password):
-    decoded_db = base64.b64decode(db_password)
-    decoded_req = base64.b64decode(req_password)
-    return decoded_db == decoded_req
-
+    # Compare the plain text passwords directly
+    return db_password == req_password
 
 def get_permissions_by_role(role_id):
     try:
         conn = get_snowflake_connection()
         cursor = conn.cursor()
         query = """
-            SELECT pl.LEVEL
-            FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp
-            JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
-            WHERE rp.ROLE_ID = %s
-        """
+        SELECT pl.LEVEL
+        FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp
+        JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+        WHERE rp.ROLE_ID = %s"""
         cursor.execute(query, (role_id,))
         permissions = cursor.fetchall()
         return [permission[0] for permission in permissions]
@@ -114,95 +111,61 @@ def get_permissions_by_email(email):
     try:
         conn = get_snowflake_connection()
         cursor = conn.cursor()
-        
         select_query = """WITH MenuData AS (
-    SELECT 
-        r.NAME AS role_name,
-        pl.LEVEL AS permission_level,
-        m.NAME AS menu_name,
-        m.ID AS menu_id,
-        sm.ID AS submenu_Id,
-        sm.NAME AS submenu_name,
-        sm.ROUTE AS submenu_path
-    FROM 
-        NBF_CIA.PUBLIC.USERS u
-    JOIN 
-        NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
-    JOIN 
-        NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
-    JOIN 
-        NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
-    JOIN 
-        NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
-    LEFT JOIN 
-        NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
-    WHERE 
-        u.EMAIL = %s AND pl.ID != 301
-    ORDER BY 
-        m.ID  ASC  
-),
-AggregatedData AS (
-    SELECT
-        role_name,
-        menu_name,
-        menu_id,
-        ARRAY_AGG(OBJECT_CONSTRUCT('submenu_Id',submenu_Id,'submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)
-        ) AS submenus
-    FROM
-       (
-        SELECT *
-        FROM MenuData
-        ORDER BY menu_id ASC, submenu_id ASC
-    ) AS ordered_data
-    GROUP BY
-        role_name, menu_name,menu_id 
-)
-SELECT
-    OBJECT_CONSTRUCT(
-        'menu_id', menu_id,
-        'menu_name', menu_name,
-        'role_name', role_name,
-        'submenus', submenus
-    ) AS menu_data
-FROM 
-    AggregatedData ORDER BY menu_id ASC;
-
+            SELECT 
+                r.NAME AS role_name,
+                pl.LEVEL AS permission_level,
+                m.NAME AS menu_name,
+                m.ID AS menu_id,
+                sm.ID AS submenu_Id,
+                sm.NAME AS submenu_name,
+                sm.ROUTE AS submenu_path
+            FROM 
+                NBF_CIA.PUBLIC.USERS u
+            JOIN 
+                NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
+            JOIN 
+                NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
+            JOIN 
+                NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
+            JOIN 
+                NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
+            LEFT JOIN 
+                NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
+            WHERE 
+                u.EMAIL = %s AND pl.ID != 301
+            ORDER BY 
+                m.ID  ASC  
+        ),
+        AggregatedData AS (
+            SELECT
+                role_name,
+                menu_name,
+                menu_id,
+                ARRAY_AGG(OBJECT_CONSTRUCT('submenu_Id',submenu_Id,'submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)
+                ) AS submenus
+            FROM
+               (
+                SELECT *
+                FROM MenuData
+                ORDER BY menu_id ASC, submenu_id ASC
+            ) AS ordered_data
+            GROUP BY
+                role_name, menu_name,menu_id 
+        )
+        SELECT
+            OBJECT_CONSTRUCT(
+                'menu_id', menu_id,
+                'menu_name', menu_name,
+                'role_name', role_name,
+                'submenus', submenus
+            ) AS menu_data
+        FROM 
+            AggregatedData ORDER BY menu_id ASC;
         """
-        # query = """SELECT 
-        #     r.NAME AS role_name,
-        #     pl.LEVEL AS permission_level,
-        #     m.NAME AS menu_name,
-        #     sm.NAME AS submenu_name,
-        #     sm.ROUTE AS submenu_path
-        # FROM 
-        #     NBF_CIA.PUBLIC.USERS u
-        # JOIN 
-        #     NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID
-        # JOIN 
-        #     NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID
-        # JOIN 
-        #     NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID
-        # JOIN 
-        #     NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID
-        # LEFT JOIN 
-        #     NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
-        # WHERE 
-        #     u.EMAIL = %s"""
         cursor.execute(select_query, (email,))
         permissions = cursor.fetchall()
-        # Return a list of dictionaries with permission details
         return [json.loads(result[0]) for result in permissions]
-        # return [
-        #     {
-        #         "role_name": permission[0],
-        #         "permission_level": permission[1],
-        #         "menu_name": permission[2],
-        #         "submenu_name": permission[3],
-        #         "submenu_path": permission[4]
-                
-        #     }
-        #     for permission in permissions
-        # ]
     except Exception as e:
         current_app.logger.error(f"Error fetching permissions for email {email}: {e}")
         return []
@@ -210,17 +173,14 @@ FROM
         cursor.close()
         conn.close()
 
-
-
 def update_password(data, user_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE users SET password = %s WHERE id = %s",
+            "UPDATE NBF_CIA.PUBLIC.USERS SET password = %s WHERE id = %s",
             (data['password'], user_id)
         )
-
         conn.commit()
         return {"message": "User Password updated successfully"}, 200
     except Exception as e:
@@ -228,3 +188,21 @@ def update_password(data, user_id):
     finally:
         cursor.close()
         conn.close()
+
+def create_jwt_token(user):
+    payload = {
+        'user_id': user['role_id'],  # Use appropriate user identifier
+        'email': user['email'],
+        'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)
+    }
+    token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
+    return token
+
+def decode_jwt_token(token):
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        return None  # Token has expired
+    except jwt.InvalidTokenError:
+        return None  # Invalid token
