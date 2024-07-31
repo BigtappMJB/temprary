@@ -405,6 +405,12 @@ def create_permission(data):
         conn.close()
 
 
+def default_json_serializer(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
+
 def get_permission(permission_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
@@ -414,7 +420,7 @@ def get_permission(permission_id):
         if permission:
             column_names = [desc[0] for desc in cursor.description]
             permission_dict = dict(zip(column_names, permission))
-            json_data = json.dumps(permission_dict, indent=4)
+            json_data = json.dumps(permission_dict, default=default_json_serializer, indent=4)
             return json_data, 200
         else:
             return {"message": "Permission not found"}, 404
@@ -423,7 +429,6 @@ def get_permission(permission_id):
     finally:
         cursor.close()
         conn.close()
-
 
 def get_all_permissions():
     conn = get_snowflake_connection()
@@ -434,7 +439,7 @@ def get_all_permissions():
         if permissions:
             column_names = [desc[0] for desc in cursor.description]
             permissions_list = [dict(zip(column_names, permission)) for permission in permissions]
-            json_data = json.dumps(permissions_list, indent=4)
+            json_data = json.dumps(permissions_list, default=default_json_serializer, indent=4)
             return json_data, 200
         else:
             return {"message": "No permissions found"}, 404
