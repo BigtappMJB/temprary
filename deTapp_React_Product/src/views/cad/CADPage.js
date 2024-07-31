@@ -303,7 +303,7 @@ const CMDPage = () => {
       openDialog(
         "warning",
         `Delete confirmation`,
-        `Are you sure you want to delete this value"?`,
+        `Are you sure you want to delete this value?`,
         {
           confirm: {
             name: "Yes",
