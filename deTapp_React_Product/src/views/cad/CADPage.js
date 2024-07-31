@@ -14,7 +14,12 @@ import {
   timeStampFileName,
 } from "../utilities/generals";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
-import { cadCreationController, caddeleteController, cadupdateController, getCADController } from "./controllers/cadControllers";
+import {
+  cadCreationController,
+  caddeleteController,
+  cadupdateController,
+  getCADController,
+} from "./controllers/cadControllers";
 import CADFormComponent from "./components/cadForm";
 
 // Styled Components
@@ -143,7 +148,7 @@ const CMDPage = () => {
     country_of_residence: "Country of Residence",
     incorporation_city: "Incorporation City",
     sector_classification: "Sector Classification",
-    emirates_id:"Emirates ID"
+    emirates_id: "Emirates ID",
   };
 
   /**
@@ -397,9 +402,22 @@ const CMDPage = () => {
     }
   };
 
-  const handleExport =()=>{
-    generateCSV(tableData,`central_adjustment_depository_${timeStampFileName(new Date())}`)
-  }
+  const handleExport = () => {
+    const columnOrder = [
+      { key: "id", name: "id" },
+      { key: "target", name: "target" },
+      { key: "country_of_residence", name: "country_of_residence" },
+      { key: "incorporation_city", name: "incorporation_city" },
+      { key: "sector_classification", name: "sector_classification" },
+      { key: "emirates_id", name: "emirates_id" },
+    ];
+
+    generateCSV(
+      tableData,
+      `central_adjustment_depository_${timeStampFileName(new Date())}`,
+      columnOrder
+    );
+  };
 
   return (
     <>

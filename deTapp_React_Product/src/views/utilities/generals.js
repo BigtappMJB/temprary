@@ -155,59 +155,76 @@ export const getSubmenuDetails = (menuList, identifier, type = "path") => {
  */
 export const timeStampFileName = (date) => 
   date.toISOString().replace(/[:.]/g, "-");
-
 /**
- * Generates and downloads a CSV file from the provided API data.
- *
+ * Generates a CSV file from the provided API data and downloads it with a timestamped filename.
+ * 
  * @param {Array<Object>} apiData - Array of objects representing the API data.
- * @param {string} filename - Desired name of the downloaded CSV file.
- *
+ * @param {string} baseFilename - Base name for the downloaded CSV file, without extension.
+ * @param {Array<Object>} [columnOrder] - Optional array specifying the order and names of columns in the CSV file.
+ *                                    Each object in the array should have keys `key` and `name`.
+ * 
  * @example
  * const apiData = [
  *   { id: 1, name: "John Doe", age: 30, description: 'He said, "Hello!"' },
  *   { id: 2, name: "Jane Smith", age: 25, description: 'She replied, "Hi!"' }
  * ];
- * const filename = 'data.csv';
- * generateCSV(apiData, filename);
+ * const baseFilename = 'data';
+ * const columnOrder = [
+ *   { key: 'id', name: 'ID' },
+ *   { key: 'name', name: 'Full Name' },
+ *   { key: 'age', name: 'Age' }
+ * ];
+ * generateCSV(apiData, baseFilename, columnOrder);
  */
-export const generateCSV = (apiData, filename) => {
+export const generateCSV = (apiData, baseFilename, columnOrder = null) => {
   // Check if apiData is an array and has at least one item
   if (!Array.isArray(apiData) || apiData.length === 0) {
-    console.error("Invalid API data. It should be a non-empty array.");
-    return;
+      console.error('Invalid API data. It should be a non-empty array.');
+      return;
   }
 
   // Function to escape values properly
   const escapeValue = (value) => {
-    if (value === null || value === undefined) {
-      return "";
-    }
-    // Convert value to string and escape quotes
-    let stringValue = value.toString();
-    // Escape double quotes by doubling them
-    stringValue = stringValue.replace(/"/g, '""');
-    // Wrap the value in double quotes
-    return `"${stringValue}"`;
+      if (value === null || value === undefined) {
+          return '';
+      }
+      // Convert value to string and escape quotes
+      let stringValue = value.toString();
+      // Escape double quotes by doubling them
+      stringValue = stringValue.replace(/"/g, '""');
+      // Wrap the value in double quotes
+      return `"${stringValue}"`;
   };
 
-  // Extract keys (column names) from the first object
-  const keys = Object.keys(apiData[0]);
+  // Determine the columns to use
+  let keys;
+  let columnNames;
+  if (columnOrder) {
+      keys = columnOrder.map(col => col.key);
+      columnNames = columnOrder.map(col => col.name);
+  } else {
+      keys = Object.keys(apiData[0]);
+      columnNames = keys;
+  }
 
   // Create CSV content
-  let csvContent = `${keys.join(",")}\n`;
+  let csvContent = `${columnNames.join(',')}\n`;
 
-  apiData.forEach((row) => {
-    const values = keys.map((key) => escapeValue(row[key]));
-    csvContent += `${values.join(",")}\n`;
+  apiData.forEach(row => {
+      const values = keys.map(key => escapeValue(row[key]));
+      csvContent += `${values.join(',')}\n`;
   });
 
   // Create a Blob from the CSV content
-  const blob = new Blob([csvContent], { type: "text/csv" });
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+
+  // Generate a timestamp for the filename
+
 
   // Create a link element to download the CSV file
-  const link = document.createElement("a");
+  const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = filename;
+  link.download = `${baseFilename}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
