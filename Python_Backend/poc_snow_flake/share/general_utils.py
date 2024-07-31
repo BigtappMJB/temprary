@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 
 def load_environment(env):
-    dotenv_file = f"D:\React Project\Rapid_Development_Application\Python_Backend\poc_snow_flake\share\environments\env.{env}"
-    # dotenv_file = f"environments/.env.{env}"
+    # dotenv_file = f"D:\React Project\Rapid_Development_Application\Python_Backend\poc_snow_flake\share\environments\env.{env}"
+    dotenv_file = f"environments/.env.{env}"
     if os.path.exists(dotenv_file):
         load_dotenv(dotenv_file)
         print(f"Loaded {dotenv_file}")
