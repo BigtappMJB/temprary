@@ -7,12 +7,10 @@ import {
   Grid,
   styled,
   Box,
-  Autocomplete,
 } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
-import { errorMessages, validationRegex } from "../../utilities/Validators";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -216,7 +214,7 @@ const CMDFormComponent = ({
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Enter target"
+                label="Enter sub target"
                 fullWidth
                 variant="outlined"
                 error={!!errors.subTarget}

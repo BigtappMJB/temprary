@@ -53,9 +53,7 @@ export const isEmailVerifiedForDefaultPasswordCookieName = encodeData(
  * Encoded cookie name for displaying email alert for default Password
  * @example isEmailVerifiedForDefaultPasswordCookieName => "encoded_isEmailVerifiedForDefault"
  */
-export const isLoginTokenCookieName = encodeData(
-  "isLoginTokenCookie"
-);
+export const isLoginTokenCookieName = encodeData("isLoginTokenCookie");
 
 /**
  * Encoded cookie name for displaying email alert for default Password
@@ -138,4 +136,79 @@ export const getSubmenuDetails = (menuList, identifier, type = "path") => {
     }
   }
   return null;
+};
+
+/**
+ * Formats the given date into a string suitable for use as a filename.
+ * 
+ * The format used is `YYYY-MM-DDTHH-mm-ss.sssZ`, where colons (:) and dots (.)
+ * are replaced with dashes (-) to ensure the filename is valid across various
+ * file systems.
+ * 
+ * @param {Date} date - The date object to be formatted.
+ * @returns {string} - The formatted date string suitable for use as a filename.
+ * 
+ * @example
+ * const now = new Date();
+ * const filename = timeStampFileName(now);
+ * console.log(filename); // Example output: 2024-07-31T10-11-12-345Z
+ */
+export const timeStampFileName = (date) => 
+  date.toISOString().replace(/[:.]/g, "-");
+
+/**
+ * Generates and downloads a CSV file from the provided API data.
+ *
+ * @param {Array<Object>} apiData - Array of objects representing the API data.
+ * @param {string} filename - Desired name of the downloaded CSV file.
+ *
+ * @example
+ * const apiData = [
+ *   { id: 1, name: "John Doe", age: 30, description: 'He said, "Hello!"' },
+ *   { id: 2, name: "Jane Smith", age: 25, description: 'She replied, "Hi!"' }
+ * ];
+ * const filename = 'data.csv';
+ * generateCSV(apiData, filename);
+ */
+export const generateCSV = (apiData, filename) => {
+  // Check if apiData is an array and has at least one item
+  if (!Array.isArray(apiData) || apiData.length === 0) {
+    console.error("Invalid API data. It should be a non-empty array.");
+    return;
+  }
+
+  // Function to escape values properly
+  const escapeValue = (value) => {
+    if (value === null || value === undefined) {
+      return "";
+    }
+    // Convert value to string and escape quotes
+    let stringValue = value.toString();
+    // Escape double quotes by doubling them
+    stringValue = stringValue.replace(/"/g, '""');
+    // Wrap the value in double quotes
+    return `"${stringValue}"`;
+  };
+
+  // Extract keys (column names) from the first object
+  const keys = Object.keys(apiData[0]);
+
+  // Create CSV content
+  let csvContent = `${keys.join(",")}\n`;
+
+  apiData.forEach((row) => {
+    const values = keys.map((key) => escapeValue(row[key]));
+    csvContent += `${values.join(",")}\n`;
+  });
+
+  // Create a Blob from the CSV content
+  const blob = new Blob([csvContent], { type: "text/csv" });
+
+  // Create a link element to download the CSV file
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
