@@ -190,13 +190,9 @@ const RolePermissionPage = () => {
       const permissionList = submenuDetails?.permission_level
         .split(",")
         .map((ele) => ele.trim().toLowerCase());
+        console.log({permissionList});
 
-      // setPermissionLevels({
-      //   create: permissionList.includes("create"),
-      //   edit: permissionList.includes("edit"),
-      //   view: permissionList.includes("view"),
-      //   delete: permissionList.includes("delete"),
-      // });
+     
 
       getTableData();
       getRoles();

@@ -218,12 +218,12 @@ const LoginPage = () => {
         });
 
         setLoginStatusFunction(true);
-        setMenuListFunction(response?.permissions);
-        // Set a cookie to store permissionList
-        setCookie({
-          name: isPermissionDetailsCookieName,
-          value: encodeData(response?.permissions),
-        });
+        // setMenuListFunction(response?.permissions);
+        // // Set a cookie to store permissionList
+        // setCookie({
+        //   name: isPermissionDetailsCookieName,
+        //   value: encodeData(response?.permissions),
+        // });
 
         // Set a cookie to store permissionList
         setCookie({

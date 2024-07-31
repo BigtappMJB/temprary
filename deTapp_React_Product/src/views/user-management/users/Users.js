@@ -139,7 +139,6 @@ const UsersPage = () => {
       const permissionList = submenuDetails?.permission_level
         .split(",")
         .map((ele) => ele.trim().toLowerCase());
-
       setPermissionLevels({
         create: permissionList.includes("create"),
         edit: permissionList.includes("edit"),

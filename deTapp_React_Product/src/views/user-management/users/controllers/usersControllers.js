@@ -4,7 +4,9 @@ import {
   put,
   remove,
 } from "../../../utilities/apiservices/apiServices";
-import { titleCaseFirstWord } from "../../../utilities/generals";
+import { getCookie } from "../../../utilities/cookieServices/cookieServices";
+import { isUserIdCookieName, titleCaseFirstWord } from "../../../utilities/generals";
+import { decodeData } from "../../../utilities/securities/encodeDecode";
 
 /**
  * Fetches the list of users from the API.
@@ -22,6 +24,29 @@ export const getUserController = async () => {
   try {
     // Send the GET request to the user API endpoint
     const response = await get("/master/Allusers", "python");
+    // Return the response data
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Fetches the list of users from the API.
+ *
+ * @async
+ * @function getUserController
+ * @returns {Promise<Object>} - The response data from the API.
+ * @throws {Error} - If the API request fails.
+ * @example
+ * getUserController()
+ *   .then(response => console.log(response))
+ *   .catch(error => console.error(error));
+ */
+export const getUserPermissionsController = async () => {
+  try {
+    // Send the GET request to the user API endpoint
+    const response = await get(`/master/user-permission/${decodeData(getCookie(isUserIdCookieName))}`, "python");
     // Return the response data
     return response;
   } catch (error) {

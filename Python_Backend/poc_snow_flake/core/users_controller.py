@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify, make_response
 
 from core.user_helper import *
+from core.login_helper import *
+
 users_bp = Blueprint('users_controller', __name__)
 
 
@@ -125,6 +127,18 @@ def permission():
         response, status_code = delete_permission(permission_id)
 
     return jsonify(response), status_code
+
+
+@users_bp.route('/user-permission/<string:email>', methods=['GET'])
+def user_permission_details(email):
+    try:
+        response= get_permissions_by_email(email)
+        if(len(response) ==0):
+            return jsonify(response), 404
+        return jsonify(response), 200
+    except:
+        return jsonify({"error": "Error fetching user permissions"}), 500
+
 
 
 @users_bp.route('/rolePermission', methods=['GET', 'POST', 'PUT', 'DELETE'])

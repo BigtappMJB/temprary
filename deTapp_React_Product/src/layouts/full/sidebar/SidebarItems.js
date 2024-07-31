@@ -1,15 +1,47 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, List } from "@mui/material";
 import NavItem from "./NavItem";
 import NavGroup from "./NavGroup/NavGroup";
 import { People } from "@mui/icons-material";
 import { useLoginProvider } from "../../../views/authentication/provider/LoginProvider";
 import { useNavigate } from "react-router";
+import { getUserPermissionsController } from "../../../views/user-management/users/controllers/usersControllers";
+import { setCookie } from "../../../views/utilities/cookieServices/cookieServices";
+import { isPermissionDetailsCookieName } from "../../../views/utilities/generals";
+import { encodeData } from "../../../views/utilities/securities/encodeDecode";
 
 const SidebarItems = ({ navItemClicked }) => {
-  const { menuList } = useLoginProvider();
+  const [menuList, setMenuList] = useState([]);
+  const hasFetchedRoles = useRef(false);
+  const { setMenuListFunction } = useLoginProvider();
+
+  // const { menuList } = useLoginProvider();
   const navigte = useNavigate();
   // Transform API data to match the required structure
+  const getTableData = async () => {
+    try {
+      const response = await getUserPermissionsController();
+      setMenuList(response);
+      // Set a cookie to store permissionList
+      setMenuListFunction(response);
+      setCookie({
+        name: isPermissionDetailsCookieName,
+        value: encodeData(response),
+      });
+    } catch (error) {
+      console.error(error);
+      if (error.statusCode === 404) {
+        setMenuList([]);
+      }
+    } finally {
+    }
+  };
+  useEffect(() => {
+    if (!hasFetchedRoles.current) {
+      getTableData();
+      hasFetchedRoles.current = true;
+    }
+  }, []);
   const transformApiData = (data) => {
     return (
       data &&

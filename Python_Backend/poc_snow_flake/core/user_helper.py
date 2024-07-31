@@ -57,6 +57,8 @@ def get_data_type():
     return data_type, 200
 
 
+
+
 def get_snowflake_connection():
     conn = snowflake.connector.connect(
         user=conf.get('user'),
