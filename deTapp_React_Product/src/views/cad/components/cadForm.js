@@ -1,13 +1,7 @@
 // src/components/FormComponent.js
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import {
-  TextField,
-  Button,
-  Grid,
-  styled,
-  Box,
-} from "@mui/material";
+import { TextField, Button, Grid, styled, Box } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
@@ -23,14 +17,18 @@ const Container = styled(Box)(({ theme }) => ({
 }));
 // Validation schema with regex patterns
 const schema = yup.object().shape({
+  countryOfResidence: yup
+    .string()
+    .required("Country of residence is required")
+    .matches(/^[a-zA-Z\s-_]+$/, "Country of residence must be alphabetic"),
+  emiratesId: yup
+    .string()
+    .required("Emirates is required")
+    .matches(/^[a-zA-Z\s-_]+$/, "Emirates must be alphabetic"),
   target: yup
     .string()
     .required("Target is required")
     .matches(/^[a-zA-Z\s-_]+$/, "Target must be alphabetic"),
-  subTarget: yup
-    .string()
-    .required("Sub Target is required")
-    .matches(/^[a-zA-Z\s-_]+$/, "Sub Target must be alphabetic"),
   incorporationCity: yup
     .string()
     .required("Incorporation City is required")
@@ -101,9 +99,10 @@ const CMDFormComponent = ({
     if (defaultValues) {
       reset({
         target: defaultValues?.target ?? "",
-        subTarget: defaultValues?.sub_target ?? "",
+        countryOfResidence: defaultValues?.country_of_residence ?? "",
         incorporationCity: defaultValues?.incorporation_city ?? "",
         sectorClassification: defaultValues?.sector_classification ?? "",
+        emiratesId: defaultValues?.emirates_id ?? "",
       });
     }
   }, [defaultValues, reset, rolesList, formAction]);
@@ -114,7 +113,8 @@ const CMDFormComponent = ({
     if (formAction.action === "add") {
       reset({
         target: "",
-        subTarget: "",
+        emiratesId: "",
+        countryOfResidence: "",
         incorporationCity: "",
         sectorClassification: "",
       });
@@ -140,7 +140,8 @@ const CMDFormComponent = ({
     onReset();
     reset({
       target: "",
-      subTarget: "",
+      emiratesId: "",
+      countryOfResidence: "",
       incorporationCity: "",
       sectorClassification: "",
     });
@@ -153,7 +154,8 @@ const CMDFormComponent = ({
     onSubmit(getValues());
     reset({
       target: "",
-      subTarget: "",
+      emiratesId: "",
+      countryOfResidence: "",
       incorporationCity: "",
       sectorClassification: "",
     });
@@ -209,16 +211,16 @@ const CMDFormComponent = ({
         </Grid>
         <Grid item xs={12} sm={6}>
           <Controller
-            name="subTarget"
+            name="countryOfResidence"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Enter target"
+                label="Enter Country of Residence"
                 fullWidth
                 variant="outlined"
-                error={!!errors.subTarget}
-                helperText={errors.subTarget?.message}
+                error={!!errors.countryOfResidence}
+                helperText={errors.countryOfResidence?.message}
                 InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only
@@ -259,6 +261,26 @@ const CMDFormComponent = ({
                 variant="outlined"
                 error={!!errors.sectorClassification}
                 helperText={errors.sectorClassification?.message}
+                InputLabelProps={{ shrink: field.value }}
+                InputProps={{
+                  readOnly: readOnly, // Make the field read-only
+                }}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="emiratesId"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Enter Emirates"
+                fullWidth
+                variant="outlined"
+                error={!!errors.emiratesId}
+                helperText={errors.emiratesId?.message}
                 InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only

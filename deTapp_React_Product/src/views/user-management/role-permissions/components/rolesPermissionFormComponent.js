@@ -296,7 +296,7 @@ const RolePermissionFormComponent = ({
             render={({ field }) => (
               <Autocomplete
                 {...field}
-                options={subMenuList}
+                options={subMenusList}
                 getOptionLabel={(option) => option.NAME}
                 isOptionEqualToValue={(option, value) => option.ID === value.ID}
                 value={field.value || null}

@@ -123,13 +123,14 @@ class CMDHelper:
         self.conn.commit()
         return self.cursor.rowcount
 
-    def delete_cad(self, cad_id, deleted_by='system'):
+    def delete_cad(self, cad_id):
         try:
-            self.cursor.execute(
-                "UPDATE NBF_CIA.PUBLIC.CAD SET IS_ACTIVE = FALSE, DELETED_BY = %s, DELETED_DATE = CURRENT_TIMESTAMP() WHERE ID = %s",
-                (deleted_by, cad_id))
+            # Proceed with deletion if no references found
+            self.cursor.execute("DELETE FROM NBF_CIA.PUBLIC.CAD WHERE ID = %s", (cad_id,))
             self.conn.commit()
-            return {"message": "CAD record marked as inactive successfully"}, 200
+            print(f"CAD {cad_id} deleted successfully")  # Debug log
+            return {"message": "CAD deleted successfully"}, 200
         except Exception as e:
             self.conn.rollback()
+            print(f"Error deleting CAD: {e}")  # Debug log
             return {"error": str(e)}, 500

@@ -64,7 +64,7 @@ export const rolePermissionCreationController = async (formData) => {
       role_id: formData.role?.id,
       menu_id: formData.menu?.ID,
       submenu_id: formData.subMenu?.ID,
-      permission_level: formData.permission?.id,
+      permission_level: formData.permission?.ID,
     };
     // Send the POST request to the role permissions API endpoint
     const response = await post("/master/rolePermission", body, "python");
@@ -112,7 +112,7 @@ export const rolePermissionUpdateController = async (formData) => {
       role_id: formData.role?.id,
       menu_id: formData.menu?.ID,
       submenu_id: formData.subMenu?.ID,
-      permission_level: formData.permission?.id,
+      permission_level: formData.permission?.ID,
     };
     // Send the PUT request to the role permissions API endpoint
     const response = await put(

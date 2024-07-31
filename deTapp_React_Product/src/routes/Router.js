@@ -58,6 +58,7 @@ const PageNotReady = Loadable(
   lazy(() => import("../views/pageNotReady/PageNotReady"))
 );
 const CMDPage = Loadable(lazy(() => import("../views/cmd/CMDPage")));
+const CADPage = Loadable(lazy(() => import("../views/cad/CADPage")));
 
 const Router = [
   {
@@ -75,6 +76,8 @@ const Router = [
       { path: "/role-permissions", exact: true, element: <RolePermission /> },
       { path: "/user-roles", exact: true, element: <UserRole /> },
       { path: "/cmd", exact: true, element: <CMDPage /> },
+      { path: "/cad", exact: true, element: <CADPage /> },
+
 
       { path: "*", element: <PageNotReady /> },
     ],
