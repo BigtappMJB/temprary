@@ -13,9 +13,11 @@ import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
 import { useLoginProvider } from "../authentication/provider/LoginProvider";
 import {
+  generateCSV,
   getCurrentPathName,
   getSubmenuDetails,
   ScrollToTopButton,
+  timeStampFileName,
 } from "../utilities/generals";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 
@@ -398,6 +400,10 @@ const CMDPage = () => {
     }
   };
 
+  const handleExport =()=>{
+    generateCSV(tableData,`central_manual_depository_${timeStampFileName(new Date())}`)
+  }
+
   return (
     <>
       {formAction.display && (
@@ -427,19 +433,38 @@ const CMDPage = () => {
           <Typography variant="h6">
             <b>Central Manual Depository List</b>
           </Typography>
-          <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="center"
+            flexWrap="wrap"
+            gap={2}
+          >
             <FormButton
               type="button"
               onClick={addUser}
               variant="contained"
               color="primary"
-              className="primary"
               style={{ marginRight: "10px" }}
-              className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
+              className={`${
+                permissionLevels?.create ? "primary" : "custom-disabled"
+              }`}
               disabled={formAction.action === "add" && formAction.display}
-           
             >
               Add CMD
+            </FormButton>
+            <FormButton
+              type="button"
+              onClick={handleExport}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}
+              className={`${
+                tableData.length ? "secondary" : "custom-disabled"
+              }`}
+            >
+              Export
             </FormButton>
           </Box>
         </SubHeader>
@@ -448,7 +473,7 @@ const CMDPage = () => {
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-              columns={columns}
+            columns={columns}
             permissionLevels={permissionLevels}
           />
         ) : (
