@@ -133,7 +133,7 @@ def get_permissions_by_email(email):
             LEFT JOIN 
                 NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
             WHERE 
-                u.EMAIL = %s AND pl.ID != 301
+                u.EMAIL = %s AND pl.ID != 16
             ORDER BY 
                 m.ID  ASC  
         ),
