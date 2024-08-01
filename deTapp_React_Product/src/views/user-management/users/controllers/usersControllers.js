@@ -94,7 +94,7 @@ export const userCreationController = async (formData) => {
       last_name: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role_id: formData?.role.id,
+      role_id:2,
     };
     // Send the POST request to the user API endpoint
     const response = await post("/master/user", body, "python");

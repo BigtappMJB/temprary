@@ -170,10 +170,10 @@ const CreateTableForm = () => {
       .map((ele) => ele.trim().toLowerCase());
 
     setPermissionLevels({
-      create: permissionList.includes("create"),
-      edit: permissionList.includes("edit"),
-      view: permissionList.includes("view"),
-      delete: permissionList.includes("delete"),
+      create: permissionList?.includes("create"),
+      edit: permissionList?.includes("edit"),
+      view: permissionList?.includes("view"),
+      delete: permissionList?.includes("delete"),
     });
     inputRef.current.focus();
     const getDataTypes = async () => {
