@@ -29,9 +29,7 @@ const schema = yup.object().shape({
   projectType: yup
     .string()
     .required("Project Type is required"),
-  projectCode: yup
-    .string()
-    .required("Project code is required"),
+ 
   projectName: yup
     .string()
     .required("Project Name is required")
@@ -223,26 +221,7 @@ const ProjectCreationForm = ({
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="projectCode"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Enter projectCode "
-                fullWidth
-                variant="outlined"
-                error={!!errors.projectCode}
-                helperText={errors.projectCode?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
+      
         <Grid item xs={12} sm={6}>
           <Controller
             name="projectName"

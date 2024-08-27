@@ -28,11 +28,9 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for validation
 const schema = yup.object().shape({
-  client: yup.object().required("Client is required"),
-  projectType: yup.object().required("Project type is required"),
   projectName: yup.object().required("Project is required"),
 
-  task: yup.object().required("task is required"),
+  activityCode: yup.object().required("Activity Code is required"),
 
   role: yup.object().required("Role is required"),
   phase: yup.object().required("Phase is required"),
@@ -62,13 +60,12 @@ const schema = yup.object().shape({
     .positive("Number should be postive")
     .max(24, "Hours cannot exceed 24"),
 
-  totalHours: yup
-    .number()
-    .default(0)
-    .nullable() // Allows null values initially
-    .required("Hours is required")
-    .positive("Number should be postive")
-    .max(24, "Hours cannot exceed 24"),
+  totalHours: yup.number(),
+  // .default(0)
+  // .nullable() // Allows null values initially
+  // .required("Hours is required")
+  // .positive("Number should be postive")
+  // .max(24, "Hours cannot exceed 24"),
 });
 
 const ProjectEstimateFormComponent = ({
@@ -205,57 +202,6 @@ const ProjectEstimateFormComponent = ({
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Controller
-            name="client"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Autocomplete
-                {...field}
-                options={projectList} // Example options, fetch from API in real use-case
-                getOptionLabel={(option) => option.ACTIVITY_DESCRIPTION}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Client Name"
-                    error={!!fieldState.error}
-                    InputLabelProps={{
-                      shrink: Boolean(field.value),
-                    }}
-                    helperText={fieldState.error?.message}
-                  />
-                )}
-                onChange={(_, data) => field.onChange(data)}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="projectType"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Autocomplete
-                {...field}
-                options={projectList} // Example options, fetch from API in real use-case
-                getOptionLabel={(option) => option.ACTIVITY_DESCRIPTION}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Project Type"
-                    error={!!fieldState.error}
-                    InputLabelProps={{
-                      shrink: Boolean(field.value),
-                    }}
-                    helperText={fieldState.error?.message}
-                  />
-                )}
-                onChange={(_, data) => field.onChange(data)}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
             name="projectName"
             control={control}
             render={({ field, fieldState }) => (
@@ -334,7 +280,7 @@ const ProjectEstimateFormComponent = ({
 
         <Grid item xs={12} sm={6}>
           <Controller
-            name="task"
+            name="activityCode"
             control={control}
             render={({ field, fieldState }) => (
               <Autocomplete
@@ -344,7 +290,7 @@ const ProjectEstimateFormComponent = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Task name"
+                    label="Activity Code"
                     error={!!fieldState.error}
                     InputLabelProps={{
                       shrink: Boolean(field.value),
@@ -368,16 +314,15 @@ const ProjectEstimateFormComponent = ({
                   {...field}
                   label="Start Date"
                   disablePast
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                      InputLabelProps={{
+                  slotProps={{
+                    textField: {
+                      error: !!fieldState.error,
+                      helperText: fieldState.error?.message,
+                      InputLabelProps: {
                         shrink: Boolean(field.value),
-                      }}
-                    />
-                  )}
+                      },
+                    },
+                  }}
                 />
               </LocalizationProvider>
             )}
@@ -394,16 +339,15 @@ const ProjectEstimateFormComponent = ({
                   {...field}
                   label="End Date"
                   minDate={watch("startDate")}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                      InputLabelProps={{
+                  slotProps={{
+                    textField: {
+                      error: !!fieldState.error,
+                      helperText: fieldState.error?.message,
+                      InputLabelProps: {
                         shrink: Boolean(field.value),
-                      }}
-                    />
-                  )}
+                      },
+                    },
+                  }}
                 />
               </LocalizationProvider>
             )}
