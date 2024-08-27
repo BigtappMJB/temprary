@@ -252,7 +252,7 @@ const DataTable = ({
                     key={key}
                     style={{
                       textAlign: validationRegex.isNumbers.test(row[key])
-                        ? "center"
+                        ? "left"
                         : "left",
                     }}
                   >
