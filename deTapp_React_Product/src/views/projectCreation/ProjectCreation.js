@@ -236,6 +236,7 @@ const CMDPage = () => {
       }
 
       if (response) {
+        getTableData();
         openDialog(
           "success",
           `Project ${isAdd ? "Addition" : "Updation"} Success`,
@@ -252,7 +253,7 @@ const CMDPage = () => {
             },
           },
           (confirmed) => {
-            getTableData();
+            
             if (!isAdd) {
               onFormReset();
             }

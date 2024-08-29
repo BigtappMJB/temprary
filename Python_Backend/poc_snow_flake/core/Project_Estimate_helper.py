@@ -270,7 +270,7 @@ def get_all_project_details():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM PROJECT_DETAILS ORDER BY PROJECT_ID DESC")
+        cursor.execute("SELECT * FROM PROJECT_DETAILS pd JOIN CLIENT_INFO ci ON pd.client_id = ci.client_code_id JOIN PROJECT_TYPE pt ON pd.project_type_id = pt.project_type_id  ORDER BY PROJECT_ID DESC")
         details = cursor.fetchall()
         if details:
             column_names = [desc[0] for desc in cursor.description]

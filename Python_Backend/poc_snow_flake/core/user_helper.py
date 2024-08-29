@@ -186,6 +186,46 @@ def fetch_all_users():
     finally:
         cursor.close()
         conn.close()
+        
+        
+def fetch_all_tables():
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+        SELECT 
+            t.TABLE_NAME AS tablename,
+            c.COLUMN_NAME AS columnname,
+            c.DATA_TYPE AS datatype
+        FROM INFORMATION_SCHEMA.TABLES t
+        JOIN INFORMATION_SCHEMA.COLUMNS c
+        ON t.TABLE_NAME = c.TABLE_NAME
+        WHERE t.TABLE_SCHEMA = CURRENT_SCHEMA()
+        AND t.TABLE_CATALOG = CURRENT_DATABASE()
+        AND t.TABLE_TYPE = 'BASE TABLE'
+        ORDER BY t.TABLE_NAME, c.ORDINAL_POSITION;
+    """)
+
+    # Fetch results
+        results = cursor.fetchall()
+
+        # Format results into JSON
+        tables = {}
+        for row in results:
+            tablename, columnname, datatype = row
+            if tablename not in tables:
+                tables[tablename] = {}
+            tables[tablename][columnname] = datatype
+
+        # Print JSON output
+        return json.dumps(tables, indent=2)
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+
 
 
 

@@ -84,6 +84,15 @@ def submenu():
     return jsonify(result), status_code
 
 
+@users_bp.route('/AllTables', methods=['GET'])
+def get_all_tables():
+    try:
+        users = fetch_all_tables()
+        return users, 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @users_bp.route('/tableConfigurator', methods=['GET', 'POST'])
 def table_configurator():
     response = "ssd"
