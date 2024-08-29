@@ -2,7 +2,7 @@ import json
 import random
 import string
 from datetime import datetime
-
+import re
 from flask import jsonify, current_app
 import snowflake.connector
 from share.general_utils import snow_conf as conf
@@ -141,6 +141,24 @@ def get_all_users():
     finally:
         cursor.close()
         conn.close()
+        
+        
+def get_all_input_field():
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("Select * from INPUT_FIELD")
+        users = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
+        data = [dict(zip(column_names, row)) for row in users]
+    
+        return data
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 def update_user(user_id, data):
     conn = get_snowflake_connection()
@@ -192,39 +210,46 @@ def fetch_all_tables():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("""
-        SELECT 
-            t.TABLE_NAME AS tablename,
-            c.COLUMN_NAME AS columnname,
-            c.DATA_TYPE AS datatype
-        FROM INFORMATION_SCHEMA.TABLES t
-        JOIN INFORMATION_SCHEMA.COLUMNS c
-        ON t.TABLE_NAME = c.TABLE_NAME
-        WHERE t.TABLE_SCHEMA = CURRENT_SCHEMA()
-        AND t.TABLE_CATALOG = CURRENT_DATABASE()
-        AND t.TABLE_TYPE = 'BASE TABLE'
-        ORDER BY t.TABLE_NAME, c.ORDINAL_POSITION;
-    """)
-
-    # Fetch results
-        results = cursor.fetchall()
-
-        # Format results into JSON
-        tables = {}
-        for row in results:
-            tablename, columnname, datatype = row
-            if tablename not in tables:
-                tables[tablename] = {}
-            tables[tablename][columnname] = datatype
-
-        # Print JSON output
-        return json.dumps(tables, indent=2)
+        cursor.execute("""SELECT TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = CURRENT_SCHEMA() AND TABLE_CATALOG = CURRENT_DATABASE();
+                       """)
+        users = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
+        data = [dict(zip(column_names, row)) for row in users]
+        return data
     except Exception as e:
         raise e
     finally:
         cursor.close()
         conn.close()
 
+def fetch_column_details(table_name):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        query = f"""SELECT
+   COLUMN_NAME,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,NUMERIC_SCALE,NUMERIC_PRECISION,IS_IDENTITY
+FROM
+    INFORMATION_SCHEMA.COLUMNS
+WHERE
+    TABLE_NAME = '{table_name.upper()}' 
+     AND IS_IDENTITY = 'NO'
+    AND TABLE_SCHEMA = CURRENT_SCHEMA()
+    AND TABLE_CATALOG = CURRENT_DATABASE()
+    
+ORDER BY
+    ORDINAL_POSITION;"""
+        cursor.execute(query)
+        users = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
+        data = [dict(zip(column_names, row)) for row in users]
+        return data
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
 
 

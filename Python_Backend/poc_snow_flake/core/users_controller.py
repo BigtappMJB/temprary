@@ -91,6 +91,26 @@ def get_all_tables():
         return users, 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+    
+@users_bp.route('/columnDetails/<string:table_name>', methods=['GET'])
+def get_column_details(table_name):
+    try:
+        users = fetch_column_details(table_name)
+        return jsonify(users), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    
+        
+@users_bp.route('/inputField', methods=['GET'])
+def get_input_field_details():
+    try:
+        users = get_all_input_field()
+        return jsonify(users), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 
 
 @users_bp.route('/tableConfigurator', methods=['GET', 'POST'])
