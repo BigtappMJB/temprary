@@ -204,23 +204,28 @@ const ProjectEstimateFormComponent = ({
           <Controller
             name="projectName"
             control={control}
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <Autocomplete
                 {...field}
-                options={projectList} // Example options, fetch from API in real use-case
-                getOptionLabel={(option) => option.ACTIVITY_DESCRIPTION}
+                options={projectList}
+                getOptionLabel={(option) => option.PROJECT_NAME}
+                isOptionEqualToValue={(option, value) =>
+                  option.PROJECT_ID === value.PROJECT_ID
+                }
+                value={field.value || null}
+                onChange={(_, data) => field.onChange(data)}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Project Name"
-                    error={!!fieldState.error}
+                    label="Select projectName"
+                    fullWidth
+                    error={!!errors.menu}
+                    helperText={errors.menu?.message}
                     InputLabelProps={{
                       shrink: Boolean(field.value),
                     }}
-                    helperText={fieldState.error?.message}
                   />
                 )}
-                onChange={(_, data) => field.onChange(data)}
               />
             )}
           />

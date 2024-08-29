@@ -8,16 +8,6 @@ import { getCookie } from "../../utilities/cookieServices/cookieServices";
 import { isUserIdCookieName, titleCaseFirstWord } from "../../utilities/generals";
 import { decodeData } from "../../utilities/securities/encodeDecode";
 
-export const getProjectsControllers = async () => {
-  try {
-    // Send the GET request to the cmd API endpoint
-    const response = await get("estimate/activity_codes", "python");
-    // Return the response data
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
 
 export const getProjectRoleControllers = async () => {
   try {

@@ -1,18 +1,9 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 
-import ProjectEstimateFormComponent from "./components/projectEstimationForm";
+import DynamicFormCreationFormComponent from "./components/dynamicPageCreationForm";
 import DataTable from "../user-management/users/components/DataTable";
-import {
-  projectEstimateCreationController,
-  cmddeleteController,
-  cmdupdateController,
-  getProjectEstimationControllers,
-  getProjectPhaseControllers,
-  getProjectRoleControllers,
-  getProjectsControllers,
-  getClientControllers,
-} from "./controllers/projectEstimationController";
+
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
 import { useLoginProvider } from "../authentication/provider/LoginProvider";
@@ -24,7 +15,11 @@ import {
   timeStampFileName,
 } from "../utilities/generals";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
-import { getProjectController } from "../projectCreation/controllers/projectCreatioControllers";
+import {
+  createReactFormController,
+  getInputFieldController,
+  getTableListDataController,
+} from "../dynamicPageCreation/controllers/dynamicPageCreationController";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -77,29 +72,26 @@ const FormButton = styled(Button)(({ theme }) => ({
 }));
 
 /**
- * CMDPage component displays a user management interface with a form and a data table.
+ * DynamicPageCreation component displays a user management interface with a form and a data table.
  *
  * @component
  * @example
  * return (
- *   <CMDPage />
+ *   <DynamicPageCreation />
  * )
  */
-const CMDPage = () => {
+const DynamicPageCreation = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
 
-  
-
-  const [project, setProject] = useState([]);
-  const [role, setRole] = useState([]);
-  const [phase, setPhase] = useState([]);
+  const [tableList, setTableList] = useState([]);
+  const [inputFieldList, setInputField] = useState([]);
 
   const { startLoading, stopLoading } = useLoading();
 
   const [formAction, setFormAction] = useState({
-    display: false,
-    action: "update",
+    display: true,
+    action: "add",
   });
 
   const [permissionLevels, setPermissionLevels] = useState({
@@ -112,30 +104,28 @@ const CMDPage = () => {
 
   const { openDialog } = useDialog();
 
-
-
   // Fetches user data and updates the table
-  const getTableData = async () => {
-    try {
-      startLoading();
-      const response = await getProjectEstimationControllers();
-      setTableData(response);
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
-        setTableData([]);
-      }
-    } finally {
-      stopLoading();
-    }
-  };
+  //   const getTableData = async () => {
+  //     try {
+  //       startLoading();
+  //       const response = await getProjectEstimationControllers();
+  //       setTableData(response);
+  //     } catch (error) {
+  //       console.error(error);
+  //       if (error.statusCode === 404) {
+  //         setTableData([]);
+  //       }
+  //     } finally {
+  //       stopLoading();
+  //     }
+  //   };
 
-  const getProjectData = async () => {
+  const getInputFieldList = async () => {
     try {
       startLoading();
-      const response = await getProjectController();
+      const response = await getInputFieldController();
       // console.log({response});
-      setProject(response);
+      setInputField(response);
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {
@@ -146,26 +136,12 @@ const CMDPage = () => {
     }
   };
 
-  const getProjectRole = async () => {
+  const getTableListData = async () => {
     try {
       startLoading();
-      const response = await getProjectRoleControllers();
-      setRole(response);
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
-        return;
-      }
-    } finally {
-      stopLoading();
-    }
-  };
-
-  const getProjectPhase = async () => {
-    try {
-      startLoading();
-      const response = await getProjectPhaseControllers();
-      setPhase(response);
+      const response = await getTableListDataController();
+      // console.log({response});
+      setTableList(response);
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {
@@ -189,16 +165,21 @@ const CMDPage = () => {
         .split(",")
         .map((ele) => ele.trim().toLowerCase());
 
+      //   setPermissionLevels({
+      //     create: permissionList?.includes("create"),
+      //     edit: permissionList?.includes("edit"),
+      //     view: permissionList?.includes("view"),
+      //     delete: permissionList?.includes("delete"),
+      //   });
       setPermissionLevels({
-        create: permissionList?.includes("create"),
-        edit: permissionList?.includes("edit"),
-        view: permissionList?.includes("view"),
-        delete: permissionList?.includes("delete"),
+        create: true,
+        edit: true,
+        view: true,
+        delete: true,
       });
-      getProjectData();
-      getProjectPhase();
-      getProjectRole();
-      getTableData();
+      getTableListData();
+      getInputFieldList();
+      //   getTableData();
       hasFetchedRoles.current = true;
     }
   }, []);
@@ -250,13 +231,13 @@ const CMDPage = () => {
       startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await projectEstimateCreationController(formData);
+      if (isAdd) response = await createReactFormController(formData);
       else {
         formData = {
           ...formData,
           ID: selectedValue.id,
         };
-        response = await cmdupdateController(formData);
+        // response = await cmdupdateController(formData);
       }
 
       if (response) {
@@ -276,7 +257,7 @@ const CMDPage = () => {
             },
           },
           (confirmed) => {
-            getTableData();
+            // getTableData();
             if (!isAdd) {
               onFormReset();
             }
@@ -376,7 +357,7 @@ const CMDPage = () => {
         },
         (confirmed) => {
           if (confirmed) {
-            removeDataFromTable(selectedRow);
+            // removeDataFromTable(selectedRow);
           }
         }
       );
@@ -404,63 +385,63 @@ const CMDPage = () => {
    * Removes a user from the table after confirming deletion.
    * @param {Object} selectedRow - The selected user's data.
    */
-  const removeDataFromTable = async (selectedRow) => {
-    try {
-      startLoading();
-      setFormAction({
-        display: false,
-        action: null,
-      });
-      const response = await cmddeleteController(selectedRow.id);
+  //   const removeDataFromTable = async (selectedRow) => {
+  //     try {
+  //       startLoading();
+  //       setFormAction({
+  //         display: false,
+  //         action: null,
+  //       });
+  //       const response = await cmddeleteController(selectedRow.id);
 
-      if (response) {
-        openDialog(
-          "success",
-          `CMD Deletion Success`,
-          response.message || `CMD has been deleted successfully  `,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {
-            confirmed && getTableData();
-          },
-          () => {
-            getTableData();
-          }
-        );
-      }
-    } catch (error) {
-      openDialog(
-        "warning",
-        "Warning",
-        `CMD Deletion failed`,
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            return;
-          }
-        }
-      );
-    } finally {
-      stopLoading();
-    }
-  };
+  //       if (response) {
+  //         openDialog(
+  //           "success",
+  //           `CMD Deletion Success`,
+  //           response.message || `CMD has been deleted successfully  `,
+  //           {
+  //             confirm: {
+  //               name: "Ok",
+  //               isNeed: true,
+  //             },
+  //             cancel: {
+  //               name: "Cancel",
+  //               isNeed: false,
+  //             },
+  //           },
+  //           (confirmed) => {
+  //             confirmed && getTableData();
+  //           },
+  //           () => {
+  //             getTableData();
+  //           }
+  //         );
+  //       }
+  //     } catch (error) {
+  //       openDialog(
+  //         "warning",
+  //         "Warning",
+  //         `CMD Deletion failed`,
+  //         {
+  //           confirm: {
+  //             name: "Ok",
+  //             isNeed: true,
+  //           },
+  //           cancel: {
+  //             name: "Cancel",
+  //             isNeed: false,
+  //           },
+  //         },
+  //         (confirmed) => {
+  //           if (confirmed) {
+  //             return;
+  //           }
+  //         }
+  //       );
+  //     } finally {
+  //       stopLoading();
+  //     }
+  //   };
 
   const handleExport = () => {
     generateCSV(
@@ -480,25 +461,24 @@ const CMDPage = () => {
                 : formAction.action === "update"
                 ? "Update"
                 : "Read "}{" "}
-              Project Estimation
+              Page
             </Typography>
           </Header>
-          <ProjectEstimateFormComponent
+          <DynamicFormCreationFormComponent
             formAction={formAction}
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
-            projectList={project}
-            roleList={role}
-            phaseList={phase}
+            tableList={tableList}
+            inputFieldList={inputFieldList}
           />
         </Container>
       )}
 
-      <SecondContainer className="common-table">
+      {/* <SecondContainer className="common-table">
         <SubHeader className="table-header">
           <Typography variant="h6">
-            <b>Project Estimation</b>
+            <b>Page Creation</b>
           </Typography>
 
           <Box
@@ -519,7 +499,7 @@ const CMDPage = () => {
               }`}
               disabled={formAction.action === "add" && formAction.display}
             >
-              Add Estimation
+              Add Page
             </FormButton>
             <FormButton
               type="button"
@@ -546,9 +526,9 @@ const CMDPage = () => {
         ) : (
           <TableErrorDisplay />
         )}
-      </SecondContainer>
+      </SecondContainer> */}
     </>
   );
 };
 
-export default CMDPage;
+export default DynamicPageCreation;

@@ -62,6 +62,8 @@ const CADPage = Loadable(lazy(() => import("../views/cad/CADPage")));
 const ProjectEstimation = Loadable(lazy(() => import("../views/project_estimation/project_estimation")));
 const ProjectCreation = Loadable(lazy(() => import("../views/projectCreation/ProjectCreation")));
 const DynamicPage = Loadable(lazy(() => import("../views/dynamic_page/dynamic_page")));
+const DynamicPageCreation = Loadable(lazy(() => import("../views/dynamicPageCreation/dynamicPageCreation")));
+
 
 
 
@@ -85,6 +87,8 @@ const Router = [
       { path: "/project-estimate", exact: true, element: <ProjectEstimation /> },
       { path: "/projectCreation", exact: true, element: <ProjectCreation /> },
       { path: "/dynamicPage", exact: true, element: <DynamicPage /> },
+      { path: "/dynamicPageCreation", exact: true, element: <DynamicPageCreation /> },
+
 
 
 
