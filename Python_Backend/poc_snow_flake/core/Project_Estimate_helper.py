@@ -159,20 +159,143 @@ def get_all_project_roles():
     finally:
         cursor.close()
         conn.close()
-
-# Helper methods for Activity_Code_Master
-def get_all_activity_codes():
+# Helper methods for Project_Type
+def get_all_project_types():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM Activity_Code_Master ORDER BY Activity_Code_ID DESC")
-        codes = cursor.fetchall()
-        if codes:
+        cursor.execute("SELECT * FROM NBF_CIA.PUBLIC.PROJECT_TYPE ORDER BY PROJECT_TYPE_ID DESC")
+        project_types = cursor.fetchall()
+        if project_types:
             column_names = [desc[0] for desc in cursor.description]
-            code_list = [dict(zip(column_names, code)) for code in codes]
-            return code_list, 200
+            project_type_list = [dict(zip(column_names, project_type)) for project_type in project_types]
+            return project_type_list, 200
         else:
-            return {"message": "No Activity Codes found"}, 404
+            return {"message": "No Project Types found"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# Helper methods for Client_Info
+def get_all_clients():
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM NBF_CIA.PUBLIC.CLIENT_INFO ORDER BY CLIENT_CODE_ID DESC")
+        clients = cursor.fetchall()
+        if clients:
+            column_names = [desc[0] for desc in cursor.description]
+            client_list = [dict(zip(column_names, client)) for client in clients]
+            return client_list, 200
+        else:
+            return {"message": "No Clients found"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def create_project_detail(data):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO NBF_CIA.PUBLIC.PROJECT_DETAILS (
+                PROJECT_NAME, CLIENT_ID, PROJECT_TYPE_ID, CREATED_BY, IS_ACTIVE
+            ) VALUES (%s, %s, %s, %s, %s)
+            """,
+            (
+                data.get('PROJECT_NAME'),
+                data.get('CLIENT_ID'),
+                data.get('PROJECT_TYPE_ID'),
+                data.get('CREATED_BY'),
+                data.get('IS_ACTIVE', True)
+            )
+        )
+        conn.commit()
+        return {"message": "Project Detail created successfully"}, 201
+    except Exception as e:
+        current_app.logger.error(f"Error occurred while creating Project Detail: {e}")
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+def update_project_detail(project_id, data):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            UPDATE NBF_CIA.PUBLIC.PROJECT_DETAILS SET
+                PROJECT_NAME = %s, CLIENT_ID = %s, PROJECT_TYPE_ID = %s,
+                UPDATED_BY = %s, UPDATED_DATE = CURRENT_TIMESTAMP, IS_ACTIVE = %s
+            WHERE PROJECT_ID = %s
+            """,
+            (
+                data.get('PROJECT_NAME'),
+                data.get('CLIENT_ID'),
+                data.get('PROJECT_TYPE_ID'),
+                data.get('UPDATED_BY'),
+                data.get('IS_ACTIVE', True),
+                project_id
+            )
+        )
+        conn.commit()
+        return {"message": "Project Detail updated successfully"}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+
+def delete_project_detail(project_id):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "DELETE FROM NBF_CIA.PUBLIC.PROJECT_DETAILS WHERE PROJECT_ID = %s", (project_id,)
+        )
+        conn.commit()
+        return {"message": "Project Detail deleted successfully"}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+def get_all_project_details():
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM PROJECT_DETAILS ORDER BY PROJECT_ID DESC")
+        details = cursor.fetchall()
+        if details:
+            column_names = [desc[0] for desc in cursor.description]
+            detail_list = [dict(zip(column_names, detail)) for detail in details]
+            return detail_list, 200
+        else:
+            return {"message": "No Project Details found"}, 404
+    except Exception as e:
+        current_app.logger.error(f"Error occurred while retrieving Project Details: {e}")
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+def get_project_detail(project_id):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM PROJECT_DETAILS WHERE PROJECT_ID = %s", (project_id,))
+        project_detail = cursor.fetchone()
+        if project_detail:
+            column_names = [desc[0] for desc in cursor.description]
+            project_detail_dict = dict(zip(column_names, project_detail))
+            return project_detail_dict, 200
+        else:
+            return {"message": "Project Detail not found"}, 404
     except Exception as e:
         return {"error": str(e)}, 500
     finally:
