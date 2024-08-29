@@ -4,7 +4,12 @@ import {
   remove,
   put,
 } from "../../utilities/apiservices/apiServices";
-import { titleCaseFirstWord } from "../../utilities/generals";
+import { getCookie } from "../../utilities/cookieServices/cookieServices";
+import {
+  isUserIdCookieName,
+  titleCaseFirstWord,
+} from "../../utilities/generals";
+import { decodeData } from "../../utilities/securities/encodeDecode";
 
 /**
  * Fetches the list of cmds from the API.
@@ -21,7 +26,7 @@ import { titleCaseFirstWord } from "../../utilities/generals";
 export const getProjectController = async () => {
   try {
     // Send the GET request to the projectCreation API endpoint
-    const response = await get("projectCreation/Allcmd", "python");
+    const response = await get("estimate/project_details", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -29,6 +34,27 @@ export const getProjectController = async () => {
   }
 };
 
+export const getProjectTypesController = async () => {
+  try {
+    // Send the GET request to the projectCreation API endpoint
+    const response = await get("estimate/project_type", "python");
+    // Return the response data
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getClientInfoController = async () => {
+  try {
+    // Send the GET request to the projectCreation API endpoint
+    const response = await get("estimate/client_info", "python");
+    // Return the response data
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const projectCreationController = async (formData) => {
   try {
@@ -36,15 +62,17 @@ export const projectCreationController = async (formData) => {
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
+    const email = decodeData(getCookie(isUserIdCookieName));
     // Prepare the body object with sanitized data
     const body = {
-      target: titleCaseFirstWord(formData?.target),
-      subTarget: titleCaseFirstWord(formData.subTarget),
-      incorporationCity: titleCaseFirstWord(formData?.incorporationCity),
-      sectorClassification: titleCaseFirstWord(formData?.sectorClassification),
+      PROJECT_NAME: titleCaseFirstWord(formData?.projectName),
+      CLIENT_ID: formData.client.CLIENT_CODE_ID,
+      PROJECT_TYPE_ID: formData?.projectType.PROJECT_TYPE_ID,
+      CREATED_BY: email,
+      IS_ACTIVE: true,
     };
     // Send the POST request to the projectCreation API endpoint
-    const response = await post("projectCreation/addprojectCreation", body, "python");
+    const response = await post("estimate/project_details", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -88,14 +116,21 @@ export const projectUpdateController = async (formData) => {
       throw new Error("Invalid form data");
     }
     // Prepare the body object with sanitized data
+    const email = decodeData(getCookie(isUserIdCookieName));
+
     const body = {
-      target: titleCaseFirstWord(formData?.target),
-      subTarget: titleCaseFirstWord(formData.subTarget),
-      incorporationCity: titleCaseFirstWord(formData?.incorporationCity),
-      sectorClassification: titleCaseFirstWord(formData?.sectorClassification),
+      PROJECT_NAME: titleCaseFirstWord(formData?.projectName),
+      CLIENT_ID: formData.client.CLIENT_CODE_ID,
+      PROJECT_TYPE_ID: formData?.projectType.PROJECT_TYPE_ID,
+      UPDATED_BY: email,
+      IS_ACTIVE: true,
     };
     // Send the PUT request to the projectCreation API endpoint
-    const response = await put(`/projectCreation/updatecmd/${formData.ID}`, body, "python");
+    const response = await put(
+      `estimate/project_details/${formData.ID}`,
+      body,
+      "python"
+    );
     // Return the response data
     return response;
   } catch (error) {
@@ -123,7 +158,10 @@ export const projectDeleteController = async (cmdId) => {
       throw new Error("Invalid form data");
     }
     // Send the DELETE request to the projectCreation API endpoint
-    const response = await remove(`/projectCreation/deletecmd/${cmdId}`, "python");
+    const response = await remove(
+      `estimate/project_details/${cmdId}`,
+      "python"
+    );
     // Return the response data
     return response;
   } catch (error) {

@@ -16,7 +16,9 @@ import {
 } from "../utilities/generals";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import {
+  getClientInfoController,
   getProjectController,
+  getProjectTypesController,
   projectCreationController,
   projectDeleteController,
   projectUpdateController,
@@ -84,6 +86,9 @@ const FormButton = styled(Button)(({ theme }) => ({
 const CMDPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [projectType, setProjectTypeData] = useState([]);
+  const [clientInfo, setClientInfo] = useState([]);
+
   const { startLoading, stopLoading } = useLoading();
 
   const [formAction, setFormAction] = useState({
@@ -116,6 +121,38 @@ const CMDPage = () => {
       stopLoading();
     }
   };
+
+  // Fetches user data and updates the table
+  const getProjectTypeData = async () => {
+    try {
+      startLoading();
+      const response = await getProjectTypesController();
+      setProjectTypeData(response);
+    } catch (error) {
+      console.error(error);
+      if (error.statusCode === 404) {
+        setProjectTypeData([]);
+      }
+    } finally {
+      stopLoading();
+    }
+  };
+
+  // Fetches user data and updates the table
+  const getClientInfo = async () => {
+    try {
+      startLoading();
+      const response = await getClientInfoController();
+      setClientInfo(response);
+    } catch (error) {
+      console.error(error);
+      if (error.statusCode === 404) {
+        setClientInfo([]);
+      }
+    } finally {
+      stopLoading();
+    }
+  };
   const { menuList } = useLoginProvider();
 
   // Fetches roles data and updates the roles list
@@ -136,17 +173,18 @@ const CMDPage = () => {
         view: permissionList?.includes("view"),
         delete: permissionList?.includes("delete"),
       });
+      getProjectTypeData();
       getTableData();
+      getClientInfo();
       hasFetchedRoles.current = true;
     }
   }, []);
 
   const columns = {
-    // USER_ID: "Username",
-    target: "Target",
-    sub_target: "Sub Target",
-    incorporation_city: "Incorporation City",
-    sector_classification: "Sector Classification",
+    CLIENT_NAME: "Client",
+    PROJECT_TYPE_NAME: "Project Type",
+    PROJECT_ID: "Project Code",
+    PROJECT_NAME: "Project Name",
   };
 
   /**
@@ -192,7 +230,7 @@ const CMDPage = () => {
       else {
         formData = {
           ...formData,
-          ID: selectedValue.id,
+          ID: selectedValue.PROJECT_ID,
         };
         response = await projectUpdateController(formData);
       }
@@ -349,7 +387,7 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      const response = await projectDeleteController(selectedRow.id);
+      const response = await projectDeleteController(selectedRow.PROJECT_ID);
 
       if (response) {
         openDialog(
@@ -426,6 +464,8 @@ const CMDPage = () => {
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
+            projectType={projectType}
+            clientInfo={clientInfo}
           />
         </Container>
       )}
