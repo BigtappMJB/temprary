@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import ProjectCreationForm from "./components/projectCreationForm";
 import DataTable from "../user-management/users/components/DataTable";
 
+import { useSelector } from "react-redux";
+
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
-import { useLoginProvider } from "../authentication/provider/LoginProvider";
 import {
   generateCSV,
   getCurrentPathName,
@@ -23,6 +24,7 @@ import {
   projectDeleteController,
   projectUpdateController,
 } from "./controllers/projectCreatioControllers";
+import { useOutletContext } from "react-router";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -153,32 +155,33 @@ const CMDPage = () => {
       stopLoading();
     }
   };
-  const { menuList } = useLoginProvider();
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    if (!hasFetchedRoles.current) {
-      const submenuDetails = getSubmenuDetails(
-        menuList,
-        getCurrentPathName(),
-        "path"
-      );
-      const permissionList = submenuDetails?.permission_level
-        .split(",")
-        .map((ele) => ele.trim().toLowerCase());
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
 
-      setPermissionLevels({
-        create: permissionList?.includes("create"),
-        edit: permissionList?.includes("edit"),
-        view: permissionList?.includes("view"),
-        delete: permissionList?.includes("delete"),
-      });
+    setPermissionLevels({
+      create: permissionList?.includes("create"),
+      edit: permissionList?.includes("edit"),
+      view: permissionList?.includes("view"),
+      delete: permissionList?.includes("delete"),
+    });
+    if (!hasFetchedRoles.current) {
       getProjectTypeData();
       getTableData();
       getClientInfo();
       hasFetchedRoles.current = true;
     }
-  }, []);
+  }, [menuList]);
 
   const columns = {
     CLIENT_NAME: "Client",
@@ -237,6 +240,9 @@ const CMDPage = () => {
 
       if (response) {
         getTableData();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `Project ${isAdd ? "Addition" : "Updation"} Success`,
@@ -252,12 +258,7 @@ const CMDPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -391,6 +392,7 @@ const CMDPage = () => {
       const response = await projectDeleteController(selectedRow.PROJECT_ID);
 
       if (response) {
+        getTableData();
         openDialog(
           "success",
           `Project Deletion Success`,
@@ -405,12 +407,8 @@ const CMDPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            confirmed && getTableData();
-          },
-          () => {
-            getTableData();
-          }
+          (confirmed) => {},
+          () => {}
         );
       }
     } catch (error) {

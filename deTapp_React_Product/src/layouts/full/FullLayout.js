@@ -1,13 +1,10 @@
 import React from "react";
-import {
-  styled,
- createTheme,
-  useMediaQuery,
-} from "@mui/material";
+import { styled, createTheme, useMediaQuery } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
 import Header from "./header/Header";
 import Sidebar from "./sidebar/Sidebar";
+import { useSelector } from "react-redux";
 /**
  * The width of the sidebar in pixels.
  *
@@ -64,7 +61,7 @@ const FullLayout = () => {
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [open, setOpen] = React.useState(!isMobile);
-
+  const reduxStore = useSelector((state) => state.applicationState);
   /**
    * Handles the toggling of the sidebar.
    *
@@ -88,7 +85,7 @@ const FullLayout = () => {
       <Main open={open}>
         <Header open={open} handleDrawerToggle={handleDrawerToggle} />
         <SubMain>
-          <Outlet />
+          <Outlet context={{ reduxStore }} />
         </SubMain>
         {/* <Footer /> */}
       </Main>

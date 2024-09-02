@@ -15,8 +15,9 @@ import {
   getSubmenuDetails,
   ScrollToTopButton,
 } from "../../utilities/generals";
-import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import { useSelector } from "react-redux";
 import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
+import { useOutletContext } from "react-router";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -78,6 +79,9 @@ const FormButton = styled(Button)(({ theme }) => ({
  * )
  */
 const Roles = () => {
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
+
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
   const [formAction, setFormAction] = useState({
@@ -94,7 +98,6 @@ const Roles = () => {
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
   const hasFetchedRoles = useRef(false);
-  const { menuList } = useLoginProvider();
   const getRoles = async () => {
     try {
       startLoading();
@@ -113,26 +116,26 @@ const Roles = () => {
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
+
+    setPermissionLevels({
+      create: permissionList?.includes("create"),
+      edit: permissionList?.includes("edit"),
+      view: permissionList?.includes("view"),
+      delete: permissionList?.includes("delete"),
+    });
     if (!hasFetchedRoles.current) {
-      const submenuDetails = getSubmenuDetails(
-        menuList,
-        getCurrentPathName(),
-        "path"
-      );
-      const permissionList = submenuDetails?.permission_level
-        .split(",")
-        .map((ele) => ele.trim().toLowerCase());
-      
-      setPermissionLevels({
-        create: permissionList?.includes("create"),
-        edit: permissionList?.includes("edit"),
-        view: permissionList?.includes("view"),
-        delete: permissionList?.includes("delete"),
-      });
       getRoles();
       hasFetchedRoles.current = true;
     }
-  }, []);
+  }, [menuList]);
 
   const columns = {
     name: "Role",
@@ -185,6 +188,10 @@ const Roles = () => {
       }
 
       if (response) {
+        getRoles();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `Role ${isAdd ? "Addition" : "Updation"} Success`,
@@ -200,12 +207,7 @@ const Roles = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            getRoles();
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -338,6 +340,8 @@ const Roles = () => {
       const response = await roledeleteController(selectedRow.id);
 
       if (response) {
+        getRoles();
+
         openDialog(
           "success",
           `Role Deletion Success`,
@@ -353,12 +357,8 @@ const Roles = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            confirmed && getRoles();
-          },
-          () => {
-            getRoles();
-          }
+          (confirmed) => {},
+          () => {}
         );
       }
     } catch (error) {
@@ -421,11 +421,11 @@ const Roles = () => {
               onClick={addRoles}
               variant="contained"
               color="primary"
-              className="primary"
               style={{ marginRight: "10px" }}
-              className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
+              className={`${
+                permissionLevels?.create ? "primary" : "custom-disabled"
+              }`}
               disabled={formAction.action === "add" && formAction.display}
-           
             >
               Add Role
             </FormButton>
@@ -436,7 +436,7 @@ const Roles = () => {
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-              columns={columns}
+            columns={columns}
             permissionLevels={permissionLevels}
           />
         ) : (

@@ -175,6 +175,10 @@ const UserRole = () => {
       }
 
       if (response) {
+        getUserData();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `User Role ${isAdd ? "Addition" : "Updation"} Success`,
@@ -189,12 +193,7 @@ const UserRole = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            getUserData();
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -403,7 +402,6 @@ const UserRole = () => {
               style={{ marginRight: "10px" }}
               // className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
               disabled={formAction.action === "add" && formAction.display}
-           
             >
               Add User Role
             </FormButton>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import logo from "../../../../../src/assets/images/logos/bt-logo.png";
 import { styled } from "@mui/material";
 import { useLoginProvider } from "../../../../views/authentication/provider/LoginProvider";
+import { useSelector } from "react-redux";
 
 const LinkStyled = styled(Link)(() => ({
   height: "110px",
@@ -13,8 +14,13 @@ const LinkStyled = styled(Link)(() => ({
 }));
 
 const Logo = () => {
-  const { menuList } = useLoginProvider();
-  const firstSubmenu = menuList[0]?.submenus[0]?.submenu_path;
+  const menuList = useSelector(
+    (state) => state.applicationState.menuDetails
+  );
+  console.log(menuList);
+  
+
+  const firstSubmenu = menuList ? menuList[0]?.submenus[0]?.submenu_path : null;
 
   return (
     <LinkStyled to={firstSubmenu}>

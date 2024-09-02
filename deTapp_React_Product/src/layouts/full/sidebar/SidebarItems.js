@@ -9,21 +9,24 @@ import { getUserPermissionsController } from "../../../views/user-management/use
 import { setCookie } from "../../../views/utilities/cookieServices/cookieServices";
 import { isPermissionDetailsCookieName } from "../../../views/utilities/generals";
 import { encodeData } from "../../../views/utilities/securities/encodeDecode";
+import { storeMenuDetails } from "../../../redux/slices/slice";
+import { useDispatch } from "react-redux";
 
 const SidebarItems = ({ navItemClicked }) => {
   const [menuList, setMenuList] = useState([]);
   const hasFetchedRoles = useRef(false);
-  const { setMenuListFunction } = useLoginProvider();
 
-  // const { menuList } = useLoginProvider();
+  //   const menuList = useSelector((state) => state.applicationState.menuDetails.payload)  || [];
   const navigte = useNavigate();
+  const dispatch = useDispatch();
+
   // Transform API data to match the required structure
   const getTableData = async () => {
     try {
       const response = await getUserPermissionsController();
       setMenuList(response);
+      dispatch(storeMenuDetails(response));
       // Set a cookie to store permissionList
-      setMenuListFunction(response);
       setCookie({
         name: isPermissionDetailsCookieName,
         value: encodeData(response),

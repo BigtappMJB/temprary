@@ -59,13 +59,12 @@ const PageNotReady = Loadable(
 );
 const CMDPage = Loadable(lazy(() => import("../views/cmd/CMDPage")));
 const CADPage = Loadable(lazy(() => import("../views/cad/CADPage")));
-const ProjectEstimation = Loadable(lazy(() => import("../views/project_estimation/project_estimation")));
-const ProjectCreation = Loadable(lazy(() => import("../views/projectCreation/ProjectCreation")));
-const DynamicPage = Loadable(lazy(() => import("../views/dynamic_page/dynamic_page")));
-const DynamicPageCreation = Loadable(lazy(() => import("../views/dynamicPageCreation/dynamicPageCreation")));
-
-
-
+const ProjectEstimation = Loadable(
+  lazy(() => import("../views/project_estimation/project_estimation"))
+);
+const ProjectCreation = Loadable(
+  lazy(() => import("../views/projectCreation/ProjectCreation"))
+);
 
 const Router = [
   {
@@ -73,25 +72,19 @@ const Router = [
     element: <FullLayout />,
     children: [
       { path: "/", element: <Navigate to="/auth/login" /> },
-      { path: "/dashboard", exact: true, element: <Dashboard /> },
-      { path: "/table-creation", exact: true, element: <Tablecreation /> },
-      { path: "/chat-interface", exact: true, element: <ChatInterface /> },
-      { path: "/users", exact: true, element: <UsersPage /> },
-      { path: "/roles", exact: true, element: <Roles /> },
-      { path: "/menu", exact: true, element: <Menu /> },
-      { path: "/subMenu", exact: true, element: <SubMenu /> },
-      { path: "/role-permissions", exact: true, element: <RolePermission /> },
-      { path: "/user-roles", exact: true, element: <UserRole /> },
-      { path: "/cmd", exact: true, element: <CMDPage /> },
-      { path: "/cad", exact: true, element: <CADPage /> },
-      { path: "/project-estimate", exact: true, element: <ProjectEstimation /> },
-      { path: "/projectCreation", exact: true, element: <ProjectCreation /> },
-      { path: "/dynamicPage", exact: true, element: <DynamicPage /> },
-      { path: "/dynamicPageCreation", exact: true, element: <DynamicPageCreation /> },
-
-
-
-
+      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/table-creation", element: <Tablecreation /> },
+      { path: "/chat-interface", element: <ChatInterface /> },
+      { path: "/users", element: <UsersPage /> },
+      { path: "/roles", element: <Roles /> },
+      { path: "/menu", element: <Menu /> },
+      { path: "/subMenu", element: <SubMenu /> },
+      { path: "/role-permissions", element: <RolePermission /> },
+      { path: "/user-roles", element: <UserRole /> },
+      { path: "/cmd", element: <CMDPage /> },
+      { path: "/cad", element: <CADPage /> },
+      { path: "/project-estimate", element: <ProjectEstimation /> },
+      { path: "/projectCreation", element: <ProjectCreation /> },
 
       { path: "*", element: <PageNotReady /> },
     ],

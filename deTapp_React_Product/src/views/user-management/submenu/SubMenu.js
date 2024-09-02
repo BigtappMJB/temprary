@@ -16,8 +16,9 @@ import {
   getSubmenuDetails,
   ScrollToTopButton,
 } from "../../utilities/generals";
-import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import { useSelector } from "react-redux";
 import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
+import { useOutletContext } from "react-router";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -113,8 +114,8 @@ const UsersPage = () => {
       stopLoading();
     }
   };
-  const { menuList } = useLoginProvider();
-
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
   // Fetches roles data and updates the roles list
   useEffect(() => {
     const getMenus = async () => {
@@ -131,28 +132,28 @@ const UsersPage = () => {
         stopLoading();
       }
     };
-    getMenus();
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
+
+    setPermissionLevels({
+      create: permissionList?.includes("create"),
+      edit: permissionList?.includes("edit"),
+      view: permissionList?.includes("view"),
+      delete: permissionList?.includes("delete"),
+    });
     if (!hasFetchedRoles.current) {
-      const submenuDetails = getSubmenuDetails(
-        menuList,
-        getCurrentPathName(),
-        "path"
-      );
-      const permissionList = submenuDetails?.permission_level
-        .split(",")
-        .map((ele) => ele.trim().toLowerCase());
-
-      setPermissionLevels({
-        create: permissionList?.includes("create"),
-        edit: permissionList?.includes("edit"),
-        view: permissionList?.includes("view"),
-        delete: permissionList?.includes("delete"),
-      });
-
       getTableData();
+      getMenus();
+
       hasFetchedRoles.current = true;
     }
-  }, []);
+  }, [menuList]);
 
   const columns = {
     MENU_NAME: "Menu",
@@ -207,6 +208,10 @@ const UsersPage = () => {
       }
 
       if (response) {
+        getTableData();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `SubMenu ${isAdd ? "Addition" : "Updation"} Success`,
@@ -222,12 +227,7 @@ const UsersPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            getTableData();
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -361,6 +361,8 @@ const UsersPage = () => {
       const response = await subMenuDeleteController(selectedRow.ID);
 
       if (response) {
+        getTableData();
+
         openDialog(
           "success",
           `SubMenu Deletion Success`,
@@ -379,7 +381,7 @@ const UsersPage = () => {
             // getTableData();
           },
           () => {
-            getTableData();
+            // getTableData();
           }
         );
       }
@@ -445,9 +447,10 @@ const UsersPage = () => {
               variant="contained"
               color="primary"
               style={{ marginRight: "10px" }}
-              className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
+              className={`${
+                permissionLevels?.create ? "primary" : "custom-disabled"
+              }`}
               disabled={formAction.action === "add" && formAction.display}
-           
             >
               Add SubMenu
             </FormButton>
@@ -458,7 +461,7 @@ const UsersPage = () => {
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-              columns={columns}
+            columns={columns}
             permissionLevels={permissionLevels}
           />
         ) : (

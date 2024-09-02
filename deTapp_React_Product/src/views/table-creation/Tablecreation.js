@@ -9,8 +9,9 @@ import {
   tableCreationController,
 } from "./controllers/tableCreationController";
 import { useLoading } from "../../components/Loading/loadingProvider";
-import { useLoginProvider } from "../authentication/provider/LoginProvider";
+import { useSelector } from "react-redux";
 import { getCurrentPathName, getSubmenuDetails } from "../utilities/generals";
+import { useOutletContext } from "react-router";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -116,8 +117,6 @@ const CreateTableForm = () => {
     view: null,
     delete: null,
   });
-  const { menuList } = useLoginProvider();
-
 
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
@@ -158,6 +157,8 @@ const CreateTableForm = () => {
       handleSubmit(e);
     }
   };
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
 
   useEffect(() => {
     const submenuDetails = getSubmenuDetails(
@@ -187,7 +188,7 @@ const CreateTableForm = () => {
       }
     };
     getDataTypes();
-  }, []);
+  }, [menuList]);
 
   const addColumnForm = () => {
     const validationError = validateTableName(tableName);
@@ -446,8 +447,9 @@ const CreateTableForm = () => {
                 type="button"
                 variant="contained"
                 color="primary"
-                className={`${permissionLevels.create ? "primary" : "custom-disabled"}`}
-           
+                className={`${
+                  permissionLevels.create ? "primary" : "custom-disabled"
+                }`}
                 disabled={columnsData.length === 0}
               >
                 Create Table

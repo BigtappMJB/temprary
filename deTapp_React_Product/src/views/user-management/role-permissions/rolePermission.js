@@ -20,7 +20,8 @@ import {
   ScrollToTopButton,
 } from "../../utilities/generals";
 import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
-import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import { useSelector } from "react-redux";
+import { useOutletContext } from "react-router";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -88,7 +89,8 @@ const RolePermissionPage = () => {
   const [menusList, setMenuList] = useState([]);
   const [subMenusList, setSubMenuList] = useState([]);
   const [permissionLevelList, setPermissionLevelList] = useState([]);
-
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
@@ -120,7 +122,6 @@ const RolePermissionPage = () => {
       stopLoading();
     }
   };
-  const { menuList } = useLoginProvider();
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
@@ -181,19 +182,16 @@ const RolePermissionPage = () => {
         stopLoading();
       }
     };
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
+
     if (!hasFetchedRoles.current) {
-      const submenuDetails = getSubmenuDetails(
-        menuList,
-        getCurrentPathName(),
-        "path"
-      );
-      const permissionList = submenuDetails?.permission_level
-        .split(",")
-        .map((ele) => ele.trim().toLowerCase());
-        console.log({permissionList});
-
-     
-
       getTableData();
       getRoles();
       getMenus();
@@ -201,7 +199,7 @@ const RolePermissionPage = () => {
       getPermissions();
       hasFetchedRoles.current = true;
     }
-  }, []);
+  }, [menuList]);
 
   const columns = {
     ROLE_NAME: "Role",
@@ -256,6 +254,10 @@ const RolePermissionPage = () => {
       }
 
       if (response) {
+        getTableData();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `Role Permission ${isAdd ? "Addition" : "Updation"} Success`,
@@ -273,12 +275,7 @@ const RolePermissionPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            getTableData();
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -412,6 +409,8 @@ const RolePermissionPage = () => {
       const response = await rolePermissionDeleteController(selectedRow.ID);
 
       if (response) {
+        getTableData();
+
         openDialog(
           "success",
           `Role Permission Deletion Success`,
@@ -430,7 +429,7 @@ const RolePermissionPage = () => {
             // getTableData();
           },
           () => {
-            getTableData();
+            // getTableData();
           }
         );
       }
