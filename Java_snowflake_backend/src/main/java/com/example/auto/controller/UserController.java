@@ -1,0 +1,292 @@
+package com.example.auto.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.auto.repositories.UserRepository;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+@CrossOrigin("*")
+@RestController
+@RequestMapping("/master")
+public class UserController {
+
+	@Autowired
+    private UserRepository userRepository;
+    // Helper function to return consistent responses
+    private ResponseEntity<Object> makeResponse(Object data, int status_code) {
+        return ResponseEntity.status(status_code).body(data);
+    }
+
+    @PostMapping("/user")
+    public ResponseEntity<Object> createUser(@RequestBody Object data) {
+        try {
+            Object response = userRepository.createUser((Map<String, Object>) data);
+            return makeResponse(response, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+	
+	  @GetMapping("/user") public ResponseEntity<Object>
+	  getUser(@RequestParam(required = false) String id) { try { if (id != null) {
+	  Object response = userRepository.getUser(id); return makeResponse(response, 200); } else {
+	  Object response = userRepository.getAllUsers(); return makeResponse(response, 200); } }
+	  catch (Exception e) { return makeResponse("Error: " + e.getMessage(), 500); }
+	  }
+	 
+
+    @PutMapping("/user")
+    public ResponseEntity<Object> updateUser(@RequestParam String id, @RequestBody Object data) {
+        try {
+            Object response = userRepository.updateUser(id, (Map<String, Object>) data);
+            return makeResponse(response, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+    @DeleteMapping("/user")
+    public ResponseEntity<Object> deleteUser(@RequestParam String id) {
+        try {
+            Object response = userRepository.deleteUser(id);
+            return makeResponse(response, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+	
+	  @GetMapping("/Allusers") public ResponseEntity<Object> getAllUsers() { try {
+	  Object users = userRepository.fetchAllUsers(); 
+	  return makeResponse(users, 200); } catch
+	  (Exception e) { return makeResponse("Error: " + e.getMessage(), 500); } }
+	 
+
+    @PostMapping("/menu")
+    public ResponseEntity<Object> createMenu(@RequestBody Object data) {
+        try {
+            Object result = userRepository.createMenu((Map<String, Object>) data);
+            return makeResponse(result, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+	
+	  @GetMapping("/menu") public ResponseEntity<Object>
+	  getMenu(@RequestParam(required = false) String id) { 
+		  try {
+			  if (id != null) {
+	  Object result = userRepository.getMenu(id);
+	  return makeResponse(result, 200); 
+	  } else {
+		  List<Map<String, Object>> result = userRepository.getAllMenus(); 
+		  return makeResponse(result, 200); 
+		  } 
+			  } catch (Exception e) {
+				  return makeResponse("Error: " + e.getMessage(), 500); }
+		  }
+	 
+
+    @PutMapping("/menu")
+    public ResponseEntity<Object> updateMenu(@RequestParam String id, @RequestBody Object data) {
+        try {
+            Object result = userRepository.updateMenu(id, (Map<String, Object>) data);
+            return makeResponse(result, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+    @DeleteMapping("/menu")
+    public ResponseEntity<Object> deleteMenu(@RequestParam String id) {
+        try {
+            Object result = userRepository.deleteMenu(id);
+            return makeResponse(result, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+    @PostMapping("/submenu")
+    public ResponseEntity<Object> createSubMenu(@RequestBody Object data) {
+        try {
+            Object result = userRepository.createSubMenu((Map<String, Object>) data);
+            return makeResponse(result, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+	
+	  @GetMapping("/submenu") public ResponseEntity<Object>
+	  getSubMenu(@RequestParam(required = false) String id) { try { if (id != null)
+	  { Object result = userRepository.getSubMenu(id); return makeResponse(result, 200); } else {
+		  List<Map<String, Object>> result = userRepository.getAllSubMenus(); return makeResponse(result, 200); } } catch
+	  (Exception e) { return makeResponse("Error: " + e.getMessage(), 500); } }
+	 
+
+    @PutMapping("/submenu")
+    public ResponseEntity<Object> updateSubMenu(@RequestParam String id, @RequestBody Object data) {
+        try {
+            Object result = userRepository.updateSubMenu(id, (Map<String, Object>) data);
+            return makeResponse(result, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+    @DeleteMapping("/submenu")
+    public ResponseEntity<Object> deleteSubMenu(@RequestParam String id) {
+        try {
+            Object result = userRepository.deleteSubMenu(id);
+            return makeResponse(result, 200);
+        } catch (Exception e) {
+            return makeResponse("Error: " + e.getMessage(), 500);
+        }
+    }
+
+
+
+ // POST: Create a new permission
+    @PostMapping("/permission")
+    public ResponseEntity<Map<String, Object>> createPermission(@RequestBody Map<String, Object> data) {
+        try {
+            Map<String, Object> response = userRepository.createPermission(data);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // GET: Get a specific permission or all permissions
+    @GetMapping("/permission")
+    public ResponseEntity<Object> getPermissions(@RequestParam(required = false) String id) {
+        try {
+           
+            if (id != null) {
+            	 Map<String, Object> response = userRepository.getPermission(id);
+            	 return makeResponse(response, 200); 
+            } else {
+            	 List<Map<String, Object>> response = userRepository.getAllPermissions();
+            	 return makeResponse(response, 200); 
+            }
+          
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // PUT: Update a permission
+    @PutMapping("/permission")
+    public ResponseEntity<Map<String, Object>> updatePermission(
+            @RequestParam String id, @RequestBody Map<String, Object> data) {
+        try {
+            Map<String, Object> response = userRepository.updatePermission(id, data);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // DELETE: Delete a permission
+    @DeleteMapping("/permission")
+    public ResponseEntity<Map<String, Object>> deletePermission(@RequestParam String id) {
+        try {
+            Map<String, Object> response = userRepository.deletePermission(id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+ // POST method to create a new role permission
+    @PostMapping("/rolePermission")
+    public ResponseEntity<Map<String, Object>> createRolePermission(@RequestBody Map<String, Object> data) {
+        Map<String, Object> response = userRepository.createRolePermission(data);
+        int statusCode = (int) response.get("status");
+        return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+    }
+
+    // GET method to retrieve role permission by ID or all role permissions
+    @GetMapping("/rolePermission")
+    public ResponseEntity<Object> getRolePermission(@RequestParam(value = "id", required = false) String rolePermissionId) {
+       
+        int statusCode;
+        try {
+        if (rolePermissionId != null) {
+        	 Map<String, Object> response = userRepository.getRolePermission(rolePermissionId);
+        	 return makeResponse(response, 200); 
+        } else {
+        	 List<Map<String, Object>> response = userRepository.getAllRolePermissions();
+        	 return makeResponse(response, 200); 
+        }
+
+    } catch (Exception e) {
+        return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    }
+
+    // PUT method to update role permission
+    @PutMapping("/rolePermission")
+    public ResponseEntity<Map<String, Object>> updateRolePermission(
+            @RequestParam(value = "id") String rolePermissionId, 
+            @RequestBody Map<String, Object> data) {
+        
+        Map<String, Object> response = userRepository.updateRolePermission(rolePermissionId, data);
+        int statusCode = (int) response.get("status");
+        return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+    }
+
+    // DELETE method to delete role permission
+    @DeleteMapping("/rolePermission")
+    public ResponseEntity<Map<String, Object>> deleteRolePermission(@RequestParam(value = "id") String rolePermissionId) {
+        Map<String, Object> response = userRepository.deleteRolePermission(rolePermissionId);
+        int statusCode = (int) response.get("status");
+        return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+    }
+
+    @PostMapping("/tableConfigurator")
+    public ResponseEntity<String> configureTable(@RequestBody Map<String, Object> data) {
+        try {
+            String response = userRepository.createTable(data);
+            return ResponseEntity.status(200).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @GetMapping("/tableConfigurator")
+    public ResponseEntity<String> getDataType(@RequestParam(value = "type", required = false) String paramType) {
+        if ("dataType".equals(paramType)) {
+            try {
+                String response = userRepository.getDataType();
+                return ResponseEntity.status(200).body(response);
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body("{\"error\": \"" + e.getMessage() + "\"}");
+            }
+        }
+        return ResponseEntity.status(400).body("{\"error\": \"Invalid request parameter\"}");
+    }
+}
+    // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
+
