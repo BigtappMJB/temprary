@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import ProjectEstimateFormComponent from "./components/projectEstimationForm";
 import DataTable from "../user-management/users/components/DataTable";
+
 import {
   projectEstimateCreationController,
   cmddeleteController,
@@ -10,12 +11,10 @@ import {
   getProjectEstimationControllers,
   getProjectPhaseControllers,
   getProjectRoleControllers,
-  getProjectsControllers,
-  getClientControllers,
 } from "./controllers/projectEstimationController";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
-import { useLoginProvider } from "../authentication/provider/LoginProvider";
+import { useSelector } from "react-redux";
 import {
   generateCSV,
   getCurrentPathName,
@@ -25,6 +24,8 @@ import {
 } from "../utilities/generals";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import { getProjectController } from "../projectCreation/controllers/projectCreatioControllers";
+import { useOutletContext } from "react-router";
+import { MenuBook } from "@mui/icons-material";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -89,8 +90,6 @@ const CMDPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
 
-  
-
   const [project, setProject] = useState([]);
   const [role, setRole] = useState([]);
   const [phase, setPhase] = useState([]);
@@ -111,8 +110,6 @@ const CMDPage = () => {
   const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
-
-
 
   // Fetches user data and updates the table
   const getTableData = async () => {
@@ -175,33 +172,33 @@ const CMDPage = () => {
       stopLoading();
     }
   };
-  const { menuList } = useLoginProvider();
-
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    if (!hasFetchedRoles.current) {
-      const submenuDetails = getSubmenuDetails(
-        menuList,
-        getCurrentPathName(),
-        "path"
-      );
-      const permissionList = submenuDetails?.permission_level
-        .split(",")
-        .map((ele) => ele.trim().toLowerCase());
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
 
-      setPermissionLevels({
-        create: permissionList?.includes("create"),
-        edit: permissionList?.includes("edit"),
-        view: permissionList?.includes("view"),
-        delete: permissionList?.includes("delete"),
-      });
+    setPermissionLevels({
+      create: permissionList?.includes("create"),
+      edit: permissionList?.includes("edit"),
+      view: permissionList?.includes("view"),
+      delete: permissionList?.includes("delete"),
+    });
+    if (!hasFetchedRoles.current) {
       getProjectData();
       getProjectPhase();
       getProjectRole();
       getTableData();
       hasFetchedRoles.current = true;
     }
-  }, []);
+  }, [menuList]);
 
   const columns = {
     // USER_ID: "Username",
@@ -260,6 +257,10 @@ const CMDPage = () => {
       }
 
       if (response) {
+        getTableData();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `CMD ${isAdd ? "Addition" : "Updation"} Success`,
@@ -275,12 +276,7 @@ const CMDPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            getTableData();
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -414,6 +410,7 @@ const CMDPage = () => {
       const response = await cmddeleteController(selectedRow.id);
 
       if (response) {
+        getTableData();
         openDialog(
           "success",
           `CMD Deletion Success`,
@@ -428,12 +425,7 @@ const CMDPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            confirmed && getTableData();
-          },
-          () => {
-            getTableData();
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {

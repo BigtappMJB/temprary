@@ -20,12 +20,15 @@ import {
 } from "../../../views/utilities/cookieServices/cookieServices";
 import { isUserIdCookieName } from "../../../views/utilities/generals";
 import { decodeData } from "../../../views/utilities/securities/encodeDecode";
+import { useDispatch } from "react-redux";
+import { resetStore } from "../../../redux/slices/slice";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
   const { startLoading, stopLoading } = useLoading();
   const navigate = useNavigate();
   const email = decodeData(getCookie(isUserIdCookieName));
+  const dispatch = useDispatch();
 
   const handleClick2 = (event) => {
     setAnchorEl2(event.currentTarget);
@@ -39,6 +42,7 @@ const Profile = () => {
       startLoading();
       // const response = await loginOutController();
       clearCookies();
+      dispatch(resetStore());
       navigate("/auth/login");
       // if (response) {
       //   clearCookies();

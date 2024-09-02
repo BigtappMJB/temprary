@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 
 import DataTable from "../user-management/users/components/DataTable";
 
+import { useSelector } from "react-redux";
+
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
-import { useLoginProvider } from "../authentication/provider/LoginProvider";
 import {
   generateCSV,
   getCurrentPathName,
@@ -21,6 +22,7 @@ import {
   getCADController,
 } from "./controllers/cadControllers";
 import CADFormComponent from "./components/cadForm";
+import { useOutletContext } from "react-router";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -117,30 +119,30 @@ const CMDPage = () => {
       stopLoading();
     }
   };
-  const { menuList } = useLoginProvider();
-
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    if (!hasFetchedRoles.current) {
-      const submenuDetails = getSubmenuDetails(
-        menuList,
-        getCurrentPathName(),
-        "path"
-      );
-      const permissionList = submenuDetails?.permission_level
-        .split(",")
-        .map((ele) => ele.trim().toLowerCase());
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
 
-      setPermissionLevels({
-        create: permissionList?.includes("create"),
-        edit: permissionList?.includes("edit"),
-        view: permissionList?.includes("view"),
-        delete: permissionList?.includes("delete"),
-      });
+    setPermissionLevels({
+      create: permissionList?.includes("create"),
+      edit: permissionList?.includes("edit"),
+      view: permissionList?.includes("view"),
+      delete: permissionList?.includes("delete"),
+    });
+    if (!hasFetchedRoles.current) {
       getTableData();
       hasFetchedRoles.current = true;
     }
-  }, []);
+  }, [menuList]);
 
   const columns = {
     // USER_ID: "Username",
@@ -200,6 +202,10 @@ const CMDPage = () => {
       }
 
       if (response) {
+        getTableData();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `CAD ${isAdd ? "Addition" : "Updation"} Success`,
@@ -215,12 +221,7 @@ const CMDPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            getTableData();
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -354,6 +355,8 @@ const CMDPage = () => {
       const response = await caddeleteController(selectedRow.id);
 
       if (response) {
+        getTableData();
+
         openDialog(
           "success",
           `CAD Deletion Success`,
@@ -369,10 +372,10 @@ const CMDPage = () => {
             },
           },
           (confirmed) => {
-            confirmed && getTableData();
+            // confirmed && getTableData();
           },
           () => {
-            getTableData();
+            // getTableData();
           }
         );
       }

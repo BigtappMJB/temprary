@@ -16,8 +16,9 @@ import {
   getSubmenuDetails,
   ScrollToTopButton,
 } from "../../utilities/generals";
-import { useLoginProvider } from "../../authentication/provider/LoginProvider";
+import { useSelector } from "react-redux";
 import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
+import { useOutletContext } from "react-router";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -83,7 +84,8 @@ const UsersPage = () => {
   const [tableData, setTableData] = useState([]);
   const [rolesList, setRolesList] = useState([]);
   const { startLoading, stopLoading } = useLoading();
-
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
@@ -114,7 +116,6 @@ const UsersPage = () => {
       stopLoading();
     }
   };
-  const { menuList } = useLoginProvider();
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
@@ -129,22 +130,21 @@ const UsersPage = () => {
         }
       }
     };
-
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
+    setPermissionLevels({
+      create: permissionList?.includes("create"),
+      edit: permissionList?.includes("edit"),
+      view: permissionList?.includes("view"),
+      delete: permissionList?.includes("delete"),
+    });
     if (!hasFetchedRoles.current) {
-      const submenuDetails = getSubmenuDetails(
-        menuList,
-        getCurrentPathName(),
-        "path"
-      );
-      const permissionList = submenuDetails?.permission_level
-        .split(",")
-        .map((ele) => ele.trim().toLowerCase());
-      setPermissionLevels({
-        create: permissionList?.includes("create"),
-        edit: permissionList?.includes("edit"),
-        view: permissionList?.includes("view"),
-        delete: permissionList?.includes("delete"),
-      });
       getRoles();
       getTableData();
       hasFetchedRoles.current = true;
@@ -209,6 +209,10 @@ const UsersPage = () => {
       }
 
       if (response) {
+        getTableData();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `User ${isAdd ? "Addition" : "Updation"} Success`,
@@ -224,12 +228,7 @@ const UsersPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            getTableData();
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -365,6 +364,8 @@ const UsersPage = () => {
       const response = await userdeleteController(selectedRow.ID);
 
       if (response) {
+        getTableData();
+
         openDialog(
           "success",
           `User Deletion Success`,
@@ -383,7 +384,7 @@ const UsersPage = () => {
             // getTableData();
           },
           () => {
-            getTableData();
+            // getTableData();
           }
         );
       }
@@ -418,10 +419,7 @@ const UsersPage = () => {
       {formAction.display && (
         <Container>
           <Header className="panel-header">
-            <Typography
-              variant="h6"
-              
-            >
+            <Typography variant="h6">
               {formAction.action === "add"
                 ? "Add"
                 : formAction.action === "update"
@@ -452,9 +450,10 @@ const UsersPage = () => {
               variant="contained"
               color="primary"
               style={{ marginRight: "10px" }}
-              className={`${permissionLevels?.create ? "primary" : "custom-disabled"}`}
+              className={`${
+                permissionLevels?.create ? "primary" : "custom-disabled"
+              }`}
               disabled={formAction.action === "add" && formAction.display}
-           
             >
               Add User
             </FormButton>

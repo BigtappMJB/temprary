@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import CMDFormComponent from "./components/cmdForm";
 import DataTable from "../user-management/users/components/DataTable";
+
 import {
   cmdCreationController,
   cmddeleteController,
@@ -11,7 +12,7 @@ import {
 } from "./controllers/cmdControllers";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
-import { useLoginProvider } from "../authentication/provider/LoginProvider";
+import { useSelector } from "react-redux";
 import {
   generateCSV,
   getCurrentPathName,
@@ -20,6 +21,7 @@ import {
   timeStampFileName,
 } from "../utilities/generals";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
+import { useOutletContext } from "react-router";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -116,26 +118,27 @@ const CMDPage = () => {
       stopLoading();
     }
   };
-  const { menuList } = useLoginProvider();
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    if (!hasFetchedRoles.current) {
-      const submenuDetails = getSubmenuDetails(
-        menuList,
-        getCurrentPathName(),
-        "path"
-      );
-      const permissionList = submenuDetails?.permission_level
-        .split(",")
-        .map((ele) => ele.trim().toLowerCase());
+    const submenuDetails = getSubmenuDetails(
+      menuList,
+      getCurrentPathName(),
+      "path"
+    );
+    const permissionList = submenuDetails?.permission_level
+      .split(",")
+      .map((ele) => ele.trim().toLowerCase());
 
-      setPermissionLevels({
-        create: permissionList?.includes("create"),
-        edit: permissionList?.includes("edit"),
-        view: permissionList?.includes("view"),
-        delete: permissionList?.includes("delete"),
-      });
+    setPermissionLevels({
+      create: permissionList?.includes("create"),
+      edit: permissionList?.includes("edit"),
+      view: permissionList?.includes("view"),
+      delete: permissionList?.includes("delete"),
+    });
+    if (!hasFetchedRoles.current) {
       getTableData();
       hasFetchedRoles.current = true;
     }
@@ -198,6 +201,10 @@ const CMDPage = () => {
       }
 
       if (response) {
+        getTableData();
+        if (!isAdd) {
+          onFormReset();
+        }
         openDialog(
           "success",
           `CMD ${isAdd ? "Addition" : "Updation"} Success`,
@@ -213,12 +220,7 @@ const CMDPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            getTableData();
-            if (!isAdd) {
-              onFormReset();
-            }
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -352,6 +354,8 @@ const CMDPage = () => {
       const response = await cmddeleteController(selectedRow.id);
 
       if (response) {
+        getTableData();
+
         openDialog(
           "success",
           `CMD Deletion Success`,
@@ -367,10 +371,10 @@ const CMDPage = () => {
             },
           },
           (confirmed) => {
-            confirmed && getTableData();
+            // confirmed && getTableData();
           },
           () => {
-            getTableData();
+            // getTableData();
           }
         );
       }
@@ -400,9 +404,12 @@ const CMDPage = () => {
     }
   };
 
-  const handleExport =()=>{
-    generateCSV(tableData,`central_manual_depository_${timeStampFileName(new Date())}`)
-  }
+  const handleExport = () => {
+    generateCSV(
+      tableData,
+      `central_manual_depository_${timeStampFileName(new Date())}`
+    );
+  };
 
   return (
     <>
