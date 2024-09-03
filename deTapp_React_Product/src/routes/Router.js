@@ -65,6 +65,9 @@ const ProjectEstimation = Loadable(
 const ProjectCreation = Loadable(
   lazy(() => import("../views/projectCreation/ProjectCreation"))
 );
+const PageCreation = Loadable(
+  lazy(() => import("../views/dynamicPageCreation/dynamicPageCreation"))
+);
 
 const Router = [
   {
@@ -85,6 +88,8 @@ const Router = [
       { path: "/cad", element: <CADPage /> },
       { path: "/project-estimate", element: <ProjectEstimation /> },
       { path: "/projectCreation", element: <ProjectCreation /> },
+      { path: "/dynamicPageCreation", element: <PageCreation /> },
+
 
       { path: "*", element: <PageNotReady /> },
     ],

@@ -29,7 +29,6 @@ import {
   isPermissionDetailsCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
-import { useLoginProvider } from "../provider/LoginProvider";
 import { useDispatch } from "react-redux";
 
 const LoginPage = () => {
@@ -144,10 +143,10 @@ const LoginPage = () => {
           value: encodeData(1),
         });
         // Set a cookie to store permissionList
-        setCookie({
-          name: isLoginTokenCookieName,
-          value: encodeData(response?.token),
-        });
+        // setCookie({
+        //   name: isLoginTokenCookieName,
+        //   value: encodeData(response?.token),
+        // });
         const firstSubMenuPath =
           response?.permissions[0]?.submenus[0]?.submenu_path;
         // await triggerOTPEmail();
