@@ -16,10 +16,7 @@ const LinkStyled = styled(Link)(() => ({
 const Logo = () => {
   const menuList = useSelector(
     (state) => state.applicationState.menuDetails
-  );
-  console.log(menuList);
-  
-
+  );  
   const firstSubmenu = menuList ? menuList[0]?.submenus[0]?.submenu_path : null;
 
   return (

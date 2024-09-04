@@ -261,3 +261,9 @@ input[type="password"]::-webkit-textfield-decoration-container {
   opacity: 0.5 !important;
   pointer-events: none; /* Disables click events */
 }
+
+.custom-display-disabled {
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+  pointer-events: none; /* Disables click events */
+}

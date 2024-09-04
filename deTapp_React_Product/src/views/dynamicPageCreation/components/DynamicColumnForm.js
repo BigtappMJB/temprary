@@ -3,15 +3,25 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
+  useState,
 } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, MenuItem, Box, Autocomplete, Button } from "@mui/material";
+import {
+  TextField,
+  MenuItem,
+  Box,
+  Autocomplete,
+  Button,
+  Typography,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../utilities/Validators";
 import debounce from "lodash/debounce";
+import OptionsDialogBox from "./DynamicOptionDialog";
 
 // Define validation schema using Yup
 const schema = yup.object().shape({
@@ -34,19 +44,39 @@ const schema = yup.object().shape({
   noOfOptions: yup
     .number()
     .nullable()
-    .typeError("noOfOptions must be a number")
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
     .positive("noOfOptions must be a positive number")
     .integer("noOfOptions must be an integer")
     .min(1, "noOfOptions must be greater than 1")
     .when("inputType", {
-      is: (value) =>
-        ["dropdown", "radio", "autocomplete"].includes(
+      is: (value) => {
+        return ["dropdown", "radio", "autocomplete"].includes(
           value?.NAME?.toLowerCase()
-        ),
+        );
+      },
       then: (schema) => schema.required("Field is required"),
       otherwise: (schema) => schema,
     }),
-  optionsList: yup.array().nullable(),
+  optionsList: yup
+    .object()
+    .nullable()
+    .when("inputType", {
+      is: (value) => {
+        return ["dropdown", "radio", "autocomplete"].includes(
+          value?.NAME?.toLowerCase()
+        );
+      },
+      then: (schema) => schema.required("Option List is required"),
+      otherwise: (schema) => schema,
+    })
+    .when("noOfOptions", {
+      is: (value) => value === null && value === "" && value <= 0,
+      then: (schema) =>
+        schema.required(
+          "NoOfOption should not be empty and has positive number"
+        ),
+      otherwise: (schema) => schema,
+    }),
 });
 
 const COLUMN_DEFAULT = {
@@ -101,15 +131,25 @@ const DynamicColumnForm = forwardRef(
       reset,
       getValues,
       watch,
+      getFieldState,
       trigger,
       formState: { errors },
     } = useForm({
       resolver: yupResolver(schema),
       mode: "onChange",
-      defaultValues: COLUMN_DEFAULT,
+      defaultValues: {
+        COLUMN_NAME: "",
+        DATA_TYPE: "",
+        CHARACTER_MAXIMUM_LENGTH: "",
+        IS_NULLABLE: false,
+        COLUMN_DEFAULT: "",
+        noOfOptions: null,
+        optionsList: null,
+        inputType: null,
+      },
     });
 
-    const watchInputType = watch("inputType");
+    const [open, setDialogOpen] = useState(false);
 
     const updateParent = useCallback(
       debounce(() => {
@@ -164,23 +204,41 @@ const DynamicColumnForm = forwardRef(
       sanitizeInputs();
     }, []);
 
-    useEffect(() => {
-      if (!watchInputType) {
-        reset((values) => ({
-          ...values,
-          noOfOptions: null,
-          optionsList: [],
-        }));
-      }
-    }, [watchInputType, reset]);
+    const inputWatchtype = watch("inputType");
 
-    // Watch for changes and update parent on change
+    const isInputTypeValid = useMemo(() => {
+      return ["dropdown", "radio", "autocomplete"].includes(
+        inputWatchtype?.NAME?.toLowerCase()
+      );
+    }, [inputWatchtype]);
+
     useEffect(() => {
-      const subscription = watch(() => {
-        updateParent();
+      if (!isInputTypeValid) {
+        reset({
+          ...getValues(),
+          noOfOptions: "",
+          optionsList: null,
+        });
+      }
+    }, [isInputTypeValid, reset, getValues]);
+
+    const onOptionSubmit = (value) => {
+      reset({
+        ...getValues(),
+        optionsList: value,
       });
-      return () => subscription.unsubscribe();
-    }, [watch, updateParent]);
+      setDialogOpen(false);
+      trigger();
+    };
+
+    const onOptionReset = () => {
+      setDialogOpen(false);
+    };
+
+    const openOptionDialogList = async () => {
+      const result = await trigger("noOfOptions");
+      setDialogOpen(result);
+    };
 
     return (
       <Container component="form" onSubmit={handleSubmit(updateParent)}>
@@ -304,7 +362,7 @@ const DynamicColumnForm = forwardRef(
                   }}
                   InputProps={{
                     ...params.InputProps,
-                    readOnly: data?.id === 0, // Make the field read-only
+                    readOnly: false,
                   }}
                 />
               )}
@@ -318,16 +376,74 @@ const DynamicColumnForm = forwardRef(
           render={({ field }) => (
             <TextField
               {...field}
-              type={"number"}
               label="No of Options"
               variant="outlined"
-              error={!!errors.COLUMN_DEFAULT}
-              helperText={errors.COLUMN_DEFAULT?.message}
+              error={!!errors.noOfOptions}
+              helperText={errors.noOfOptions?.message}
               className="input-field"
               InputProps={{
                 readOnly: false, // Make the field read-only
               }}
             />
+          )}
+        />
+
+        <Controller
+          name="optionsList"
+          control={control}
+          render={({ field }) => (
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                {...field}
+                onClick={openOptionDialogList}
+                type="button"
+                variant="contained"
+                color="primary"
+                style={{
+                  textAlign: "center",
+                  padding: "10px",
+                  backgroundColor: "#f0f0f0",
+                  cursor: "pointer",
+                }}
+                className={`${
+                  typeof watch("noOfOptions") !== "number" && // Value is not a number
+                  watch("noOfOptions") <= 0
+                    ? "custom-display-disabled"
+                    : "primary"
+                }`}
+              >
+                Option List
+              </Button>
+              {/* Display validation error if exists */}
+              <Box>
+                {errors.optionsList && (
+                  <Typography
+                    sx={{
+                      fontFamily: "Plus Jakarta Sans, sans-serif",
+                      fontWeight: "400",
+                      fontSize: "0.75rem",
+                      lineHeight: "1.66",
+                      textAlign: "left",
+                      marginTop: "3px",
+                      marginRight: "14px",
+                      marginBottom: "0",
+                      color: "red",
+                      marginLeft: "14px",
+                    }}
+                  >
+                    {errors.optionsList?.message}
+                  </Typography>
+                )}
+              </Box>
+            </Box>
           )}
         />
 
@@ -342,6 +458,15 @@ const DynamicColumnForm = forwardRef(
             Delete
           </Button>
         </Box>
+        <OptionsDialogBox
+          onSubmit={onOptionSubmit}
+          onReset={onOptionReset}
+          noOfOptions={getValues().noOfOptions}
+          handleClose={() => setDialogOpen(false)}
+          open={open}
+          defaultValues={getValues().optionsList}
+          key={"dialogKey"}
+        />
       </Container>
     );
   }

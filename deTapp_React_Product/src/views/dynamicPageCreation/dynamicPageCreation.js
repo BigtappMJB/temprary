@@ -253,6 +253,8 @@ const DynamicPageCreation = () => {
         }
       );
     }
+
+    console.log(updatedColumnsData);
   };
 
   const handleColumnsClear = () => {
