@@ -151,17 +151,16 @@ const DynamicColumnForm = forwardRef(
 
     const [open, setDialogOpen] = useState(false);
 
-    const updateParent = useCallback(
-      debounce(() => {
-        const fullValue = {
-          id: data.id,
-          validated: false,
-          ...getValues(),
-        };
-        onColumnSubmit(fullValue);
-      }, 300),
-      [data.id, getValues, onColumnSubmit]
-    );
+    const updateParent = useCallback(async () => {
+      const fullValue = {
+        id: data.id,
+        validated: false,
+        ...getValues(),
+      };
+      onColumnSubmit(fullValue);
+    }, [data.id, getValues, onColumnSubmit]);
+
+    useCallback(debounce(updateParent, 300), [updateParent]);
 
     // Expose a method to trigger validation via ref
     useImperativeHandle(ref, () => ({
@@ -180,7 +179,7 @@ const DynamicColumnForm = forwardRef(
           CHARACTER_MAXIMUM_LENGTH: data.CHARACTER_MAXIMUM_LENGTH ?? "",
           IS_NULLABLE: data.IS_NULLABLE ?? false,
           COLUMN_DEFAULT: data.COLUMN_DEFAULT ?? "",
-          noOfOptions: data.noOfOptions ?? null,
+          noOfOptions: Number(data.noOfOptions) ?? null,
           optionsList: data.optionsList ?? null,
           inputType: data.inputType ?? null,
         });
@@ -239,6 +238,14 @@ const DynamicColumnForm = forwardRef(
       const result = await trigger("noOfOptions");
       setDialogOpen(result);
     };
+
+    // Watch for changes and update parent on change
+    useEffect(() => {
+      const subscription = watch(() => {
+        updateParent();
+      });
+      return () => subscription.unsubscribe();
+    }, [watch, updateParent]);
 
     return (
       <Container component="form" onSubmit={handleSubmit(updateParent)}>
