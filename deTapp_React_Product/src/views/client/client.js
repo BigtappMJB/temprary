@@ -1,29 +1,21 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-
-import ProjectEstimateFormComponent from "./components/projectEstimationForm";
-import DataTable from "../user-management/users/components/DataTable";
-
 import {
-  projectEstimateCreationController,
-  getProjectEstimationControllers,
-  getProjectPhaseControllers,
-  getProjectRoleControllers,
-  getActivityCodeController,
-  projectEstimateDeletionController,
-  projectEstimateUpdateController,
-} from "./controllers/projectEstimationController";
-import { useLoading } from "../../components/Loading/loadingProvider";
-import { useDialog } from "../utilities/alerts/DialogContent";
+  getRolesController,
+  roleCreationController,
+  roleupdateController,
+  roledeleteController,
+} from "./controllers/clientControllers";
+import { useDialog } from "../../utilities/alerts/DialogContent";
+import FormComponent from "./components/clientFormComponent";
+import DataTable from "../users/components/DataTable";
+import { useLoading } from "../../../components/Loading/loadingProvider";
 import {
-  generateCSV,
   getCurrentPathName,
   getSubmenuDetails,
   ScrollToTopButton,
-  timeStampFileName,
-} from "../utilities/generals";
-import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
-import { getProjectController } from "../projectCreation/controllers/projectCreatioControllers";
+} from "../../utilities/generals";
+import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
 import { useOutletContext } from "react-router";
 
 // Styled Components
@@ -77,46 +69,40 @@ const FormButton = styled(Button)(({ theme }) => ({
 }));
 
 /**
- * CMDPage component displays a user management interface with a form and a data table.
+ * Roles component displays a user management interface with a form and a data table.
  *
  * @component
  * @example
  * return (
- *   <CMDPage />
+ *   <Roles />
  * )
  */
-const CMDPage = () => {
+const Roles = () => {
+  const { reduxStore } = useOutletContext() || [];
+  const menuList = reduxStore?.menuDetails || [];
+
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
-
-  const [project, setProject] = useState([]);
-  const [role, setRole] = useState([]);
-  const [phase, setPhase] = useState([]);
-  const [activityCode, setActivityCode] = useState([]);
-
-  const { startLoading, stopLoading } = useLoading();
-
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
   });
-
   const [permissionLevels, setPermissionLevels] = useState({
     create: null,
     edit: null,
     view: null,
     delete: null,
   });
-  const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
-
-  // Fetches user data and updates the table
-  const getTableData = async () => {
+  const { startLoading, stopLoading } = useLoading();
+  const hasFetchedRoles = useRef(false);
+  const getRoles = async () => {
     try {
       startLoading();
-      const response = await getProjectEstimationControllers();
+      const response = await getRolesController();
       setTableData(response);
+      // debugger;
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {
@@ -127,68 +113,6 @@ const CMDPage = () => {
     }
   };
 
-  const getProjectData = async () => {
-    try {
-      startLoading();
-      const response = await getProjectController();
-      // console.log({response});
-      setProject(response);
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
-        return;
-      }
-    } finally {
-      stopLoading();
-    }
-  };
-
-  const getProjectRole = async () => {
-    try {
-      startLoading();
-      const response = await getProjectRoleControllers();
-      setRole(response);
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
-        return;
-      }
-    } finally {
-      stopLoading();
-    }
-  };
-
-  const getProjectPhase = async () => {
-    try {
-      startLoading();
-      const response = await getProjectPhaseControllers();
-      setPhase(response);
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
-        return;
-      }
-    } finally {
-      stopLoading();
-    }
-  };
-
-  const getActivityCode = async () => {
-    try {
-      startLoading();
-      const response = await getActivityCodeController();
-      setActivityCode(response);
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
-        return;
-      }
-    } finally {
-      stopLoading();
-    }
-  };
-  const { reduxStore } = useOutletContext() || [];
-  const menuList = reduxStore?.menuDetails || [];
   // Fetches roles data and updates the roles list
   useEffect(() => {
     const submenuDetails = getSubmenuDetails(
@@ -207,31 +131,20 @@ const CMDPage = () => {
       delete: permissionList?.includes("delete"),
     });
     if (!hasFetchedRoles.current) {
-      getProjectData();
-      getProjectPhase();
-      getProjectRole();
-      getTableData();
-      getActivityCode();
+      getRoles();
       hasFetchedRoles.current = true;
     }
   }, [menuList]);
 
   const columns = {
-    // USER_ID: "Username",
-    target: "Project",
-    sub_target: "Phase",
-    incorporation_city: "Role",
-    sector_classification: "Activity Code",
-    sector_classification1: "Start Date",
-    sector_classificatio2n: "End Date",
-    sector_classificatio3n: "Hours Per Day",
-    sector_classificatio4n: "Total Hours",
+    name: "Client",
+    description: "Description",
   };
 
   /**
    * Initiates the process to add a new user.
    */
-  const addUser = () => {
+  const addRoles = () => {
     if (permissionLevels?.create)
       setFormAction({
         display: true,
@@ -267,25 +180,22 @@ const CMDPage = () => {
       startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await projectEstimateCreationController(formData);
+      if (isAdd) response = await roleCreationController(formData);
       else {
-        formData = {
-          ...formData,
-          ID: selectedValue.id,
-        };
-        response = await projectEstimateUpdateController(formData);
+        formData = { ...formData, ID: selectedValue.id };
+        response = await roleupdateController(formData);
       }
 
       if (response) {
-        getTableData();
+        getRoles();
         if (!isAdd) {
           onFormReset();
         }
         openDialog(
           "success",
-          `CMD ${isAdd ? "Addition" : "Updation"} Success`,
+          `Client ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `CMD has been ${isAdd ? "addded" : "updated"} successfully`,
+            `Client has been ${isAdd ? "addded" : "updated"} successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -300,12 +210,11 @@ const CMDPage = () => {
         );
       }
     } catch (error) {
-      console.error(error);
       const isAdd = formAction.action === "add";
       openDialog(
         "warning",
         "Warning",
-        `CMD ${isAdd ? "Addition" : "Updation"} failed`,
+        `Client ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -379,7 +288,7 @@ const CMDPage = () => {
       openDialog(
         "warning",
         `Delete confirmation`,
-        `Are you sure you want to delete this value?`,
+        `Are you sure you want to delete this role "${selectedRow.name}"?`,
         {
           confirm: {
             name: "Yes",
@@ -427,16 +336,16 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      const response = await projectEstimateDeletionController(
-        selectedRow.PROJECT_ID
-      );
+      const response = await roledeleteController(selectedRow.id);
 
       if (response) {
-        getTableData();
+        getRoles();
+
         openDialog(
           "success",
-          `CMD Deletion Success`,
-          response.message || `CMD has been deleted successfully  `,
+          `Client Deletion Success`,
+          response.message || `Client has been deleted successfully  `,
+
           {
             confirm: {
               name: "Ok",
@@ -447,14 +356,15 @@ const CMDPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {}
+          (confirmed) => {},
+          () => {}
         );
       }
     } catch (error) {
       openDialog(
         "warning",
         "Warning",
-        `CMD Deletion failed`,
+        error.errorMessage || `Client Deletion failed`,
         {
           confirm: {
             name: "Ok",
@@ -476,13 +386,6 @@ const CMDPage = () => {
     }
   };
 
-  const handleExport = () => {
-    generateCSV(
-      tableData,
-      `central_manual_depository_${timeStampFileName(new Date())}`
-    );
-  };
-
   return (
     <>
       {formAction.display && (
@@ -494,18 +397,14 @@ const CMDPage = () => {
                 : formAction.action === "update"
                 ? "Update"
                 : "Read "}{" "}
-              Project Estimation
+              Client
             </Typography>
           </Header>
-          <ProjectEstimateFormComponent
+          <FormComponent
             formAction={formAction}
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
-            projectList={project}
-            roleList={role}
-            phaseList={phase}
-            activityList={activityCode}
           />
         </Container>
       )}
@@ -513,19 +412,12 @@ const CMDPage = () => {
       <SecondContainer className="common-table">
         <SubHeader className="table-header">
           <Typography variant="h6">
-            <b>Project Estimation</b>
+            <b>Clients List</b>
           </Typography>
-
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            flexWrap="wrap"
-            gap={2}
-          >
+          <Box display="flex" justifyContent="space-between" flexWrap="wrap">
             <FormButton
               type="button"
-              onClick={addUser}
+              onClick={addRoles}
               variant="contained"
               color="primary"
               style={{ marginRight: "10px" }}
@@ -534,19 +426,7 @@ const CMDPage = () => {
               }`}
               disabled={formAction.action === "add" && formAction.display}
             >
-              Add Estimation
-            </FormButton>
-            <FormButton
-              type="button"
-              onClick={handleExport}
-              variant="contained"
-              color="primary"
-              style={{ marginRight: "10px" }}
-              className={`${
-                tableData.length ? "secondary" : "custom-disabled"
-              }`}
-            >
-              Export
+              Add Client
             </FormButton>
           </Box>
         </SubHeader>
@@ -566,4 +446,4 @@ const CMDPage = () => {
   );
 };
 
-export default CMDPage;
+export default Roles;
