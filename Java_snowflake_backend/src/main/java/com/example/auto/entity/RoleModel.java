@@ -8,41 +8,119 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 public class RoleModel {
-	  
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "role_id")
-	private int roleId;
+	@Column(name = "ID")
+	private int id;
 
-	@Column(name = "role_name")
-	private String roleName;
+	@Column(name = "NAME")
+	private String name;
 
-	@Column(name = "active")
-	private String active;
+	@Column(name = "DESCRIPTION")
+	private String description;
 
-	public String getRoleName() {
-		return roleName;
+	@Column(name = "CREATED_BY")
+	private String createdBy;
+
+	@Column(name = "CREATED_DATE")
+	private String createdDate;
+
+	@Column(name = "UPDATED_BY")
+	private String updatedBy;
+
+	@Column(name = "UPDATED_DATE")
+	private String updatedDate;
+
+	@Column(name = "IS_ACTIVE")
+	private String isActive;
+
+	@Column(name = "DELETED_BY")
+	private String deletedBy;
+
+	@Column(name = "DELETED_DATE")
+	private String deletedDate;
+
+	public int getId() {
+		return id;
 	}
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
+	public void setId(int id) {
+		this.id = id;
 	}
 
-	public int getRoleId() {
-		return roleId;
+	public String getName() {
+		return name;
 	}
 
-	public void setRoleId(int roleId) {
-		this.roleId = roleId;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getActive() {
-		return active;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setActive(String active) {
-		this.active = active;
+	public void setDescription(String description) {
+		this.description = description;
 	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+	public String getUpdatedDate() {
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(String updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
+	public String getDeletedBy() {
+		return deletedBy;
+	}
+
+	public void setDeletedBy(String deletedBy) {
+		this.deletedBy = deletedBy;
+	}
+
+	public String getDeletedDate() {
+		return deletedDate;
+	}
+
+	public void setDeletedDate(String deletedDate) {
+		this.deletedDate = deletedDate;
+	}
+
 }

@@ -23,111 +23,114 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.auto.repositories.RegisterRepository;
 import com.example.auto.utill.Constants;
 
-import net.snowflake.client.jdbc.internal.net.minidev.json.JSONObject;
-
+//import net.snowflake.client.jdbc.internal.net.minidev.json.JSONObject;
 
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/register")
 public class RegisterController {
 	private static final Logger LOG = LoggerFactory.getLogger(RegisterController.class);
+
 	@Autowired
-    private RegisterRepository registerRepository;
-	
+	private RegisterRepository registerRepository;
+
 	@GetMapping("/userhello")
-    public String sayHello() {
-        return "Hello, World!";
-    }
+	public String sayHello() {
+		return "Hello, World!";
+	}
+
 	// Route for Registration
 	@PostMapping("/registration")
 	public ResponseEntity<Object> register(@RequestBody Map<String, Object> data) throws SQLException {
-	    String email = (String) data.get("email");
-	    String first_name = (String) data.get("first_name");
-	    String middle_name = (String) data.get("middle_name");
-	    String last_name = (String) data.get("last_name");
-	    String mobile = (String) data.get("mobile");
-	    int role_id = 701;  // Default role from the roles table
-	    LocalDateTime created_date = LocalDateTime.now();
+		String email = (String) data.get("email");
+		String first_name = (String) data.get("first_name");
+		String middle_name = (String) data.get("middle_name");
+		String last_name = (String) data.get("last_name");
+		String mobile = (String) data.get("mobile");
+		int role_id = 2; // Default role from the roles table
+		LocalDateTime created_date = LocalDateTime.now();
 
-	    if (registerRepository.getUserByEmail(email) != null) {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "User already exists"));
-	    }
+		if (registerRepository.getUserByEmail(email) != null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "User already exists"));
+		}
 
-	    String otp = registerRepository.generateOTP();
-	    if (registerRepository.sendOtpEmail(email, otp)) {
-	    	registerRepository.insertUser(email, first_name, middle_name, last_name, mobile, role_id, otp, created_date);  // Save OTP in password field
-	        return ResponseEntity.ok(Map.of("message", "OTP sent to email successfully"));
-	    } else {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send OTP"));
-	    }
+		String otp = registerRepository.generateOTP();
+		if (registerRepository.sendOtpEmail(email, otp)) {
+			registerRepository.insertUser(email, first_name, middle_name, last_name, mobile, role_id, otp,
+					created_date); // Save OTP in password field
+			return ResponseEntity.ok(Map.of("message", "OTP sent to email successfully"));
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send OTP"));
+		}
 	}
-	
+
 	// Route for Verifying OTP
 	@PostMapping("/verify_otp")
 	public ResponseEntity<Object> verifyOtp(@RequestBody Map<String, Object> data) throws SQLException {
-	    String email = (String) data.get("email");
-	    String otp = (String) data.get("otp");
-	    Map<String, Object> user = registerRepository.getUserByEmail(email);
+		String email = (String) data.get("email");
+		String otp = (String) data.get("otp");
+		Map<String, Object> user = registerRepository.getUserByEmail(email);
 
-	    if (user == null) {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
-	    }
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
+		}
 
-	    if (!user.get("password").equals(otp)) {  // Assuming the password field is used to store the OTP temporarily
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "The OTP you have entered is incorrect. Please check the OTP email for the valid code."));
-	    }
+		if (!user.get("password").equals(otp)) { // Assuming the password field is used to store the OTP temporarily
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error",
+					"The OTP you have entered is incorrect. Please check the OTP email for the valid code."));
+		}
 
-	    // Update IS_VERIFIED to true and set a default password
-	    String default_password = registerRepository.generateDefaultPassword(8);
-	    registerRepository.updateUserPasswordAndVerify(email, default_password);
-	    registerRepository.sendDefaultPassword(email, default_password);
-	    return ResponseEntity.ok(Map.of("message", "OTP verified, default password sent to mail"));
+		// Update IS_VERIFIED to true and set a default password
+		String default_password = registerRepository.generateDefaultPassword(8);
+		registerRepository.updateUserPasswordAndVerify(email, default_password);
+		registerRepository.sendDefaultPassword(email, default_password);
+		return ResponseEntity.ok(Map.of("message", "OTP verified, default password sent to mail"));
 	}
+
 	// Route for Changing Password
 	@PostMapping("/change_password")
 	public ResponseEntity<Object> changePassword(@RequestBody Map<String, String> data) throws SQLException {
-	    String email = data.get("email");
-	    String oldPassword = data.get("old_password");
-	    String newPassword = data.get("new_password");
+		String email = data.get("email");
+		String oldPassword = data.get("old_password");
+		String newPassword = data.get("new_password");
 
-	    Objects.requireNonNull(email, "Email must not be null");
-	    Objects.requireNonNull(oldPassword, "Old password must not be null");
-	    Objects.requireNonNull(newPassword, "New password must not be null");
-	    LOG.info("Request received to change password for email: " + email);
-	  
+		Objects.requireNonNull(email, "Email must not be null");
+		Objects.requireNonNull(oldPassword, "Old password must not be null");
+		Objects.requireNonNull(newPassword, "New password must not be null");
+		LOG.info("Request received to change password for email: " + email);
 
-	    Map<String, Object> user = registerRepository.getUserByEmail(email);
-	    if (user == null) {
-	    	  LOG.info("\"User not found for email: " + email);
-	       
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "User not found"));
-	    }
-	    LOG.info("\"User Found: " + email);
-	   
+		Map<String, Object> user = registerRepository.getUserByEmail(email);
+		if (user == null) {
+			LOG.info("\"User not found for email: " + email);
 
-	    // Strip leading/trailing whitespace from passwords
-	    String providedOldPassword = oldPassword.strip();
-	    String storedPassword = ((String) user.get("password")).strip();
-	    LOG.info("\"Provided old password (stripped): : " + providedOldPassword);
-	    LOG.info("\"Stored password (stripped):" + storedPassword);
-	    
-	    if (!providedOldPassword.equals(storedPassword)) {  // Direct comparison after stripping whitespace
-	    	 LOG.info("\"Invalid email or password for email:" + email);
-	    	
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", "Invalid default/Current password"));
-	    }
-	    LOG.info("\"Old password verified for email:" + email);
-	   
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(Collections.singletonMap("error", "User not found"));
+		}
+		LOG.info("\"User Found: " + email);
 
-	    registerRepository.updateUserPassword(email, newPassword);
-	    LOG.info("\"Password updated successfully for email" + email);
-	   
+		// Strip leading/trailing whitespace from passwords
+		String providedOldPassword = oldPassword.strip();
+		String storedPassword = ((String) user.get("password")).strip();
+		LOG.info("\"Provided old password (stripped): : " + providedOldPassword);
+		LOG.info("\"Stored password (stripped):" + storedPassword);
 
-	    // Send password update notification email
-	   // sendPasswordUpdateEmail(email);
+		if (!providedOldPassword.equals(storedPassword)) { // Direct comparison after stripping whitespace
+			LOG.info("\"Invalid email or password for email:" + email);
 
-	    return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(Collections.singletonMap("error", "Invalid default/Current password"));
+		}
+		LOG.info("\"Old password verified for email:" + email);
+
+		registerRepository.updateUserPassword(email, newPassword);
+		LOG.info("\"Password updated successfully for email" + email);
+
+		// Send password update notification email
+		// sendPasswordUpdateEmail(email);
+
+		return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
 	}
+
 	/*
 	 * public void sendPasswordUpdateEmail(String userEmail) { // Create a
 	 * SimpleMailMessage object SimpleMailMessage message = new SimpleMailMessage();
@@ -144,32 +147,33 @@ public class RegisterController {
 	 * LOG.error("An error occurred while sending password update email: {}",
 	 * e.getMessage()); } }
 	 */
-	 @PostMapping("/generate_otp")
-	    public ResponseEntity<String> generateOtp(@RequestBody Map<String, String> data) {
-	        String email = data.get("email");
-	        LOG.info("OTP generation requested for email: {}", email);
+	@PostMapping("/generate_otp")
+	public ResponseEntity<String> generateOtp(@RequestBody Map<String, String> data) {
+		String email = data.get("email");
+		LOG.info("OTP generation requested for email: {}", email);
 
-	        try {
-	        	 if (registerRepository.getUserByEmail(email) == null) {
-	     	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"User not found\"}");
-	     	    }
-	        	String otp =  registerRepository.generateOTP();
+		try {
+			if (registerRepository.getUserByEmail(email) == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"User not found\"}");
+			}
+			String otp = registerRepository.generateOTP();
 
-	            if (otp!=null) {
-	            	if (registerRepository.sendOtpEmail(email, otp)) {
-	            		registerRepository.updateUserOtp(email, otp); // Save the OTP in the database
-	            		LOG.info("OTP sent and saved for email: {}", email);
-	                LOG.info("OTP sent and saved for email: {}", email);
-	                return ResponseEntity.status(200).body("{\"message\": \"OTP generated and sent to email successfully\"}");
-	            } else {
-	                return ResponseEntity.status(500).body("{\"error\": \"Failed to send OTP\"}");
-	            }
-	        }else {
-                return ResponseEntity.status(500).body("{\"error\": \"Failed to send mail\"}");
-            }
-	            } catch (Exception e) {
-	        	LOG.error("User not found or error occurred for email: {}", email, e);
-	            return ResponseEntity.status(404).body("{\"error\": \"User not found or an error occurred\"}");
-	        }
-	    }
+			if (otp != null) {
+				if (registerRepository.sendOtpEmail(email, otp)) {
+					registerRepository.updateUserOtp(email, otp); // Save the OTP in the database
+					LOG.info("OTP sent and saved for email: {}", email);
+					LOG.info("OTP sent and saved for email: {}", email);
+					return ResponseEntity.status(200)
+							.body("{\"message\": \"OTP generated and sent to email successfully\"}");
+				} else {
+					return ResponseEntity.status(500).body("{\"error\": \"Failed to send OTP\"}");
+				}
+			} else {
+				return ResponseEntity.status(500).body("{\"error\": \"Failed to send mail\"}");
+			}
+		} catch (Exception e) {
+			LOG.error("User not found or error occurred for email: {}", email, e);
+			return ResponseEntity.status(404).body("{\"error\": \"User not found or an error occurred\"}");
+		}
+	}
 }

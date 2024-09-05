@@ -26,16 +26,16 @@ public class RoleRepository {
    
 
     public int createRole(String name, String description) throws SQLException {
-    	Connection conn = connector.getSnowflakeConnection();
+    	Connection conn = connector.getDBConnection();
         int roleId = -1;
         try {
-            stmt = conn.prepareStatement("INSERT INTO NBF_CIA.PUBLIC.ROLES (NAME, DESCRIPTION) VALUES (?, ?)");
+            stmt = conn.prepareStatement("INSERT INTO ROLES (NAME, DESCRIPTION) VALUES (?, ?)");
             stmt.setString(1, name);
             stmt.setString(2, description);
             stmt.executeUpdate();
             conn.commit();
 
-            stmt = conn.prepareStatement("SELECT MAX(ID) FROM NBF_CIA.PUBLIC.ROLES");
+            stmt = conn.prepareStatement("SELECT MAX(ID) FROM ROLES");
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 roleId = rs.getInt(1);
@@ -47,10 +47,10 @@ public class RoleRepository {
     }
 
     public List<Map<String, Object>> getRoles() throws SQLException {
-    	Connection conn = connector.getSnowflakeConnection();
+    	Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
         try {
-            stmt = conn.prepareStatement("SELECT ID, NAME, DESCRIPTION FROM NBF_CIA.PUBLIC.ROLES");
+            stmt = conn.prepareStatement("SELECT ID, NAME, DESCRIPTION FROM ROLES");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Map<String, Object> role = new HashMap<>();
@@ -67,9 +67,9 @@ public class RoleRepository {
 
     public Map<String, Object> getRole(int roleId) throws SQLException {
         Map<String, Object> role = null;
-        Connection conn = connector.getSnowflakeConnection();
+        Connection conn = connector.getDBConnection();
         try {
-            stmt = conn.prepareStatement("SELECT ID, NAME, DESCRIPTION FROM NBF_CIA.PUBLIC.ROLES WHERE ID = ?");
+            stmt = conn.prepareStatement("SELECT ID, NAME, DESCRIPTION FROM ROLES WHERE ID = ?");
             stmt.setInt(1, roleId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -86,9 +86,9 @@ public class RoleRepository {
 
     public int updateRole(int roleId, String name, String description) throws SQLException {
         int rowCount = -1;
-        Connection conn = connector.getSnowflakeConnection();
+        Connection conn = connector.getDBConnection();
         try {
-            stmt = conn.prepareStatement("UPDATE NBF_CIA.PUBLIC.ROLES SET NAME = ?, DESCRIPTION = ? WHERE ID = ?");
+            stmt = conn.prepareStatement("UPDATE ROLES SET NAME = ?, DESCRIPTION = ? WHERE ID = ?");
             stmt.setString(1, name);
             stmt.setString(2, description);
             stmt.setInt(3, roleId);
@@ -101,10 +101,10 @@ public class RoleRepository {
     }
 
     public Map<String, Object> deleteRole(int roleId) throws SQLException {
-    	Connection conn = connector.getSnowflakeConnection();
+    	Connection conn = connector.getDBConnection();
         Map<String, Object> result = new HashMap<>();
         try {
-            stmt = conn.prepareStatement("SELECT COUNT(*) FROM NBF_CIA.PUBLIC.USERS WHERE ROLE_ID = ?");
+            stmt = conn.prepareStatement("SELECT COUNT(*) FROM USERS WHERE ROLE_ID = ?");
             stmt.setInt(1, roleId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -117,7 +117,7 @@ public class RoleRepository {
                 }
             }
 
-            stmt = conn.prepareStatement("SELECT COUNT(*) FROM NBF_CIA.PUBLIC.ROLE_PERMISSION WHERE ROLE_ID = ?");
+            stmt = conn.prepareStatement("SELECT COUNT(*) FROM ROLE_PERMISSION WHERE ROLE_ID = ?");
             stmt.setInt(1, roleId);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -130,7 +130,7 @@ public class RoleRepository {
                 }
             }
 
-            stmt = conn.prepareStatement("DELETE FROM NBF_CIA.PUBLIC.ROLES WHERE ID = ?");
+            stmt = conn.prepareStatement("DELETE FROM ROLES WHERE ID = ?");
             stmt.setInt(1, roleId);
             stmt.executeUpdate();
             conn.commit();
@@ -144,10 +144,10 @@ public class RoleRepository {
     }
 
     public List<Map<String, Object>> getAllPermissions() throws SQLException {
-    	Connection conn = connector.getSnowflakeConnection();
+    	Connection conn = connector.getDBConnection();
         List<Map<String, Object>> permissions = new ArrayList<>();
         try {
-            stmt = conn.prepareStatement("SELECT ID, LEVEL FROM NBF_CIA.PUBLIC.PERMISSION_LEVEL");
+            stmt = conn.prepareStatement("SELECT ID, LEVEL FROM PERMISSION_LEVEL");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Map<String, Object> permission = new HashMap<>();

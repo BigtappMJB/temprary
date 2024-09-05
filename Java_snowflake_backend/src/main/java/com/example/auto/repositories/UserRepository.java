@@ -22,7 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 
-import net.snowflake.client.jdbc.internal.net.minidev.json.JSONObject;
+
 
 @Repository
 public class UserRepository {
@@ -32,6 +32,8 @@ public class UserRepository {
     private RegisterRepository registerRepository;
 	@Autowired
     private JdbcTemplate jdbcTemplate;
+    private PreparedStatement stmt;
+
 	// Method to fetch all users with their roles
     public List<Map<String, Object>> fetchAllUsers() throws SQLException {
         Connection conn = null;
@@ -40,10 +42,10 @@ public class UserRepository {
         List<Map<String, Object>> data = new ArrayList<>();
 
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
             String sql = "SELECT u.*, r.name as role_name " +
-                         "FROM NBF_CIA.PUBLIC.USERS u " +
-                         "LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID " +
+                         "FROM USERS u " +
+                         "LEFT JOIN ROLES r ON r.ID = u.ROLE_ID " +
                          "ORDER BY u.ID DESC";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
@@ -81,8 +83,8 @@ public class UserRepository {
         ResultSet rs = null;
         int ids =Integer.parseInt(id);
         try {
-            conn = connector.getSnowflakeConnection();
-            String sql = "SELECT * FROM NBF_CIA.PUBLIC.MENUS WHERE ID = ?";
+            conn = connector.getDBConnection();
+            String sql = "SELECT * FROM MENUS WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, ids);
             rs = stmt.executeQuery();
@@ -120,8 +122,8 @@ public class UserRepository {
         ResultSet rs = null;
         List<Map<String, Object>> menusList = new ArrayList<>();
         try {
-            conn = connector.getSnowflakeConnection();
-            String sql = "SELECT * FROM NBF_CIA.PUBLIC.MENUS";
+            conn = connector.getDBConnection();
+            String sql = "SELECT * FROM MENUS";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
 
@@ -168,10 +170,10 @@ public class UserRepository {
         int menuIds= Integer.parseInt(menuId);
 
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "UPDATE NBF_CIA.PUBLIC.MENUS SET NAME = ?, DESCRIPTION = ? WHERE ID = ?";
+            String sql = "UPDATE MENUS SET NAME = ?, DESCRIPTION = ? WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
@@ -213,10 +215,10 @@ public class UserRepository {
         ResultSet rs = null;
         int menuIds= Integer.parseInt(menuId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Check if there are any submenus associated with this menu
-            String checkSql = "SELECT COUNT(*) FROM NBF_CIA.PUBLIC.SUB_MENUS WHERE MENU_ID = ?";
+            String checkSql = "SELECT COUNT(*) FROM SUB_MENUS WHERE MENU_ID = ?";
             checkStmt = conn.prepareStatement(checkSql);
             checkStmt.setInt(1, menuIds);
             rs = checkStmt.executeQuery();
@@ -226,7 +228,7 @@ public class UserRepository {
             }
 
             // If no submenus are associated, proceed to delete the menu
-            String deleteSql = "DELETE FROM NBF_CIA.PUBLIC.MENUS WHERE ID = ?";
+            String deleteSql = "DELETE FROM MENUS WHERE ID = ?";
             deleteStmt = conn.prepareStatement(deleteSql);
             deleteStmt.setInt(1, menuIds);
             int rowsDeleted = deleteStmt.executeUpdate();
@@ -260,7 +262,7 @@ public class UserRepository {
         PreparedStatement stmt = null;
 
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Generate default password
            
@@ -270,7 +272,7 @@ public class UserRepository {
             registerRepository.sendDefaultPassword(data.get("email").toString(), default_password);
 
             // Prepare SQL statement
-            String sql = "INSERT INTO NBF_CIA.PUBLIC.USERS " +
+            String sql = "INSERT INTO USERS " +
                          "(FIRST_NAME, MIDDLE_NAME, LAST_NAME, EMAIL, MOBILE, ROLE_ID, PASSWORD, IS_VERIFIED, IS_DEFAULT_PASSWORD_CHANGED, CREATED_DATE) " +
                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             stmt = conn.prepareStatement(sql);
@@ -318,10 +320,10 @@ public class UserRepository {
         ResultSet rs = null;
         int userIds =Integer.parseInt(userId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
             String sql = "SELECT u.*, r.name as role_name " +
-                         "FROM NBF_CIA.PUBLIC.USERS u " +
-                         "LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID " +
+                         "FROM USERS u " +
+                         "LEFT JOIN ROLES r ON r.ID = u.ROLE_ID " +
                          "WHERE u.ID = ? ORDER BY u.ID DESC";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userIds);
@@ -367,10 +369,10 @@ public class UserRepository {
         ResultSet rs = null;
 
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
             String sql = "SELECT u.*, r.name as role_name " +
-                         "FROM NBF_CIA.PUBLIC.USERS u " +
-                         "LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID " +
+                         "FROM USERS u " +
+                         "LEFT JOIN ROLES r ON r.ID = u.ROLE_ID " +
                          "ORDER BY u.ID DESC";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
@@ -428,10 +430,10 @@ public class UserRepository {
         PreparedStatement stmt = null;
         int userIds =Integer.parseInt(userId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "UPDATE NBF_CIA.PUBLIC.USERS " +
+            String sql = "UPDATE USERS " +
                          "SET FIRST_NAME = ?, MIDDLE_NAME = ?, LAST_NAME = ?, MOBILE = ?, EMAIL = ?, ROLE_ID = ? " +
                          "WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
@@ -476,10 +478,10 @@ public class UserRepository {
         PreparedStatement stmt = null;
         int userIds =Integer.parseInt(userId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "DELETE FROM NBF_CIA.PUBLIC.USERS WHERE ID = ?";
+            String sql = "DELETE FROM USERS WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
 
             // Set the user ID parameter
@@ -517,10 +519,10 @@ public class UserRepository {
         PreparedStatement stmt = null;
 
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "INSERT INTO NBF_CIA.PUBLIC.MENUS (NAME, DESCRIPTION) VALUES (?, ?)";
+            String sql = "INSERT INTO MENUS (NAME, DESCRIPTION) VALUES (?, ?)";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
@@ -555,10 +557,10 @@ public class UserRepository {
         PreparedStatement stmt = null;
 
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "INSERT INTO NBF_CIA.PUBLIC.SUB_MENUS (MENU_ID, NAME, DESCRIPTION, ROUTE) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO SUB_MENUS (MENU_ID, NAME, DESCRIPTION, ROUTE) VALUES (?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
@@ -596,9 +598,9 @@ public class UserRepository {
         ResultSet rs = null;
         int subMenuIds =Integer.parseInt(subMenuId);
         try {
-            conn = connector.getSnowflakeConnection();
-            String sql = "SELECT sm.*, m.NAME as menu_name FROM NBF_CIA.PUBLIC.SUB_MENUS sm " +
-                         "LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.ID = sm.MENU_ID WHERE sm.ID = ?";
+            conn = connector.getDBConnection();
+            String sql = "SELECT sm.*, m.NAME as menu_name FROM SUB_MENUS sm " +
+                         "LEFT JOIN MENUS m ON m.ID = sm.MENU_ID WHERE sm.ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, subMenuIds);
             rs = stmt.executeQuery();
@@ -640,9 +642,9 @@ public class UserRepository {
         ResultSet rs = null;
         List<Map<String, Object>> subMenusList = new ArrayList<>();
         try {
-            conn = connector.getSnowflakeConnection();
-            String sql = "SELECT sm.*, m.NAME as menu_name FROM NBF_CIA.PUBLIC.SUB_MENUS sm " +
-                         "LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.ID = sm.MENU_ID";
+            conn = connector.getDBConnection();
+            String sql = "SELECT sm.*, m.NAME as menu_name FROM SUB_MENUS sm " +
+                         "LEFT JOIN MENUS m ON m.ID = sm.MENU_ID";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
 
@@ -653,7 +655,7 @@ public class UserRepository {
             while (rs.next()) {
             	 Map<String, Object> subMenuDict = new HashMap<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    String columnName = rs.getMetaData().getColumnName(i);
+                    String columnName = rs.getMetaData().getColumnLabel(i);
                     Object columnValue = rs.getObject(i);
                     subMenuDict.put(columnName, columnValue);
                 }
@@ -684,10 +686,10 @@ public class UserRepository {
         PreparedStatement stmt = null;
         int subMenuIds =Integer.parseInt(subMenuId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "UPDATE NBF_CIA.PUBLIC.SUB_MENUS SET MENU_ID = ?, NAME = ?, DESCRIPTION = ?, ROUTE = ? WHERE ID = ?";
+            String sql = "UPDATE SUB_MENUS SET MENU_ID = ?, NAME = ?, DESCRIPTION = ?, ROUTE = ? WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
@@ -731,10 +733,10 @@ public class UserRepository {
         ResultSet rs = null;
         int subMenuIds =Integer.parseInt(subMenuId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Check if the submenu is mapped to any role permission
-            String checkSql = "SELECT COUNT(*) FROM NBF_CIA.PUBLIC.ROLE_PERMISSION WHERE SUB_MENU_ID = ?";
+            String checkSql = "SELECT COUNT(*) FROM ROLE_PERMISSION WHERE SUB_MENU_ID = ?";
             checkStmt = conn.prepareStatement(checkSql);
             checkStmt.setInt(1, subMenuIds);
             rs = checkStmt.executeQuery();
@@ -744,7 +746,7 @@ public class UserRepository {
             }
 
             // Delete the submenu based on the given ID
-            String deleteSql = "DELETE FROM NBF_CIA.PUBLIC.SUB_MENUS WHERE ID = ?";
+            String deleteSql = "DELETE FROM SUB_MENUS WHERE ID = ?";
             deleteStmt = conn.prepareStatement(deleteSql);
             deleteStmt.setInt(1, subMenuIds);
             int rowsDeleted = deleteStmt.executeUpdate();
@@ -775,7 +777,7 @@ public class UserRepository {
 	// Method to create a new permission
     public static Map<String, Object> createPermission(Map<String, Object> data) throws SQLException {
         String sql = "INSERT INTO permission_level (level) VALUES (?)";
-        try (Connection conn = connector.getSnowflakeConnection();
+        try (Connection conn = connector.getDBConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, (String) data.get("level"));
             stmt.executeUpdate();
@@ -788,7 +790,7 @@ public class UserRepository {
     }
     public static Map<String, Object> getPermission(String id) throws SQLException {
         String sql = "SELECT * FROM permission_level WHERE id = ?";
-        try (Connection conn = connector.getSnowflakeConnection();
+        try (Connection conn = connector.getDBConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -812,7 +814,7 @@ public class UserRepository {
     public static  List<Map<String, Object>> getAllPermissions() throws SQLException {
     	 List<Map<String, Object>> permissions = new ArrayList<>();
         String sql = "SELECT * FROM permission_level";
-        try (Connection conn = connector.getSnowflakeConnection();
+        try (Connection conn = connector.getDBConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
         	
@@ -846,7 +848,7 @@ public class UserRepository {
     // Method to update a permission
     public static Map<String, Object> updatePermission(String id, Map<String, Object> data) throws SQLException {
         String sql = "UPDATE permission_level SET level = ? WHERE id = ?";
-        try (Connection conn = connector.getSnowflakeConnection();
+        try (Connection conn = connector.getDBConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, (String) data.get("level"));
             stmt.setString(2, id);
@@ -867,7 +869,7 @@ public class UserRepository {
     // Method to delete a permission
     public static Map<String, Object> deletePermission(String id) throws SQLException {
         String sql = "DELETE FROM permission_level WHERE id = ?";
-        try (Connection conn = connector.getSnowflakeConnection();
+        try (Connection conn = connector.getDBConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             int rowsDeleted = stmt.executeUpdate();
@@ -890,10 +892,10 @@ public class UserRepository {
         PreparedStatement stmt = null;
 
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "INSERT INTO NBF_CIA.PUBLIC.ROLE_PERMISSION (ROLE_ID, MENU_ID, SUB_MENU_ID, PERMISSION_LEVEL) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO ROLE_PERMISSION (ROLE_ID, MENU_ID, SUB_MENU_ID, PERMISSION_LEVEL) VALUES (?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
@@ -904,7 +906,7 @@ public class UserRepository {
 
             // Execute the insert operation
             stmt.executeUpdate();
-            conn.commit();
+//            conn.commit();
 
             // Return success message
             return Map.of("message", "Role permission created successfully", "status", 201);
@@ -931,14 +933,14 @@ public class UserRepository {
         ResultSet rs = null;
         int rolePermissionIds =Integer.parseInt(rolePermissionId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
             String sql = """
                 SELECT rp.*, r.name as role_name, m.name as menu_name, sm.name AS sub_menu_name, p.level AS permission 
-                FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp 
-                LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.id = rp.role_id
-                LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.id = rp.menu_id 
-                LEFT JOIN NBF_CIA.PUBLIC.SUB_MENUS sm ON sm.id = rp.sub_menu_id 
-                LEFT JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL p ON p.id = rp.permission_level
+                FROM ROLE_PERMISSION rp 
+                LEFT JOIN ROLES r ON r.id = rp.role_id
+                LEFT JOIN MENUS m ON m.id = rp.menu_id 
+                LEFT JOIN SUB_MENUS sm ON sm.id = rp.sub_menu_id 
+                LEFT JOIN PERMISSION_LEVEL p ON p.id = rp.permission_level
                 WHERE rp.id = ?""";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, rolePermissionIds);
@@ -982,14 +984,14 @@ public class UserRepository {
         ResultSet rs = null;
         List<Map<String, Object>> rolePermissionsList = new ArrayList<>();
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
             String sql = """
                 SELECT rp.*, r.name as role_name, m.name as menu_name, sm.name AS sub_menu_name, p.level AS permission 
-                FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp 
-                LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.id = rp.role_id
-                LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.id = rp.menu_id 
-                LEFT JOIN NBF_CIA.PUBLIC.SUB_MENUS sm ON sm.id = rp.sub_menu_id 
-                LEFT JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL p ON p.id = rp.permission_level
+                FROM ROLE_PERMISSION rp 
+                LEFT JOIN ROLES r ON r.id = rp.role_id
+                LEFT JOIN MENUS m ON m.id = rp.menu_id 
+                LEFT JOIN SUB_MENUS sm ON sm.id = rp.sub_menu_id 
+                LEFT JOIN PERMISSION_LEVEL p ON p.id = rp.permission_level
                 ORDER BY rp.id DESC""";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
@@ -1001,7 +1003,7 @@ public class UserRepository {
             while (rs.next()) {
                 Map<String, Object> rolePermissionDict = new HashMap<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    String columnName = rs.getMetaData().getColumnName(i);
+                    String columnName = rs.getMetaData().getColumnLabel(i);
                     Object columnValue = rs.getObject(i);
                     rolePermissionDict.put(columnName, columnValue);
                 }
@@ -1032,10 +1034,10 @@ public class UserRepository {
         PreparedStatement stmt = null;
         int rolePermissionIds =Integer.parseInt(rolePermissionId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "UPDATE NBF_CIA.PUBLIC.ROLE_PERMISSION SET ROLE_ID = ?, MENU_ID = ?, SUB_MENU_ID = ?, PERMISSION_LEVEL = ? WHERE ID = ?";
+            String sql = "UPDATE ROLE_PERMISSION SET ROLE_ID = ?, MENU_ID = ?, SUB_MENU_ID = ?, PERMISSION_LEVEL = ? WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
@@ -1050,7 +1052,7 @@ public class UserRepository {
 
             // Check if the update was successful
             if (rowsUpdated > 0) {
-                conn.commit(); // Commit the transaction
+//                conn.commit(); // Commit the transaction
                 return Map.of("message", "Role permission updated successfully", "status", 200);
             } else {
                 return Map.of("message", "Role permission not found", "status", 404);
@@ -1078,10 +1080,10 @@ public class UserRepository {
         PreparedStatement stmt = null;
         int rolePermissionIds =Integer.parseInt(rolePermissionId);
         try {
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "DELETE FROM NBF_CIA.PUBLIC.ROLE_PERMISSION WHERE ID = ?";
+            String sql = "DELETE FROM ROLE_PERMISSION WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
 
             // Set the role permission ID parameter
@@ -1092,7 +1094,7 @@ public class UserRepository {
 
             // Check if the delete was successful
             if (rowsDeleted > 0) {
-                conn.commit(); // Commit the transaction
+//                conn.commit(); // Commit the transaction
                 return Map.of("message", "Role permission deleted successfully", "status", 200);
             } else {
                 return Map.of("message", "Role permission not found", "status", 404);
@@ -1167,7 +1169,7 @@ public class UserRepository {
 	 * // Execute the SQL query return setConnectionsPost(createTableQuery); } catch
 	 * (Exception e) { e.printStackTrace(); return "{\"error\": \"" + e.getMessage()
 	 * + "\"}"; } } private String setConnectionsPost(String query) { try
-	 * (Connection conn = connector.getSnowflakeConnection(); PreparedStatement stmt
+	 * (Connection conn = connector.getDBConnection(); PreparedStatement stmt
 	 * = conn.prepareStatement(query)) { stmt.executeUpdate(); return
 	 * "{\"message\": \"Table created successfully\"}"; } catch (SQLException e) {
 	 * e.printStackTrace(); return "{\"error\": \"" + e.getMessage() +
@@ -1286,4 +1288,72 @@ public class UserRepository {
             return "{\"error\": \"" + error.getMessage() + "\"}";
         }
     }
+	public List<Map<String, Object>> getClients() throws SQLException {
+		Connection conn = connector.getDBConnection();
+        List<Map<String, Object>> roles = new ArrayList<>();
+        try {
+            stmt = conn.prepareStatement("SELECT CLIENT_CODE_ID,CLIENT_NAME FROM client_info");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> role = new HashMap<>();
+                role.put("id", rs.getInt("CLIENT_CODE_ID"));
+                role.put("name", rs.getString("CLIENT_NAME"));
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+	}
+	public List<Map<String, Object>> getProjects() throws SQLException {
+		Connection conn = connector.getDBConnection();
+        List<Map<String, Object>> roles = new ArrayList<>();
+        try {
+            stmt = conn.prepareStatement("SELECT PROJECT_TYPE_ID,PROJECT_TYPE_NAME FROM project_type");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> role = new HashMap<>();
+                role.put("id", rs.getInt("PROJECT_TYPE_ID"));
+                role.put("name", rs.getString("PROJECT_TYPE_NAME"));
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+	}
+	public List<Map<String, Object>> getAllProjectRoles() throws SQLException {
+		Connection conn = connector.getDBConnection();
+        List<Map<String, Object>> roles = new ArrayList<>();
+        try {
+            stmt = conn.prepareStatement("SELECT ROLE_ID,ROLE_NAME FROM project_role");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> role = new HashMap<>();
+                role.put("id", rs.getInt("ROLE_ID"));
+                role.put("name", rs.getString("ROLE_NAME"));
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+	}
+	public List<Map<String, Object>> getAllProjectPhases() throws SQLException {
+		Connection conn = connector.getDBConnection();
+        List<Map<String, Object>> roles = new ArrayList<>();
+        try {
+            stmt = conn.prepareStatement("SELECT PHASE_ID,PHASE_NAME FROM project_phases");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> role = new HashMap<>();
+                role.put("id", rs.getInt("PHASE_ID"));
+                role.put("name", rs.getString("PHASE_NAME"));
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+	}
 }

@@ -1,8 +1,11 @@
 package com.example.auto.controller;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.auto.repositories.RegisterRepository;
 import com.example.auto.repositories.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -27,9 +33,13 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/master")
 public class UserController {
+	
+	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
     private UserRepository userRepository;
+	
+
     // Helper function to return consistent responses
     private ResponseEntity<Object> makeResponse(Object data, int status_code) {
         return ResponseEntity.status(status_code).body(data);
@@ -287,6 +297,30 @@ public class UserController {
         }
         return ResponseEntity.status(400).body("{\"error\": \"Invalid request parameter\"}");
     }
+
+    @GetMapping("/AllClients")
+	public ResponseEntity<Object> getAllClients() throws SQLException {
+		List<Map<String, Object>> roles = userRepository.getClients();
+		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
+
+    @GetMapping("/AllProjects")
+	public ResponseEntity<Object> getAllProjects() throws SQLException {
+		List<Map<String, Object>> roles = userRepository.getProjects();
+		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
+    
+    @GetMapping("/AllProjectRoles")
+	public ResponseEntity<Object> getAllProjectRoles() throws SQLException {
+		List<Map<String, Object>> roles = userRepository.getAllProjectRoles();
+		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
+
+    @GetMapping("/AllProjectPhases")
+	public ResponseEntity<Object> getAllProjectPhases() throws SQLException {
+		List<Map<String, Object>> roles = userRepository.getAllProjectPhases();
+		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
 }
     // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
 

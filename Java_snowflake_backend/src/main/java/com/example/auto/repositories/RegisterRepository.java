@@ -44,23 +44,22 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
+
 @Repository
 public class RegisterRepository {
-	
-	
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RegisterRepository.class);
 	static dataSourceConfig connector = new dataSourceConfig();
 	 
 	public Map<String, Object> getUserByEmail(String email) throws SQLException  {
-	    Connection conn = connector.getSnowflakeConnection();
+	    Connection conn = connector.getDBConnection();
 	    PreparedStatement stmt = null;
 	    ResultSet rs = null;
 	    Map<String, Object> userMap = new HashMap<>();
 
 	    try {
 	        String query = "SELECT first_name, middle_name, last_name, email, mobile, role_id, password, is_default_password_changed, is_verified, last_login_datetime, otp " +
-	                       "FROM NBF_CIA.PUBLIC.USERS " +
+	                       "FROM USERS " +
 	                       "WHERE email = ?";
 	        stmt = conn.prepareStatement(query);
 	        stmt.setString(1, email);
@@ -160,7 +159,7 @@ public class RegisterRepository {
 
         try {
             // Establish a connection
-            conn = connector.getSnowflakeConnection();
+            conn = connector.getDBConnection();
 
             // Prepare SQL query
             String sql = "UPDATE USERS SET OTP = ?, UPDATED_DATE = ?, UPDATED_BY = ? WHERE EMAIL = ?";
@@ -200,11 +199,11 @@ public class RegisterRepository {
        
         try {
             // Get a connection
-        	  conn = connector.getSnowflakeConnection();
+        	  conn = connector.getDBConnection();
 
             // SQL query with placeholders
             String query = """
-                INSERT INTO NBF_CIA.PUBLIC.USERS (EMAIL, FIRST_NAME, MIDDLE_NAME, LAST_NAME, MOBILE, ROLE_ID, PASSWORD, CREATED_DATE)
+                INSERT INTO USERS (EMAIL, FIRST_NAME, MIDDLE_NAME, LAST_NAME, MOBILE, ROLE_ID, PASSWORD, CREATED_DATE)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
@@ -292,10 +291,10 @@ public class RegisterRepository {
     	Connection conn = null;
     	 Statement stmt = null;
         try {
-        	 conn = connector.getSnowflakeConnection();
+        	 conn = connector.getDBConnection();
              stmt = conn.createStatement();
             stmt.executeUpdate(String.format(
-                "UPDATE NBF_CIA.PUBLIC.USERS " +
+                "UPDATE USERS " +
                 "SET PASSWORD = '%s', IS_VERIFIED = TRUE, UPDATED_DATE = '%s', UPDATED_BY = 'system' " +
                 "WHERE EMAIL = '%s'",
                 password, LocalDateTime.now(), email));
@@ -350,7 +349,7 @@ public class RegisterRepository {
     }
  // Convert the Python code to Java
     public void updateLastLogin(String email) throws SQLException {
-        Connection conn = connector.getSnowflakeConnection();
+        Connection conn = connector.getDBConnection();
         Statement stmt = conn.createStatement();
         try {
             // Ensure the datetime format is correct
@@ -358,7 +357,7 @@ public class RegisterRepository {
             LOG.info("Updating last login datetime for email:"+ email + " to " + currentTime, currentTime);
            
 
-            stmt.executeUpdate("UPDATE NBF_CIA.PUBLIC.USERS " +
+            stmt.executeUpdate("UPDATE USERS " +
                     "SET LAST_LOGIN_DATETIME = '" + currentTime + "' " +
                     "WHERE EMAIL = '" + email + "'");
             conn.commit();
@@ -379,59 +378,103 @@ public class RegisterRepository {
     List<Map<String, Object>> permissions = new ArrayList<>();
     ObjectMapper objectMapper = new ObjectMapper();
     try {
-        conn = connector.getSnowflakeConnection();
-        String selectQuery = "WITH MenuData AS (\n" +
-                "    SELECT\n" +
-                "        r.NAME AS role_name,\n" +
-                "        pl.LEVEL AS permission_level,\n" +
-                "        m.NAME AS menu_name,\n" +
-                "        m.ID AS menu_id,\n" +
-                "        sm.ID AS submenu_Id,\n" +
-                "        sm.NAME AS submenu_name,\n" +
-                "        sm.ROUTE AS submenu_path\n" +
-                "    FROM\n" +
-                "        NBF_CIA.PUBLIC.USERS u\n" +
-                "    JOIN\n" +
-                "        NBF_CIA.PUBLIC.ROLES r ON u.ROLE_ID = r.ID\n" +
-                "    JOIN\n" +
-                "        NBF_CIA.PUBLIC.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID\n" +
-                "    JOIN\n" +
-                "        NBF_CIA.PUBLIC.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID\n" +
-                "    JOIN\n" +
-                "        NBF_CIA.PUBLIC.MENUS m ON rp.MENU_ID = m.ID\n" +
-                "    LEFT JOIN\n" +
-                "        NBF_CIA.PUBLIC.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID\n" +
-                "    WHERE\n" +
-                "        u.EMAIL = ? AND pl.ID != 301\n" +
-                "    ORDER BY\n" +
-                "        m.ID  ASC\n" +
-                "),\n" +
-                "AggregatedData AS (\n" +
-                "    SELECT\n" +
-                "        role_name,\n" +
-                "        menu_name,\n" +
-                "        menu_id,\n" +
-                "        ARRAY_AGG(OBJECT_CONSTRUCT('submenu_Id',submenu_Id,'submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)\n" +
-                "        ) AS submenus\n" +
-                "    FROM\n" +
-                "       (\n" +
-                "        SELECT *\n" +
-                "        FROM MenuData\n" +
-                "        ORDER BY menu_id ASC, submenu_id ASC\n" +
-                "    ) AS ordered_data\n" +
-                "    GROUP BY\n" +
-                "        role_name, menu_name,menu_id\n" +
-                ")\n" +
-                "SELECT\n" +
-                "    OBJECT_CONSTRUCT(\n" +
-                "        'menu_id', menu_id,\n" +
-                "        'menu_name', menu_name,\n" +
-                "        'role_name', role_name,\n" +
-                "        'submenus', submenus\n" +
-                "    ) AS menu_data\n" +
-                "FROM\n" +
-                "    AggregatedData ORDER BY menu_id ASC";
-
+        conn = connector.getDBConnection();
+//        String selectQuery = "WITH MenuData AS (\n" +
+//                "    SELECT\n" +
+//                "        r.NAME AS role_name,\n" +
+//                "        pl.LEVEL AS permission_level,\n" +
+//                "        m.NAME AS menu_name,\n" +
+//                "        m.ID AS menu_id,\n" +
+//                "        sm.ID AS submenu_Id,\n" +
+//                "        sm.NAME AS submenu_name,\n" +
+//                "        sm.ROUTE AS submenu_path\n" +
+//                "    FROM\n" +
+//                "        USERS u\n" +
+//                "    JOIN\n" +
+//                "        ROLES r ON u.ROLE_ID = r.ID\n" +
+//                "    JOIN\n" +
+//                "        ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID\n" +
+//                "    JOIN\n" +
+//                "        PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID\n" +
+//                "    JOIN\n" +
+//                "        MENUS m ON rp.MENU_ID = m.ID\n" +
+//                "    LEFT JOIN\n" +
+//                "        SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID\n" +
+//                "    WHERE\n" +
+//                "        u.EMAIL = ? AND pl.ID != 301\n" +
+//                "    ORDER BY\n" +
+//                "        m.ID  ASC\n" +
+//                "),\n" +
+//                "AggregatedData AS (\n" +
+//                "    SELECT\n" +
+//                "        role_name,\n" +
+//                "        menu_name,\n" +
+//                "        menu_id,\n" +
+//                "        ARRAY_AGG(OBJECT_CONSTRUCT('submenu_Id',submenu_Id,'submenu_name', submenu_name, 'submenu_path', submenu_path, 'permission_level', permission_level)\n" +
+//                "        ) AS submenus\n" +
+//                "    FROM\n" +
+//                "       (\n" +
+//                "        SELECT *\n" +
+//                "        FROM MenuData\n" +
+//                "        ORDER BY menu_id ASC, submenu_id ASC\n" +
+//                "    ) AS ordered_data\n" +
+//                "    GROUP BY\n" +
+//                "        role_name, menu_name,menu_id\n" +
+//                ")\n" +
+//                "SELECT\n" +
+//                "    OBJECT_CONSTRUCT(\n" +
+//                "        'menu_id', menu_id,\n" +
+//                "        'menu_name', menu_name,\n" +
+//                "        'role_name', role_name,\n" +
+//                "        'submenus', submenus\n" +
+//                "    ) AS menu_data\n" +
+//                "FROM\n" +
+//                "    AggregatedData ORDER BY menu_id ASC";
+        String selectQuery = "SELECT\r\n"
+        		+ "    CONCAT(\r\n"
+        		+ "        '{\"menu_id\":', menu_id,\r\n"
+        		+ "        ',\"menu_name\":\"', menu_name,\r\n"
+        		+ "        '\",\"role_name\":\"', role_name,\r\n"
+        		+ "        '\",\"submenus\":[', \r\n"
+        		+ "        GROUP_CONCAT(\r\n"
+        		+ "            CONCAT(\r\n"
+        		+ "                '{\"submenu_Id\":', submenu_Id,\r\n"
+        		+ "                ',\"submenu_name\":\"', submenu_name,\r\n"
+        		+ "                '\",\"submenu_path\":\"', submenu_path,\r\n"
+        		+ "                '\",\"permission_level\":\"', permission_level, '\"}'\r\n"
+        		+ "            ) SEPARATOR ','\r\n"
+        		+ "        ), \r\n"
+        		+ "        ']}'\r\n"
+        		+ "    ) AS menu_data\r\n"
+        		+ "FROM\r\n"
+        		+ "    (\r\n"
+        		+ "        SELECT\r\n"
+        		+ "            r.NAME AS role_name,\r\n"
+        		+ "            pl.LEVEL AS permission_level,\r\n"
+        		+ "            m.NAME AS menu_name,\r\n"
+        		+ "            m.ID AS menu_id,\r\n"
+        		+ "            sm.ID AS submenu_Id,\r\n"
+        		+ "            sm.NAME AS submenu_name,\r\n"
+        		+ "            sm.ROUTE AS submenu_path\r\n"
+        		+ "        FROM\r\n"
+        		+ "            automationutil.USERS u\r\n"
+        		+ "        JOIN\r\n"
+        		+ "            automationutil.ROLES r ON u.ROLE_ID = r.ID\r\n"
+        		+ "        JOIN\r\n"
+        		+ "            automationutil.ROLE_PERMISSION rp ON rp.ROLE_ID = r.ID\r\n"
+        		+ "        JOIN\r\n"
+        		+ "            automationutil.PERMISSION_LEVEL pl ON rp.PERMISSION_LEVEL = pl.ID\r\n"
+        		+ "        JOIN\r\n"
+        		+ "            automationutil.MENUS m ON rp.MENU_ID = m.ID\r\n"
+        		+ "        LEFT JOIN\r\n"
+        		+ "            automationutil.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID\r\n"
+        		+ "        WHERE\r\n"
+        		+ "            u.EMAIL = ? \r\n"
+        		+ "    ) AS MenuData\r\n"
+        		+ "GROUP BY\r\n"
+        		+ "    role_name, menu_name, menu_id\r\n"
+        		+ "ORDER BY\r\n"
+        		+ "    menu_id ASC;\r\n";
         stmt = conn.prepareStatement(selectQuery);
         stmt.setString(1, email);
         rs = stmt.executeQuery();
@@ -498,7 +541,7 @@ public class RegisterRepository {
  // Update Password Method in Java
 	
     public Map<String, Object> updatePassword(String data_j, int id) throws SQLException {
-        Connection conn = connector.getSnowflakeConnection();
+        Connection conn = connector.getDBConnection();
         PreparedStatement stmt = null;
         try {
             // Parse the JSON string using Jackson
@@ -531,11 +574,11 @@ public class RegisterRepository {
     
  // Converted Python code to Java
     public void updateUserPassword(String email, String password) throws SQLException {
-        Connection conn = connector.getSnowflakeConnection();
+        Connection conn = connector.getDBConnection();
         Statement stmt = conn.createStatement();
         try {
             stmt.executeUpdate(String.format(
-                "UPDATE NBF_CIA.PUBLIC.USERS " +
+                "UPDATE USERS " +
                 "SET PASSWORD = '%s', IS_DEFAULT_PASSWORD_CHANGED = TRUE, UPDATED_DATE = '%s', UPDATED_BY = 'system' " +
                 "WHERE EMAIL = '%s'",
                 password, LocalDateTime.now(), email));
