@@ -85,6 +85,8 @@ const DynamicPageCreation = () => {
   const [inputList, setInputList] = useState([]);
   const [columnsData, setColumnsData] = useState([]);
   const formRefs = useRef([]);
+  const allColumnsDataList = useRef([]);
+
   const isRemovingForm = useRef(false);
 
   const { startLoading, stopLoading } = useLoading();
@@ -143,6 +145,7 @@ const DynamicPageCreation = () => {
       try {
         startLoading();
         const response = await getColumnsDetailsController(tableName);
+        allColumnsDataList.current = response;
         columnDetailsRef.current = response;
       } catch (error) {
         openDialog("critical", "Critical", `Column Details Retrieval Failed`, {
@@ -164,6 +167,7 @@ const DynamicPageCreation = () => {
       setColumnsData((prevData) => {
         const updatedData = [...prevData];
         updatedData[columnData.id] = columnData;
+        console.log({ updatedData });
         return updatedData;
       });
     }
@@ -171,7 +175,11 @@ const DynamicPageCreation = () => {
 
   const onRemoveForm = (id, columnData) => {
     isRemovingForm.current = true;
-    columnDetailsRef.current.unshift(columnData);
+    const removingData = allColumnsDataList.current.filter(
+      (column) => column.COLUMN_NAME === columnData.COLUMN_NAME
+    )[0];
+    columnDetailsRef.current.unshift(removingData);
+
     setColumnsData((prevData) =>
       prevData
         .filter((form) => form.id !== id)
@@ -195,7 +203,6 @@ const DynamicPageCreation = () => {
   const addColumnForm = () => {
     updateSelectedColumns(currentSelectedRef.current);
     updateColumnDetails(currentSelectedRef.current.COLUMN_NAME);
-
     setColumnsData((prevData) => [
       ...prevData,
       { id: prevData.length, ...currentSelectedRef.current },

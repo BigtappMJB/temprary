@@ -138,14 +138,15 @@ const DynamicColumnForm = forwardRef(
       resolver: yupResolver(schema),
       mode: "onChange",
       defaultValues: {
-        COLUMN_NAME: "",
-        DATA_TYPE: "",
-        CHARACTER_MAXIMUM_LENGTH: "",
-        IS_NULLABLE: false,
-        COLUMN_DEFAULT: "",
-        noOfOptions: null,
-        optionsList: null,
-        inputType: null,
+        COLUMN_NAME: data.COLUMN_NAME ?? "",
+        DATA_TYPE: data.DATA_TYPE ?? "",
+        CHARACTER_MAXIMUM_LENGTH: data.CHARACTER_MAXIMUM_LENGTH ?? "",
+        IS_NULLABLE: data.IS_NULLABLE ?? false,
+        COLUMN_DEFAULT: data.COLUMN_DEFAULT ?? "",
+        noOfOptions:
+          data.noOfOptions !== "" ? Number(data.noOfOptions) : null ?? null,
+        optionsList: data.optionsList ?? null,
+        inputType: data.inputType ?? null,
       },
     });
 
@@ -173,22 +174,42 @@ const DynamicColumnForm = forwardRef(
 
     useEffect(() => {
       if (data) {
+        console.log(data);
+        console.log(data.optionsList);
+        console.log(data.noOfOptions);
+
+
+        debugger;
         reset({
           COLUMN_NAME: data.COLUMN_NAME ?? "",
           DATA_TYPE: data.DATA_TYPE ?? "",
           CHARACTER_MAXIMUM_LENGTH: data.CHARACTER_MAXIMUM_LENGTH ?? "",
           IS_NULLABLE: data.IS_NULLABLE ?? false,
           COLUMN_DEFAULT: data.COLUMN_DEFAULT ?? "",
-          noOfOptions: Number(data.noOfOptions) ?? null,
+          noOfOptions:
+            data.noOfOptions !== "" ? Number(data.noOfOptions) : null ?? null,
           optionsList: data.optionsList ?? null,
           inputType: data.inputType ?? null,
         });
+        debugger;
+        console.log(getValues());
+        debugger;
       }
     }, [data, reset]);
 
     // Reset form handler
     const handleReset = () => {
-      reset(COLUMN_DEFAULT);
+      reset({
+        COLUMN_NAME: "",
+        DATA_TYPE: "",
+        CHARACTER_MAXIMUM_LENGTH: "",
+        IS_NULLABLE: false,
+        COLUMN_DEFAULT: "",
+        noOfOptions: null,
+        optionsList: null,
+        inputType: null,
+      });
+      debugger;
       if (onReset) onReset(data.id, data);
     };
 
