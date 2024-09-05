@@ -31,6 +31,17 @@ export const getProjectPhaseControllers = async () => {
   }
 };
 
+export const getActivityCodeController = async () => {
+  try {
+    // Send the GET request to the cmd API endpoint
+    const response = await get("estimate/project_phases", "python");
+    // Return the response data
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 /**
  * Fetches the list of cmds from the API.
  *
@@ -152,21 +163,28 @@ export const projectEstimateCreationController = async (formData) => {
  *   .catch(error => console.error(error));
  */
 
-export const cmdupdateController = async (formData) => {
+export const projectEstimateUpdateController = async (formData) => {
   try {
     // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
+    const email = decodeData(getCookie(isUserIdCookieName));
+
     // Prepare the body object with sanitized data
     const body = {
-      target: titleCaseFirstWord(formData?.target),
-      subTarget: titleCaseFirstWord(formData.subTarget),
-      incorporationCity: titleCaseFirstWord(formData?.incorporationCity),
-      sectorClassification: titleCaseFirstWord(formData?.sectorClassification),
+      Phase_ID: formData?.phase.PHASE_ID,
+      Role_ID: formData?.role.Role_ID,
+      Activity_Code_ID: formData?.projectName.ACTIVITY_CODE_ID,
+      Start_Date: formData.startDate.format("YYYY-MM-DD"),
+      End_Date: formData.endDate.format("YYYY-MM-DD"),
+      No_of_Hours_Per_Day: formData.hoursPerDay,
+      Total_Hours: 16,
+      created_by: email,
+      is_active: true,
     };
-    // Send the PUT request to the cmd API endpoint
-    const response = await put(`/cmd/updatecmd/${formData.ID}`, body, "python");
+    // Send the POST request to the cmd API endpoint
+    const response = await post("cmd/addCMD", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -187,7 +205,7 @@ export const cmdupdateController = async (formData) => {
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const cmddeleteController = async (cmdId) => {
+export const projectEstimateDeletionController = async (cmdId) => {
   try {
     // Data Validation and Sanitization
     if (typeof cmdId !== "number") {

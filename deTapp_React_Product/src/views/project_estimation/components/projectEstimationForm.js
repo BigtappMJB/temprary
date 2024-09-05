@@ -76,6 +76,7 @@ const ProjectEstimateFormComponent = ({
   projectList,
   roleList,
   phaseList,
+  activityList,
 }) => {
   const [readOnly, setReadOnly] = useState(false);
 
@@ -126,27 +127,43 @@ const ProjectEstimateFormComponent = ({
   // Effect to set default values and reset the form
   useEffect(() => {
     if (defaultValues) {
-      reset(defaultValues);
+      const projectName =
+        projectList.find((data) => data.ID === defaultValues.MENU_ID) || null;
+      const role =
+        roleList.find((data) => data.ID === defaultValues.SUB_MENU_ID) || null;
+      const phase =
+        phaseList.find((data) => data.id === defaultValues.PHASE_NAME) || null;
+      const activityCode =
+        activityList.find(
+          (data) => data.ID === defaultValues.PERMISSION_LEVEL
+        ) || null;
+      reset({
+        ...defaultValues,
+        projectName,
+        role,
+        phase,
+        activityCode,
+      });
     }
   }, [defaultValues, reset]);
 
   // Effect to set read-only state and reset form on formAction change
-  // useEffect(() => {
-  //   console.log(getValues());
+  useEffect(() => {
+    console.log(getValues());
 
-  //   setReadOnly(formAction?.action === "read");
-  //   if (formAction.action === "add") {
-  //     reset({
-  //       projectName: null,
-  //       role: null,
-  //       phase: null,
-  //       startDate: null,
-  //       endDate: null,
-  //       hoursPerDay: "",
-  //       totalHours: 0,
-  //     });
-  //   }
-  // }, [formAction, reset]);
+    setReadOnly(formAction?.action === "read");
+    if (formAction.action === "add") {
+      reset({
+        projectName: null,
+        role: null,
+        phase: null,
+        startDate: null,
+        endDate: null,
+        hoursPerDay: "",
+        totalHours: 0,
+      });
+    }
+  }, [formAction, reset]);
 
   // Effect to sanitize input values
   useEffect(() => {
@@ -290,7 +307,7 @@ const ProjectEstimateFormComponent = ({
             render={({ field, fieldState }) => (
               <Autocomplete
                 {...field}
-                options={projectList} // Example options, fetch from API in real use-case
+                options={activityList} // Example options, fetch from API in real use-case
                 getOptionLabel={(option) => option.ACTIVITY_DESCRIPTION}
                 renderInput={(params) => (
                   <TextField

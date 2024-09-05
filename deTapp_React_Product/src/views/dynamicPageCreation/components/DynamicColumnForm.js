@@ -144,7 +144,7 @@ const DynamicColumnForm = forwardRef(
         IS_NULLABLE: data.IS_NULLABLE ?? false,
         COLUMN_DEFAULT: data.COLUMN_DEFAULT ?? "",
         noOfOptions:
-          data.noOfOptions !== "" ? Number(data.noOfOptions) : null ?? null,
+          data.noOfOptions !== "" ? Number(data.noOfOptions) : null,
         optionsList: data.optionsList ?? null,
         inputType: data.inputType ?? null,
       },
@@ -186,8 +186,9 @@ const DynamicColumnForm = forwardRef(
           CHARACTER_MAXIMUM_LENGTH: data.CHARACTER_MAXIMUM_LENGTH ?? "",
           IS_NULLABLE: data.IS_NULLABLE ?? false,
           COLUMN_DEFAULT: data.COLUMN_DEFAULT ?? "",
-          noOfOptions:
-            data.noOfOptions !== "" ? Number(data.noOfOptions) : null ?? null,
+          // noOfOptions:
+          //   data.noOfOptions !== "" ? Number(data.noOfOptions) : null ?? null,
+          noOfOptions: Number(data.noOfOptions) ?? null ,
           optionsList: data.optionsList ?? null,
           inputType: data.inputType ?? null,
         });

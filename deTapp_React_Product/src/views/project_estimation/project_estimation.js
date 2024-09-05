@@ -6,15 +6,15 @@ import DataTable from "../user-management/users/components/DataTable";
 
 import {
   projectEstimateCreationController,
-  cmddeleteController,
-  cmdupdateController,
   getProjectEstimationControllers,
   getProjectPhaseControllers,
   getProjectRoleControllers,
+  getActivityCodeController,
+  projectEstimateDeletionController,
+  projectEstimateUpdateController,
 } from "./controllers/projectEstimationController";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
-import { useSelector } from "react-redux";
 import {
   generateCSV,
   getCurrentPathName,
@@ -25,7 +25,6 @@ import {
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import { getProjectController } from "../projectCreation/controllers/projectCreatioControllers";
 import { useOutletContext } from "react-router";
-import { MenuBook } from "@mui/icons-material";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -93,6 +92,7 @@ const CMDPage = () => {
   const [project, setProject] = useState([]);
   const [role, setRole] = useState([]);
   const [phase, setPhase] = useState([]);
+  const [activityCode, setActivityCode] = useState([]);
 
   const { startLoading, stopLoading } = useLoading();
 
@@ -172,6 +172,21 @@ const CMDPage = () => {
       stopLoading();
     }
   };
+
+  const getActivityCode = async () => {
+    try {
+      startLoading();
+      const response = await getActivityCodeController();
+      setActivityCode(response);
+    } catch (error) {
+      console.error(error);
+      if (error.statusCode === 404) {
+        return;
+      }
+    } finally {
+      stopLoading();
+    }
+  };
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || [];
   // Fetches roles data and updates the roles list
@@ -196,6 +211,7 @@ const CMDPage = () => {
       getProjectPhase();
       getProjectRole();
       getTableData();
+      getActivityCode();
       hasFetchedRoles.current = true;
     }
   }, [menuList]);
@@ -253,7 +269,7 @@ const CMDPage = () => {
           ...formData,
           ID: selectedValue.id,
         };
-        response = await cmdupdateController(formData);
+        response = await projectEstimateUpdateController(formData);
       }
 
       if (response) {
@@ -407,7 +423,7 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      const response = await cmddeleteController(selectedRow.id);
+      const response = await projectEstimateDeletionController(selectedRow.id);
 
       if (response) {
         getTableData();
@@ -483,6 +499,7 @@ const CMDPage = () => {
             projectList={project}
             roleList={role}
             phaseList={phase}
+            activityList={activityCode}
           />
         </Container>
       )}
