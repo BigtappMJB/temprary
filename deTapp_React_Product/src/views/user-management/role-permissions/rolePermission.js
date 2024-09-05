@@ -202,10 +202,10 @@ const RolePermissionPage = () => {
   }, [menuList]);
 
   const columns = {
-    ROLE_NAME: "Role",
-    MENU_NAME: "Menu",
-    SUB_MENU_NAME: "SubMenu",
-    PERMISSION: "Permission",
+    role_name: "Role",
+    menu_name: "Menu",
+    sub_menu_name: "SubMenu",
+    permission: "Permission",
   };
 
   /**
@@ -233,7 +233,7 @@ const RolePermissionPage = () => {
             isNeed: false,
           },
         },
-        (confirmed) => {}
+        (confirmed) => { }
       );
     }
   };
@@ -262,9 +262,8 @@ const RolePermissionPage = () => {
           "success",
           `Role Permission ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `Role Permission has been ${
-              isAdd ? "addded" : "updated"
-            } successfully`,
+          `Role Permission has been ${isAdd ? "addded" : "updated"
+          } successfully`,
           {
             confirm: {
               name: "Ok",
@@ -275,7 +274,7 @@ const RolePermissionPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {}
+          (confirmed) => { }
         );
       }
     } catch (error) {
@@ -343,7 +342,7 @@ const RolePermissionPage = () => {
             isNeed: false,
           },
         },
-        (confirmed) => {}
+        (confirmed) => { }
       );
     }
   };
@@ -390,7 +389,7 @@ const RolePermissionPage = () => {
             isNeed: false,
           },
         },
-        (confirmed) => {}
+        (confirmed) => { }
       );
     }
   };
@@ -468,8 +467,8 @@ const RolePermissionPage = () => {
               {formAction.action === "add"
                 ? "Add"
                 : formAction.action === "update"
-                ? "Update"
-                : "Read "}{" "}
+                  ? "Update"
+                  : "Read "}{" "}
               Role Permission
             </Typography>
           </Header>
@@ -498,9 +497,8 @@ const RolePermissionPage = () => {
               variant="contained"
               color="primary"
               style={{ marginRight: "10px" }}
-              className={`${
-                permissionLevels?.create ? "primary" : "custom-disabled"
-              }`}
+              className={`${permissionLevels?.create ? "primary" : "custom-disabled"
+                }`}
               disabled={formAction.action === "add" && formAction.display}
             >
               Add Role Permission

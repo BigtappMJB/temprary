@@ -156,7 +156,7 @@ const UsersPage = () => {
   }, [menuList]);
 
   const columns = {
-    MENU_NAME: "Menu",
+    menu_name: "Menu",
     NAME: "SubMenu",
     DESCRIPTION: "Description",
     ROUTE: "Route Path",

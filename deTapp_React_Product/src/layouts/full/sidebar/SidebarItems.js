@@ -24,12 +24,12 @@ const SidebarItems = ({ navItemClicked }) => {
   const getTableData = async () => {
     try {
       const response = await getUserPermissionsController();
-      setMenuList(response);
-      dispatch(storeMenuDetails(response));
+      setMenuList(response.permissions);
+      dispatch(storeMenuDetails(response.permissions));
       // Set a cookie to store permissionList
       setCookie({
         name: isPermissionDetailsCookieName,
-        value: encodeData(response),
+        value: encodeData(response.permissions),
       });
     } catch (error) {
       console.error(error);

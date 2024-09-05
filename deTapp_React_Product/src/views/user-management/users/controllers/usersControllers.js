@@ -46,7 +46,10 @@ export const getUserController = async () => {
 export const getUserPermissionsController = async () => {
   try {
     // Send the GET request to the user API endpoint
-    const response = await get(`/master/user-permission/${decodeData(getCookie(isUserIdCookieName))}`, "python");
+    const body = {
+      email: decodeData(getCookie(isUserIdCookieName))
+    }
+    const response = await post(`/user-permission`,body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -94,7 +97,7 @@ export const userCreationController = async (formData) => {
       last_name: titleCaseFirstWord(formData?.lastName.trim()),
       email: formData.email.trim(),
       mobile: formData.mobileNo.trim(),
-      role_id:2,
+      role_id: 2,
     };
     // Send the POST request to the user API endpoint
     const response = await post("/master/user", body, "python");
