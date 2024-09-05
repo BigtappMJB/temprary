@@ -24,8 +24,16 @@ const Container = styled(Box)(({ theme }) => ({
 }));
 // Validation schema with regex patterns
 const schema = yup.object().shape({
-  client: yup.object().required("Client is required"),
-  projectType: yup.object().required("Project Type is required"),
+  client: yup
+    .object()
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .required("Client is required"),
+  projectType: yup
+    .object()
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .required("Project Type is required"),
   projectName: yup.string().required("Project Name is required"),
 });
 
@@ -82,24 +90,25 @@ const ProjectCreationForm = ({
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
-    defaultValues,
   });
 
   // Effect to set default values and reset the form
   useEffect(() => {
     if (defaultValues) {
+      console.log(defaultValues);
+
       reset({
         client:
-          clientInfo?.filter(
-            (ele) => ele.CLIENT_CODE_ID === defaultValues.CLIENT_CODE_ID
-          )[0] ?? null,
+          clientInfo?.filter((ele) => ele.id === defaultValues.CLIENT_ID)[0] ??
+          null,
         projectType:
           projectType.filter(
-            (ele) => ele.PROJECT_TYPE_ID === defaultValues.PROJECT_TYPE_ID
+            (ele) => ele.id === defaultValues.PROJECT_TYPE_ID
           )[0] ?? null,
         projectName: defaultValues?.PROJECT_NAME,
       });
     }
+    console.log(getValues());
   }, [defaultValues, clientInfo, reset, projectType, formAction]);
 
   // Effect to set read-only state and reset form on formAction change
@@ -109,7 +118,7 @@ const ProjectCreationForm = ({
       reset({
         client: "",
         projectType: "",
-        
+
         projectName: "",
       });
     }
@@ -134,7 +143,7 @@ const ProjectCreationForm = ({
     onReset();
     reset({
       client: null,
-      projectType:  null,
+      projectType: null,
       projectName: "",
     });
   };
@@ -146,7 +155,7 @@ const ProjectCreationForm = ({
     onSubmit(getValues());
     reset({
       client: null,
-      projectType:  null,
+      projectType: null,
       projectName: "",
     });
   };
@@ -166,10 +175,8 @@ const ProjectCreationForm = ({
               <Autocomplete
                 {...field}
                 options={clientInfo}
-                getOptionLabel={(option) => option.CLIENT_NAME}
-                isOptionEqualToValue={(option, value) =>
-                  option.CLIENT_CODE_ID === value.CLIENT_CODE_ID
-                }
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={field.value || null}
                 onChange={(_, data) => field.onChange(data)}
                 renderInput={(params) => (
@@ -177,8 +184,8 @@ const ProjectCreationForm = ({
                     {...params}
                     label="Select client"
                     fullWidth
-                    error={!!errors.menu}
-                    helperText={errors.menu?.message}
+                    error={!!errors.client}
+                    helperText={errors.client?.message}
                     InputLabelProps={{
                       shrink: Boolean(field.value || isFocused.menu),
                     }}
@@ -202,10 +209,8 @@ const ProjectCreationForm = ({
               <Autocomplete
                 {...field}
                 options={projectType}
-                getOptionLabel={(option) => option.PROJECT_TYPE_NAME}
-                isOptionEqualToValue={(option, value) =>
-                  option.PROJECT_TYPE_ID === value.PROJECT_TYPE_ID
-                }
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={field.value || null}
                 onChange={(_, data) => field.onChange(data)}
                 renderInput={(params) => (
@@ -213,8 +218,8 @@ const ProjectCreationForm = ({
                     {...params}
                     label="Select projectType"
                     fullWidth
-                    error={!!errors.menu}
-                    helperText={errors.menu?.message}
+                    error={!!errors.projectType}
+                    helperText={errors.projectType?.message}
                     InputLabelProps={{
                       shrink: Boolean(field.value || isFocused.menu),
                     }}

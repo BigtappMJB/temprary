@@ -423,7 +423,7 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      const response = await projectEstimateDeletionController(selectedRow.id);
+      const response = await projectEstimateDeletionController(selectedRow.PROJECT_ID);
 
       if (response) {
         getTableData();

@@ -60,7 +60,7 @@ const schema = yup.object().shape({
     .positive("Number should be postive")
     .max(24, "Hours cannot exceed 24"),
 
-  totalHours: yup.number(),
+  totalHours: yup.string(),
   // .default(0)
   // .nullable() // Allows null values initially
   // .required("Hours is required")
@@ -90,7 +90,6 @@ const ProjectEstimateFormComponent = ({
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
-    defaultValues,
     shouldFocusError: true, // Focus the first invalid field
     reValidateMode: "onChange", // Revalidate on field change
   });
@@ -99,6 +98,15 @@ const ProjectEstimateFormComponent = ({
     const diffInDays = moment(endDate).diff(moment(startDate), "days") + 1; // +1 to include both start and end date
     return diffInDays * hoursPerDay;
   };
+
+  const [isFocused, setIsFocused] = useState({
+    project: false,
+    phase: false,
+    role: false,
+    activityCode: false,
+    startDate: false,
+    endDate: false,
+  });
 
   useEffect(() => {
     const subscription = watch((value, { name }) => {
@@ -234,12 +242,20 @@ const ProjectEstimateFormComponent = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Select projectName"
+                    label="Select project"
                     fullWidth
                     error={!!errors.menu}
                     helperText={errors.menu?.message}
                     InputLabelProps={{
-                      shrink: Boolean(field.value),
+                      shrink: Boolean(field.value || isFocused.project),
+                    }}
+                    InputProps={{
+                      ...params.InputProps,
+                      readOnly: readOnly, // Set to true if you want the field to be read-only
+                      onFocus: () =>
+                        setIsFocused({ ...isFocused, project: true }),
+                      onBlur: () =>
+                        setIsFocused({ ...isFocused, project: false }),
                     }}
                   />
                 )}
@@ -255,8 +271,9 @@ const ProjectEstimateFormComponent = ({
             render={({ field, fieldState }) => (
               <Autocomplete
                 {...field}
-                getOptionLabel={(option) => option.PHASE_NAME}
+                getOptionLabel={(option) => option.name}
                 options={phaseList} // Example options, fetch from API in real use-case
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -264,7 +281,15 @@ const ProjectEstimateFormComponent = ({
                     error={!!fieldState.error}
                     helperText={fieldState.error?.message}
                     InputLabelProps={{
-                      shrink: Boolean(field.value),
+                      shrink: Boolean(field.value || isFocused.phase),
+                    }}
+                    InputProps={{
+                      ...params.InputProps,
+                      readOnly: readOnly, // Set to true if you want the field to be read-only
+                      onFocus: () =>
+                        setIsFocused({ ...isFocused, phase: true }),
+                      onBlur: () =>
+                        setIsFocused({ ...isFocused, phase: false }),
                     }}
                   />
                 )}
@@ -281,8 +306,9 @@ const ProjectEstimateFormComponent = ({
             render={({ field, fieldState }) => (
               <Autocomplete
                 {...field}
-                getOptionLabel={(option) => option.ROLE_NAME}
+                getOptionLabel={(option) => option.name}
                 options={roleList} // Example options, fetch from API in real use-case
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -290,7 +316,13 @@ const ProjectEstimateFormComponent = ({
                     error={!!fieldState.error}
                     helperText={fieldState.error?.message}
                     InputLabelProps={{
-                      shrink: Boolean(field.value),
+                      shrink: Boolean(field.value || isFocused.role),
+                    }}
+                    InputProps={{
+                      ...params.InputProps,
+                      readOnly: readOnly, // Set to true if you want the field to be read-only
+                      onFocus: () => setIsFocused({ ...isFocused, role: true }),
+                      onBlur: () => setIsFocused({ ...isFocused, role: false }),
                     }}
                   />
                 )}
@@ -308,14 +340,23 @@ const ProjectEstimateFormComponent = ({
               <Autocomplete
                 {...field}
                 options={activityList} // Example options, fetch from API in real use-case
-                getOptionLabel={(option) => option.ACTIVITY_DESCRIPTION}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     label="Activity Code"
                     error={!!fieldState.error}
                     InputLabelProps={{
-                      shrink: Boolean(field.value),
+                      shrink: Boolean(field.value || isFocused.activityCode),
+                    }}
+                    InputProps={{
+                      ...params.InputProps,
+                      readOnly: readOnly, // Set to true if you want the field to be read-only
+                      onFocus: () =>
+                        setIsFocused({ ...isFocused, activityCode: true }),
+                      onBlur: () =>
+                        setIsFocused({ ...isFocused, activityCode: false }),
                     }}
                     helperText={fieldState.error?.message}
                   />
@@ -341,7 +382,14 @@ const ProjectEstimateFormComponent = ({
                       error: !!fieldState.error,
                       helperText: fieldState.error?.message,
                       InputLabelProps: {
-                        shrink: Boolean(field.value),
+                        shrink: Boolean(field.value || isFocused.startDate),
+                      },
+                      InputProps: {
+                        readOnly: readOnly, // Set to true if you want the field to be read-only
+                        onFocus: () =>
+                          setIsFocused({ ...isFocused, startDate: true }),
+                        onBlur: () =>
+                          setIsFocused({ ...isFocused, startDate: false }),
                       },
                     },
                   }}
@@ -366,7 +414,14 @@ const ProjectEstimateFormComponent = ({
                       error: !!fieldState.error,
                       helperText: fieldState.error?.message,
                       InputLabelProps: {
-                        shrink: Boolean(field.value),
+                        shrink: Boolean(field.value || isFocused.endDate),
+                      },
+                      InputProps: {
+                        readOnly: readOnly, // Set to true if you want the field to be read-only
+                        onFocus: () =>
+                          setIsFocused({ ...isFocused, endDate: true }),
+                        onBlur: () =>
+                          setIsFocused({ ...isFocused, endDate: false }),
                       },
                     },
                   }}

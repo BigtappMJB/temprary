@@ -5,14 +5,16 @@ import {
   put,
 } from "../../utilities/apiservices/apiServices";
 import { getCookie } from "../../utilities/cookieServices/cookieServices";
-import { isUserIdCookieName, titleCaseFirstWord } from "../../utilities/generals";
+import {
+  isUserIdCookieName,
+  titleCaseFirstWord,
+} from "../../utilities/generals";
 import { decodeData } from "../../utilities/securities/encodeDecode";
-
 
 export const getProjectRoleControllers = async () => {
   try {
     // Send the GET request to the cmd API endpoint
-    const response = await get("estimate/project_roles", "python");
+    const response = await get("master/AllProjectRoles", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -23,7 +25,7 @@ export const getProjectRoleControllers = async () => {
 export const getProjectPhaseControllers = async () => {
   try {
     // Send the GET request to the cmd API endpoint
-    const response = await get("estimate/project_phases", "python");
+    const response = await get("master/AllProjectPhases", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -34,7 +36,7 @@ export const getProjectPhaseControllers = async () => {
 export const getActivityCodeController = async () => {
   try {
     // Send the GET request to the cmd API endpoint
-    const response = await get("estimate/project_phases", "python");
+    const response = await get("master/AllActivityCode", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -65,7 +67,6 @@ export const getProjectEstimationControllers = async () => {
   }
 };
 
-
 export const getClientControllers = async () => {
   try {
     // Send the GET request to the cmd API endpoint
@@ -76,7 +77,6 @@ export const getClientControllers = async () => {
     throw error;
   }
 };
-
 
 /**
    * Creates a new cmd with the given form data.

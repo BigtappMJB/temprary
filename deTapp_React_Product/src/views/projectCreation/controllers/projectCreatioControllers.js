@@ -26,7 +26,7 @@ import { decodeData } from "../../utilities/securities/encodeDecode";
 export const getProjectController = async () => {
   try {
     // Send the GET request to the projectCreation API endpoint
-    const response = await get("estimate/project_details", "python");
+    const response = await get("master/AllProjectCreation", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -37,7 +37,7 @@ export const getProjectController = async () => {
 export const getProjectTypesController = async () => {
   try {
     // Send the GET request to the projectCreation API endpoint
-    const response = await get("estimate/project_type", "python");
+    const response = await get("master/AllProjects", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -48,7 +48,7 @@ export const getProjectTypesController = async () => {
 export const getClientInfoController = async () => {
   try {
     // Send the GET request to the projectCreation API endpoint
-    const response = await get("estimate/client_info", "python");
+    const response = await get("master/AllClients", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -66,8 +66,8 @@ export const projectCreationController = async (formData) => {
     // Prepare the body object with sanitized data
     const body = {
       PROJECT_NAME: titleCaseFirstWord(formData?.projectName),
-      CLIENT_ID: formData.client.CLIENT_CODE_ID,
-      PROJECT_TYPE_ID: formData?.projectType.PROJECT_TYPE_ID,
+      CLIENT_ID: formData.client.id,
+      PROJECT_TYPE_ID: formData?.projectType.id,
       CREATED_BY: email,
       IS_ACTIVE: true,
     };
@@ -120,8 +120,8 @@ export const projectUpdateController = async (formData) => {
 
     const body = {
       PROJECT_NAME: titleCaseFirstWord(formData?.projectName),
-      CLIENT_ID: formData.client.CLIENT_CODE_ID,
-      PROJECT_TYPE_ID: formData?.projectType.PROJECT_TYPE_ID,
+      CLIENT_ID: formData.client.id,
+      PROJECT_TYPE_ID: formData?.projectType.id,
       UPDATED_BY: email,
       IS_ACTIVE: true,
     };
