@@ -1288,7 +1288,6 @@ public class UserRepository {
             return "{\"error\": \"" + error.getMessage() + "\"}";
         }
     }
-    
 	public List<Map<String, Object>> getClients() throws SQLException {
 		Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
@@ -1303,14 +1302,6 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            // Close resources
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace(); // Log exception if closing fails
-            }
         }
         return roles;
 	}
@@ -1328,14 +1319,6 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            // Close resources
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace(); // Log exception if closing fails
-            }
         }
         return roles;
 	}
@@ -1353,14 +1336,6 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            // Close resources
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace(); // Log exception if closing fails
-            }
         }
         return roles;
 	}
@@ -1378,14 +1353,6 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            // Close resources
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace(); // Log exception if closing fails
-            }
         }
         return roles;
 	}
@@ -1409,14 +1376,6 @@ public class UserRepository {
 	            }
 	        } catch (SQLException e) {
 	            e.printStackTrace();
-	        }finally {
-	            // Close resources
-	            try {
-	                if (stmt != null) stmt.close();
-	                if (conn != null) conn.close();
-	            } catch (SQLException e) {
-	                e.printStackTrace(); // Log exception if closing fails
-	            }
 	        }
 	        return detailList;
 	}
