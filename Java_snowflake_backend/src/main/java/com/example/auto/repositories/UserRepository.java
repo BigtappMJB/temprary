@@ -1288,6 +1288,7 @@ public class UserRepository {
             return "{\"error\": \"" + error.getMessage() + "\"}";
         }
     }
+    
 	public List<Map<String, Object>> getClients() throws SQLException {
 		Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
@@ -1302,6 +1303,14 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            // Close resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
         }
         return roles;
 	}
@@ -1319,6 +1328,14 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            // Close resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
         }
         return roles;
 	}
@@ -1336,6 +1353,14 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            // Close resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
         }
         return roles;
 	}
@@ -1353,7 +1378,46 @@ public class UserRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            // Close resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
         }
         return roles;
+	}
+	public List<Map<String, Object>> getAllProjectCreation() throws SQLException {
+		 Connection conn = connector.getDBConnection();
+         List<Map<String, Object>> detailList = new ArrayList<>();
+	        try {
+	            stmt = conn.prepareStatement("SELECT * FROM PROJECT_DETAILS pd JOIN CLIENT_INFO ci ON pd.client_id = ci.client_code_id JOIN PROJECT_TYPE pt ON pd.project_type_id = pt.project_type_id  ORDER BY PROJECT_ID DESC");
+	            ResultSet rs = stmt.executeQuery();
+
+	            while (rs.next()) {
+	                Map<String, Object> rowMap = new HashMap<>();
+	                // Get column names and values for each row
+	                int columnCount = rs.getMetaData().getColumnCount();
+	                for (int i = 1; i <= columnCount; i++) {
+	                    String columnName = rs.getMetaData().getColumnLabel(i);
+	                    Object columnValue = rs.getObject(i);
+	                    rowMap.put(columnName, columnValue);
+	                }
+	                detailList.add(rowMap);
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }finally {
+	            // Close resources
+	            try {
+	                if (stmt != null) stmt.close();
+	                if (conn != null) conn.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace(); // Log exception if closing fails
+	            }
+	        }
+	        return detailList;
 	}
 }

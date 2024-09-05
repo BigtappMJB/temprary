@@ -321,6 +321,13 @@ public class UserController {
 		List<Map<String, Object>> roles = userRepository.getAllProjectPhases();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
+
+    @GetMapping("/AllProjectCreation")
+  	public ResponseEntity<Object> getAllProjectCreation() throws SQLException {
+  		List<Map<String, Object>> roles = userRepository.getAllProjectCreation();
+  		return new ResponseEntity<>(roles, HttpStatus.OK);
+  	}
+
 }
     // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
 
