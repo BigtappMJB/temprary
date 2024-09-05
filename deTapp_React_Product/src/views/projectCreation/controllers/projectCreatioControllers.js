@@ -65,14 +65,14 @@ export const projectCreationController = async (formData) => {
     const email = decodeData(getCookie(isUserIdCookieName));
     // Prepare the body object with sanitized data
     const body = {
-      PROJECT_NAME: titleCaseFirstWord(formData?.projectName),
-      CLIENT_ID: formData.client.id,
-      PROJECT_TYPE_ID: formData?.projectType.id,
-      CREATED_BY: email,
-      IS_ACTIVE: true,
+      porjectName: titleCaseFirstWord(formData?.projectName),
+      clientId: formData.client.id,
+      projectTypeId: formData?.projectType.id,
+      createdBy: email,
+      isActive: 1,
     };
     // Send the POST request to the projectCreation API endpoint
-    const response = await post("estimate/project_details", body, "python");
+    const response = await post("master/AllProjectCreation", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -116,18 +116,18 @@ export const projectUpdateController = async (formData) => {
       throw new Error("Invalid form data");
     }
     // Prepare the body object with sanitized data
-    const email = decodeData(getCookie(isUserIdCookieName));
+    // const email = decodeData(getCookie(isUserIdCookieName));
 
     const body = {
-      PROJECT_NAME: titleCaseFirstWord(formData?.projectName),
-      CLIENT_ID: formData.client.id,
-      PROJECT_TYPE_ID: formData?.projectType.id,
-      UPDATED_BY: email,
-      IS_ACTIVE: true,
+      projectName: titleCaseFirstWord(formData?.projectName),
+      clientId: formData.client.id,
+      projectTypeId: formData?.projectType.id,
+      // createdBy: email,
+      // isActive: 1,
     };
     // Send the PUT request to the projectCreation API endpoint
     const response = await put(
-      `estimate/project_details/${formData.ID}`,
+      `master/AllProjectCreation/?id=${formData.ID}`,
       body,
       "python"
     );
@@ -159,7 +159,7 @@ export const projectDeleteController = async (cmdId) => {
     }
     // Send the DELETE request to the projectCreation API endpoint
     const response = await remove(
-      `estimate/project_details/${cmdId}`,
+      `master/AllProjectCreation/?id=${cmdId}`,
       "python"
     );
     // Return the response data
