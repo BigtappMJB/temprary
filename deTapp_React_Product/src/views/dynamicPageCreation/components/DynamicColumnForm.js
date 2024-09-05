@@ -277,6 +277,7 @@ const DynamicColumnForm = forwardRef(
             <TextField
               {...field}
               label="Column Name"
+              value={field.value ?? ""} // Explicitly bind the value
               variant="outlined"
               error={!!errors.COLUMN_NAME}
               helperText={errors.COLUMN_NAME?.message}
@@ -296,6 +297,7 @@ const DynamicColumnForm = forwardRef(
               {...field}
               label="DataType"
               variant="outlined"
+              value={field.value ?? ""} // Explicitly bind the value
               error={!!errors.DATA_TYPE}
               helperText={errors.DATA_TYPE?.message}
               className="input-field"
@@ -315,6 +317,7 @@ const DynamicColumnForm = forwardRef(
               label="Length"
               type={"number"}
               variant="outlined"
+              value={field.value ?? ""} // Explicitly bind the value
               error={!!errors.CHARACTER_MAXIMUM_LENGTH}
               helperText={errors.CHARACTER_MAXIMUM_LENGTH?.message}
               className="input-field"
@@ -332,6 +335,7 @@ const DynamicColumnForm = forwardRef(
             <TextField
               {...field}
               label="Mandatory"
+              value={field.value ?? ""} // Explicitly bind the value
               variant="outlined"
               select
               error={!!errors.IS_NULLABLE}
@@ -342,7 +346,7 @@ const DynamicColumnForm = forwardRef(
               }}
             >
               <MenuItem value={"YES"}>Yes</MenuItem>
-              <MenuItem value={"No"}>No</MenuItem>
+              <MenuItem value={"NO"}>No</MenuItem>
             </TextField>
           )}
         />
@@ -355,6 +359,7 @@ const DynamicColumnForm = forwardRef(
               {...field}
               label="Default Value"
               variant="outlined"
+              value={field.value ?? ""} // Explicitly bind the value
               error={!!errors.COLUMN_DEFAULT}
               helperText={errors.COLUMN_DEFAULT?.message}
               className="input-field"
@@ -406,6 +411,7 @@ const DynamicColumnForm = forwardRef(
               {...field}
               label="No of Options"
               variant="outlined"
+              value={field.value ?? ""} // Explicitly bind the value
               error={!!errors.noOfOptions}
               helperText={errors.noOfOptions?.message}
               className="input-field"
@@ -431,6 +437,7 @@ const DynamicColumnForm = forwardRef(
             >
               <Button
                 {...field}
+                value={field.value ?? ""} // Explicitly bind the value
                 onClick={openOptionDialogList}
                 type="button"
                 variant="contained"
