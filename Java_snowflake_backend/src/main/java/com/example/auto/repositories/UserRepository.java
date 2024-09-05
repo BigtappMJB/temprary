@@ -13,6 +13,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -1378,5 +1379,143 @@ public class UserRepository {
 	            e.printStackTrace();
 	        }
 	        return detailList;
+	}
+	
+	public Map<String, Object> updateAllProjectCreation(String id, Map<String, Object> data) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int projectId=Integer.parseInt(id);
+		try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "UPDATE PROJECT_DETAILS SET project_name = ?, client_id = ?, project_type_id = ? " +
+                    "WHERE PROJECT_ID =?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set parameters
+            stmt.setString(1, (String)data.get("projectName"));
+            stmt.setInt(2, (int) data.get("clientId"));
+            stmt.setInt(3, (int) data.get("projectTypeid"));
+            stmt.setInt(4, projectId);
+
+            // Execute the update operation
+            int rowsUpdated = stmt.executeUpdate();
+
+            // Check if the update was successful
+            if (rowsUpdated > 0) {
+//                conn.commit(); // Commit the transaction
+                return Map.of("message", "project creation updated successfully", "status", 200);
+            } else {
+                return Map.of("message", "Project creation not found", "status", 404);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log the exception
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+      
+	}
+	
+	 public  Map<String, Object>  deleteProjectDetails(String projectId) {
+		 
+		  Connection conn = null;
+	        PreparedStatement stmt = null;
+	        int rolePermissionIds =Integer.parseInt(projectId);
+	        try {
+	            conn = connector.getDBConnection();
+
+	            // Prepare SQL statement
+	            String sql = "DELETE FROM PROJECT_DETAILS WHERE project_id = ?";
+	            stmt = conn.prepareStatement(sql);
+
+	            // Set the role permission ID parameter
+	            stmt.setInt(1, rolePermissionIds);
+
+	            // Execute the delete operation
+	            int rowsDeleted = stmt.executeUpdate();
+
+	            // Check if the delete was successful
+
+	            if (rowsDeleted > 0) {
+//	                conn.commit(); // Commit the transaction
+	                return Map.of("message", "Project details deleted successfully", "status", 200);
+	            } else {
+	                return Map.of("message", "Project details permission not found", "status", 404);
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace(); // Log the exception
+	            return Map.of("error", e.getMessage(), "status", 500);
+
+	        } finally {
+	            // Close resources
+	            try {
+	                if (stmt != null) stmt.close();
+	                if (conn != null) conn.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace(); // Log exception if closing fails
+	            }
+	        }
+	        
+	    }
+	public Map<String, Object> createAllProjectCreation(Map<String, Object> data) {
+		Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = connector.getDBConnection();
+
+
+            // Prepare SQL statement
+            String sql = "\r\n"
+            		+ "\r\n"
+            		+ "insert into  automationutil.project_details(PROJECT_NAME, CLIENT_ID,PROJECT_TYPE_ID,"
+            		+ "CREATED_BY,CREATED_DATE,IS_ACTIVE) "
+            		+ " " +
+                         "VALUES (?, ?, ?,?, CURRENT_TIMESTAMP,?)";
+            stmt = conn.prepareStatement(sql);
+
+            // Set parameters
+            stmt.setString(1, data.get("porjectName").toString());
+            stmt.setInt(2,(int) data.get("clientId"));
+            stmt.setInt(3,(int) data.get("projectTypeId"));
+            stmt.setString(4, data.get("createdby").toString());
+            stmt.setInt(5,(int) data.get("isActive"));
+
+            // Execute the insert operation
+            stmt.executeUpdate();
+
+            // Commit the transaction
+//            conn.commit();
+
+            // Return success message
+            return Map.of("message", "Project details created successfully", "status", 201);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Log the error
+            System.err.println("Error occurred while creating user: " + e.getMessage());
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
 	}
 }

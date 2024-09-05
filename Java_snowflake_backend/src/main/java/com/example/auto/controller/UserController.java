@@ -324,10 +324,43 @@ public class UserController {
 
     @GetMapping("/AllProjectCreation")
   	public ResponseEntity<Object> getAllProjectCreation() throws SQLException {
-  		List<Map<String, Object>> roles = userRepository.getAllProjectCreation();
+  		List<Map<String, Object>> roles = userRepository.getAllProjectPhases();
   		return new ResponseEntity<>(roles, HttpStatus.OK);
   	}
 
+    
+    // PUT method to update role permission
+    @PutMapping("/AllProjectCreation")
+    public ResponseEntity<Map<String, Object>> updateAllProjectCreation(
+            @RequestParam(value = "id") String id, 
+            @RequestBody Map<String, Object> data) {
+        
+        Map<String, Object> response = userRepository.updateAllProjectCreation(id, data);
+        int statusCode = (int) response.get("status");
+        return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+    }
+    
+    // DELETE method to delete role permission
+    @DeleteMapping("/AllProjectCreation")
+    public ResponseEntity<Map<String, Object>> deleteProjectDetail(@RequestParam(value = "id") String rolePermissionId) {
+        Map<String, Object> response = userRepository.deleteRolePermission(rolePermissionId);
+        int statusCode = (int) response.get("status");
+        return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+    }
+
+
+    // POST: Create a new permission
+       @PostMapping("/AllProjectCreation")
+       public ResponseEntity<Map<String, Object>> createAllProjectCreation(@RequestBody Map<String, Object> data) {
+           try {
+               Map<String, Object> response = userRepository.createAllProjectCreation(data);
+               return new ResponseEntity<>(response, HttpStatus.CREATED);
+           } catch (Exception e) {
+               return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+           }
+       }
+
+     
 }
     // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
 
