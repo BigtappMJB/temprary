@@ -1519,4 +1519,24 @@ public class UserRepository {
         }
 
 	}
+	public List<Map<String, Object>> getAllActivityCodes(String phaseId, int projectRoleId)  throws SQLException {
+		Connection conn = connector.getDBConnection();
+        List<Map<String, Object>> roles = new ArrayList<>();
+        try {
+            stmt = conn.prepareStatement("SELECT ACTIVITY_CODE FROM project_activity where project_phase_id=? AND PROJECT_ROLE_ID = ?");
+
+            stmt.setString(1, (phaseId).toString());
+            stmt.setInt(2, projectRoleId);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> role = new HashMap<>();
+                role.put("activityName", rs.getString("ACTIVITY_CODE"));
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+	}
 }

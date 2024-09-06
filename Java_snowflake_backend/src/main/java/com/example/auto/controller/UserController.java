@@ -360,6 +360,12 @@ public class UserController {
            }
        }
 
+       @GetMapping("/AllActivityCodes")
+     	public ResponseEntity<Object> getAllActivityCodes(@RequestParam(value = "phaseId") String phaseId, 
+     			@RequestParam(value = "projectRoleId") int projectRoleId) throws SQLException {
+     		List<Map<String, Object>> roles = userRepository.getAllActivityCodes(phaseId,projectRoleId);
+     		return new ResponseEntity<>(roles, HttpStatus.OK);
+     	}
      
 }
     // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
