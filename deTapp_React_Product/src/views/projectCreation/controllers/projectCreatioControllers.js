@@ -67,9 +67,10 @@ export const projectCreationController = async (formData) => {
     const body = {
       projectName: titleCaseFirstWord(formData?.projectName),
       clientId: formData.client.id,
+      projectcode: formData?.projectCode,
       projectTypeId: formData?.projectType.id,
       createdby: email,
-      isActive: 1
+      isActive: 1,
     };
     // Send the POST request to the projectCreation API endpoint
     const response = await post("master/AllProjectCreation", body, "python");
@@ -121,6 +122,7 @@ export const projectUpdateController = async (formData) => {
     const body = {
       projectName: titleCaseFirstWord(formData?.projectName),
       clientId: formData.client.id,
+      projectcode: formData?.projectCode,
       projectTypeid: formData?.projectType.id,
       // createdBy: email,
       // isActive: 1,

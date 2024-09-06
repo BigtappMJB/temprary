@@ -13,6 +13,7 @@ const applicationSlice = createSlice({
   reducers: {
     // Define your reducers here
     storeLoginDetails: (state, action) => {
+      
       state.useremail = action.payload.username;
       state.loginDetails = action.payload.userDetails;
     },

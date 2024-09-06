@@ -39,6 +39,8 @@ const schema = yup.object().shape({
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value))
     .required("Project Type is required"),
+  projectCode: yup.string().required("Project Code is required"),
+
   projectName: yup.string().required("Project Name is required"),
 });
 
@@ -109,6 +111,7 @@ const ProjectCreationForm = forwardRef(
               (ele) => ele.id === defaultValues.PROJECT_TYPE_ID
             )[0] ?? null,
           projectName: defaultValues?.PROJECT_NAME,
+          projectCode: defaultValues?.PROJECT_CODE,
         });
       }
       console.log(getValues());
@@ -121,7 +124,7 @@ const ProjectCreationForm = forwardRef(
         reset({
           client: "",
           projectType: "",
-
+          projectCode: "",
           projectName: "",
         });
       }
@@ -148,6 +151,7 @@ const ProjectCreationForm = forwardRef(
         client: null,
         projectType: null,
         projectName: "",
+        projectCode: "",
       });
     };
 
@@ -169,6 +173,7 @@ const ProjectCreationForm = forwardRef(
           client: null,
           projectType: null,
           projectName: "",
+          projectCode: "",
         });
       },
     }));
@@ -257,6 +262,26 @@ const ProjectCreationForm = forwardRef(
             />
           </Grid>
 
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="projectCode"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter project code"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.projectCode}
+                  helperText={errors.projectCode?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
           <Grid item xs={12} sm={6}>
             <Controller
               name="projectName"
