@@ -188,7 +188,7 @@ const CMDPage = () => {
   const columns = {
     CLIENT_NAME: "Client",
     PROJECT_TYPE_NAME: "Project Type",
-    PROJECT_ID: "Project Code",
+    PROJECT_NAME_CODE: "Project Code",
     PROJECT_NAME: "Project Name",
   };
 
@@ -235,7 +235,7 @@ const CMDPage = () => {
       else {
         formData = {
           ...formData,
-          ID: selectedValue.PROJECT_ID,
+          ID: selectedValue.PROJECT_NAME_CODE,
         };
         response = await projectUpdateController(formData);
       }
@@ -392,7 +392,7 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      const response = await projectDeleteController(selectedRow.PROJECT_ID);
+      const response = await projectDeleteController(selectedRow.PROJECT_NAME_CODE);
 
       if (response) {
         getTableData();

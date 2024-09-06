@@ -67,8 +67,8 @@ export const projectCreationController = async (formData) => {
     const body = {
       projectName: titleCaseFirstWord(formData?.projectName),
       clientId: formData.client.id,
-      projectcode: formData?.projectCode,
-      projectTypeId: formData?.projectType.id,
+      projectCode: formData?.projectCode,
+      projectTypeCode: formData?.projectType.id,
       createdby: email,
       isActive: 1,
     };
@@ -122,9 +122,9 @@ export const projectUpdateController = async (formData) => {
     const body = {
       projectName: titleCaseFirstWord(formData?.projectName),
       clientId: formData.client.id,
-      projectcode: formData?.projectCode,
-      projectTypeid: formData?.projectType.id,
-      // createdBy: email,
+      projectCode: formData?.projectCode,
+      projectTypeCode: formData?.projectType.id,
+      // createdby: email,
       // isActive: 1,
     };
     // Send the PUT request to the projectCreation API endpoint

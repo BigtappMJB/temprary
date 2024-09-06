@@ -1310,11 +1310,11 @@ public class UserRepository {
 		Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
         try {
-            stmt = conn.prepareStatement("SELECT PROJECT_TYPE_ID,PROJECT_TYPE_NAME FROM project_type");
+            stmt = conn.prepareStatement("SELECT PROJECT_TYPE_CODE,PROJECT_TYPE_NAME FROM project_type");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Map<String, Object> role = new HashMap<>();
-                role.put("id", rs.getInt("PROJECT_TYPE_ID"));
+                role.put("id", rs.getString("PROJECT_TYPE_CODE"));
                 role.put("name", rs.getString("PROJECT_TYPE_NAME"));
                 roles.add(role);
             }
@@ -1327,12 +1327,12 @@ public class UserRepository {
 		Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
         try {
-            stmt = conn.prepareStatement("SELECT ROLE_ID,ROLE_NAME FROM project_role");
+            stmt = conn.prepareStatement("SELECT PROJECT_ROLE_ID,PROJECT_ROLE_NAME FROM project_role");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Map<String, Object> role = new HashMap<>();
-                role.put("id", rs.getInt("ROLE_ID"));
-                role.put("name", rs.getString("ROLE_NAME"));
+                role.put("id", rs.getInt("PROJECT_ROLE_ID"));
+                role.put("name", rs.getString("PROJECT_ROLE_NAME"));
                 roles.add(role);
             }
         } catch (SQLException e) {
@@ -1344,11 +1344,11 @@ public class UserRepository {
 		Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
         try {
-            stmt = conn.prepareStatement("SELECT PHASE_ID,PHASE_NAME FROM project_phases");
+            stmt = conn.prepareStatement("SELECT PHASE_CODE,PHASE_NAME FROM project_phases");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Map<String, Object> role = new HashMap<>();
-                role.put("id", rs.getInt("PHASE_ID"));
+                role.put("id", rs.getString("PHASE_CODE"));
                 role.put("name", rs.getString("PHASE_NAME"));
                 roles.add(role);
             }
@@ -1361,7 +1361,7 @@ public class UserRepository {
 		 Connection conn = connector.getDBConnection();
          List<Map<String, Object>> detailList = new ArrayList<>();
 	        try {
-	            stmt = conn.prepareStatement("SELECT * FROM PROJECT_DETAILS pd JOIN CLIENT_INFO ci ON pd.client_id = ci.client_code_id JOIN PROJECT_TYPE pt ON pd.project_type_id = pt.project_type_id  ORDER BY PROJECT_ID DESC");
+	            stmt = conn.prepareStatement("SELECT * FROM PROJECT_DETAILS pd JOIN CLIENT_INFO ci ON pd.client_id = ci.client_code_id JOIN PROJECT_TYPE pt ON pd.PROJECT_TYPE_CODE = pt.PROJECT_TYPE_CODE  ORDER BY pd.created_date DESC;");
 	            ResultSet rs = stmt.executeQuery();
 
 	            while (rs.next()) {
@@ -1479,18 +1479,19 @@ public class UserRepository {
             // Prepare SQL statement
             String sql = "\r\n"
             		+ "\r\n"
-            		+ "insert into  automationutil.project_details(PROJECT_NAME, CLIENT_ID,PROJECT_TYPE_ID,"
+            		+ "insert into project_details(project_name_code,PROJECT_NAME, CLIENT_ID,PROJECT_TYPE_CODE,"
             		+ "CREATED_BY,CREATED_DATE,IS_ACTIVE) "
             		+ " " +
-                         "VALUES (?, ?, ?,?, CURRENT_TIMESTAMP,?)";
+                         "VALUES (?,?, ?, ?,?, CURRENT_TIMESTAMP,?)";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
-            stmt.setString(1, data.get("projectName").toString());
-            stmt.setInt(2,(int) data.get("clientId"));
-            stmt.setInt(3,(int) data.get("projectTypeId"));
-            stmt.setString(4, data.get("createdby").toString());
-            stmt.setInt(5,(int) data.get("isActive"));
+            stmt.setString(1, data.get("projectCode").toString());
+            stmt.setString(2, data.get("projectName").toString());
+            stmt.setInt(3,(int) data.get("clientId"));
+            stmt.setString(4, data.get("projectTypeCode").toString());
+            stmt.setString(5, data.get("createdby").toString());
+            stmt.setInt(6,(int) data.get("isActive"));
 
             // Execute the insert operation
             stmt.executeUpdate();

@@ -99,8 +99,6 @@ const ProjectCreationForm = forwardRef(
     // Effect to set default values and reset the form
     useEffect(() => {
       if (defaultValues) {
-        console.log(defaultValues);
-
         reset({
           client:
             clientInfo?.filter(
@@ -110,8 +108,8 @@ const ProjectCreationForm = forwardRef(
             projectType.filter(
               (ele) => ele.id === defaultValues.PROJECT_TYPE_ID
             )[0] ?? null,
-          projectName: defaultValues?.PROJECT_NAME,
-          projectCode: defaultValues?.PROJECT_CODE,
+          projectName: defaultValues?.PROJECT_NAME ?? null,
+          projectCode: defaultValues?.PROJECT_NAME_CODE ?? null,
         });
       }
       console.log(getValues());
