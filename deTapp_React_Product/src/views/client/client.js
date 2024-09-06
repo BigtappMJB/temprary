@@ -94,6 +94,7 @@ const Roles = () => {
     view: null,
     delete: null,
   });
+  const formRef = useRef();
 
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
@@ -189,6 +190,7 @@ const Roles = () => {
 
       if (response) {
         getRoles();
+        formRef.current.reset()
         if (!isAdd) {
           onFormReset();
         }
@@ -406,6 +408,7 @@ const Roles = () => {
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
+            ref={(el) => (formRef.current = el)}
           />
         </Container>
       )}

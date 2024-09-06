@@ -91,6 +91,7 @@ const CMDPage = () => {
   const [tableData, setTableData] = useState([]);
   const [projectType, setProjectTypeData] = useState([]);
   const [clientInfo, setClientInfo] = useState([]);
+  const formRef = useRef();
 
   const { startLoading, stopLoading } = useLoading();
 
@@ -241,6 +242,7 @@ const CMDPage = () => {
 
       if (response) {
         getTableData();
+        formRef.current.resetForm();
         if (!isAdd) {
           onFormReset();
         }
@@ -439,10 +441,7 @@ const CMDPage = () => {
   };
 
   const handleExport = () => {
-    generateCSV(
-      tableData,
-      `central_manual_depository_${timeStampFileName(new Date())}`
-    );
+    generateCSV(tableData, `project_creation_${timeStampFileName(new Date())}`);
   };
 
   return (
@@ -464,6 +463,7 @@ const CMDPage = () => {
             defaultValues={selectedValue}
             onSubmit={onformSubmit}
             onReset={onFormReset}
+            ref={(el) => (formRef.current = el)}
             projectType={projectType}
             clientInfo={clientInfo}
           />

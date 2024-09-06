@@ -1,5 +1,10 @@
 // src/components/FormComponent.js
-import React, { useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   TextField,
@@ -70,225 +75,242 @@ const schema = yup.object().shape({
  *   rolesList={rolesList}
  * />
  */
-const ProjectCreationForm = ({
-  formAction,
-  defaultValues,
-  onSubmit,
-  onReset,
-  projectType,
-  clientInfo,
-}) => {
-  const [readOnly, setReadOnly] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+const ProjectCreationForm = forwardRef(
+  (
+    { formAction, defaultValues, onSubmit, onReset, projectType, clientInfo },
+    ref
+  ) => {
+    const [readOnly, setReadOnly] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { errors },
-  } = useForm({
-    mode: "onChange",
-    resolver: yupResolver(schema),
-  });
+    const {
+      control,
+      handleSubmit,
+      reset,
+      getValues,
+      formState: { errors },
+    } = useForm({
+      mode: "onChange",
+      resolver: yupResolver(schema),
+    });
 
-  // Effect to set default values and reset the form
-  useEffect(() => {
-    if (defaultValues) {
-      console.log(defaultValues);
+    // Effect to set default values and reset the form
+    useEffect(() => {
+      if (defaultValues) {
+        console.log(defaultValues);
 
+        reset({
+          client:
+            clientInfo?.filter(
+              (ele) => ele.id === defaultValues.CLIENT_ID
+            )[0] ?? null,
+          projectType:
+            projectType.filter(
+              (ele) => ele.id === defaultValues.PROJECT_TYPE_ID
+            )[0] ?? null,
+          projectName: defaultValues?.PROJECT_NAME,
+        });
+      }
+      console.log(getValues());
+    }, [defaultValues, clientInfo, reset, projectType, formAction]);
+
+    // Effect to set read-only state and reset form on formAction change
+    useEffect(() => {
+      setReadOnly(formAction?.action === "read");
+      if (formAction.action === "add") {
+        reset({
+          client: "",
+          projectType: "",
+
+          projectName: "",
+        });
+      }
+    }, [formAction, reset]);
+
+    // Effect to sanitize input values
+    useEffect(() => {
+      const sanitizeInputs = () => {
+        const inputs = document.querySelectorAll("input");
+        inputs.forEach((input) => {
+          input.value = DOMPurify.sanitize(input.value);
+        });
+      };
+
+      sanitizeInputs();
+    }, []);
+
+    /**
+     * Resets the form to its initial state
+     */
+    const handleReset = () => {
+      onReset();
       reset({
-        client:
-          clientInfo?.filter((ele) => ele.id === defaultValues.CLIENT_ID)[0] ??
-          null,
-        projectType:
-          projectType.filter(
-            (ele) => ele.id === defaultValues.PROJECT_TYPE_ID
-          )[0] ?? null,
-        projectName: defaultValues?.PROJECT_NAME,
-      });
-    }
-    console.log(getValues());
-  }, [defaultValues, clientInfo, reset, projectType, formAction]);
-
-  // Effect to set read-only state and reset form on formAction change
-  useEffect(() => {
-    setReadOnly(formAction?.action === "read");
-    if (formAction.action === "add") {
-      reset({
-        client: "",
-        projectType: "",
-
+        client: null,
+        projectType: null,
         projectName: "",
-      });
-    }
-  }, [formAction, reset]);
-
-  // Effect to sanitize input values
-  useEffect(() => {
-    const sanitizeInputs = () => {
-      const inputs = document.querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.value = DOMPurify.sanitize(input.value);
       });
     };
 
-    sanitizeInputs();
-  }, []);
+    /**
+     * Submits the form data
+     */
+    const onLocalSubmit = () => {
+      onSubmit(getValues());
+      // reset({
+      //   client: null,
+      //   projectType: null,
+      //   projectName: "",
+      // });
+    };
+    // Expose a method to trigger validation via ref
+    useImperativeHandle(ref, () => ({
+      resetForm: async () => {
+        reset({
+          client: null,
+          projectType: null,
+          projectName: "",
+        });
+      },
+    }));
 
-  /**
-   * Resets the form to its initial state
-   */
-  const handleReset = () => {
-    onReset();
-    reset({
-      client: null,
-      projectType: null,
-      projectName: "",
-    });
-  };
+    return (
+      <Container
+        component="form"
+        className="panel-bg"
+        onSubmit={handleSubmit(onLocalSubmit)}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="client"
+              control={control}
+              render={({ field }) => (
+                <Autocomplete
+                  {...field}
+                  options={clientInfo}
+                  getOptionLabel={(option) => option.name}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  value={field.value || null}
+                  onChange={(_, data) => field.onChange(data)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select client"
+                      fullWidth
+                      error={!!errors.client}
+                      helperText={errors.client?.message}
+                      InputLabelProps={{
+                        shrink: Boolean(field.value || isFocused.menu),
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        readOnly: readOnly, // Set to true if you want the field to be read-only
+                        onFocus: () =>
+                          setIsFocused({ ...isFocused, menu: true }),
+                        onBlur: () =>
+                          setIsFocused({ ...isFocused, menu: false }),
+                      }}
+                    />
+                  )}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="projectType"
+              control={control}
+              render={({ field }) => (
+                <Autocomplete
+                  {...field}
+                  options={projectType}
+                  getOptionLabel={(option) => option.name}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  value={field.value || null}
+                  onChange={(_, data) => field.onChange(data)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select projectType"
+                      fullWidth
+                      error={!!errors.projectType}
+                      helperText={errors.projectType?.message}
+                      InputLabelProps={{
+                        shrink: Boolean(field.value || isFocused.menu),
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        readOnly: readOnly, // Set to true if you want the field to be read-only
+                        onFocus: () =>
+                          setIsFocused({ ...isFocused, menu: true }),
+                        onBlur: () =>
+                          setIsFocused({ ...isFocused, menu: false }),
+                      }}
+                    />
+                  )}
+                />
+              )}
+            />
+          </Grid>
 
-  /**
-   * Submits the form data
-   */
-  const onLocalSubmit = () => {
-    onSubmit(getValues());
-    reset({
-      client: null,
-      projectType: null,
-      projectName: "",
-    });
-  };
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="projectName"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter project name"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.projectName}
+                  helperText={errors.projectName?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="center"
+              flexWrap="wrap"
+              gap={2} // Adds space between buttons
+            >
+              {formAction.action !== "read" && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className="primary"
+                >
+                  {formAction.action === "add" ? "Add" : "Update"}
+                </Button>
+              )}
 
-  return (
-    <Container
-      component="form"
-      className="panel-bg"
-      onSubmit={handleSubmit(onLocalSubmit)}
-    >
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="client"
-            control={control}
-            render={({ field }) => (
-              <Autocomplete
-                {...field}
-                options={clientInfo}
-                getOptionLabel={(option) => option.name}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                value={field.value || null}
-                onChange={(_, data) => field.onChange(data)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select client"
-                    fullWidth
-                    error={!!errors.client}
-                    helperText={errors.client?.message}
-                    InputLabelProps={{
-                      shrink: Boolean(field.value || isFocused.menu),
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      readOnly: readOnly, // Set to true if you want the field to be read-only
-                      onFocus: () => setIsFocused({ ...isFocused, menu: true }),
-                      onBlur: () => setIsFocused({ ...isFocused, menu: false }),
-                    }}
-                  />
-                )}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="projectType"
-            control={control}
-            render={({ field }) => (
-              <Autocomplete
-                {...field}
-                options={projectType}
-                getOptionLabel={(option) => option.name}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                value={field.value || null}
-                onChange={(_, data) => field.onChange(data)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select projectType"
-                    fullWidth
-                    error={!!errors.projectType}
-                    helperText={errors.projectType?.message}
-                    InputLabelProps={{
-                      shrink: Boolean(field.value || isFocused.menu),
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      readOnly: readOnly, // Set to true if you want the field to be read-only
-                      onFocus: () => setIsFocused({ ...isFocused, menu: true }),
-                      onBlur: () => setIsFocused({ ...isFocused, menu: false }),
-                    }}
-                  />
-                )}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="projectName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Enter project name"
-                fullWidth
-                variant="outlined"
-                error={!!errors.projectName}
-                helperText={errors.projectName?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12}>
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            flexWrap="wrap"
-            gap={2} // Adds space between buttons
-          >
-            {formAction.action !== "read" && (
               <Button
-                type="submit"
+                type="button"
                 variant="contained"
                 color="primary"
-                className="primary"
+                className="danger"
+                onClick={handleReset}
               >
-                {formAction.action === "add" ? "Add" : "Update"}
+                {formAction.action !== "read" ? "Cancel" : "Close"}
               </Button>
-            )}
-
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              className="danger"
-              onClick={handleReset}
-            >
-              {formAction.action !== "read" ? "Cancel" : "Close"}
-            </Button>
-          </Box>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
-  );
-};
+      </Container>
+    );
+  }
+);
 
 export default ProjectCreationForm;

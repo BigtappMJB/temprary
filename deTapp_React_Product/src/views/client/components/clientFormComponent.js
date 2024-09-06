@@ -1,5 +1,10 @@
 // src/components/FormComponent.js
-import React, { useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { useForm, Controller } from "react-hook-form";
 import { TextField, Button, Grid, styled, Box } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -56,110 +61,115 @@ const schema = yup.object().shape({
  *   onReset={handleReset}
  * />
  */
-const FormComponent = ({
-  formAction,
-  defaultValues,
-  onSubmit,
-  onReset,
-  rolesList,
-}) => {
-  const [readOnly, setReadOnly] = useState(false);
+const FormComponent = forwardRef(
+  ({ formAction, defaultValues, onSubmit, onReset, rolesList }, ref) => {
+    const [readOnly, setReadOnly] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { errors },
-  } = useForm({
-    mode: "onChange",
-    resolver: yupResolver(schema),
-    defaultValues,
-  });
+    const {
+      control,
+      handleSubmit,
+      reset,
+      getValues,
+      formState: { errors },
+    } = useForm({
+      mode: "onChange",
+      resolver: yupResolver(schema),
+      defaultValues,
+    });
 
-  // Effect to set default values and reset the form
-  useEffect(() => {
-    if (defaultValues) {
-      reset({
-        name: defaultValues.name ?? "",
-        description: defaultValues.description ?? "",
-      });
-    }
-  }, [defaultValues, reset, rolesList, formAction]);
+    // Effect to set default values and reset the form
+    useEffect(() => {
+      if (defaultValues) {
+        reset({
+          name: defaultValues.name ?? "",
+          description: defaultValues.description ?? "",
+        });
+      }
+    }, [defaultValues, reset, rolesList, formAction]);
 
-  // Effect to set read-only state and reset form on formAction change
-  useEffect(() => {
-    setReadOnly(formAction?.action === "read");
-    if (formAction.action === "add") {
+    // Effect to set read-only state and reset form on formAction change
+    useEffect(() => {
+      setReadOnly(formAction?.action === "read");
+      if (formAction.action === "add") {
+        reset({
+          name: "",
+          description: "",
+        });
+      }
+    }, [formAction, reset, defaultValues]);
+
+    // Effect to sanitize input values
+    useEffect(() => {
+      const sanitizeInputs = () => {
+        const inputs = document.querySelectorAll("input");
+        inputs.forEach((input) => {
+          input.value = DOMPurify.sanitize(input.value);
+        });
+      };
+
+      sanitizeInputs();
+    }, []);
+
+    /**
+     * Resets the form to its initial state
+     */
+    const handleReset = () => {
+      onReset();
       reset({
         name: "",
         description: "",
       });
-    }
-  }, [formAction, reset, defaultValues]);
-
-  // Effect to sanitize input values
-  useEffect(() => {
-    const sanitizeInputs = () => {
-      const inputs = document.querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.value = DOMPurify.sanitize(input.value);
-      });
     };
 
-    sanitizeInputs();
-  }, []);
+    /**
+     * Submits the form data
+     */
+    const onLocalSubmit = () => {
+      onSubmit(getValues());
+      // reset({
+      //   name: "",
+      //   description: "",
+      // });
+    };
 
-  /**
-   * Resets the form to its initial state
-   */
-  const handleReset = () => {
-    onReset();
-    reset({
-      name: "",
-      description: "",
-    });
-  };
+    // Expose a method to trigger validation via ref
+    useImperativeHandle(ref, () => ({
+      resetForm: async () => {
+        reset({
+          name: "",
+          description: "",
+        });
+      },
+    }));
 
-  /**
-   * Submits the form data
-   */
-  const onLocalSubmit = () => {
-    onSubmit(getValues());
-    reset({
-      name: "",
-      description: "",
-    });
-  };
-
-  return (
-    <Container
-      component="form"
-      className="panel-bg"
-      onSubmit={handleSubmit(onLocalSubmit)}
-    >
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Name"
-                fullWidth
-                variant="outlined"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
-        {/* <Grid item xs={12} sm={6}>
+    return (
+      <Container
+        component="form"
+        className="panel-bg"
+        onSubmit={handleSubmit(onLocalSubmit)}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Name"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          {/* <Grid item xs={12} sm={6}>
           <Controller
             name="description"
             control={control}
@@ -179,39 +189,40 @@ const FormComponent = ({
             )}
           />
         </Grid> */}
-        <Grid item xs={12}>
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            flexWrap="wrap"
-            gap={2} // Adds space between buttons
-          >
-            {formAction.action !== "read" && (
+          <Grid item xs={12}>
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="center"
+              flexWrap="wrap"
+              gap={2} // Adds space between buttons
+            >
+              {formAction.action !== "read" && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className="primary"
+                >
+                  {formAction.action === "add" ? "Add" : "Update"}
+                </Button>
+              )}
+
               <Button
-                type="submit"
+                type="button"
                 variant="contained"
                 color="primary"
-                className="primary"
+                className="danger"
+                onClick={handleReset}
               >
-                {formAction.action === "add" ? "Add" : "Update"}
+                {formAction.action !== "read" ? "Cancel" : "Close"}
               </Button>
-            )}
-
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              className="danger"
-              onClick={handleReset}
-            >
-              {formAction.action !== "read" ? "Cancel" : "Close"}
-            </Button>
-          </Box>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
-  );
-};
+      </Container>
+    );
+  }
+);
 
 export default FormComponent;
