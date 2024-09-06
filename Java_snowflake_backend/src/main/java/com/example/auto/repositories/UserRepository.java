@@ -1594,4 +1594,28 @@ public class UserRepository {
         }
 
 	}
+	
+	
+	public List<Map<String, Object>> getAllProjectEst()  throws SQLException {
+		Connection conn = connector.getDBConnection();
+        List<Map<String, Object>> roles = new ArrayList<>();
+        try {
+            stmt = conn.prepareStatement("SELECT PROJECT_PHASE_CODE, PROJECT_ROLE_ID, ACTIVITY_CODE, START_DATE, END_DATE, NO_OF_HOURS_PER_DAY, TOTAL_HOURS PROJECT_NAME_CODE FROM project_estimate ");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> roleMap = new HashMap<>();
+            	int columnCount = rs.getMetaData().getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = rs.getMetaData().getColumnLabel(i);
+                    Object columnValue = rs.getObject(i);
+                    roleMap.put(columnName, columnValue);
+                }
+
+                roles.add(roleMap);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+	}
 }

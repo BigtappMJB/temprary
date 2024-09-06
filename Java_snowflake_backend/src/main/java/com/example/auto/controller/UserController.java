@@ -377,6 +377,14 @@ public class UserController {
                return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
            }
        }
+
+       @GetMapping("/getAllProjectEst")
+     	public ResponseEntity<Object> getAllProjectEst() throws SQLException {
+     		List<Map<String, Object>> roles = userRepository.getAllProjectEst();
+     		return new ResponseEntity<>(roles, HttpStatus.OK);
+     	}
+
+
 }
     // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
 
