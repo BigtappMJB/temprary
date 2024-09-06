@@ -21,7 +21,7 @@ import { titleCaseFirstWord } from "../../utilities/generals";
 export const getprojectTypesController = async () => {
   try {
     // Send the GET request to the projectTypes API endpoint
-    const response = await get("/master/AllProjects", "python");
+    const response = await get("/master/AllProjectTypes", "python");
     // Return the response data
     return response;
   } catch (error) {

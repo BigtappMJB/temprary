@@ -65,11 +65,11 @@ export const projectCreationController = async (formData) => {
     const email = decodeData(getCookie(isUserIdCookieName));
     // Prepare the body object with sanitized data
     const body = {
-      porjectName: titleCaseFirstWord(formData?.projectName),
+      projectName: titleCaseFirstWord(formData?.projectName),
       clientId: formData.client.id,
       projectTypeId: formData?.projectType.id,
-      createdBy: email,
-      isActive: 1,
+      createdby: email,
+      isActive: 1
     };
     // Send the POST request to the projectCreation API endpoint
     const response = await post("master/AllProjectCreation", body, "python");
@@ -121,13 +121,13 @@ export const projectUpdateController = async (formData) => {
     const body = {
       projectName: titleCaseFirstWord(formData?.projectName),
       clientId: formData.client.id,
-      projectTypeId: formData?.projectType.id,
+      projectTypeid: formData?.projectType.id,
       // createdBy: email,
       // isActive: 1,
     };
     // Send the PUT request to the projectCreation API endpoint
     const response = await put(
-      `master/AllProjectCreation/?id=${formData.ID}`,
+      `master/AllProjectCreation?id=${formData.ID}`,
       body,
       "python"
     );
@@ -159,7 +159,7 @@ export const projectDeleteController = async (cmdId) => {
     }
     // Send the DELETE request to the projectCreation API endpoint
     const response = await remove(
-      `master/AllProjectCreation/?id=${cmdId}`,
+      `master/AllProjectCreation?id=${cmdId}`,
       "python"
     );
     // Return the response data

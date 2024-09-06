@@ -25,6 +25,7 @@ import {
   projectUpdateController,
 } from "./controllers/projectCreatioControllers";
 import { useOutletContext } from "react-router";
+import { getprojectTypesController } from "../projectTypes/controllers/projectTypesControllers";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -128,7 +129,7 @@ const CMDPage = () => {
   const getProjectTypeData = async () => {
     try {
       startLoading();
-      const response = await getProjectTypesController();
+      const response = await getprojectTypesController();
       setProjectTypeData(response);
     } catch (error) {
       console.error(error);
