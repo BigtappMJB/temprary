@@ -7,21 +7,21 @@ import {
 import { titleCaseFirstWord } from "../../utilities/generals";
 
 /**
- * Fetches the list of roles from the API.
+ * Fetches the list of projectPhasess from the API.
  *
  * @async
- * @function getRolesController
+ * @function getprojectPhasesController
  * @returns {Promise<Object>} - The response data from the API.
  * @throws {Error} - If the API request fails.
  * @example
- * getRolesController()
+ * getprojectPhasesController()
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const getRolesController = async () => {
+export const getprojectPhasesController = async () => {
   try {
-    // Send the GET request to the role API endpoint
-    const response = await get("/master/AllClients", "python");
+    // Send the GET request to the projectPhases API endpoint
+    const response = await get("/master/AllProjectPhases", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -30,13 +30,13 @@ export const getRolesController = async () => {
 };
 
 /**
- * Creates a new role with the given form data.
+ * Creates a new projectPhases with the given form data.
  *
  * @async
- * @function roleCreationController
- * @param {Object} formData - The form data for the new role.
- * @param {string} formData.name - The role name.
- * @param {string} formData.description - The role description.
+ * @function projectPhasesCreationController
+ * @param {Object} formData - The form data for the new projectPhases.
+ * @param {string} formData.name - The projectPhases name.
+ * @param {string} formData.description - The projectPhases description.
  * @returns {Promise<Object>} - The response data from the API.
  * @throws {Error} - If the form data is invalid or the API request fails.
  * @example
@@ -44,11 +44,11 @@ export const getRolesController = async () => {
  *   name: "tester",
  *   description: "no description"
  * };
- * roleCreationController(formData)
+ * projectPhasesCreationController(formData)
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const roleCreationController = async (formData) => {
+export const projectPhasesCreationController = async (formData) => {
   try {
     // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
@@ -60,8 +60,8 @@ export const roleCreationController = async (formData) => {
       name: titleCaseFirstWord(formData.name.trim()),
       // description: titleCaseFirstWord(formData.description.trim()),
     };
-    // Send the POST request to the role API endpoint
-    const response = await post("/role/roles", body, "python");
+    // Send the POST request to the projectPhases API endpoint
+    const response = await post("master/AllProjectPhases", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -70,14 +70,14 @@ export const roleCreationController = async (formData) => {
 };
 
 /**
- * Updates an existing role with the given form data.
+ * Updates an existing projectPhases with the given form data.
  *
  * @async
- * @function roleupdateController
- * @param {Object} formData - The form data for updating the role.
- * @param {string} formData.name - The role name.
- * @param {string} formData.description - The role description.
- * @param {string} formData.ID - The primary key for role ID.
+ * @function projectPhasesupdateController
+ * @param {Object} formData - The form data for updating the projectPhases.
+ * @param {string} formData.name - The projectPhases name.
+ * @param {string} formData.description - The projectPhases description.
+ * @param {string} formData.ID - The primary key for projectPhases ID.
  * @returns {Promise<Object>} - The response data from the API.
  * @throws {Error} - If the form data is invalid or the API request fails.
  * @example
@@ -86,11 +86,11 @@ export const roleCreationController = async (formData) => {
  *   description: "no description",
  *   ID: 123
  * };
- * roleupdateController(formData)
+ * projectPhasesupdateController(formData)
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const roleupdateController = async (formData) => {
+export const projectPhasesupdateController = async (formData) => {
   try {
     // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
@@ -100,11 +100,11 @@ export const roleupdateController = async (formData) => {
     // Prepare the body object with sanitized data
     const body = {
       name: titleCaseFirstWord(formData.name.trim()),
-      description: titleCaseFirstWord(formData.description.trim()),
+      // description: titleCaseFirstWord(formData.description.trim()),
     };
-    // Send the PUT request to the role API endpoint
+    // Send the PUT request to the projectPhases API endpoint
     const response = await put(
-      `/role/updaterole/${formData.ID}`,
+      `master/AllProjectPhases/${formData.ID}`,
       body,
       "python"
     );
@@ -116,26 +116,29 @@ export const roleupdateController = async (formData) => {
 };
 
 /**
- * Deletes a role with the given ID.
+ * Deletes a projectPhases with the given ID.
  *
  * @async
- * @function roledeleteController
- * @param {number} roleId - The ID of the role to delete.
+ * @function projectPhasesdeleteController
+ * @param {number} projectPhasesId - The ID of the projectPhases to delete.
  * @returns {Promise<Object>} - The response data from the API.
- * @throws {Error} - If the role ID is invalid or the API request fails.
+ * @throws {Error} - If the projectPhases ID is invalid or the API request fails.
  * @example
- * roledeleteController(123)
+ * projectPhasesdeleteController(123)
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const roledeleteController = async (roleId) => {
+export const projectPhasesdeleteController = async (projectPhasesId) => {
   try {
     // Data Validation and Sanitization
-    if (typeof roleId !== "number") {
-      throw new Error("Invalid role ID");
+    if (typeof projectPhasesId !== "number") {
+      throw new Error("Invalid projectPhases ID");
     }
-    // Send the DELETE request to the role API endpoint
-    const response = await remove(`role/deleteroles/${roleId}`, "python");
+    // Send the DELETE request to the projectPhases API endpoint
+    const response = await remove(
+      `projectPhases/deleteprojectPhasess/${projectPhasesId}`,
+      "python"
+    );
     // Return the response data
     return response;
   } catch (error) {

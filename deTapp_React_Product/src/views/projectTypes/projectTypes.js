@@ -1,12 +1,12 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import {
-  getRolesController,
-  roleCreationController,
-  roleupdateController,
-  roledeleteController,
-} from "./controllers/clientControllers";
-import FormComponent from "./components/clientFormComponent";
+  getprojectTypesController,
+  projectTypesCreationController,
+  projectTypesupdateController,
+  projectTypesdeleteController,
+} from "./controllers/projectTypesControllers";
+import FormComponent from "./components/projectTypesComponent";
 
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import { useOutletContext } from "react-router";
@@ -101,7 +101,7 @@ const Roles = () => {
   const getRoles = async () => {
     try {
       startLoading();
-      const response = await getRolesController();
+      const response = await getprojectTypesController();
       setTableData(response);
       // debugger;
     } catch (error) {
@@ -138,7 +138,7 @@ const Roles = () => {
   }, [menuList]);
 
   const columns = {
-    name: "Client",
+    name: "ProjectType",
     // description: "Description",
   };
 
@@ -181,10 +181,10 @@ const Roles = () => {
       startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await roleCreationController(formData);
+      if (isAdd) response = await projectTypesCreationController(formData);
       else {
         formData = { ...formData, ID: selectedValue.id };
-        response = await roleupdateController(formData);
+        response = await projectTypesupdateController(formData);
       }
 
       if (response) {
@@ -194,9 +194,9 @@ const Roles = () => {
         }
         openDialog(
           "success",
-          `Client ${isAdd ? "Addition" : "Updation"} Success`,
+          `ProjectType ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `Client has been ${isAdd ? "addded" : "updated"} successfully  `,
+            `ProjectType has been ${isAdd ? "addded" : "updated"} successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -215,7 +215,7 @@ const Roles = () => {
       openDialog(
         "warning",
         "Warning",
-        `Client ${isAdd ? "Addition" : "Updation"} failed`,
+        `ProjectType ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -337,15 +337,15 @@ const Roles = () => {
         display: false,
         action: null,
       });
-      const response = await roledeleteController(selectedRow.id);
+      const response = await projectTypesdeleteController(selectedRow.id);
 
       if (response) {
         getRoles();
 
         openDialog(
           "success",
-          `Client Deletion Success`,
-          response.message || `Client has been deleted successfully  `,
+          `ProjectType Deletion Success`,
+          response.message || `ProjectType has been deleted successfully  `,
 
           {
             confirm: {
@@ -365,7 +365,7 @@ const Roles = () => {
       openDialog(
         "warning",
         "Warning",
-        error.errorMessage || `Client Deletion failed`,
+        error.errorMessage || `ProjectType Deletion failed`,
         {
           confirm: {
             name: "Ok",
@@ -398,7 +398,7 @@ const Roles = () => {
                 : formAction.action === "update"
                 ? "Update"
                 : "Read "}{" "}
-              Client
+              ProjectType
             </Typography>
           </Header>
           <FormComponent
@@ -413,7 +413,7 @@ const Roles = () => {
       <SecondContainer className="common-table">
         <SubHeader className="table-header">
           <Typography variant="h6">
-            <b>Clients List</b>
+            <b>ProjectTypes List</b>
           </Typography>
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">
             <FormButton
@@ -427,7 +427,7 @@ const Roles = () => {
               }`}
               disabled={formAction.action === "add" && formAction.display}
             >
-              Add Client
+              Add ProjectType
             </FormButton>
           </Box>
         </SubHeader>

@@ -1,4 +1,4 @@
-// src/components/FormComponent.js
+// src/components/ProjectTypesFormComponent.js
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { TextField, Button, Grid, styled, Box } from "@mui/material";
@@ -30,7 +30,7 @@ const schema = yup.object().shape({
 });
 
 /**
- * FormComponent renders a form with fields for user details.
+ * ProjectTypesFormComponent renders a form with fields for user details.
  * The form is validated using Yup schema and managed with React Hook Form.
  *
  * @component
@@ -49,14 +49,14 @@ const schema = yup.object().shape({
  * };
 
  *
- * <FormComponent
+ * <ProjectTypesFormComponent
  *   formAction={formAction}
  *   defaultValues={defaultValues}
  *   onSubmit={handleSubmit}
  *   onReset={handleReset}
  * />
  */
-const FormComponent = ({
+const ProjectTypesFormComponent = ({
   formAction,
   defaultValues,
   onSubmit,
@@ -214,4 +214,4 @@ const FormComponent = ({
   );
 };
 
-export default FormComponent;
+export default ProjectTypesFormComponent;

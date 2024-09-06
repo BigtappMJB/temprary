@@ -69,6 +69,20 @@ const PageCreation = Loadable(
   lazy(() => import("../views/dynamicPageCreation/dynamicPageCreation"))
 );
 
+const ClientPage = Loadable(lazy(() => import("../views/client/client")));
+
+const ProjectTypePage = Loadable(
+  lazy(() => import("../views/projectTypes/projectTypes"))
+);
+
+const ProjectRolePage = Loadable(
+  lazy(() => import("../views/projectRole/projectRoles"))
+);
+
+const ProjectPhasePage = Loadable(
+  lazy(() => import("../views/projectPhase/projectPhases"))
+);
+
 const Router = [
   {
     path: "/",
@@ -89,7 +103,10 @@ const Router = [
       { path: "/project-estimate", element: <ProjectEstimation /> },
       { path: "/projectCreation", element: <ProjectCreation /> },
       { path: "/dynamicPageCreation", element: <PageCreation /> },
-
+      { path: "/clientPage", element: <ClientPage /> },
+      { path: "/projectType", element: <ProjectTypePage /> },
+      { path: "/projectRole", element: <ProjectRolePage /> },
+      { path: "/projectPhase", element: <ProjectPhasePage /> },
 
       { path: "*", element: <PageNotReady /> },
     ],
