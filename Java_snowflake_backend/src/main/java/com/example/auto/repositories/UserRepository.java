@@ -1306,7 +1306,7 @@ public class UserRepository {
         }
         return roles;
 	}
-	public List<Map<String, Object>> getProjects() throws SQLException {
+	public List<Map<String, Object>> getProjectTypes() throws SQLException {
 		Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
         try {
@@ -1486,7 +1486,7 @@ public class UserRepository {
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
-            stmt.setString(1, data.get("porjectName").toString());
+            stmt.setString(1, data.get("projectName").toString());
             stmt.setInt(2,(int) data.get("clientId"));
             stmt.setInt(3,(int) data.get("projectTypeId"));
             stmt.setString(4, data.get("createdby").toString());

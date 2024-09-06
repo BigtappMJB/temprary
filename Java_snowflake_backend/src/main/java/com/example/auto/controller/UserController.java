@@ -304,9 +304,9 @@ public class UserController {
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
 
-    @GetMapping("/AllProjects")
+    @GetMapping("/AllProjectTypes")
 	public ResponseEntity<Object> getAllProjects() throws SQLException {
-		List<Map<String, Object>> roles = userRepository.getProjects();
+		List<Map<String, Object>> roles = userRepository.getProjectTypes();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
     
@@ -324,7 +324,7 @@ public class UserController {
 
     @GetMapping("/AllProjectCreation")
   	public ResponseEntity<Object> getAllProjectCreation() throws SQLException {
-  		List<Map<String, Object>> roles = userRepository.getAllProjectPhases();
+  		List<Map<String, Object>> roles = userRepository.getAllProjectCreation();
   		return new ResponseEntity<>(roles, HttpStatus.OK);
   	}
 
@@ -343,7 +343,7 @@ public class UserController {
     // DELETE method to delete role permission
     @DeleteMapping("/AllProjectCreation")
     public ResponseEntity<Map<String, Object>> deleteProjectDetail(@RequestParam(value = "id") String rolePermissionId) {
-        Map<String, Object> response = userRepository.deleteRolePermission(rolePermissionId);
+        Map<String, Object> response = userRepository.deleteProjectDetails(rolePermissionId);
         int statusCode = (int) response.get("status");
         return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
     }
