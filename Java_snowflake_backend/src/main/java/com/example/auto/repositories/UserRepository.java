@@ -1539,4 +1539,59 @@ public class UserRepository {
         }
         return roles;
 	}
+	
+	public Map<String, Object> createProjectEst(Map<String, Object> data) {
+		Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = connector.getDBConnection();
+
+
+            // Prepare SQL statement
+            String sql = "INSERT INTO project_estimate( PROJECT_PHASE_CODE, PROJECT_ROLE_ID, ACTIVITY_CODE,"
+            		+ " START_DATE, END_DATE, NO_OF_HOURS_PER_DAY, TOTAL_HOURS,"
+            		+ " CREATED_BY, CREATED_DATE, UPDATED_BY, UPDATED_DATE, IS_ACTIVE,"
+            		+ "PROJECT_NAME_CODE) "
+            		+ " " +
+                         "VALUES (?,?, ?, ?,?,?,?,?, CURRENT_TIMESTAMP,null, null,?, ?)";
+            stmt = conn.prepareStatement(sql);
+
+            // Set parameters
+            stmt.setString(1, data.get("projectPhaseCode").toString());
+            stmt.setInt(2, (int)data.get("projectRoleId"));
+            stmt.setString(3, data.get("ActivityCode").toString());
+            stmt.setString(4, data.get("startDate").toString());
+            stmt.setString(5, data.get("endDate").toString());
+            stmt.setInt(6, (int)data.get("noOfHours"));
+            stmt.setInt(7, (int)data.get("totalHours"));
+            stmt.setString(8, data.get("createdBy").toString());
+            stmt.setInt(9,(int) data.get("isActive"));
+            stmt.setString(10, data.get("projectNameCode").toString());
+            // Execute the insert operation
+            stmt.executeUpdate();
+
+            // Commit the transaction
+//            conn.commit();
+
+            // Return success message
+            return Map.of("message", "Project Estimation created successfully", "status", 201);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Log the error
+            System.err.println("Error occurred while creating user: " + e.getMessage());
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+	}
 }

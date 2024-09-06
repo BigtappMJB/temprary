@@ -367,6 +367,16 @@ public class UserController {
      		return new ResponseEntity<>(roles, HttpStatus.OK);
      	}
      
+       // POST: Create a new permission
+       @PostMapping("/CreateProjectEst")
+       public ResponseEntity<Map<String, Object>> createProjectEst(@RequestBody Map<String, Object> data) {
+           try {
+               Map<String, Object> response = userRepository.createProjectEst(data);
+               return new ResponseEntity<>(response, HttpStatus.CREATED);
+           } catch (Exception e) {
+               return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+           }
+       }
 }
     // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
 
