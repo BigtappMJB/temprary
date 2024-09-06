@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
   get,
   post,
@@ -33,6 +34,20 @@ export const getProjectPhaseControllers = async () => {
   }
 };
 
+export const getActivityCodecontroller = async (phaseId, roleId) => {
+  try {
+    // Send the GET request to the projectCreation API endpoint
+    const response = await get(
+      `master/AllActivityCodes?phaseId=${phaseId}&projectRoleId=${roleId}`,
+      "python"
+    );
+    // Return the response data
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getActivityCodeController = async () => {
   try {
     // Send the GET request to the cmd API endpoint
@@ -59,7 +74,7 @@ export const getActivityCodeController = async () => {
 export const getProjectEstimationControllers = async () => {
   try {
     // Send the GET request to the cmd API endpoint
-    const response = await get("cmd/Allcmd", "python");
+    const response = await get("master/getAllProjectEst", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -111,22 +126,26 @@ export const projectEstimateCreationController = async (formData) => {
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
+
+    debugger;
+
     const email = decodeData(getCookie(isUserIdCookieName));
 
     // Prepare the body object with sanitized data
     const body = {
-      Phase_ID: formData?.phase.PHASE_ID,
-      Role_ID: formData?.role.Role_ID,
-      Activity_Code_ID: formData?.projectName.ACTIVITY_CODE_ID,
-      Start_Date: formData.startDate.format("YYYY-MM-DD"),
-      End_Date: formData.endDate.format("YYYY-MM-DD"),
-      No_of_Hours_Per_Day: formData.hoursPerDay,
-      Total_Hours: 16,
-      created_by: email,
-      is_active: true,
+      projectNameCode: formData?.projectName.PROJECT_NAME_CODE,
+      projectPhaseCode: formData?.phase.id,
+      projectRoleId: formData?.role.id,
+      ActivityCode: formData?.activityCode.activityName,
+      startDate: moment(formData.startDate).format("YYYY-MM-DD"),
+      endDate: moment(formData.endDate).format("YYYY-MM-DD"),
+      noOfHours: Number(formData.hoursPerDay),
+      totalHours: Number(formData?.totalHours),
+      createdBy: email,
+      isActive: 1,
     };
     // Send the POST request to the cmd API endpoint
-    const response = await post("cmd/addCMD", body, "python");
+    const response = await post("master/CreateProjectEst", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -173,18 +192,23 @@ export const projectEstimateUpdateController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      Phase_ID: formData?.phase.PHASE_ID,
-      Role_ID: formData?.role.Role_ID,
-      Activity_Code_ID: formData?.projectName.ACTIVITY_CODE_ID,
-      Start_Date: formData.startDate.format("YYYY-MM-DD"),
-      End_Date: formData.endDate.format("YYYY-MM-DD"),
-      No_of_Hours_Per_Day: formData.hoursPerDay,
-      Total_Hours: 16,
-      created_by: email,
-      is_active: true,
+      projectNameCode: formData?.projectName.PROJECT_NAME_CODE,
+      projectPhaseCode: formData?.phase.id,
+      projectRoleId: formData?.role.id,
+      ActivityCode: formData?.activityCode.activityName,
+      startDate: moment(formData.startDate).format("YYYY-MM-DD"),
+      endDate: moment(formData.endDate).format("YYYY-MM-DD"),
+      noOfHours: Number(formData.hoursPerDay),
+      totalHours: Number(formData?.totalHours),
+      // created_by: email,
+      // is_active: true,
     };
     // Send the POST request to the cmd API endpoint
-    const response = await post("cmd/addCMD", body, "python");
+    const response = await put(
+      `master/getAllProjectEst?id=${formData?.ID}`,
+      body,
+      "python"
+    );
     // Return the response data
     return response;
   } catch (error) {
@@ -212,7 +236,10 @@ export const projectEstimateDeletionController = async (cmdId) => {
       throw new Error("Invalid form data");
     }
     // Send the DELETE request to the cmd API endpoint
-    const response = await remove(`/cmd/deletecmd/${cmdId}`, "python");
+    const response = await remove(
+      `master/getAllProjectEst?id=${cmdId}`,
+      "python"
+    );
     // Return the response data
     return response;
   } catch (error) {

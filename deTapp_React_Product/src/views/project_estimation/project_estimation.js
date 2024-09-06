@@ -77,15 +77,15 @@ const FormButton = styled(Button)(({ theme }) => ({
 }));
 
 /**
- * CMDPage component displays a user management interface with a form and a data table.
+ * ProjectEstimationPage component displays a user management interface with a form and a data table.
  *
  * @component
  * @example
  * return (
- *   <CMDPage />
+ *   <ProjectEstimationPage />
  * )
  */
-const CMDPage = () => {
+const ProjectEstimationPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
 
@@ -95,7 +95,7 @@ const CMDPage = () => {
   const [activityCode, setActivityCode] = useState([]);
 
   const { startLoading, stopLoading } = useLoading();
-
+  const formRef = useRef({});
   const [formAction, setFormAction] = useState({
     display: false,
     action: "update",
@@ -173,20 +173,6 @@ const CMDPage = () => {
     }
   };
 
-  const getActivityCode = async () => {
-    try {
-      startLoading();
-      const response = await getActivityCodeController();
-      setActivityCode(response);
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
-        return;
-      }
-    } finally {
-      stopLoading();
-    }
-  };
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || [];
   // Fetches roles data and updates the roles list
@@ -211,21 +197,21 @@ const CMDPage = () => {
       getProjectPhase();
       getProjectRole();
       getTableData();
-      getActivityCode();
+
       hasFetchedRoles.current = true;
     }
   }, [menuList]);
 
   const columns = {
     // USER_ID: "Username",
-    target: "Project",
-    sub_target: "Phase",
-    incorporation_city: "Role",
-    sector_classification: "Activity Code",
-    sector_classification1: "Start Date",
-    sector_classificatio2n: "End Date",
-    sector_classificatio3n: "Hours Per Day",
-    sector_classificatio4n: "Total Hours",
+    PROJECT_NAME: "Project",
+    PHASE_NAME: "Phase",
+    PROJECT_ROLE_NAME: "Role",
+    ACTIVITY_CODE: "Activity Code",
+    START_DATE: "Start Date",
+    END_DATE: "End Date",
+    NO_OF_HOURS_PER_DAY: "Hours Per Day",
+    TOTAL_HOURS: "Total Hours",
   };
 
   /**
@@ -271,21 +257,25 @@ const CMDPage = () => {
       else {
         formData = {
           ...formData,
-          ID: selectedValue.id,
+          ID: selectedValue.ESTIMATE_ID,
         };
         response = await projectEstimateUpdateController(formData);
       }
-
-      if (response) {
+      if (response?.message) {
         getTableData();
+        formRef.current?.resetForm();
+        console.log(!isAdd);
+        
         if (!isAdd) {
           onFormReset();
         }
         openDialog(
           "success",
-          `CMD ${isAdd ? "Addition" : "Updation"} Success`,
+          `Project Estimation ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `CMD has been ${isAdd ? "addded" : "updated"} successfully`,
+            `Project Estimation has been ${
+              isAdd ? "addded" : "updated"
+            } successfully`,
           {
             confirm: {
               name: "Ok",
@@ -298,6 +288,28 @@ const CMDPage = () => {
           },
           (confirmed) => {}
         );
+      } else {
+        openDialog(
+          "warning",
+          "Warning",
+          response?.error ||
+            `Project Estimation ${isAdd ? "Addition" : "Updation"} failed`,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            if (confirmed) {
+              return;
+            }
+          }
+        );
       }
     } catch (error) {
       console.error(error);
@@ -305,7 +317,7 @@ const CMDPage = () => {
       openDialog(
         "warning",
         "Warning",
-        `CMD ${isAdd ? "Addition" : "Updation"} failed`,
+        `Project Estimation ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -331,6 +343,7 @@ const CMDPage = () => {
    * Resets the form and hides it.
    */
   const onFormReset = () => {
+    debugger;
     setFormAction({
       display: false,
       action: null,
@@ -428,15 +441,16 @@ const CMDPage = () => {
         action: null,
       });
       const response = await projectEstimateDeletionController(
-        selectedRow.PROJECT_ID
+        selectedRow.ESTIMATE_ID
       );
 
       if (response) {
         getTableData();
         openDialog(
           "success",
-          `CMD Deletion Success`,
-          response.message || `CMD has been deleted successfully  `,
+          `Project Estimation Deletion Success`,
+          response.message ||
+            `Project Estimation has been deleted successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -454,7 +468,7 @@ const CMDPage = () => {
       openDialog(
         "warning",
         "Warning",
-        `CMD Deletion failed`,
+        `Project Estimation Deletion failed`,
         {
           confirm: {
             name: "Ok",
@@ -505,6 +519,7 @@ const CMDPage = () => {
             projectList={project}
             roleList={role}
             phaseList={phase}
+            ref={(el) => (formRef.current = el)}
             activityList={activityCode}
           />
         </Container>
@@ -566,4 +581,4 @@ const CMDPage = () => {
   );
 };
 
-export default CMDPage;
+export default ProjectEstimationPage;
