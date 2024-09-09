@@ -1409,6 +1409,97 @@ public class UserRepository {
 
     }
     
+    public Map<String, Object> updateClient(String id, Map<String, Object> data) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int projectId = Integer.parseInt(id);
+        try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "UPDATE client_info SET CLIENT_NAME = ? WHERE CLIENT_CODE_ID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set parameters
+            stmt.setString(1, data.get("clientName").toString());
+            stmt.setInt(2, projectId);
+
+            // Execute the update operation
+            int rowsUpdated = stmt.executeUpdate();
+
+            // Check if the update was successful
+            if (rowsUpdated > 0) {
+                // conn.commit(); // Commit the transaction
+                return Map.of("message", "client updated successfully", "status", 200);
+            } else {
+                return Map.of("message", "client not found", "status", 404);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log the exception
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+    }
+
+    
+    public Map<String, Object> deleteClientById(String projectId) {
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "DELETE FROM client_info WHERE CLIENT_CODE_ID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the role permission ID parameter
+            stmt.setString(1, projectId.toString());
+
+            // Execute the delete operation
+            int rowsDeleted = stmt.executeUpdate();
+
+            // Check if the delete was successful
+
+            if (rowsDeleted > 0) {
+                // conn.commit(); // Commit the transaction
+                return Map.of("message", "Client  deleted successfully", "status", 200);
+            } else {
+                return Map.of("message", "Client  details  not found", "status", 404);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log the exception
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+    }
+
+    
     
     
     

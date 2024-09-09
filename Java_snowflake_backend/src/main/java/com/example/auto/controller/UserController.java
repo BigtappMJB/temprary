@@ -298,6 +298,8 @@ public class UserController {
         return ResponseEntity.status(400).body("{\"error\": \"Invalid request parameter\"}");
     }
 
+    
+    //Clients
 	@GetMapping("/AllClients")
 	public ResponseEntity<Object> getAllClients() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getClients();
@@ -314,7 +316,22 @@ public class UserController {
 		}
 	}
 	
+	@PutMapping("/updateClient")
+	public ResponseEntity<Map<String, Object>> updateClient(@RequestParam(value = "id") String id,
+			@RequestBody Map<String, Object> data) {
+
+		Map<String, Object> response = userRepository.updateClient(id, data);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
 	
+	@DeleteMapping("/deleteClientById")
+	public ResponseEntity<Map<String, Object>> deleteClientById(
+			@RequestParam(value = "id") String rolePermissionId) {
+		Map<String, Object> response = userRepository.deleteClientById(rolePermissionId);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
 	
 	
 	
