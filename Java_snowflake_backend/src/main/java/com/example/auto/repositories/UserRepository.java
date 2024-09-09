@@ -1672,7 +1672,7 @@ public class UserRepository {
                     "SELECT pe.*,pr.PROJECT_ROLE_NAME,pp.PHASE_NAME,pd.PROJECT_NAME_CODE,pd.PROJECT_NAME\n" + //
                             "FROM project_estimate pe JOIN project_role pr ON pe.PROJECT_ROLE_ID = pr.PROJECT_ROLE_ID JOIN project_phases pp ON pe.PROJECT_PHASE_CODE = pp.PHASE_CODE\n"
                             + //
-                            "JOIN project_details pd ON pe.PROJECT_NAME_CODE = pd.PROJECT_NAME_CODE ORDERY BY CREA ");
+                            "JOIN project_details pd ON pe.PROJECT_NAME_CODE = pd.PROJECT_NAME_CODE  ORDER BY pe.CREATED_DATE DESC");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Map<String, Object> roleMap = new HashMap<>();
