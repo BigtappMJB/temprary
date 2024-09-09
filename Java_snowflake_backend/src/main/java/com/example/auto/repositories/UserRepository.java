@@ -1619,9 +1619,9 @@ public class UserRepository {
             String sql = "INSERT INTO project_estimate( PROJECT_PHASE_CODE, PROJECT_ROLE_ID, ACTIVITY_CODE,"
                     + " START_DATE, END_DATE, NO_OF_HOURS_PER_DAY, TOTAL_HOURS,"
                     + " CREATED_BY, CREATED_DATE, UPDATED_BY, UPDATED_DATE, IS_ACTIVE,"
-                    + "PROJECT_NAME_CODE) "
+                    + "PROJECT_NAME_CODE,No_of_working_days) "
                     + " " +
-                    "VALUES (?,?, ?, ?,?,?,?,?, CURRENT_TIMESTAMP,null, null,?, ?)";
+                    "VALUES (?,?, ?, ?,?,?,?,?, CURRENT_TIMESTAMP,null, null,?, ?,?)";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
@@ -1635,6 +1635,7 @@ public class UserRepository {
             stmt.setString(8, data.get("createdBy").toString());
             stmt.setInt(9, (int) data.get("isActive"));
             stmt.setString(10, data.get("projectNameCode").toString());
+            stmt.setInt(11, (int) data.get("noOfWorkingDays"));
             // Execute the insert operation
             stmt.executeUpdate();
 
