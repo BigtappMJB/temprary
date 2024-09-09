@@ -19,11 +19,12 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for form validation using Yup
 const schema = yup.object().shape({
+  code: yup.string().required("Code is required"),
   name: yup
     .string()
     .required("Name is required")
     .matches(validationRegex.isSingleWord, errorMessages.singleWord),
-  // description: yup
+  // code: yup
   //   .string()
   //   .required("Description is required")
   //   .matches(validationRegex.bio, errorMessages.bio),
@@ -45,7 +46,7 @@ const schema = yup.object().shape({
  * const formAction = { action: 'add' };
  * const defaultValues = {
  *   name: 'role',
- *   role: 'description',
+ *   role: 'code',
  * };
 
  *
@@ -82,7 +83,7 @@ const ProjectTypesFormComponent = ({
     if (defaultValues) {
       reset({
         name: defaultValues.name ?? "",
-        description: defaultValues.description ?? "",
+        code: defaultValues.id ?? "",
       });
     }
   }, [defaultValues, reset, rolesList, formAction]);
@@ -93,7 +94,7 @@ const ProjectTypesFormComponent = ({
     if (formAction.action === "add") {
       reset({
         name: "",
-        description: "",
+        code: "",
       });
     }
   }, [formAction, reset, defaultValues]);
@@ -117,7 +118,7 @@ const ProjectTypesFormComponent = ({
     onReset();
     reset({
       name: "",
-      description: "",
+      code: "",
     });
   };
 
@@ -128,7 +129,7 @@ const ProjectTypesFormComponent = ({
     onSubmit(getValues());
     reset({
       name: "",
-      description: "",
+      code: "",
     });
   };
 
@@ -139,6 +140,26 @@ const ProjectTypesFormComponent = ({
       onSubmit={handleSubmit(onLocalSubmit)}
     >
       <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="code"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Code"
+                fullWidth
+                variant="outlined"
+                error={!!errors.code}
+                helperText={errors.code?.message}
+                InputLabelProps={{ shrink: field.value }}
+                InputProps={{
+                  readOnly: readOnly, // Make the field read-only
+                }}
+              />
+            )}
+          />
+        </Grid>
         <Grid item xs={12} sm={6}>
           <Controller
             name="name"
@@ -161,7 +182,7 @@ const ProjectTypesFormComponent = ({
         </Grid>
         {/* <Grid item xs={12} sm={6}>
           <Controller
-            name="description"
+            name="code"
             control={control}
             render={({ field }) => (
               <TextField
@@ -169,8 +190,8 @@ const ProjectTypesFormComponent = ({
                 label="Description"
                 fullWidth
                 variant="outlined"
-                error={!!errors.description}
-                helperText={errors.description?.message}
+                error={!!errors.code}
+                helperText={errors.code?.message}
                 InputLabelProps={{ shrink: field.value }}
                 InputProps={{
                   readOnly: readOnly, // Make the field read-only

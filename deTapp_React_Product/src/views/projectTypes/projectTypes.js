@@ -138,7 +138,7 @@ const Roles = () => {
   }, [menuList]);
 
   const columns = {
-    name: "ProjectType",
+    name: "Project Type",
     // description: "Description",
   };
 
@@ -194,9 +194,9 @@ const Roles = () => {
         }
         openDialog(
           "success",
-          `ProjectType ${isAdd ? "Addition" : "Updation"} Success`,
+          `Project Type ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `ProjectType has been ${isAdd ? "addded" : "updated"} successfully  `,
+            `Project Type has been ${isAdd ? "addded" : "updated"} successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -215,7 +215,7 @@ const Roles = () => {
       openDialog(
         "warning",
         "Warning",
-        `ProjectType ${isAdd ? "Addition" : "Updation"} failed`,
+        `Project Type ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -344,8 +344,8 @@ const Roles = () => {
 
         openDialog(
           "success",
-          `ProjectType Deletion Success`,
-          response.message || `ProjectType has been deleted successfully  `,
+          `Project Type Deletion Success`,
+          response.message || `Project Type has been deleted successfully  `,
 
           {
             confirm: {
@@ -365,7 +365,7 @@ const Roles = () => {
       openDialog(
         "warning",
         "Warning",
-        error.errorMessage || `ProjectType Deletion failed`,
+        error.errorMessage || `Project Type Deletion failed`,
         {
           confirm: {
             name: "Ok",
@@ -398,7 +398,7 @@ const Roles = () => {
                 : formAction.action === "update"
                 ? "Update"
                 : "Read "}{" "}
-              ProjectType
+              Project Type
             </Typography>
           </Header>
           <FormComponent
@@ -413,7 +413,7 @@ const Roles = () => {
       <SecondContainer className="common-table">
         <SubHeader className="table-header">
           <Typography variant="h6">
-            <b>ProjectTypes List</b>
+            <b>Project Types List</b>
           </Typography>
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">
             <FormButton
@@ -427,7 +427,7 @@ const Roles = () => {
               }`}
               disabled={formAction.action === "add" && formAction.display}
             >
-              Add ProjectType
+              Add Project Type
             </FormButton>
           </Box>
         </SubHeader>

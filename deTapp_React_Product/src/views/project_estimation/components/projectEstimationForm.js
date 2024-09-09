@@ -66,13 +66,33 @@ const schema = yup.object().shape({
     .required("Hours is required")
     .positive("Number should be postive")
     .max(24, "Hours cannot exceed 24"),
+  workingDays: yup
+    .number()
+    .nullable() // Allows null values initially
+    .transform(
+      (value, originalValue) => (originalValue === "" ? null : value) // Convert empty string to null
+    )
+    .required("Working Days is required")
+    .positive("Number should be postive")
+    .test("max-days", function (value) {
+      const { startDate, endDate } = this.parent;
+
+      if (!startDate || !endDate) return true; // Skip validation if either date is not provided
+
+      const maxDaysDiff = moment(endDate).diff(moment(startDate), "days") + 1;
+      // Dynamically create the error message based on maxDaysDiff
+      const isValid = value <= maxDaysDiff;
+
+      // Return the validation result and error message
+      return (
+        isValid ||
+        this.createError({
+          message: `Working days cannot exceed ${maxDaysDiff} days`,
+        })
+      );
+    }),
 
   totalHours: yup.string(),
-  // .default(0)
-  // .nullable() // Allows null values initially
-  // .required("Hours is required")
-  // .positive("Number should be postive")
-  // .max(24, "Hours cannot exceed 24"),
 });
 
 const ProjectEstimateFormComponent = forwardRef(
@@ -96,7 +116,7 @@ const ProjectEstimateFormComponent = forwardRef(
       reset,
       getValues,
       watch,
-      formState: { errors, isDirty, isValid, touchedFields, isSubmitting },
+      formState: { errors },
     } = useForm({
       mode: "onChange",
       resolver: yupResolver(schema),
@@ -106,8 +126,17 @@ const ProjectEstimateFormComponent = forwardRef(
 
     const activityCodeList = useRef([]);
 
-    const calculateTotalHours = (startDate, endDate, hoursPerDay) => {
-      const diffInDays = moment(endDate).diff(moment(startDate), "days") + 1; // +1 to include both start and end date
+    const getDaysDiff = (startDate, endDate) => {
+      return moment(endDate).diff(moment(startDate), "days") + 1;
+    };
+
+    const calculateTotalHours = (
+      startDate,
+      endDate,
+      hoursPerDay,
+      workingDays
+    ) => {
+      const diffInDays = workingDays ?? getDaysDiff(startDate, endDate); // +1 to include both start and end date
       return diffInDays * hoursPerDay;
     };
 
@@ -118,6 +147,9 @@ const ProjectEstimateFormComponent = forwardRef(
       activityCode: false,
       startDate: false,
       endDate: false,
+      totalHours: false,
+      hoursPerDay: false,
+      workingDays: false,
     });
 
     useEffect(() => {
@@ -125,14 +157,16 @@ const ProjectEstimateFormComponent = forwardRef(
         if (
           name === "startDate" ||
           name === "endDate" ||
-          name === "hoursPerDay"
+          name === "hoursPerDay" ||
+          name === "workingDays"
         ) {
-          const { startDate, endDate, hoursPerDay } = value;
+          const { startDate, endDate, hoursPerDay, workingDays } = value;
           if (startDate && endDate && hoursPerDay) {
             const totalHours = calculateTotalHours(
               startDate,
               endDate,
-              hoursPerDay
+              hoursPerDay,
+              workingDays
             );
             reset({
               ...getValues(),
@@ -147,12 +181,14 @@ const ProjectEstimateFormComponent = forwardRef(
     // Effect to set default values and reset the form
     useEffect(() => {
       if (defaultValues) {
+        console.log({ defaultValues });
+
         const projectName =
           projectList.find(
             (data) => data.PROJECT_NAME_CODE === defaultValues.PROJECT_NAME_CODE
           ) || null;
         const role =
-          roleList.find((data) => data.id === defaultValues.Project_ROLE_ID) ||
+          roleList.find((data) => data.id === defaultValues.PROJECT_ROLE_ID) ||
           null;
 
         const phase =
@@ -173,6 +209,7 @@ const ProjectEstimateFormComponent = forwardRef(
           hoursPerDay: Number(defaultValues?.NO_OF_HOURS_PER_DAY) ?? null,
           totalHours: defaultValues?.TOTAL_HOURS ?? null,
           activityCode: null,
+          workingDays: null,
         });
         formAction.action !== "add" &&
           defaultValues?.ACTIVITY_CODE &&
@@ -183,6 +220,7 @@ const ProjectEstimateFormComponent = forwardRef(
     // Expose a method to trigger validation via ref
     useImperativeHandle(ref, () => ({
       resetForm: async () => {
+        debugger;
         reset({
           projectName: null,
           role: null,
@@ -192,6 +230,7 @@ const ProjectEstimateFormComponent = forwardRef(
           hoursPerDay: "",
           totalHours: null,
           activityCode: null,
+          workingDays: null,
         });
       },
     }));
@@ -209,6 +248,7 @@ const ProjectEstimateFormComponent = forwardRef(
           hoursPerDay: "",
           totalHours: null,
           activityCode: null,
+          workingDays: null,
         });
       }
     }, [formAction, reset]);
@@ -240,6 +280,7 @@ const ProjectEstimateFormComponent = forwardRef(
         hoursPerDay: "",
         totalHours: null,
         activityCode: null,
+        workingDays: null,
       });
     };
 
@@ -248,7 +289,7 @@ const ProjectEstimateFormComponent = forwardRef(
      */
     const onLocalSubmit = (data) => {
       onSubmit(data);
-      handleReset(); // Clear form after submission
+      // handleReset(); // Clear form after submission
     };
 
     const getActivityCode = async (defaultValue = null) => {
@@ -297,8 +338,8 @@ const ProjectEstimateFormComponent = forwardRef(
                       {...params}
                       label="Select project"
                       fullWidth
-                      error={!!errors.menu}
-                      helperText={errors.menu?.message}
+                      error={!!errors.projectName}
+                      helperText={errors.projectName?.message}
                       InputLabelProps={{
                         shrink: Boolean(field.value || isFocused.project),
                       }}
@@ -505,6 +546,34 @@ const ProjectEstimateFormComponent = forwardRef(
 
           <Grid item xs={12} sm={3}>
             <Controller
+              name="workingDays"
+              control={control}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  value={field.value || null}
+                  type="number"
+                  label="Working days"
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  InputLabelProps={{
+                    shrink: Boolean(field.value || isFocused.workingDays),
+                  }}
+                  InputProps={{
+                    ...field.InputProps,
+                    readOnly: readOnly,
+                    onFocus: () =>
+                      setIsFocused({ ...isFocused, workingDays: true }),
+                    onBlur: () =>
+                      setIsFocused({ ...isFocused, workingDays: false }),
+                  }}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={3}>
+            <Controller
               name="hoursPerDay"
               control={control}
               render={({ field, fieldState }) => (
@@ -512,11 +581,19 @@ const ProjectEstimateFormComponent = forwardRef(
                   {...field}
                   value={field.value || null}
                   type="number"
-                  label="Hours Per Day"
+                  label="Hours/Day"
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
                   InputLabelProps={{
-                    shrink: Boolean(field.value),
+                    shrink: Boolean(field.value || isFocused.hoursPerDay),
+                  }}
+                  InputProps={{
+                    ...field.InputProps,
+                    readOnly: readOnly,
+                    onFocus: () =>
+                      setIsFocused({ ...isFocused, hoursPerDay: true }),
+                    onBlur: () =>
+                      setIsFocused({ ...isFocused, hoursPerDay: false }),
                   }}
                 />
               )}
@@ -536,7 +613,15 @@ const ProjectEstimateFormComponent = forwardRef(
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
                   InputLabelProps={{
-                    shrink: Boolean(field.value),
+                    shrink: Boolean(field.value || isFocused.totalHours),
+                  }}
+                  InputProps={{
+                    ...field.InputProps,
+                    readOnly: readOnly,
+                    onFocus: () =>
+                      setIsFocused({ ...isFocused, totalHours: true }),
+                    onBlur: () =>
+                      setIsFocused({ ...isFocused, totalHours: false }),
                   }}
                 />
               )}

@@ -210,7 +210,8 @@ const ProjectEstimationPage = () => {
     ACTIVITY_CODE: "Activity Code",
     START_DATE: "Start Date",
     END_DATE: "End Date",
-    NO_OF_HOURS_PER_DAY: "Hours Per Day",
+    WORKING_DAYS: "Working Days",
+    NO_OF_HOURS_PER_DAY: "Hours/Day",
     TOTAL_HOURS: "Total Hours",
   };
 
@@ -265,8 +266,9 @@ const ProjectEstimationPage = () => {
         getTableData();
         formRef.current?.resetForm();
         console.log(!isAdd);
-        
+
         if (!isAdd) {
+          debugger;
           onFormReset();
         }
         openDialog(
