@@ -383,8 +383,28 @@ public class UserController {
      		List<Map<String, Object>> roles = userRepository.getAllProjectEst();
      		return new ResponseEntity<>(roles, HttpStatus.OK);
      	}
+       
+       
+       
+       // PUT method to update role permission
+       @PutMapping("/getAllProjectEst")
+       public ResponseEntity<Map<String, Object>> updategetAllProjectEst(
+               @RequestParam(value = "id") String id, 
+               @RequestBody Map<String, Object> data) {
+           
+           Map<String, Object> response = userRepository.updategetAllProjectEst(id, data);
+           int statusCode = (int) response.get("status");
+           return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+       }
 
 
+       // DELETE method to delete role permission
+       @DeleteMapping("/DeleteProjectEstById")
+       public ResponseEntity<Map<String, Object>> deleteProjectEstById(@RequestParam(value = "id") String rolePermissionId) {
+           Map<String, Object> response = userRepository.deleteProjectEstById(rolePermissionId);
+           int statusCode = (int) response.get("status");
+           return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+       }
 }
     // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
 

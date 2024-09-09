@@ -1691,4 +1691,108 @@ public class UserRepository {
         }
         return roles;
     }
+
+    
+    public Map<String, Object> updategetAllProjectEst(String id, Map<String, Object> data) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int projectId = Integer.parseInt(id);
+        try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "UPDATE PROJECT_ESTIMATE SET PROJECT_PHASE_CODE = ?, PROJECT_ROLE_ID = ?, "
+            		+ "ACTIVITY_CODE = ?, START_DATE = ?,END_DATE = ?,NO_OF_HOURS_PER_DAY = ?, TOTAL_HOURS = ?, "
+            		+ "PROJECT_NAME_CODE = ?,No_of_working_days = ? " +
+                    "WHERE ESTIMATE_ID =?;";
+            stmt = conn.prepareStatement(sql);
+
+            // Set parameters
+            stmt.setString(1, data.get("projectPhaseCode").toString());
+            stmt.setInt(2, (int) data.get("projectRoleId"));
+            stmt.setString(3, data.get("ActivityCode").toString());
+            stmt.setString(4, data.get("startDate").toString());
+            stmt.setString(5, data.get("endDate").toString());
+            stmt.setInt(6, (int) data.get("noOfHours"));
+            stmt.setInt(7, (int) data.get("totalHours"));
+            stmt.setString(8, data.get("projectNameCode").toString());
+            stmt.setInt(9, (int) data.get("noOfWorkingDays"));
+            stmt.setInt(10, projectId);
+            // Execute the update operation
+            int rowsUpdated = stmt.executeUpdate();
+
+            // Check if the update was successful
+            if (rowsUpdated > 0) {
+                // conn.commit(); // Commit the transaction
+                return Map.of("message", "project creation updated successfully", "status", 200);
+            } else {
+                return Map.of("message", "Project creation not found", "status", 404);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log the exception
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+    }
+
+    
+    
+
+    public Map<String, Object> deleteProjectEstById(String projectEstId) {
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int rolePermissionIds = Integer.parseInt(projectEstId);
+        try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "DELETE FROM PROJECT_ESTIMATE WHERE ESTIMATE_ID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the role permission ID parameter
+            stmt.setInt(1, rolePermissionIds);
+
+            // Execute the delete operation
+            int rowsDeleted = stmt.executeUpdate();
+
+            // Check if the delete was successful
+
+            if (rowsDeleted > 0) {
+                // conn.commit(); // Commit the transaction
+                return Map.of("message", "Project estimatie deleted successfully", "status", 200);
+            } else {
+                return Map.of("message", "Project estimatie not found", "status", 404);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log the exception
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+    }
+
 }
