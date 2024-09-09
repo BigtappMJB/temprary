@@ -1444,20 +1444,20 @@ public class UserRepository {
     public Map<String, Object> updateAllProjectCreation(String id, Map<String, Object> data) {
         Connection conn = null;
         PreparedStatement stmt = null;
-        int projectId = Integer.parseInt(id);
+        String projectId = id;
         try {
             conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "UPDATE PROJECT_DETAILS SET project_name = ?, client_id = ?, project_type_id = ? " +
-                    "WHERE PROJECT_ID =?";
+            String sql = "UPDATE PROJECT_DETAILS SET project_name = ?, client_id = ?, project_type_code = ? " +
+                    "WHERE PROJECT_NAME_CODE =?";
             stmt = conn.prepareStatement(sql);
 
             // Set parameters
-            stmt.setString(1, (String) data.get("projectName"));
+            stmt.setString(1, data.get("projectName").toString());
             stmt.setInt(2, (int) data.get("clientId"));
-            stmt.setInt(3, (int) data.get("projectTypeid"));
-            stmt.setInt(4, projectId);
+            stmt.setString(3, data.get("projectTypeCode").toString());
+            stmt.setString(4, projectId.toString());
 
             // Execute the update operation
             int rowsUpdated = stmt.executeUpdate();
