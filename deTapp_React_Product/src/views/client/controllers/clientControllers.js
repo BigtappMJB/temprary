@@ -102,11 +102,11 @@ export const clientupdateController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      name: titleCaseFirstWord(formData.name.trim()),
+      clientName: titleCaseFirstWord(formData.name.trim()),
     };
     // Send the PUT request to the client API endpoint
     const response = await put(
-      `/client/updateclient/${formData.ID}`,
+      `/master/updateClient?id=${formData.ID}`,
       body,
       "python"
     );
@@ -137,7 +137,7 @@ export const clientdeleteController = async (clientId) => {
       throw new Error("Invalid client ID");
     }
     // Send the DELETE request to the client API endpoint
-    const response = await remove(`client/deleteclients/${clientId}`, "python");
+    const response = await remove(`master/deleteClientById?id=${clientId}`, "python");
     // Return the response data
     return response;
   } catch (error) {

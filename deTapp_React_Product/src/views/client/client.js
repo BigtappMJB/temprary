@@ -187,10 +187,9 @@ const Roles = () => {
         formData = { ...formData, ID: selectedValue.id };
         response = await clientupdateController(formData);
       }
-
-      if (response) {
+      if (response?.message) {
         getRoles();
-        formRef.current.reset()
+        formRef.current.resetForm();
         if (!isAdd) {
           onFormReset();
         }
@@ -212,12 +211,31 @@ const Roles = () => {
           (confirmed) => {}
         );
       }
+      if (response?.error) {
+        openDialog(
+          "success",
+          `Client ${isAdd ? "Addition" : "Updation"} Failed`,
+          response?.error || `Client ${isAdd ? "addded" : "updated"} Failed `,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {}
+        );
+      }
     } catch (error) {
       const isAdd = formAction.action === "add";
       openDialog(
         "warning",
         "Warning",
-        `Client ${isAdd ? "Addition" : "Updation"} failed`,
+        error?.errorMessage ||
+          `Client ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",

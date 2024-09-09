@@ -27,7 +27,7 @@ const schema = yup.object().shape({
   name: yup
     .string()
     .required("Name is required")
-    .matches(validationRegex.isSingleWord, errorMessages.singleWord),
+    // .matches(validationRegex.isSingleWord, errorMessages.singleWord),
   // description: yup
   //   .string()
   //   .required("Description is required")
@@ -137,7 +137,6 @@ const FormComponent = forwardRef(
       resetForm: async () => {
         reset({
           name: "",
-          description: "",
         });
       },
     }));
