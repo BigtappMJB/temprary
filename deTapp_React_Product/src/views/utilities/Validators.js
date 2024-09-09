@@ -107,7 +107,7 @@ export const validationRegex = {
   /**
    * Regex to validate a string containing only numbers.
    */
-  isNumbers: /[0-9]+$/,
+  isNumbers: /^\d+$/,
 
   /**
    * Regex to validate a string containing only alphabets.

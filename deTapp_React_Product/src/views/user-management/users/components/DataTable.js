@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import {
   Table,
   TableBody,
@@ -49,10 +55,17 @@ const DataTable = ({
   // Add S.NO column to the columns definition
   const extendedColumns = { sno: "S.No", ...columns };
 
+  // Add S.NO column to tableData
+  const dataWithSno = useMemo(() => {
+    return tableData.map((row, index) => ({
+      ...row,
+      sno: index + 1,
+    }));
+  }, [tableData]);
+
   // Memoize filtered data to optimize performance
   const filteredData = useMemo(() => {
-
-    return tableData.filter((row, index) => {
+    return dataWithSno.filter((row, index) => {
       const sno = page * rowsPerPage + index + 1;
       return Object.keys(filter).every((key) => {
         const valueToFilter = key === "sno" ? sno : row[key];
@@ -62,21 +75,14 @@ const DataTable = ({
           .includes(filter[key].toLowerCase());
       });
     });
-  }, [tableData, filter, page, rowsPerPage]);
+  }, [dataWithSno, filter, page, rowsPerPage]);
 
   // Memoize sorted data based on the sorting criteria
   const sortedData = useMemo(() => {
     return filteredData.slice().sort((a, b) => {
       if (order === "original") {
-        return tableData.indexOf(a) - tableData.indexOf(b);
+        return dataWithSno.indexOf(a) - dataWithSno.indexOf(b);
       }
-
-      if (orderBy === "sno") {
-        const snoA = filteredData.indexOf(a) + 1;
-        const snoB = filteredData.indexOf(b) + 1;
-        return order === "asc" ? snoA - snoB : snoB - snoA;
-      }
-
       if (validationRegex.isNumbers.test(a[orderBy])) {
         return order === "asc"
           ? a[orderBy] - b[orderBy]
@@ -87,7 +93,7 @@ const DataTable = ({
         ? a[orderBy].localeCompare(b[orderBy])
         : b[orderBy].localeCompare(a[orderBy]);
     });
-  }, [filteredData, order, orderBy, tableData]);
+  }, [filteredData, order, orderBy, dataWithSno]);
 
   const paginatedData = useMemo(() => {
     return sortedData.slice(
@@ -131,7 +137,6 @@ const DataTable = ({
                 <StyledTableCell key={key}>
                   <TableSortLabel
                     active={orderBy === key}
-                    disabled={key === "sno"}
                     direction={orderBy === key ? order : "asc"}
                     onClick={() => handleRequestSort(key)}
                     style={{
@@ -150,13 +155,7 @@ const DataTable = ({
                     name={key}
                     onChange={handleFilterChange}
                     variant="outlined"
-                    sx={{
-                      visibility: key === "sno" && "hidden",
-                    }}
-                    disabled={key === "sno"}
-                    placeholder={
-                      key !== "sno" && `Search ${extendedColumns[key]}`
-                    }
+                    placeholder={`Search ${extendedColumns[key]}`}
                     fullWidth
                   />
                 </StyledTableCell>
@@ -200,17 +199,13 @@ const DataTable = ({
                   backgroundColor: index % 2 !== 0 ? "#f2f2f2" : "inherit",
                 }}
               >
-                {/* Display Serial Number (S.No) */}
-                <StyledTableCell style={{ textAlign: "center" }}>
-                  {page * rowsPerPage + index + 1}
-                </StyledTableCell>
 
-                {Object.keys(columns).map((key) => (
+                {Object.keys(extendedColumns).map((key) => (
                   <StyledTableCell
                     key={key}
                     style={{
                       textAlign: validationRegex.isNumbers.test(row[key])
-                        ? "left"
+                        ? "center"
                         : "left",
                     }}
                   >
