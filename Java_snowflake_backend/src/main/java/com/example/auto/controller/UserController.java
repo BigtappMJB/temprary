@@ -298,36 +298,63 @@ public class UserController {
         return ResponseEntity.status(400).body("{\"error\": \"Invalid request parameter\"}");
     }
 
-    @GetMapping("/AllClients")
+	@GetMapping("/AllClients")
 	public ResponseEntity<Object> getAllClients() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getClients();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
+	
+	@PostMapping("/createClient")
+	public ResponseEntity<Object> createClients(@RequestBody Map<String, Object> data) throws SQLException {
+		try {
+			Map<String, Object> response = userRepository.createClients(data);
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	
+	
+	
 
-    @GetMapping("/AllProjectTypes")
+	@GetMapping("/AllProjectTypes")
 	public ResponseEntity<Object> getAllProjects() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getProjectTypes();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
-    
-    @GetMapping("/AllProjectRoles")
+
+	@GetMapping("/AllProjectRoles")
 	public ResponseEntity<Object> getAllProjectRoles() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getAllProjectRoles();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
 
-    @GetMapping("/AllProjectPhases")
+	@GetMapping("/AllProjectPhases")
 	public ResponseEntity<Object> getAllProjectPhases() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getAllProjectPhases();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
-    
-    //Project creation
+	
+	
+
+	// Project creation
 
 	@GetMapping("/AllProjectCreation")
 	public ResponseEntity<Object> getAllProjectCreation() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getAllProjectCreation();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
+
+	@PostMapping("/AllProjectCreation")
+	public ResponseEntity<Map<String, Object>> createAllProjectCreation(@RequestBody Map<String, Object> data) {
+		try {
+			Map<String, Object> response = userRepository.createAllProjectCreation(data);
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@PutMapping("/AllProjectCreation")
@@ -347,61 +374,48 @@ public class UserController {
 		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
 	}
 
-	@PostMapping("/AllProjectCreation")
-	public ResponseEntity<Map<String, Object>> createAllProjectCreation(@RequestBody Map<String, Object> data) {
+
+	
+	
+	// Project Estimation
+
+	@GetMapping("/getAllProjectEst")
+	public ResponseEntity<Object> getAllProjectEst() throws SQLException {
+		List<Map<String, Object>> roles = userRepository.getAllProjectEst();
+		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
+
+	@PostMapping("/CreateProjectEst")
+	public ResponseEntity<Map<String, Object>> createProjectEst(@RequestBody Map<String, Object> data) {
 		try {
-			Map<String, Object> response = userRepository.createAllProjectCreation(data);
+			Map<String, Object> response = userRepository.createProjectEst(data);
 			return new ResponseEntity<>(response, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-       
-     
 
-    
+	@PutMapping("/getAllProjectEst")
+	public ResponseEntity<Map<String, Object>> updategetAllProjectEst(@RequestParam(value = "id") String id,
+			@RequestBody Map<String, Object> data) {
 
-       
-		// Project Estimation
-
-		@GetMapping("/getAllProjectEst")
-		public ResponseEntity<Object> getAllProjectEst() throws SQLException {
-			List<Map<String, Object>> roles = userRepository.getAllProjectEst();
-			return new ResponseEntity<>(roles, HttpStatus.OK);
-		}
-
-		@PostMapping("/CreateProjectEst")
-		public ResponseEntity<Map<String, Object>> createProjectEst(@RequestBody Map<String, Object> data) {
-			try {
-				Map<String, Object> response = userRepository.createProjectEst(data);
-				return new ResponseEntity<>(response, HttpStatus.CREATED);
-			} catch (Exception e) {
-				return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
-
-		@PutMapping("/getAllProjectEst")
-		public ResponseEntity<Map<String, Object>> updategetAllProjectEst(@RequestParam(value = "id") String id,
-				@RequestBody Map<String, Object> data) {
-
-			Map<String, Object> response = userRepository.updategetAllProjectEst(id, data);
-			int statusCode = (int) response.get("status");
-			return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
-		}
-
-		@DeleteMapping("/DeleteProjectEstById")
-		public ResponseEntity<Map<String, Object>> deleteProjectEstById(
-				@RequestParam(value = "id") String rolePermissionId) {
-			Map<String, Object> response = userRepository.deleteProjectEstById(rolePermissionId);
-			int statusCode = (int) response.get("status");
-			return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
-		}
-
-		@GetMapping("/AllActivityCodes")
-		public ResponseEntity<Object> getAllActivityCodes(@RequestParam(value = "phaseId") String phaseId,
-				@RequestParam(value = "projectRoleId") int projectRoleId) throws SQLException {
-			List<Map<String, Object>> roles = userRepository.getAllActivityCodes(phaseId, projectRoleId);
-			return new ResponseEntity<>(roles, HttpStatus.OK);
-		}
+		Map<String, Object> response = userRepository.updategetAllProjectEst(id, data);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
 	}
-    
+
+	@DeleteMapping("/DeleteProjectEstById")
+	public ResponseEntity<Map<String, Object>> deleteProjectEstById(
+			@RequestParam(value = "id") String rolePermissionId) {
+		Map<String, Object> response = userRepository.deleteProjectEstById(rolePermissionId);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
+
+	@GetMapping("/AllActivityCodes")
+	public ResponseEntity<Object> getAllActivityCodes(@RequestParam(value = "phaseId") String phaseId,
+			@RequestParam(value = "projectRoleId") int projectRoleId) throws SQLException {
+		List<Map<String, Object>> roles = userRepository.getAllActivityCodes(phaseId, projectRoleId);
+		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
+}

@@ -1361,6 +1361,57 @@ public class UserRepository {
         }
         return roles;
     }
+    
+    
+    public Map<String, Object> createClients(Map<String, Object> data) throws SQLException {
+    	Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "INSERT INTO client_info (CLIENT_NAME, CREATED_BY, IS_ACTIVE) VALUES (?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+
+            // Set parameters
+            stmt.setString(1, data.get("clientName").toString());
+            stmt.setString(2, data.get("createdBy").toString());
+            stmt.setInt(3, (int) data.get("isActive"));
+
+            // Execute the insert operation
+            stmt.executeUpdate();
+
+            // Commit the transaction
+            // conn.commit();
+
+            // Return success message
+            return Map.of("message", "client created successfully", "status", 201);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Log the error
+            System.err.println("Error occurred while creating user: " + e.getMessage());
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+
+    }
+    
+    
+    
+    
 
     public List<Map<String, Object>> getProjectTypes() throws SQLException {
         Connection conn = connector.getDBConnection();
