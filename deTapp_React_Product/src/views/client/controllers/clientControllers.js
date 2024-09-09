@@ -4,10 +4,12 @@ import {
   put,
   remove,
 } from "../../utilities/apiservices/apiServices";
-import { titleCaseFirstWord } from "../../utilities/generals";
+import { getCookie } from "../../utilities/cookieServices/cookieServices";
+import { isUserIdCookieName, titleCaseFirstWord } from "../../utilities/generals";
+import { decodeData } from "../../utilities/securities/encodeDecode";
 
 /**
- * Fetches the list of roles from the API.
+ * Fetches the list of clients from the API.
  *
  * @async
  * @function getRolesController
@@ -20,7 +22,7 @@ import { titleCaseFirstWord } from "../../utilities/generals";
  */
 export const getRolesController = async () => {
   try {
-    // Send the GET request to the role API endpoint
+    // Send the GET request to the client API endpoint
     const response = await get("/master/AllClients", "python");
     // Return the response data
     return response;
@@ -30,13 +32,13 @@ export const getRolesController = async () => {
 };
 
 /**
- * Creates a new role with the given form data.
+ * Creates a new client with the given form data.
  *
  * @async
- * @function roleCreationController
- * @param {Object} formData - The form data for the new role.
- * @param {string} formData.name - The role name.
- * @param {string} formData.description - The role description.
+ * @function clientCreationController
+ * @param {Object} formData - The form data for the new client.
+ * @param {string} formData.name - The client name.
+ * @param {string} formData.description - The client description.
  * @returns {Promise<Object>} - The response data from the API.
  * @throws {Error} - If the form data is invalid or the API request fails.
  * @example
@@ -44,11 +46,11 @@ export const getRolesController = async () => {
  *   name: "tester",
  *   description: "no description"
  * };
- * roleCreationController(formData)
+ * clientCreationController(formData)
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const roleCreationController = async (formData) => {
+export const clientCreationController = async (formData) => {
   try {
     // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
@@ -57,11 +59,12 @@ export const roleCreationController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      name: titleCaseFirstWord(formData.name.trim()),
-      // description: titleCaseFirstWord(formData.description.trim()),
+      clientName: titleCaseFirstWord(formData.name.trim()),
+      createdBy:decodeData(getCookie(isUserIdCookieName)),
+      isActive: 1,
     };
-    // Send the POST request to the role API endpoint
-    const response = await post("/role/roles", body, "python");
+    // Send the POST request to the client API endpoint
+    const response = await post("/master/createClient", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -70,14 +73,14 @@ export const roleCreationController = async (formData) => {
 };
 
 /**
- * Updates an existing role with the given form data.
+ * Updates an existing client with the given form data.
  *
  * @async
- * @function roleupdateController
- * @param {Object} formData - The form data for updating the role.
- * @param {string} formData.name - The role name.
- * @param {string} formData.description - The role description.
- * @param {string} formData.ID - The primary key for role ID.
+ * @function clientupdateController
+ * @param {Object} formData - The form data for updating the client.
+ * @param {string} formData.name - The client name.
+ * @param {string} formData.description - The client description.
+ * @param {string} formData.ID - The primary key for client ID.
  * @returns {Promise<Object>} - The response data from the API.
  * @throws {Error} - If the form data is invalid or the API request fails.
  * @example
@@ -86,11 +89,11 @@ export const roleCreationController = async (formData) => {
  *   description: "no description",
  *   ID: 123
  * };
- * roleupdateController(formData)
+ * clientupdateController(formData)
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const roleupdateController = async (formData) => {
+export const clientupdateController = async (formData) => {
   try {
     // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
@@ -100,11 +103,10 @@ export const roleupdateController = async (formData) => {
     // Prepare the body object with sanitized data
     const body = {
       name: titleCaseFirstWord(formData.name.trim()),
-      description: titleCaseFirstWord(formData.description.trim()),
     };
-    // Send the PUT request to the role API endpoint
+    // Send the PUT request to the client API endpoint
     const response = await put(
-      `/role/updaterole/${formData.ID}`,
+      `/client/updateclient/${formData.ID}`,
       body,
       "python"
     );
@@ -116,26 +118,26 @@ export const roleupdateController = async (formData) => {
 };
 
 /**
- * Deletes a role with the given ID.
+ * Deletes a client with the given ID.
  *
  * @async
- * @function roledeleteController
- * @param {number} roleId - The ID of the role to delete.
+ * @function clientdeleteController
+ * @param {number} clientId - The ID of the client to delete.
  * @returns {Promise<Object>} - The response data from the API.
- * @throws {Error} - If the role ID is invalid or the API request fails.
+ * @throws {Error} - If the client ID is invalid or the API request fails.
  * @example
- * roledeleteController(123)
+ * clientdeleteController(123)
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const roledeleteController = async (roleId) => {
+export const clientdeleteController = async (clientId) => {
   try {
     // Data Validation and Sanitization
-    if (typeof roleId !== "number") {
-      throw new Error("Invalid role ID");
+    if (typeof clientId !== "number") {
+      throw new Error("Invalid client ID");
     }
-    // Send the DELETE request to the role API endpoint
-    const response = await remove(`role/deleteroles/${roleId}`, "python");
+    // Send the DELETE request to the client API endpoint
+    const response = await remove(`client/deleteclients/${clientId}`, "python");
     // Return the response data
     return response;
   } catch (error) {

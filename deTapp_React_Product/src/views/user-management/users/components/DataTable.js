@@ -51,8 +51,6 @@ const DataTable = ({
 
   // Memoize filtered data to optimize performance
   const filteredData = useMemo(() => {
-    console.log({ tableData });
-
     return tableData.filter((row, index) => {
       const sno = page * rowsPerPage + index + 1;
       return Object.keys(filter).every((key) => {

@@ -2,9 +2,9 @@ import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import {
   getRolesController,
-  roleCreationController,
-  roleupdateController,
-  roledeleteController,
+  clientCreationController,
+  clientupdateController,
+  clientdeleteController,
 } from "./controllers/clientControllers";
 import FormComponent from "./components/clientFormComponent";
 
@@ -115,7 +115,7 @@ const Roles = () => {
     }
   };
 
-  // Fetches roles data and updates the roles list
+  // Fetches clients data and updates the clients list
   useEffect(() => {
     const submenuDetails = getSubmenuDetails(
       menuList,
@@ -182,10 +182,10 @@ const Roles = () => {
       startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await roleCreationController(formData);
+      if (isAdd) response = await clientCreationController(formData);
       else {
         formData = { ...formData, ID: selectedValue.id };
-        response = await roleupdateController(formData);
+        response = await clientupdateController(formData);
       }
 
       if (response) {
@@ -339,7 +339,7 @@ const Roles = () => {
         display: false,
         action: null,
       });
-      const response = await roledeleteController(selectedRow.id);
+      const response = await clientdeleteController(selectedRow.id);
 
       if (response) {
         getRoles();
