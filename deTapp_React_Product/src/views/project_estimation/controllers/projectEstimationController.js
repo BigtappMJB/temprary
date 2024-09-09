@@ -127,6 +127,8 @@ export const projectEstimateCreationController = async (formData) => {
       throw new Error("Invalid form data");
     }
 
+    // console.log({formData});
+
     debugger;
 
     const email = decodeData(getCookie(isUserIdCookieName));
@@ -141,6 +143,7 @@ export const projectEstimateCreationController = async (formData) => {
       endDate: moment(formData.endDate).format("YYYY-MM-DD"),
       noOfHours: Number(formData.hoursPerDay),
       totalHours: Number(formData?.totalHours),
+      workingDays: Number(formData?.workingDays),
       createdBy: email,
       isActive: 1,
     };
@@ -200,6 +203,8 @@ export const projectEstimateUpdateController = async (formData) => {
       endDate: moment(formData.endDate).format("YYYY-MM-DD"),
       noOfHours: Number(formData.hoursPerDay),
       totalHours: Number(formData?.totalHours),
+      workingDays: Number(formData?.workingDays),
+
       // created_by: email,
       // is_active: true,
     };
