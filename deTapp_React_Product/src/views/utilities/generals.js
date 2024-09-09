@@ -140,29 +140,29 @@ export const getSubmenuDetails = (menuList, identifier, type = "path") => {
 
 /**
  * Formats the given date into a string suitable for use as a filename.
- * 
+ *
  * The format used is `YYYY-MM-DDTHH-mm-ss.sssZ`, where colons (:) and dots (.)
  * are replaced with dashes (-) to ensure the filename is valid across various
  * file systems.
- * 
+ *
  * @param {Date} date - The date object to be formatted.
  * @returns {string} - The formatted date string suitable for use as a filename.
- * 
+ *
  * @example
  * const now = new Date();
  * const filename = timeStampFileName(now);
  * console.log(filename); // Example output: 2024-07-31T10-11-12-345Z
  */
-export const timeStampFileName = (date) => 
+export const timeStampFileName = (date) =>
   date.toISOString().replace(/[:.]/g, "-");
 /**
  * Generates a CSV file from the provided API data and downloads it with a timestamped filename.
- * 
+ *
  * @param {Array<Object>} apiData - Array of objects representing the API data.
  * @param {string} baseFilename - Base name for the downloaded CSV file, without extension.
  * @param {Array<Object>} [columnOrder] - Optional array specifying the order and names of columns in the CSV file.
  *                                    Each object in the array should have keys `key` and `name`.
- * 
+ *
  * @example
  * const apiData = [
  *   { id: 1, name: "John Doe", age: 30, description: 'He said, "Hello!"' },
@@ -179,50 +179,61 @@ export const timeStampFileName = (date) =>
 export const generateCSV = (apiData, baseFilename, columnOrder = null) => {
   // Check if apiData is an array and has at least one item
   if (!Array.isArray(apiData) || apiData.length === 0) {
-      console.error('Invalid API data. It should be a non-empty array.');
-      return;
+    console.error("Invalid API data. It should be a non-empty array.");
+    return;
   }
-
   // Function to escape values properly
   const escapeValue = (value) => {
-      if (value === null || value === undefined) {
-          return '';
-      }
-      // Convert value to string and escape quotes
-      let stringValue = value.toString();
-      // Escape double quotes by doubling them
-      stringValue = stringValue.replace(/"/g, '""');
-      // Wrap the value in double quotes
-      return `"${stringValue}"`;
+    if (value === null || value === undefined) {
+      return "";
+    }
+    // Convert value to string and escape quotes
+    let stringValue = value.toString();
+    // Escape double quotes by doubling them
+    stringValue = stringValue.replace(/"/g, '""');
+    // Wrap the value in double quotes
+    return `"${stringValue}"`;
   };
 
   // Determine the columns to use
   let keys;
   let columnNames;
-  if (columnOrder) {
-      keys = columnOrder.map(col => col.key);
-      columnNames = columnOrder.map(col => col.name);
-  } else {
+  if (columnOrder && columnOrder.length > 0) {
+    keys = columnOrder.map((col) => col);
+    columnNames = columnOrder.map((col) => col);
+
+    // Check if all columnOrder keys are present in the data
+    const missingKeys = keys.filter(
+      (key) => !Object.keys(apiData[0]).includes(key)
+    );
+    if (missingKeys.length > 0) {
+      console.warn(
+        "Some columns in columnOrder do not exist in the data:",
+        missingKeys
+      );
+
+      // Fallback to original order if keys are missing
       keys = Object.keys(apiData[0]);
       columnNames = keys;
+    }
+  } else {
+    keys = Object.keys(apiData[0]);
+    columnNames = keys;
   }
 
   // Create CSV content
-  let csvContent = `${columnNames.join(',')}\n`;
+  let csvContent = `${columnNames.join(",")}\n`;
 
-  apiData.forEach(row => {
-      const values = keys.map(key => escapeValue(row[key]));
-      csvContent += `${values.join(',')}\n`;
+  apiData.forEach((row) => {
+    const values = keys.map((key) => escapeValue(row[key]));
+    csvContent += `${values.join(",")}\n`;
   });
 
   // Create a Blob from the CSV content
-  const blob = new Blob([csvContent], { type: 'text/csv' });
-
-  // Generate a timestamp for the filename
-
+  const blob = new Blob([csvContent], { type: "text/csv" });
 
   // Create a link element to download the CSV file
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = `${baseFilename}.csv`;
   document.body.appendChild(link);

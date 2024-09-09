@@ -242,7 +242,7 @@ export const projectEstimateDeletionController = async (cmdId) => {
     }
     // Send the DELETE request to the cmd API endpoint
     const response = await remove(
-      `master/getAllProjectEst?id=${cmdId}`,
+      `master/DeleteProjectEstById?id=${cmdId}`,
       "python"
     );
     // Return the response data

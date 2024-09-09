@@ -265,8 +265,6 @@ const ProjectEstimationPage = () => {
       if (response?.message) {
         getTableData();
         formRef.current?.resetForm();
-        console.log(!isAdd);
-
         if (!isAdd) {
           debugger;
           onFormReset();
@@ -510,7 +508,8 @@ const ProjectEstimationPage = () => {
     ];
     generateCSV(
       tableData,
-      `project_estimation_${timeStampFileName(new Date())}`
+      `project_estimation_${timeStampFileName(new Date())}`,
+      columnOrder
     );
   };
 

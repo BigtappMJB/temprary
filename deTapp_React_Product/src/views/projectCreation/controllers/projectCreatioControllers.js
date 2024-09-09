@@ -56,8 +56,6 @@ export const getClientInfoController = async () => {
   }
 };
 
-
-
 export const projectCreationController = async (formData) => {
   try {
     // Data Validation and Sanitization
@@ -124,14 +122,13 @@ export const projectUpdateController = async (formData) => {
     const body = {
       projectName: titleCaseFirstWord(formData?.projectName),
       clientId: formData.client.id,
-      projectCode: formData?.projectCode,
       projectTypeCode: formData?.projectType.id,
       // createdby: email,
       // isActive: 1,
     };
     // Send the PUT request to the projectCreation API endpoint
     const response = await put(
-      `master/AllProjectCreation?id=${formData.ID}`,
+      `/master/AllProjectCreation?id=${formData.ID}`,
       body,
       "python"
     );
@@ -158,9 +155,11 @@ export const projectUpdateController = async (formData) => {
 export const projectDeleteController = async (cmdId) => {
   try {
     // Data Validation and Sanitization
-    if (typeof cmdId !== "number") {
+    if (typeof cmdId !== "string") {
       throw new Error("Invalid form data");
     }
+    debugger;
+
     // Send the DELETE request to the projectCreation API endpoint
     const response = await remove(
       `master/AllProjectCreation?id=${cmdId}`,

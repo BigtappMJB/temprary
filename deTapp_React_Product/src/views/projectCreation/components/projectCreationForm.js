@@ -106,13 +106,12 @@ const ProjectCreationForm = forwardRef(
             )[0] ?? null,
           projectType:
             projectType.filter(
-              (ele) => ele.id === defaultValues.PROJECT_TYPE_ID
+              (ele) => ele.id === defaultValues.PROJECT_TYPE_CODE
             )[0] ?? null,
           projectName: defaultValues?.PROJECT_NAME ?? null,
           projectCode: defaultValues?.PROJECT_NAME_CODE ?? null,
         });
       }
-      console.log(getValues());
     }, [defaultValues, clientInfo, reset, projectType, formAction]);
 
     // Effect to set read-only state and reset form on formAction change
@@ -260,26 +259,29 @@ const ProjectCreationForm = forwardRef(
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="projectCode"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Enter project code"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.projectCode}
-                  helperText={errors.projectCode?.message}
-                  InputLabelProps={{ shrink: field.value }}
-                  InputProps={{
-                    readOnly: readOnly, // Make the field read-only
-                  }}
-                />
-              )}
-            />
-          </Grid>
+          {formAction.action !== "update" && (
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="projectCode"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Enter project code"
+                    fullWidth
+                    variant="outlined"
+                    error={!!errors.projectCode}
+                    helperText={errors.projectCode?.message}
+                    InputLabelProps={{ shrink: field.value }}
+                    InputProps={{
+                      readOnly: readOnly, // Make the field read-only
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+          )}
+
           <Grid item xs={12} sm={6}>
             <Controller
               name="projectName"

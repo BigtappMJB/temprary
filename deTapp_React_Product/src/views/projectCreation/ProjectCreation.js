@@ -392,8 +392,13 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      const response = await projectDeleteController(selectedRow.PROJECT_NAME_CODE);
-
+      console.log(selectedRow.PROJECT_NAME_CODE);
+      debugger;
+      const response = await projectDeleteController(
+        selectedRow.PROJECT_NAME_CODE
+      );
+      console.log(response);
+      debugger;
       if (response) {
         getTableData();
         openDialog(
@@ -441,7 +446,19 @@ const CMDPage = () => {
   };
 
   const handleExport = () => {
-    generateCSV(tableData, `project_creation_${timeStampFileName(new Date())}`);
+    const columnOrder = [
+      "PROJECT_NAME_CODE",
+      "PROJECT_NAME",
+      "CLIENT_ID",
+      "CLIENT_NAME",
+      "PROJECT_TYPE_CODE",
+      "PROJECT_TYPE_NAME",
+    ];
+    generateCSV(
+      tableData,
+      `project_creation_${timeStampFileName(new Date())}`,
+      columnOrder
+    );
   };
 
   return (

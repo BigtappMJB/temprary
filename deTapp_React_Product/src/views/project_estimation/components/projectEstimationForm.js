@@ -75,7 +75,7 @@ const schema = yup.object().shape({
     )
     .required("Working Days is required")
     .positive("Number should be postive")
-    .max(5, "Working Days cannot exceed 7"),
+    .max(5, "Working Days cannot exceed 5"),
   // .test("max-days", function (value) {
   //   const { startDate, endDate } = this.parent;
 
@@ -226,8 +226,6 @@ const ProjectEstimateFormComponent = forwardRef(
     // Effect to set default values and reset the form
     useEffect(() => {
       if (defaultValues) {
-        console.log({ defaultValues });
-
         const projectName =
           projectList.find(
             (data) => data.PROJECT_NAME_CODE === defaultValues.PROJECT_NAME_CODE
