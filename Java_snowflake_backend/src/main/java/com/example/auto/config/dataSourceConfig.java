@@ -17,9 +17,9 @@ public class dataSourceConfig {
 	// Database Configuration
 	@Bean
 	public Connection getDBConnection() throws SQLException {
-		String url = "jdbc:mysql://13.229.55.246:3306/automationUtil";
+		String url = "jdbc:mysql://13.201.216.64:3306/automationUtil";
 		String username = "automation";
-		String password = "Welcome@1234";
+		String password = "Welcome@2024*";
 		java.util.Properties properties = new java.util.Properties();
 		properties.put("user", username);
 		properties.put("password", password);
