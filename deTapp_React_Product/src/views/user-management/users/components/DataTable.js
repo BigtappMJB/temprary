@@ -51,6 +51,7 @@ const DataTable = ({
 
   // Memoize filtered data to optimize performance
   const filteredData = useMemo(() => {
+
     return tableData.filter((row, index) => {
       const sno = page * rowsPerPage + index + 1;
       return Object.keys(filter).every((key) => {
@@ -149,6 +150,9 @@ const DataTable = ({
                     name={key}
                     onChange={handleFilterChange}
                     variant="outlined"
+                    sx={{
+                      visibility: key === "sno" && "hidden",
+                    }}
                     disabled={key === "sno"}
                     placeholder={
                       key !== "sno" && `Search ${extendedColumns[key]}`

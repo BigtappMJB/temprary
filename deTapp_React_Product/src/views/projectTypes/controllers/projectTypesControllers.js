@@ -131,7 +131,7 @@ export const projectTypesupdateController = async (formData) => {
 export const projectTypesdeleteController = async (projectTypesId) => {
   try {
     // Data Validation and Sanitization
-    if (typeof projectTypesId !== "number") {
+    if (!projectTypesId) {
       throw new Error("Invalid projectTypes ID");
     }
     // Send the DELETE request to the projectTypes API endpoint

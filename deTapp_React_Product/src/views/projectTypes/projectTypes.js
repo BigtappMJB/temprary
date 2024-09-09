@@ -18,6 +18,7 @@ import {
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
 import DataTable from "../user-management/users/components/DataTable";
+import { errorMessages } from "../utilities/Validators";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -95,6 +96,8 @@ const Roles = () => {
     delete: null,
   });
 
+  const formRef = useRef();
+
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
   const hasFetchedRoles = useRef(false);
@@ -138,6 +141,7 @@ const Roles = () => {
   }, [menuList]);
 
   const columns = {
+    id: "Project Type Code",
     name: "Project Type",
     // description: "Description",
   };
@@ -187,8 +191,9 @@ const Roles = () => {
         response = await projectTypesupdateController(formData);
       }
 
-      if (response) {
+      if (response.message) {
         getRoles();
+        formRef.current.resetForm();
         if (!isAdd) {
           onFormReset();
         }
@@ -196,7 +201,28 @@ const Roles = () => {
           "success",
           `Project Type ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `Project Type has been ${isAdd ? "addded" : "updated"} successfully  `,
+            `Project Type has been ${
+              isAdd ? "addded" : "updated"
+            } successfully  `,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {}
+        );
+      }
+      if (response.error) {
+        openDialog(
+          "success",
+          `Project Type ${isAdd ? "Addition" : "Updation"} Failed`,
+          response.error ||
+            `Project Type ${isAdd ? "addded" : "updated"} Failed `,
           {
             confirm: {
               name: "Ok",
@@ -215,7 +241,8 @@ const Roles = () => {
       openDialog(
         "warning",
         "Warning",
-        `Project Type ${isAdd ? "Addition" : "Updation"} failed`,
+        error?.errorMessages ||
+          `Project Type ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -337,8 +364,9 @@ const Roles = () => {
         display: false,
         action: null,
       });
-      const response = await projectTypesdeleteController(selectedRow.id);
 
+      const response = await projectTypesdeleteController(selectedRow.id);
+      debugger;
       if (response) {
         getRoles();
 
@@ -362,6 +390,8 @@ const Roles = () => {
         );
       }
     } catch (error) {
+      console.error(error);
+
       openDialog(
         "warning",
         "Warning",
@@ -404,6 +434,7 @@ const Roles = () => {
           <FormComponent
             formAction={formAction}
             defaultValues={selectedValue}
+            ref={(el) => (formRef.current = el)}
             onSubmit={onformSubmit}
             onReset={onFormReset}
           />
