@@ -1492,16 +1492,16 @@ public class UserRepository {
 
         Connection conn = null;
         PreparedStatement stmt = null;
-        int rolePermissionIds = Integer.parseInt(projectId);
+        
         try {
             conn = connector.getDBConnection();
 
             // Prepare SQL statement
-            String sql = "DELETE FROM PROJECT_DETAILS WHERE project_id = ?";
+            String sql = "DELETE FROM PROJECT_DETAILS WHERE PROJECT_NAME_CODE = ?";
             stmt = conn.prepareStatement(sql);
 
             // Set the role permission ID parameter
-            stmt.setInt(1, rolePermissionIds);
+            stmt.setString(1, projectId.toString());
 
             // Execute the delete operation
             int rowsDeleted = stmt.executeUpdate();

@@ -321,90 +321,87 @@ public class UserController {
 		List<Map<String, Object>> roles = userRepository.getAllProjectPhases();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
-
-    @GetMapping("/AllProjectCreation")
-  	public ResponseEntity<Object> getAllProjectCreation() throws SQLException {
-  		List<Map<String, Object>> roles = userRepository.getAllProjectCreation();
-  		return new ResponseEntity<>(roles, HttpStatus.OK);
-  	}
-
     
-    // PUT method to update role permission
-    @PutMapping("/AllProjectCreation")
-    public ResponseEntity<Map<String, Object>> updateAllProjectCreation(
-            @RequestParam(value = "id") String id, 
-            @RequestBody Map<String, Object> data) {
-        
-        Map<String, Object> response = userRepository.updateAllProjectCreation(id, data);
-        int statusCode = (int) response.get("status");
-        return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
-    }
-    
-    // DELETE method to delete role permission
-    @DeleteMapping("/AllProjectCreation")
-    public ResponseEntity<Map<String, Object>> deleteProjectDetail(@RequestParam(value = "id") String rolePermissionId) {
-        Map<String, Object> response = userRepository.deleteProjectDetails(rolePermissionId);
-        int statusCode = (int) response.get("status");
-        return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
-    }
+    //Project creation
 
+	@GetMapping("/AllProjectCreation")
+	public ResponseEntity<Object> getAllProjectCreation() throws SQLException {
+		List<Map<String, Object>> roles = userRepository.getAllProjectCreation();
+		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
 
-    // POST: Create a new permission
-       @PostMapping("/AllProjectCreation")
-       public ResponseEntity<Map<String, Object>> createAllProjectCreation(@RequestBody Map<String, Object> data) {
-           try {
-               Map<String, Object> response = userRepository.createAllProjectCreation(data);
-               return new ResponseEntity<>(response, HttpStatus.CREATED);
-           } catch (Exception e) {
-               return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-           }
-       }
+	@PutMapping("/AllProjectCreation")
+	public ResponseEntity<Map<String, Object>> updateAllProjectCreation(@RequestParam(value = "id") String id,
+			@RequestBody Map<String, Object> data) {
 
-       @GetMapping("/AllActivityCodes")
-     	public ResponseEntity<Object> getAllActivityCodes(@RequestParam(value = "phaseId") String phaseId, 
-     			@RequestParam(value = "projectRoleId") int projectRoleId) throws SQLException {
-     		List<Map<String, Object>> roles = userRepository.getAllActivityCodes(phaseId,projectRoleId);
-     		return new ResponseEntity<>(roles, HttpStatus.OK);
-     	}
+		Map<String, Object> response = userRepository.updateAllProjectCreation(id, data);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
+
+	@DeleteMapping("/AllProjectCreation")
+	public ResponseEntity<Map<String, Object>> deleteProjectDetail(
+			@RequestParam(value = "id") String rolePermissionId) {
+		Map<String, Object> response = userRepository.deleteProjectDetails(rolePermissionId);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
+
+	@PostMapping("/AllProjectCreation")
+	public ResponseEntity<Map<String, Object>> createAllProjectCreation(@RequestBody Map<String, Object> data) {
+		try {
+			Map<String, Object> response = userRepository.createAllProjectCreation(data);
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+       
      
-       // POST: Create a new permission
-       @PostMapping("/CreateProjectEst")
-       public ResponseEntity<Map<String, Object>> createProjectEst(@RequestBody Map<String, Object> data) {
-           try {
-               Map<String, Object> response = userRepository.createProjectEst(data);
-               return new ResponseEntity<>(response, HttpStatus.CREATED);
-           } catch (Exception e) {
-               return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-           }
-       }
 
-       @GetMapping("/getAllProjectEst")
-     	public ResponseEntity<Object> getAllProjectEst() throws SQLException {
-     		List<Map<String, Object>> roles = userRepository.getAllProjectEst();
-     		return new ResponseEntity<>(roles, HttpStatus.OK);
-     	}
+    
+
        
-       
-       
-       // PUT method to update role permission
-       @PutMapping("/getAllProjectEst")
-       public ResponseEntity<Map<String, Object>> updategetAllProjectEst(
-               @RequestParam(value = "id") String id, 
-               @RequestBody Map<String, Object> data) {
-           
-           Map<String, Object> response = userRepository.updategetAllProjectEst(id, data);
-           int statusCode = (int) response.get("status");
-           return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
-       }
+		// Project Estimation
 
+		@GetMapping("/getAllProjectEst")
+		public ResponseEntity<Object> getAllProjectEst() throws SQLException {
+			List<Map<String, Object>> roles = userRepository.getAllProjectEst();
+			return new ResponseEntity<>(roles, HttpStatus.OK);
+		}
 
-       // DELETE method to delete role permission
-       @DeleteMapping("/DeleteProjectEstById")
-       public ResponseEntity<Map<String, Object>> deleteProjectEstById(@RequestParam(value = "id") String rolePermissionId) {
-           Map<String, Object> response = userRepository.deleteProjectEstById(rolePermissionId);
-           int statusCode = (int) response.get("status");
-           return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
-       }
-}
-    // Implement the methods for createTable, getDataType, createPermission, getPermission, getAllPermissions, createRolePermission, getRolePermission, getAllRolePermissions, updatePermission, deletePermission, updateRolePermission, and deleteRolePermission
+		@PostMapping("/CreateProjectEst")
+		public ResponseEntity<Map<String, Object>> createProjectEst(@RequestBody Map<String, Object> data) {
+			try {
+				Map<String, Object> response = userRepository.createProjectEst(data);
+				return new ResponseEntity<>(response, HttpStatus.CREATED);
+			} catch (Exception e) {
+				return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
 
+		@PutMapping("/getAllProjectEst")
+		public ResponseEntity<Map<String, Object>> updategetAllProjectEst(@RequestParam(value = "id") String id,
+				@RequestBody Map<String, Object> data) {
+
+			Map<String, Object> response = userRepository.updategetAllProjectEst(id, data);
+			int statusCode = (int) response.get("status");
+			return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+		}
+
+		@DeleteMapping("/DeleteProjectEstById")
+		public ResponseEntity<Map<String, Object>> deleteProjectEstById(
+				@RequestParam(value = "id") String rolePermissionId) {
+			Map<String, Object> response = userRepository.deleteProjectEstById(rolePermissionId);
+			int statusCode = (int) response.get("status");
+			return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+		}
+
+		@GetMapping("/AllActivityCodes")
+		public ResponseEntity<Object> getAllActivityCodes(@RequestParam(value = "phaseId") String phaseId,
+				@RequestParam(value = "projectRoleId") int projectRoleId) throws SQLException {
+			List<Map<String, Object>> roles = userRepository.getAllActivityCodes(phaseId, projectRoleId);
+			return new ResponseEntity<>(roles, HttpStatus.OK);
+		}
+	}
+    
