@@ -210,7 +210,7 @@ const ProjectEstimationPage = () => {
     ACTIVITY_CODE: "Activity Code",
     START_DATE: "Start Date",
     END_DATE: "End Date",
-    WORKING_DAYS: "Working Days",
+    No_of_working_days: "Working Days",
     NO_OF_HOURS_PER_DAY: "Hours/Day",
     TOTAL_HOURS: "Total Hours",
   };
@@ -493,9 +493,24 @@ const ProjectEstimationPage = () => {
   };
 
   const handleExport = () => {
+    const columnOrder = [
+      "ESTIMATE_ID",
+      "PROJECT_NAME_CODE",
+      "PROJECT_NAME",
+      "PROJECT_PHASE_CODE",
+      "PHASE_NAME",
+      "PROJECT_ROLE_ID",
+      "PROJECT_ROLE_NAME",
+      "ACTIVITY_CODE",
+      "START_DATE",
+      "END_DATE",
+      "No_of_working_days",
+      "NO_OF_HOURS_PER_DAY",
+      "TOTAL_HOURS",
+    ];
     generateCSV(
       tableData,
-      `central_manual_depository_${timeStampFileName(new Date())}`
+      `project_estimation_${timeStampFileName(new Date())}`
     );
   };
 

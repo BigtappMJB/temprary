@@ -253,8 +253,8 @@ const ProjectEstimateFormComponent = forwardRef(
             : null,
           hoursPerDay: Number(defaultValues?.NO_OF_HOURS_PER_DAY) ?? null,
           totalHours: defaultValues?.TOTAL_HOURS ?? null,
+          workingDays: defaultValues?.No_of_working_days ?? null,
           activityCode: null,
-          workingDays: null,
         });
         formAction.action !== "add" &&
           defaultValues?.ACTIVITY_CODE &&
