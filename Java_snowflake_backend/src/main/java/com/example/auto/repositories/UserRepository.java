@@ -1634,31 +1634,41 @@ public class UserRepository {
 
         Connection conn = null;
         PreparedStatement stmt = null;
-        
+
         try {
             conn = connector.getDBConnection();
+            conn.setAutoCommit(false);  // Disable auto-commit to manage the transaction manually
 
-            // Prepare SQL statement
-            String sql = "DELETE FROM PROJECT_DETAILS WHERE PROJECT_NAME_CODE = ?";
-            stmt = conn.prepareStatement(sql);
+            // Prepare SQL for PROJECT_DETAILS deletion
+            String sql1 = "DELETE FROM PROJECT_DETAILS WHERE PROJECT_NAME_CODE = ?";
+            stmt = conn.prepareStatement(sql1);
+            stmt.setString(1, projectId);
+            int rowsDeletedDetails = stmt.executeUpdate();
 
-            // Set the role permission ID parameter
-            stmt.setString(1, projectId.toString());
+            // Prepare SQL for project_estimate deletion
+            String sql2 = "DELETE FROM project_estimate WHERE PROJECT_NAME_CODE = ?";
+            stmt = conn.prepareStatement(sql2);
+            stmt.setString(1, projectId);
+            int rowsDeletedEstimate = stmt.executeUpdate();
 
-            // Execute the delete operation
-            int rowsDeleted = stmt.executeUpdate();
-
-            // Check if the delete was successful
-
-            if (rowsDeleted > 0) {
-                // conn.commit(); // Commit the transaction
-                return Map.of("message", "Project details deleted successfully", "status", 200);
+            // Check if both delete operations were successful
+            if (rowsDeletedDetails > 0 && rowsDeletedEstimate > 0) {
+                conn.commit();  // Commit the transaction if both deletes are successful
+                return Map.of("message", "Project details and estimate deleted successfully", "status", 200);
             } else {
-                return Map.of("message", "Project details permission not found", "status", 404);
+                conn.rollback();  // Rollback the transaction if any delete failed
+                return Map.of("message", "Project details or estimate not found", "status", 404);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Log the exception
+            try {
+                if (conn != null) {
+                    conn.rollback();  // Rollback the transaction in case of error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();  // Log rollback failure
+            }
+            e.printStackTrace();  // Log the original exception
             return Map.of("error", e.getMessage(), "status", 500);
 
         } finally {
@@ -1669,10 +1679,9 @@ public class UserRepository {
                 if (conn != null)
                     conn.close();
             } catch (SQLException e) {
-                e.printStackTrace(); // Log exception if closing fails
+                e.printStackTrace();  // Log exception if closing fails
             }
         }
-
     }
 
     public Map<String, Object> createAllProjectCreation(Map<String, Object> data) {
