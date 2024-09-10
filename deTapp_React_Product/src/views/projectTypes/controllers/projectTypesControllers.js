@@ -4,7 +4,12 @@ import {
   put,
   remove,
 } from "../../utilities/apiservices/apiServices";
-import { titleCaseFirstWord } from "../../utilities/generals";
+import { getCookie } from "../../utilities/cookieServices/cookieServices";
+import {
+  isUserIdCookieName,
+  titleCaseFirstWord,
+} from "../../utilities/generals";
+import { decodeData } from "../../utilities/securities/encodeDecode";
 
 /**
  * Fetches the list of projectTypess from the API.
@@ -57,11 +62,14 @@ export const projectTypesCreationController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      name: titleCaseFirstWord(formData.name.trim()),
+      projectTypeCode: formData.code.trim(),
+      projectTypeName: titleCaseFirstWord(formData.name.trim()),
+      createdBy: decodeData(getCookie(isUserIdCookieName)),
+      isActive: 1,
       // description: titleCaseFirstWord(formData.description.trim()),
     };
     // Send the POST request to the projectTypes API endpoint
-    const response = await post("/projectTypes/projectTypess", body, "python");
+    const response = await post(`master/updateProjectType`, body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -99,12 +107,14 @@ export const projectTypesupdateController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      name: titleCaseFirstWord(formData.name.trim()),
-      // description: titleCaseFirstWord(formData.description.trim()),
+      projectTypeCode: formData.code.trim(),
+      projectTypeName: titleCaseFirstWord(formData.name.trim()),
+      updatedBy: decodeData(getCookie(isUserIdCookieName)),
+      // isActive: 1,
     };
     // Send the PUT request to the projectTypes API endpoint
     const response = await put(
-      `/projectTypes/updateprojectTypes/${formData.ID}`,
+      `master/updateProjectType?id=${formData.ID}`,
       body,
       "python"
     );
@@ -136,7 +146,7 @@ export const projectTypesdeleteController = async (projectTypesId) => {
     }
     // Send the DELETE request to the projectTypes API endpoint
     const response = await remove(
-      `projectTypes/deleteprojectTypess/${projectTypesId}`,
+      `master/deleteProjectType?id=${projectTypesId}`,
       "python"
     );
     // Return the response data

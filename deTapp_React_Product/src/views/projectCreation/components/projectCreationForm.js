@@ -259,28 +259,26 @@ const ProjectCreationForm = forwardRef(
             />
           </Grid>
 
-          {formAction.action !== "update" && (
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="projectCode"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Enter project code"
-                    fullWidth
-                    variant="outlined"
-                    error={!!errors.projectCode}
-                    helperText={errors.projectCode?.message}
-                    InputLabelProps={{ shrink: field.value }}
-                    InputProps={{
-                      readOnly: readOnly, // Make the field read-only
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-          )}
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="projectCode"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter project code"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.projectCode}
+                  helperText={errors.projectCode?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly || formAction.action === "update", // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
 
           <Grid item xs={12} sm={6}>
             <Controller

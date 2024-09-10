@@ -48,8 +48,8 @@ const schema = yup.object().shape({
     .required("Start Date is required")
     .test("is-valid", "Start Date must be a valid date", (value) => {
       return moment(value).isValid();
-    })
-    .min(moment().startOf("day").toDate(), "Start date cannot be in the past"),
+    }),
+    // .min(moment().startOf("day").toDate(), "Start date cannot be in the past"),
   endDate: yup
     .date()
     .nullable()
@@ -74,8 +74,8 @@ const schema = yup.object().shape({
       (value, originalValue) => (originalValue === "" ? null : value) // Convert empty string to null
     )
     .required("Working Days is required")
-    .positive("Number should be postive")
-    .max(5, "Working Days cannot exceed 5"),
+    .positive("Number should be postive"),
+  // .max(5, "Working Days cannot exceed 5"),
   // .test("max-days", function (value) {
   //   const { startDate, endDate } = this.parent;
 
@@ -168,56 +168,7 @@ const ProjectEstimateFormComponent = forwardRef(
       endDate,
       workingDaysPerWeek,
       hoursPerDay
-    ) => {
-      // Convert input dates to JavaScript Date objects
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-
-      // Ensure start date is earlier than end date
-      if (end < start) {
-        throw new Error("End date must be after start date");
-      }
-
-      // Helper function to calculate the difference in days
-      const getDayDifference = (start, end) =>
-        Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-
-      // Find the day of the week for start and end dates (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-      const startDay = start.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
-      const endDay = end.getDay();
-
-      // Calculate the total number of days between the start and end dates
-      const totalDays = getDayDifference(start, end);
-
-      // Calculate the number of full weeks between the start and end dates
-      const fullWeeks = Math.floor(totalDays / 7);
-
-      // Calculate the working days in full weeks
-      const workingDaysInFullWeeks = fullWeeks * workingDaysPerWeek;
-
-      // Calculate the remaining days that don't form a full week
-      const remainingDays = totalDays % 7;
-
-      // Determine how many of the remaining days are working days
-      let workingDaysInPartialWeek = 0;
-
-      // If there are remaining days, check if they fall on working days (Monday - Friday)
-      for (let i = 0; i < remainingDays; i++) {
-        const currentDay = (startDay + i) % 7; // Calculate the day of the week (0 = Sunday, 6 = Saturday)
-        if (currentDay > 0 && currentDay <= workingDaysPerWeek) {
-          workingDaysInPartialWeek++;
-        }
-      }
-
-      // Calculate the total number of working days
-      const totalWorkingDays =
-        workingDaysInFullWeeks + workingDaysInPartialWeek;
-
-      // Calculate the total working hours
-      const totalWorkingHours = totalWorkingDays * hoursPerDay;
-
-      return totalWorkingHours;
-    };
+    )  => workingDaysPerWeek * hoursPerDay;
     const [isFocused, setIsFocused] = useState({
       project: false,
       phase: false,
@@ -233,6 +184,14 @@ const ProjectEstimateFormComponent = forwardRef(
     const { startDate, endDate, hoursPerDay, workingDays } = watch();
 
     // Memoize the total working hours calculation
+    const workingDaysValue = useMemo(() => {
+      if (startDate && endDate) {
+        return getTotalWorkingDays(startDate, endDate);
+      }
+      return 0; // Fallback if any value is missing
+    }, [startDate, endDate]);
+
+    // Memoize the total working hours calculation
     const totalHours = useMemo(() => {
       if (startDate && endDate && hoursPerDay && workingDays) {
         return calculateWorkingHours(
@@ -243,15 +202,7 @@ const ProjectEstimateFormComponent = forwardRef(
         );
       }
       return 0; // Fallback if any value is missing
-    }, [startDate, endDate, hoursPerDay, workingDays]);
-
-    // Memoize the total working hours calculation
-    const workingDaysValue = useMemo(() => {
-      if (startDate && endDate) {
-        return getTotalWorkingDays(startDate, endDate);
-      }
-      return 0; // Fallback if any value is missing
-    }, [startDate, endDate]);
+    }, [workingDaysValue, startDate, endDate, hoursPerDay, workingDays]);
 
     // Effect to update the form whenever the calculated hours change
     useEffect(() => {
@@ -577,7 +528,7 @@ const ProjectEstimateFormComponent = forwardRef(
                   <DatePicker
                     {...field}
                     label="Start Date"
-                    disablePast
+                    // disablePast
                     slotProps={{
                       textField: {
                         error: !!fieldState.error,
@@ -649,7 +600,7 @@ const ProjectEstimateFormComponent = forwardRef(
                   }}
                   InputProps={{
                     ...field.InputProps,
-                    readOnly: readOnly,
+                    readOnly: true,
                     onFocus: () =>
                       setIsFocused({ ...isFocused, workingDays: true }),
                     onBlur: () =>

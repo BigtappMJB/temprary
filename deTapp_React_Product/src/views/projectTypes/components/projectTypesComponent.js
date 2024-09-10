@@ -24,10 +24,7 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for form validation using Yup
 const schema = yup.object().shape({
-  name: yup
-    .string()
-    .required("Name is required")
-    .matches(validationRegex.isSingleWord, errorMessages.singleWord),
+  name: yup.string().required("Name is required"),
   code: yup.string().required("Code is required"),
 });
 
@@ -160,7 +157,7 @@ const ProjectTypesFormComponent = forwardRef(
                   helperText={errors.code?.message}
                   InputLabelProps={{ shrink: field.value }}
                   InputProps={{
-                    readOnly: readOnly, // Make the field read-only
+                    readOnly: readOnly || formAction.action === "update", // Make the field read-only
                   }}
                 />
               )}
