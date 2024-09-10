@@ -101,6 +101,8 @@ const ProjectEstimationPage = () => {
     action: "update",
   });
 
+  const [filtertedTableData, setFiltertedTableData] = useState([]);
+
   const [permissionLevels, setPermissionLevels] = useState({
     create: null,
     edit: null,
@@ -116,6 +118,7 @@ const ProjectEstimationPage = () => {
     try {
       startLoading();
       const response = await getProjectEstimationControllers();
+      setFiltertedTableData(response);
       setTableData(response);
     } catch (error) {
       console.error(error);
@@ -490,6 +493,10 @@ const ProjectEstimationPage = () => {
     }
   };
 
+  const sendUpdatedPaginatedData = (tableData) => {
+    setFiltertedTableData(tableData);
+  };
+
   const handleExport = () => {
     const columnOrder = [
       "ESTIMATE_ID",
@@ -506,8 +513,9 @@ const ProjectEstimationPage = () => {
       "NO_OF_HOURS_PER_DAY",
       "TOTAL_HOURS",
     ];
+
     generateCSV(
-      tableData,
+      filtertedTableData,
       `project_estimation_${timeStampFileName(new Date())}`,
       columnOrder
     );
@@ -571,6 +579,7 @@ const ProjectEstimationPage = () => {
               type="button"
               onClick={handleExport}
               variant="contained"
+              disabled={filtertedTableData.length === 0}
               color="primary"
               style={{ marginRight: "10px" }}
               className={`${
@@ -587,6 +596,7 @@ const ProjectEstimationPage = () => {
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
             columns={columns}
+            sendUpdatedPaginatedData={sendUpdatedPaginatedData}
             permissionLevels={permissionLevels}
           />
         ) : (

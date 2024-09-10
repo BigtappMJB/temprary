@@ -45,6 +45,7 @@ const DataTable = ({
   tableData,
   columns,
   permissionLevels,
+  sendUpdatedPaginatedData,
 }) => {
   const [order, setOrder] = useState("original");
   const [orderBy, setOrderBy] = useState("");
@@ -96,10 +97,12 @@ const DataTable = ({
   }, [filteredData, order, orderBy, dataWithSno]);
 
   const paginatedData = useMemo(() => {
-    return sortedData.slice(
+    const sortedDataValue = sortedData.slice(
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage
     );
+    sendUpdatedPaginatedData && sendUpdatedPaginatedData(sortedDataValue);
+    return sortedDataValue;
   }, [sortedData, page, rowsPerPage]);
 
   const handleRequestSort = (property) => {
@@ -199,7 +202,6 @@ const DataTable = ({
                   backgroundColor: index % 2 !== 0 ? "#f2f2f2" : "inherit",
                 }}
               >
-
                 {Object.keys(extendedColumns).map((key) => (
                   <StyledTableCell
                     key={key}
