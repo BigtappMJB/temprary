@@ -69,7 +69,7 @@ export const projectTypesCreationController = async (formData) => {
       // description: titleCaseFirstWord(formData.description.trim()),
     };
     // Send the POST request to the projectTypes API endpoint
-    const response = await post(`master/updateProjectType`, body, "python");
+    const response = await post(`master/createProjectType`, body, "python");
     // Return the response data
     return response;
   } catch (error) {
