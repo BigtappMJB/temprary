@@ -240,7 +240,7 @@ const CMDPage = () => {
         response = await projectUpdateController(formData);
       }
 
-      if (response) {
+      if (response.message) {
         getTableData();
         formRef.current.resetForm();
         if (!isAdd) {
@@ -264,13 +264,37 @@ const CMDPage = () => {
           (confirmed) => {}
         );
       }
+      if (response.error) {
+        getTableData();
+        formRef.current.resetForm();
+        if (!isAdd) {
+          onFormReset();
+        }
+        openDialog(
+          "success",
+          `Project ${isAdd ? "Addition" : "Updation"} Failed`,
+          response.error || `Project  ${isAdd ? "addded" : "updated"} Failed`,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {}
+        );
+      }
     } catch (error) {
       console.error(error);
       const isAdd = formAction.action === "add";
       openDialog(
         "warning",
         "Warning",
-        `Project ${isAdd ? "Addition" : "Updation"} failed`,
+        error.errorMessage ||
+          `Project ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -392,7 +416,6 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      console.log(selectedRow.PROJECT_NAME_CODE);
       debugger;
       const response = await projectDeleteController(
         selectedRow.PROJECT_NAME_CODE
@@ -423,7 +446,7 @@ const CMDPage = () => {
       openDialog(
         "warning",
         "Warning",
-        `Project Deletion failed`,
+        error.errorMessage || `Project Deletion failed`,
         {
           confirm: {
             name: "Ok",
