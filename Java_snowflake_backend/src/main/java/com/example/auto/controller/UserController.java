@@ -384,6 +384,19 @@ public class UserController {
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
 	
+//	@PostMapping("/createProjectRole")
+//	public ResponseEntity<Object> createProjectRole(@RequestBody Map<String, Object> data) throws SQLException {
+//		try {
+//			Map<String, Object> response = userRepository.createProjectRole(data);
+//			return new ResponseEntity<>(response, HttpStatus.CREATED);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+	
+	
+	
+	
 	
 	
 	//Project Phases
@@ -476,6 +489,12 @@ public class UserController {
 	public ResponseEntity<Object> getAllActivityCodes(@RequestParam(value = "phaseId") String phaseId,
 			@RequestParam(value = "projectRoleId") int projectRoleId) throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getAllActivityCodes(phaseId, projectRoleId);
+		return new ResponseEntity<>(roles, HttpStatus.OK);
+	}
+	
+	@GetMapping("/GetActivityCodes")
+	public ResponseEntity<Object> getAllActivityCodes() throws SQLException {
+		List<Map<String, Object>> roles = userRepository.getActivityCodes();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
 }

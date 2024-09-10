@@ -1653,20 +1653,6 @@ public class UserRepository {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     public List<Map<String, Object>> getAllProjectRoles() throws SQLException {
         Connection conn = connector.getDBConnection();
@@ -1686,6 +1672,73 @@ public class UserRepository {
         return roles;
     }
 
+//    public Map<String, Object> createProjectRole(Map<String, Object> data) throws SQLException {
+//    	Connection conn = null;
+//        PreparedStatement stmt = null;
+//
+//        try {
+//            conn = connector.getDBConnection();
+//
+//            // Prepare SQL statement
+//            String sql = "INSERT INTO project_type (PROJECT_TYPE_CODE, PROJECT_TYPE_NAME, CREATED_BY, IS_ACTIVE) VALUES (?, ?, ?, ?)";
+//            stmt = conn.prepareStatement(sql);
+//
+//            // Set parameters
+//            stmt.setString(1, data.get("projectTypeCode").toString());
+//            stmt.setString(2, data.get("projectTypeName").toString());
+//            stmt.setString(3, data.get("createdBy").toString());
+//            stmt.setInt(4, (int) data.get("isActive"));
+//
+//            // Execute the insert operation
+//            stmt.executeUpdate();
+//
+//            // Commit the transaction
+//            // conn.commit();
+//
+//            // Return success message
+//            return Map.of("message", "Project type created successfully", "status", 201);
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            // Log the error
+//            System.err.println("Error occurred while creating user: " + e.getMessage());
+//            return Map.of("error", e.getMessage(), "status", 500);
+//
+//        } finally {
+//            // Close resources
+//            try {
+//                if (stmt != null)
+//                    stmt.close();
+//                if (conn != null)
+//                    conn.close();
+//            } catch (SQLException e) {
+//                e.printStackTrace(); // Log exception if closing fails
+//            }
+//        }
+//
+//
+//    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public List<Map<String, Object>> getAllProjectPhases() throws SQLException {
         Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
@@ -1897,6 +1950,42 @@ public class UserRepository {
             while (rs.next()) {
                 Map<String, Object> role = new HashMap<>();
                 role.put("activityName", rs.getString("ACTIVITY_CODE"));
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+    }
+    
+    public List<Map<String, Object>> getActivityCodes() throws SQLException {
+        Connection conn = connector.getDBConnection();
+        List<Map<String, Object>> roles = new ArrayList<>();
+        try {
+            stmt = conn.prepareStatement(
+                    "SELECT \r\n"
+                    + "    pp.PHASE_CODE, \r\n"
+                    + "    pp.PHASE_NAME, \r\n"
+                    + "    pa.PROJECT_ROLE_ID,  -- Specify the table for PROJECT_ROLE_ID to avoid ambiguity\r\n"
+                    + "    pr.PROJECT_ROLE_NAME, \r\n"
+                    + "    pa.ACTIVITY_CODE \r\n"
+                    + "FROM \r\n"
+                    + "    project_activity pa \r\n"
+                    + "JOIN \r\n"
+                    + "    project_role pr ON pa.PROJECT_ROLE_ID = pr.PROJECT_ROLE_ID \r\n"
+                    + "JOIN \r\n"
+                    + "    project_phases pp ON pa.PROJECT_PHASE_ID = pp.PHASE_CODE\r\n"
+                    + "LIMIT 0, 1000;\r\n"
+                    + " ");
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> role = new HashMap<>();
+                role.put("PHASE_CODE", rs.getString("PHASE_CODE"));
+                role.put("PHASE_NAME", rs.getString("PHASE_NAME"));
+                role.put("PROJECT_ROLE_ID", rs.getString("PROJECT_ROLE_ID"));
+                role.put("PROJECT_ROLE_NAME", rs.getString("PROJECT_ROLE_NAME"));
+                role.put("ACTIVITY_CODE", rs.getString("ACTIVITY_CODE"));
                 roles.add(role);
             }
         } catch (SQLException e) {
