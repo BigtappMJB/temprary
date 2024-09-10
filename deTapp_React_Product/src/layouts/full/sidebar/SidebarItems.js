@@ -26,6 +26,7 @@ const SidebarItems = ({ navItemClicked }) => {
       const response = await getUserPermissionsController();
       setMenuList(response.permissions);
       dispatch(storeMenuDetails(response.permissions));
+      // setCookie(isPermissionDetailsCookieName, encodeData(response.permissions), 1);
       // Set a cookie to store permissionList
       setCookie({
         name: isPermissionDetailsCookieName,
