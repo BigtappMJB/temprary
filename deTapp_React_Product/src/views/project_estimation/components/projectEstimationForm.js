@@ -49,7 +49,7 @@ const schema = yup.object().shape({
     .test("is-valid", "Start Date must be a valid date", (value) => {
       return moment(value).isValid();
     }),
-    // .min(moment().startOf("day").toDate(), "Start date cannot be in the past"),
+  // .min(moment().startOf("day").toDate(), "Start date cannot be in the past"),
   endDate: yup
     .date()
     .nullable()
@@ -168,7 +168,7 @@ const ProjectEstimateFormComponent = forwardRef(
       endDate,
       workingDaysPerWeek,
       hoursPerDay
-    )  => workingDaysPerWeek * hoursPerDay;
+    ) => workingDaysPerWeek * hoursPerDay;
     const [isFocused, setIsFocused] = useState({
       project: false,
       phase: false,
@@ -250,6 +250,10 @@ const ProjectEstimateFormComponent = forwardRef(
           workingDays: defaultValues?.No_of_working_days ?? null,
           activityCode: null,
         });
+        console.log({ defaultValues });
+        console.log(getValues());
+        debugger;
+
         formAction.action !== "add" &&
           defaultValues?.ACTIVITY_CODE &&
           getActivityCode(defaultValues?.ACTIVITY_CODE);
@@ -267,10 +271,12 @@ const ProjectEstimateFormComponent = forwardRef(
           startDate: null,
           endDate: null,
           hoursPerDay: "",
-          totalHours: null,
-          activityCode: null,
-          workingDays: null,
+          totalHours: "",
+          activityCode: "",
+          workingDays: "",
         });
+        console.log(getValues());
+        debugger;
       },
     }));
 
@@ -285,9 +291,9 @@ const ProjectEstimateFormComponent = forwardRef(
           startDate: null,
           endDate: null,
           hoursPerDay: "",
-          totalHours: null,
-          activityCode: null,
-          workingDays: null,
+          totalHours: "",
+          activityCode: "",
+          workingDays: "",
         });
       }
     }, [formAction, reset]);
@@ -317,9 +323,9 @@ const ProjectEstimateFormComponent = forwardRef(
         startDate: null,
         endDate: null,
         hoursPerDay: "",
-        totalHours: null,
-        activityCode: null,
-        workingDays: null,
+        totalHours: "",
+        activityCode: "",
+        workingDays: "",
       });
     };
 
@@ -590,7 +596,11 @@ const ProjectEstimateFormComponent = forwardRef(
               render={({ field, fieldState }) => (
                 <TextField
                   {...field}
-                  value={field.value || null}
+                  value={
+                    field.value !== undefined && field.value !== null
+                      ? field.value
+                      : ""
+                  }
                   type="number"
                   label="Working days"
                   error={!!fieldState.error}
@@ -618,7 +628,11 @@ const ProjectEstimateFormComponent = forwardRef(
               render={({ field, fieldState }) => (
                 <TextField
                   {...field}
-                  value={field.value || null}
+                  value={
+                    field.value !== undefined && field.value !== null
+                      ? field.value
+                      : ""
+                  }
                   type="number"
                   label="Hours/Day"
                   error={!!fieldState.error}
@@ -646,7 +660,11 @@ const ProjectEstimateFormComponent = forwardRef(
               render={({ field, fieldState }) => (
                 <TextField
                   {...field}
-                  value={field.value || null}
+                  value={
+                    field.value !== undefined && field.value !== null
+                      ? field.value
+                      : ""
+                  }
                   type="number"
                   label="Total Hours"
                   error={!!fieldState.error}
