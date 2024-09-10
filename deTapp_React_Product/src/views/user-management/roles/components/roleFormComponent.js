@@ -21,8 +21,8 @@ const Container = styled(Box)(({ theme }) => ({
 const schema = yup.object().shape({
   name: yup
     .string()
-    .required("Name is required")
-    .matches(validationRegex.isSingleWord, errorMessages.singleWord),
+    .required("Name is required"),
+    // .matches(validationRegex.isSingleWord, errorMessages.singleWord),
   description: yup
     .string()
     .required("Description is required")

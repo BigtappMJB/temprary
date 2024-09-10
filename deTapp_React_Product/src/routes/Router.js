@@ -82,6 +82,9 @@ const ProjectRolePage = Loadable(
 const ProjectPhasePage = Loadable(
   lazy(() => import("../views/projectPhase/projectPhases"))
 );
+const ActivityCodePage = Loadable(
+  lazy(() => import("../views/activityCodePage/ActivityCode"))
+);
 
 const Router = [
   {
@@ -107,6 +110,7 @@ const Router = [
       { path: "/projectType", element: <ProjectTypePage /> },
       { path: "/projectRole", element: <ProjectRolePage /> },
       { path: "/projectPhase", element: <ProjectPhasePage /> },
+      { path: "/activityCode", element: <ActivityCodePage /> },
 
       { path: "*", element: <PageNotReady /> },
     ],
