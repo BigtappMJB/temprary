@@ -299,13 +299,13 @@ public class UserController {
     }
 
     
-    //Clients
+	// Clients
 	@GetMapping("/AllClients")
 	public ResponseEntity<Object> getAllClients() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getClients();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/createClient")
 	public ResponseEntity<Object> createClients(@RequestBody Map<String, Object> data) throws SQLException {
 		try {
@@ -315,7 +315,7 @@ public class UserController {
 			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@PutMapping("/updateClient")
 	public ResponseEntity<Map<String, Object>> updateClient(@RequestParam(value = "id") String id,
 			@RequestBody Map<String, Object> data) {
@@ -324,10 +324,9 @@ public class UserController {
 		int statusCode = (int) response.get("status");
 		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
 	}
-	
+
 	@DeleteMapping("/deleteClientById")
-	public ResponseEntity<Map<String, Object>> deleteClientById(
-			@RequestParam(value = "id") String rolePermissionId) {
+	public ResponseEntity<Map<String, Object>> deleteClientById(@RequestParam(value = "id") String rolePermissionId) {
 		Map<String, Object> response = userRepository.deleteClientById(rolePermissionId);
 		int statusCode = (int) response.get("status");
 		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
@@ -335,24 +334,68 @@ public class UserController {
 	
 	
 	
-
+	//Project Types
 	@GetMapping("/AllProjectTypes")
 	public ResponseEntity<Object> getAllProjects() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getProjectTypes();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
 
+	
+	@PostMapping("/createProjectType")
+	public ResponseEntity<Object> createProjectType(@RequestBody Map<String, Object> data) throws SQLException {
+		try {
+			Map<String, Object> response = userRepository.createProjectType(data);
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+
+	@PutMapping("/updateProjectType")
+	public ResponseEntity<Map<String, Object>> updateProjectType(@RequestParam(value = "id") String id,
+			@RequestBody Map<String, Object> data) {
+
+		Map<String, Object> response = userRepository.updateProjectType(id, data);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
+	
+	
+	@DeleteMapping("/deleteProjectType")
+	public ResponseEntity<Map<String, Object>> deleteProjectType(
+			@RequestParam(value = "id") String rolePermissionId) {
+		Map<String, Object> response = userRepository.deleteProjectType(rolePermissionId);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
+	
+	
+	
+	
+	
+	
+	//Project Roles
+	
 	@GetMapping("/AllProjectRoles")
 	public ResponseEntity<Object> getAllProjectRoles() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getAllProjectRoles();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
+	
+	
+	
+	//Project Phases
 
 	@GetMapping("/AllProjectPhases")
 	public ResponseEntity<Object> getAllProjectPhases() throws SQLException {
 		List<Map<String, Object>> roles = userRepository.getAllProjectPhases();
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
+	
+	
+	
 	
 	
 
