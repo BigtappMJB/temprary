@@ -1792,13 +1792,13 @@ public class UserRepository {
             int rowsDeletedDetails = stmt.executeUpdate();
 
             // Prepare SQL for project_estimate deletion
-            String sql2 = "DELETE FROM project_estimate WHERE PROJECT_NAME_CODE = ?";
-            stmt = conn.prepareStatement(sql2);
-            stmt.setString(1, projectId);
-            int rowsDeletedEstimate = stmt.executeUpdate();
+//            String sql2 = "DELETE FROM project_estimate WHERE PROJECT_NAME_CODE = ?";
+//            stmt = conn.prepareStatement(sql2);
+//            stmt.setString(1, projectId);
+//            int rowsDeletedEstimate = stmt.executeUpdate();
 
             // Check if both delete operations were successful
-            if (rowsDeletedDetails > 0 && rowsDeletedEstimate > 0) {
+            if (rowsDeletedDetails > 0) {
                 conn.commit(); // Commit the transaction if both deletes are successful
                 return Map.of("message", "Project details and estimate deleted successfully", "status", 200);
             } else {
