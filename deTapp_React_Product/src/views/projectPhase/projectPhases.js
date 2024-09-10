@@ -11,9 +11,11 @@ import FormComponent from "./components/projectPhaseComponent";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import { useOutletContext } from "react-router";
 import {
+  generateCSV,
   getCurrentPathName,
   getSubmenuDetails,
   ScrollToTopButton,
+  timeStampFileName,
 } from "../utilities/generals";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
@@ -138,7 +140,7 @@ const Roles = () => {
   }, [menuList]);
 
   const columns = {
-    id:"Phase Code",
+    id: "Phase Code",
     name: "Project Phase",
     // description: "Description",
   };
@@ -197,7 +199,9 @@ const Roles = () => {
           "success",
           `Project Phase ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `Project Phase has been ${isAdd ? "addded" : "updated"} successfully  `,
+            `Project Phase has been ${
+              isAdd ? "addded" : "updated"
+            } successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -388,6 +392,15 @@ const Roles = () => {
     }
   };
 
+  const handleExport = () => {
+    const columnOrder = ["id", "name"];
+    generateCSV(
+      tableData,
+      `projectPhases_${timeStampFileName(new Date())}`,
+      columnOrder
+    );
+  };
+
   return (
     <>
       {formAction.display && (
@@ -429,6 +442,18 @@ const Roles = () => {
               disabled={formAction.action === "add" && formAction.display}
             >
               Add Project Phase
+            </FormButton>
+            <FormButton
+              type="button"
+              onClick={handleExport}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}
+              className={`${
+                tableData.length ? "secondary" : "custom-disabled"
+              }`}
+            >
+              Export
             </FormButton>
           </Box>
         </SubHeader>

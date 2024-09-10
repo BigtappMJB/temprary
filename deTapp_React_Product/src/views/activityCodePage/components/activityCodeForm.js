@@ -101,13 +101,13 @@ const ProjectCreationForm = forwardRef(
         reset({
           projectPhase:
             projectPhase?.filter(
-              (ele) => ele.id === defaultValues.CLIENT_ID
+              (ele) => ele.id === defaultValues.PHASE_CODE
             )[0] ?? null,
           projectRole:
             projectRole.filter(
-              (ele) => ele.id === defaultValues.PROJECT_TYPE_CODE
+              (ele) => ele.id === Number(defaultValues.PROJECT_ROLE_ID)
             )[0] ?? null,
-          activityName: defaultValues?.PROJECT_NAME ?? null,
+          activityName: defaultValues?.ACTIVITY_CODE ?? null,
         });
       }
     }, [defaultValues, projectPhase, reset, projectRole, formAction]);
@@ -238,15 +238,15 @@ const ProjectCreationForm = forwardRef(
                       error={!!errors.projectRole}
                       helperText={errors.projectRole?.message}
                       InputLabelProps={{
-                        shrink: Boolean(field.value || isFocused.menu),
+                        shrink: Boolean(field.value || isFocused.projectRole),
                       }}
                       InputProps={{
                         ...params.InputProps,
                         readOnly: readOnly, // Set to true if you want the field to be read-only
                         onFocus: () =>
-                          setIsFocused({ ...isFocused, menu: true }),
+                          setIsFocused({ ...isFocused, projectRole: true }),
                         onBlur: () =>
-                          setIsFocused({ ...isFocused, menu: false }),
+                          setIsFocused({ ...isFocused, projectRole: false }),
                       }}
                     />
                   )}

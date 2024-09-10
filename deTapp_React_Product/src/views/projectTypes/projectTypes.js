@@ -11,9 +11,11 @@ import FormComponent from "./components/projectTypesComponent";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import { useOutletContext } from "react-router";
 import {
+  generateCSV,
   getCurrentPathName,
   getSubmenuDetails,
   ScrollToTopButton,
+  timeStampFileName,
 } from "../utilities/generals";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
@@ -174,6 +176,15 @@ const Roles = () => {
         (confirmed) => {}
       );
     }
+  };
+
+  const handleExport = () => {
+    const columnOrder = ["id", "name"];
+    generateCSV(
+      tableData,
+      `projectTypes_${timeStampFileName(new Date())}`,
+      columnOrder
+    );
   };
 
   /**
@@ -459,6 +470,18 @@ const Roles = () => {
               disabled={formAction.action === "add" && formAction.display}
             >
               Add Project Type
+            </FormButton>
+            <FormButton
+              type="button"
+              onClick={handleExport}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}
+              className={`${
+                tableData.length ? "secondary" : "custom-disabled"
+              }`}
+            >
+              Export
             </FormButton>
           </Box>
         </SubHeader>

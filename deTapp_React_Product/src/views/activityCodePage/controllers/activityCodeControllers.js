@@ -23,10 +23,10 @@ import { decodeData } from "../../utilities/securities/encodeDecode";
  *   .then(response => console.log(response))
  *   .catch(error => console.error(error));
  */
-export const getProjectController = async () => {
+export const getActivityCodeController = async () => {
   try {
     // Send the GET request to the projectCreation API endpoint
-    const response = await get("master/AllProjectCreation", "python");
+    const response = await get("master/GetActivityCodes", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -34,27 +34,7 @@ export const getProjectController = async () => {
   }
 };
 
-export const getProjectTypesController = async () => {
-  try {
-    // Send the GET request to the projectCreation API endpoint
-    const response = await get("master/AllProjects", "python");
-    // Return the response data
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
 
-export const getClientInfoController = async () => {
-  try {
-    // Send the GET request to the projectCreation API endpoint
-    const response = await get("master/AllClients", "python");
-    // Return the response data
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
 
 export const projectCreationController = async (formData) => {
   try {

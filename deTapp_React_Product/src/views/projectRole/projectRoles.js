@@ -11,9 +11,11 @@ import FormComponent from "./components/projectRoleComponent";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import { useOutletContext } from "react-router";
 import {
+  generateCSV,
   getCurrentPathName,
   getSubmenuDetails,
   ScrollToTopButton,
+  timeStampFileName,
 } from "../utilities/generals";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
@@ -196,7 +198,9 @@ const Roles = () => {
           "success",
           `Project Role ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `Project Role has been ${isAdd ? "addded" : "updated"} successfully  `,
+            `Project Role has been ${
+              isAdd ? "addded" : "updated"
+            } successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -387,6 +391,15 @@ const Roles = () => {
     }
   };
 
+  const handleExport = () => {
+    const columnOrder = ["id", "name"];
+    generateCSV(
+      tableData,
+      `project_role_${timeStampFileName(new Date())}`,
+      columnOrder
+    );
+  };
+
   return (
     <>
       {formAction.display && (
@@ -428,6 +441,18 @@ const Roles = () => {
               disabled={formAction.action === "add" && formAction.display}
             >
               Add Project Role
+            </FormButton>
+            <FormButton
+              type="button"
+              onClick={handleExport}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}
+              className={`${
+                tableData.length ? "secondary" : "custom-disabled"
+              }`}
+            >
+              Export
             </FormButton>
           </Box>
         </SubHeader>

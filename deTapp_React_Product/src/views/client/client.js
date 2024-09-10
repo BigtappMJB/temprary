@@ -11,9 +11,11 @@ import FormComponent from "./components/clientFormComponent";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import { useOutletContext } from "react-router";
 import {
+  generateCSV,
   getCurrentPathName,
   getSubmenuDetails,
   ScrollToTopButton,
+  timeStampFileName,
 } from "../utilities/generals";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
@@ -300,6 +302,15 @@ const Roles = () => {
     }
   };
 
+  const handleExport = () => {
+    const columnOrder = ["id", "name"];
+    generateCSV(
+      tableData,
+      `client_${timeStampFileName(new Date())}`,
+      columnOrder
+    );
+  };
+
   /**
    * Initiates the process to delete a user.
    * @param {Object} selectedRow - The selected user's data.
@@ -449,6 +460,18 @@ const Roles = () => {
               disabled={formAction.action === "add" && formAction.display}
             >
               Add Client
+            </FormButton>
+            <FormButton
+              type="button"
+              onClick={handleExport}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}
+              className={`${
+                tableData.length ? "secondary" : "custom-disabled"
+              }`}
+            >
+              Export
             </FormButton>
           </Box>
         </SubHeader>

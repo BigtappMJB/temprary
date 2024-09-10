@@ -17,9 +17,7 @@ import {
 } from "../utilities/generals";
 import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisplay";
 import {
-  getClientInfoController,
-  getProjectController,
-  getProjectTypesController,
+  getActivityCodeController,
   projectCreationController,
   projectDeleteController,
   projectUpdateController,
@@ -116,7 +114,7 @@ const ActivityCodePage = () => {
   const getTableData = async () => {
     try {
       startLoading();
-      const response = await getProjectController();
+      const response = await getActivityCodeController();
       setTableData(response);
     } catch (error) {
       console.error(error);
@@ -236,7 +234,7 @@ const ActivityCodePage = () => {
       else {
         formData = {
           ...formData,
-          ID: selectedValue.PROJECT_NAME_CODE,
+          ID: selectedValue.ACTIVITY_CODE,
         };
         response = await projectUpdateController(formData);
       }
@@ -422,7 +420,7 @@ const ActivityCodePage = () => {
       });
       debugger;
       const response = await projectDeleteController(
-        selectedRow.PROJECT_NAME_CODE
+        selectedRow.ACTIVITY_CODE
       );
       console.log(response);
       debugger;
@@ -474,16 +472,15 @@ const ActivityCodePage = () => {
 
   const handleExport = () => {
     const columnOrder = [
-      "PROJECT_NAME_CODE",
-      "PROJECT_NAME",
-      "CLIENT_ID",
-      "CLIENT_NAME",
-      "PROJECT_TYPE_CODE",
-      "PROJECT_TYPE_NAME",
+      "PHASE_CODE",
+      "PHASE_NAME",
+      "PROJECT_ROLE_ID",
+      "PROJECT_ROLE_NAME",
+      "ACTIVITY_CODE",
     ];
     generateCSV(
       tableData,
-      `project_creation_${timeStampFileName(new Date())}`,
+      `activity_code_${timeStampFileName(new Date())}`,
       columnOrder
     );
   };
