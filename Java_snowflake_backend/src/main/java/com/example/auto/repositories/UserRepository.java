@@ -42,10 +42,7 @@ public class UserRepository {
 
         try {
             conn = connector.getDBConnection();
-            String sql = "SELECT u.*, r.name as role_name " +
-                    "FROM USERS u " +
-                    "LEFT JOIN ROLES r ON r.ID = u.ROLE_ID " +
-                    "ORDER BY u.ID DESC";
+            String sql = "Select us.id,us.FIRST_NAME,us.MIDDLE_NAME,us.LAST_NAME,us.EMAIL,us.MOBILE,us.is_verified,us.LAST_LOGIN_DATETIME,re.ID as 'ROLE_ID',re.NAME as 'ROLE_NAME' from Users us JOIN roles re ON us.ROLE_ID = re.ID;";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
 
@@ -53,7 +50,7 @@ public class UserRepository {
             int columnCount = rs.getMetaData().getColumnCount();
             List<String> columnNames = new ArrayList<>();
             for (int i = 1; i <= columnCount; i++) {
-                columnNames.add(rs.getMetaData().getColumnName(i));
+                columnNames.add(rs.getMetaData().getColumnLabel(i));
             }
 
             // Iterate through the ResultSet and populate data list
@@ -1361,10 +1358,9 @@ public class UserRepository {
         }
         return roles;
     }
-    
-    
+
     public Map<String, Object> createClients(Map<String, Object> data) throws SQLException {
-    	Connection conn = null;
+        Connection conn = null;
         PreparedStatement stmt = null;
 
         try {
@@ -1406,9 +1402,8 @@ public class UserRepository {
             }
         }
 
-
     }
-    
+
     public Map<String, Object> updateClient(String id, Map<String, Object> data) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -1453,12 +1448,11 @@ public class UserRepository {
 
     }
 
-    
     public Map<String, Object> deleteClientById(String projectId) {
 
         Connection conn = null;
         PreparedStatement stmt = null;
-        
+
         try {
             conn = connector.getDBConnection();
 
@@ -1498,11 +1492,6 @@ public class UserRepository {
         }
 
     }
-
-    
-    
-    
-    
 
     public List<Map<String, Object>> getProjectTypes() throws SQLException {
         Connection conn = connector.getDBConnection();
@@ -1637,7 +1626,7 @@ public class UserRepository {
 
         try {
             conn = connector.getDBConnection();
-            conn.setAutoCommit(false);  // Disable auto-commit to manage the transaction manually
+            conn.setAutoCommit(false); // Disable auto-commit to manage the transaction manually
 
             // Prepare SQL for PROJECT_DETAILS deletion
             String sql1 = "DELETE FROM PROJECT_DETAILS WHERE PROJECT_NAME_CODE = ?";
@@ -1653,22 +1642,22 @@ public class UserRepository {
 
             // Check if both delete operations were successful
             if (rowsDeletedDetails > 0 && rowsDeletedEstimate > 0) {
-                conn.commit();  // Commit the transaction if both deletes are successful
+                conn.commit(); // Commit the transaction if both deletes are successful
                 return Map.of("message", "Project details and estimate deleted successfully", "status", 200);
             } else {
-                conn.rollback();  // Rollback the transaction if any delete failed
+                conn.rollback(); // Rollback the transaction if any delete failed
                 return Map.of("message", "Project details or estimate not found", "status", 404);
             }
 
         } catch (SQLException e) {
             try {
                 if (conn != null) {
-                    conn.rollback();  // Rollback the transaction in case of error
+                    conn.rollback(); // Rollback the transaction in case of error
                 }
             } catch (SQLException ex) {
-                ex.printStackTrace();  // Log rollback failure
+                ex.printStackTrace(); // Log rollback failure
             }
-            e.printStackTrace();  // Log the original exception
+            e.printStackTrace(); // Log the original exception
             return Map.of("error", e.getMessage(), "status", 500);
 
         } finally {
@@ -1679,7 +1668,7 @@ public class UserRepository {
                 if (conn != null)
                     conn.close();
             } catch (SQLException e) {
-                e.printStackTrace();  // Log exception if closing fails
+                e.printStackTrace(); // Log exception if closing fails
             }
         }
     }
@@ -1843,7 +1832,6 @@ public class UserRepository {
         return roles;
     }
 
-    
     public Map<String, Object> updategetAllProjectEst(String id, Map<String, Object> data) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -1853,8 +1841,8 @@ public class UserRepository {
 
             // Prepare SQL statement
             String sql = "UPDATE PROJECT_ESTIMATE SET PROJECT_PHASE_CODE = ?, PROJECT_ROLE_ID = ?, "
-            		+ "ACTIVITY_CODE = ?, START_DATE = ?,END_DATE = ?,NO_OF_HOURS_PER_DAY = ?, TOTAL_HOURS = ?, "
-            		+ "PROJECT_NAME_CODE = ?,No_of_working_days = ? " +
+                    + "ACTIVITY_CODE = ?, START_DATE = ?,END_DATE = ?,NO_OF_HOURS_PER_DAY = ?, TOTAL_HOURS = ?, "
+                    + "PROJECT_NAME_CODE = ?,No_of_working_days = ? " +
                     "WHERE ESTIMATE_ID =?;";
             stmt = conn.prepareStatement(sql);
 
@@ -1897,9 +1885,6 @@ public class UserRepository {
         }
 
     }
-
-    
-    
 
     public Map<String, Object> deleteProjectEstById(String projectEstId) {
 
