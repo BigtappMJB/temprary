@@ -13,7 +13,10 @@ import {
   removeCookie,
   setCookie,
 } from "../../utilities/cookieServices/cookieServices";
-import { storeLoginDetails } from "../../../redux/slices/slice";
+import {
+  storeLoginDetails,
+  storeMenuDetails,
+} from "../../../redux/slices/slice";
 
 import { encodeData } from "../../utilities/securities/encodeDecode";
 import {
@@ -131,6 +134,9 @@ const LoginPage = () => {
         };
 
         dispatch(storeLoginDetails(loginDetails));
+        dispatch(storeMenuDetails(response?.permissions));
+
+        debugger;
 
         // Remember the user if the rememberMe flag is set
         if (formData.rememberMe) {

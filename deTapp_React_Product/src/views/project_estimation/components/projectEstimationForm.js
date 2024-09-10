@@ -128,8 +128,39 @@ const ProjectEstimateFormComponent = forwardRef(
 
     const activityCodeList = useRef([]);
 
-    const getDaysDiff = (startDate, endDate) => {
-      return moment(endDate).diff(moment(startDate), "days") + 1;
+    // const getDaysDiff = (startDate, endDate) => {
+    //   return moment(endDate).diff(moment(startDate), "days") + 1;
+    // };
+
+    const getTotalWorkingDays = (startDate, endDate) => {
+      const start = moment(startDate);
+      const end = moment(endDate);
+
+      // Get total number of days between start and end date
+      let totalDays = end.diff(start, "days") + 1;
+
+      // Get the number of complete weeks
+      const completeWeeks = Math.floor(totalDays / 7);
+
+      // Calculate the number of weekend days in the complete weeks
+      let weekendDays = completeWeeks * 2;
+
+      // Calculate remaining days after removing complete weeks
+      let remainingDays = totalDays % 7;
+
+      // Start day of the week
+      const startDay = start.day();
+
+      // Add the remaining weekend days within the partial week range
+      for (let i = 0; i < remainingDays; i++) {
+        const currentDay = (startDay + i) % 7;
+        if (currentDay === 0 || currentDay === 6) {
+          weekendDays++;
+        }
+      }
+
+      // Subtract the weekend days from total days to get working days
+      return totalDays - weekendDays;
     };
 
     const calculateWorkingHours = (
@@ -214,15 +245,29 @@ const ProjectEstimateFormComponent = forwardRef(
       return 0; // Fallback if any value is missing
     }, [startDate, endDate, hoursPerDay, workingDays]);
 
+    // Memoize the total working hours calculation
+    const workingDaysValue = useMemo(() => {
+      if (startDate && endDate) {
+        return getTotalWorkingDays(startDate, endDate);
+      }
+      return 0; // Fallback if any value is missing
+    }, [startDate, endDate]);
+
     // Effect to update the form whenever the calculated hours change
     useEffect(() => {
+      if (workingDaysValue > 0) {
+        reset({
+          ...getValues(),
+          workingDays: workingDaysValue,
+        });
+      }
       if (totalHours > 0) {
         reset({
           ...getValues(),
           totalHours,
         });
       }
-    }, [totalHours, reset, getValues]);
+    }, [workingDaysValue, totalHours, reset, getValues]);
     // Effect to set default values and reset the form
     useEffect(() => {
       if (defaultValues) {
