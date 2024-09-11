@@ -384,15 +384,32 @@ public class UserController {
 		return new ResponseEntity<>(roles, HttpStatus.OK);
 	}
 	
-//	@PostMapping("/createProjectRole")
-//	public ResponseEntity<Object> createProjectRole(@RequestBody Map<String, Object> data) throws SQLException {
-//		try {
-//			Map<String, Object> response = userRepository.createProjectRole(data);
-//			return new ResponseEntity<>(response, HttpStatus.CREATED);
-//		} catch (Exception e) {
-//			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
+	@PostMapping("/createProjectRole")
+	public ResponseEntity<Object> createProjectRole(@RequestBody Map<String, Object> data) throws SQLException {
+		try {
+			Map<String, Object> response = userRepository.createProjectRole(data);
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PutMapping("/updateProjectRoleById")
+	public ResponseEntity<Map<String, Object>> updateProjectRole(@RequestParam(value = "id") String id,
+			@RequestBody Map<String, Object> data) {
+
+		Map<String, Object> response = userRepository.updateProjectRoleById(id, data);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
+	
+	@DeleteMapping("/deleteProjectRole")
+	public ResponseEntity<Map<String, Object>> deleteProjectRole(
+			@RequestParam(value = "id") String rolePermissionId) {
+		Map<String, Object> response = userRepository.deleteProjectRole(rolePermissionId);
+		int statusCode = (int) response.get("status");
+		return new ResponseEntity<>(response, HttpStatus.valueOf(statusCode));
+	}
 	
 	
 	

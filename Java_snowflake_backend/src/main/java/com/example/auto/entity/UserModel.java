@@ -12,8 +12,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-@Entity
-@Table(name = "users")
+//@Entity
+//@Table(name = "users")
 public class UserModel {
 
 	@Id

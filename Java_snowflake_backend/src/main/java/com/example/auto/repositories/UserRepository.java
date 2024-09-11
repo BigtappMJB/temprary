@@ -1672,57 +1672,145 @@ public class UserRepository {
         return roles;
     }
 
-//    public Map<String, Object> createProjectRole(Map<String, Object> data) throws SQLException {
-//    	Connection conn = null;
-//        PreparedStatement stmt = null;
-//
-//        try {
-//            conn = connector.getDBConnection();
-//
-//            // Prepare SQL statement
-//            String sql = "INSERT INTO project_type (PROJECT_TYPE_CODE, PROJECT_TYPE_NAME, CREATED_BY, IS_ACTIVE) VALUES (?, ?, ?, ?)";
-//            stmt = conn.prepareStatement(sql);
-//
-//            // Set parameters
-//            stmt.setString(1, data.get("projectTypeCode").toString());
-//            stmt.setString(2, data.get("projectTypeName").toString());
-//            stmt.setString(3, data.get("createdBy").toString());
-//            stmt.setInt(4, (int) data.get("isActive"));
-//
-//            // Execute the insert operation
-//            stmt.executeUpdate();
-//
-//            // Commit the transaction
-//            // conn.commit();
-//
-//            // Return success message
-//            return Map.of("message", "Project type created successfully", "status", 201);
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            // Log the error
-//            System.err.println("Error occurred while creating user: " + e.getMessage());
-//            return Map.of("error", e.getMessage(), "status", 500);
-//
-//        } finally {
-//            // Close resources
-//            try {
-//                if (stmt != null)
-//                    stmt.close();
-//                if (conn != null)
-//                    conn.close();
-//            } catch (SQLException e) {
-//                e.printStackTrace(); // Log exception if closing fails
-//            }
-//        }
-//
-//
-//    }
+    public Map<String, Object> createProjectRole(Map<String, Object> data) throws SQLException {
+    	Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "INSERT INTO project_role ( PROJECT_ROLE_NAME, CREATED_BY, "
+            		+ "CREATED_DATE, IS_ACTIVE, PROJECT_TYPE_CODE)"
+            		+ " VALUES (?, ?, CURRENT_TIMESTAMP, ?, null)";
+            stmt = conn.prepareStatement(sql);
+
+            // Set parameters
+            stmt.setString(1, data.get("projectRoleName").toString());
+            stmt.setString(2, data.get("createdBy").toString());
+            stmt.setInt(3, (int) data.get("isActive"));
+
+            // Execute the insert operation
+            stmt.executeUpdate();
+
+            // Commit the transaction
+            // conn.commit();
+
+            // Return success message
+            return Map.of("message", "Project role created successfully", "status", 201);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Log the error
+            System.err.println("Error occurred while creating user: " + e.getMessage());
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+
+    }
     
     
+    public Map<String, Object> updateProjectRoleById(String id, Map<String, Object> data) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int projectId = Integer.parseInt(id);
+        try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "UPDATE project_role SET PROJECT_ROLE_NAME = ?, UPDATED_BY = ?" +
+                    "WHERE PROJECT_ROLE_ID =?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set parameters
+            stmt.setString(1, data.get("projectRoleName").toString());
+            stmt.setString(2, data.get("updatedBy").toString());
+            stmt.setInt(3, projectId);
+
+            // Execute the update operation
+            int rowsUpdated = stmt.executeUpdate();
+
+            // Check if the update was successful
+            if (rowsUpdated > 0) {
+                // conn.commit(); // Commit the transaction
+                return Map.of("message", "project creation updated successfully", "status", 200);
+            } else {
+                return Map.of("message", "Project creation not found", "status", 404);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log the exception
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+    }
     
-    
-    
+    public Map<String, Object> deleteProjectRole(String projectEstId) {
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int rolePermissionIds = Integer.parseInt(projectEstId);
+        try {
+            conn = connector.getDBConnection();
+
+            // Prepare SQL statement
+            String sql = "DELETE FROM PROJECT_ROLE WHERE PROJECT_ROLE_ID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the role permission ID parameter
+            stmt.setInt(1, rolePermissionIds);
+
+            // Execute the delete operation
+            int rowsDeleted = stmt.executeUpdate();
+
+            // Check if the delete was successful
+
+            if (rowsDeleted > 0) {
+                // conn.commit(); // Commit the transaction
+                return Map.of("message", "Project role deleted successfully", "status", 200);
+            } else {
+                return Map.of("message", "Project role not found", "status", 404);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log the exception
+            return Map.of("error", e.getMessage(), "status", 500);
+
+        } finally {
+            // Close resources
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); // Log exception if closing fails
+            }
+        }
+
+    }
     
     
     
