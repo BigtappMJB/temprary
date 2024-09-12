@@ -24,8 +24,6 @@ import PageCreationForm from "./components/pageDetailsForm";
 import { ScrollToTopButton } from "../utilities/generals";
 
 // Styled Components
-
-// Main form container styling
 const Container = styled(Paper)(({ theme }) => ({
   paddingBottom: theme.spacing(3),
   marginBottom: theme.spacing(5),
@@ -36,7 +34,6 @@ const Container = styled(Paper)(({ theme }) => ({
   },
 }));
 
-// Container for dynamic columns form
 const SecondContainer = styled(Paper)(({ theme }) => ({
   paddingBottom: theme.spacing(3),
   marginBottom: theme.spacing(5),
@@ -47,7 +44,6 @@ const SecondContainer = styled(Paper)(({ theme }) => ({
   },
 }));
 
-// Header styling
 const Header = styled(Box)(({ theme }) => ({
   backgroundColor: "#1e88e5",
   color: "#fff",
@@ -60,12 +56,10 @@ const Header = styled(Box)(({ theme }) => ({
   alignItems: "center",
 }));
 
-// Box to hold dynamic forms
 const StyledColumnBox = styled(Box)(({ theme }) => ({
   overflow: "auto",
 }));
 
-// Sub-header styling
 const SubHeader = styled(Box)(({ theme }) => ({
   color: "#1e88e5",
   padding: theme.spacing(2),
@@ -77,52 +71,42 @@ const SubHeader = styled(Box)(({ theme }) => ({
   alignItems: "center",
 }));
 
-// Button styling
 const FormButton = styled(Button)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     width: "100%",
   },
 }));
 
-// Schema for validation of initial form
+// Schema for validation
 const schema1 = yup.object().shape({
   tableName: yup.object().required("Table is required"),
 });
 
-/**
- * DynamicPageCreation is a React component that allows users to create dynamic forms.
- * Users can select a table, add columns from the table, and dynamically add/remove form inputs for each selected column.
- */
 const DynamicPageCreation = () => {
-  // State to hold table list data
   const [tableList, setTableList] = useState([]);
-
-  // State to hold input fields data
   const [inputList, setInputList] = useState([]);
-
-  // State to hold column form data
   const [columnsData, setColumnsData] = useState([]);
-
-  // Refs for storing form refs and other data
   const formRefs = useRef([]);
   const pageDetailsRef = useRef({});
+
   const allColumnsDataList = useRef([]);
+
   const isRemovingForm = useRef(false);
 
   const { startLoading, stopLoading } = useLoading();
   const { openDialog } = useDialog();
 
-  // Refs for handling selected columns, table name, etc.
   const selectedColumnsRef = useRef([]);
   const tableNameRef = useRef(null);
+
   const columnDetailsRef = useRef([]);
   const currentSelectedRef = useRef(null);
   const hasFetchedRoles = useRef(false);
 
-  // Form control for managing inputs and validation
   const {
     control,
     handleSubmit,
+    reset,
     trigger,
     formState: { errors },
   } = useForm({
@@ -131,7 +115,6 @@ const DynamicPageCreation = () => {
     defaultValues: {},
   });
 
-  // Fetch the table list from the API
   const fetchTableListData = useCallback(async () => {
     try {
       startLoading();
@@ -144,7 +127,6 @@ const DynamicPageCreation = () => {
     }
   }, [startLoading, stopLoading]);
 
-  // Fetch the input field list from the API
   const fetchInputList = useCallback(async () => {
     try {
       startLoading();
@@ -157,7 +139,6 @@ const DynamicPageCreation = () => {
     }
   }, [startLoading, stopLoading]);
 
-  // On initial render, fetch table list and input list once
   useEffect(() => {
     if (!hasFetchedRoles.current) {
       fetchTableListData();
@@ -166,7 +147,6 @@ const DynamicPageCreation = () => {
     }
   }, [fetchTableListData, fetchInputList]);
 
-  // Fetch column details when a table is selected
   const getColumnDetails = useCallback(
     async (tableName) => {
       try {
@@ -186,54 +166,48 @@ const DynamicPageCreation = () => {
     [startLoading, stopLoading, openDialog]
   );
 
-  // Handle table form submission and load columns for the selected table
   const onTableSubmit = async (data) => {
     tableNameRef.current = data.TABLE_NAME;
     await getColumnDetails(data.TABLE_NAME);
   };
 
-  /**
-   * onRemoveForm removes a specific DynamicColumnForm based on its ID.
-   * The removed column's data is re-added to the available columns list.
-   */
-  const onRemoveForm = (id, columnData) => {
-    isRemovingForm.current = true;
-
-    // Find the column to be removed and add it back to the available column details
-    const removingData = allColumnsDataList.current.find(
-      (column) => column.COLUMN_NAME === columnData.COLUMN_NAME
-    );
-
-    if (removingData) {
-      columnDetailsRef.current = [removingData, ...columnDetailsRef.current];
+  const onColumnSubmit = (columnData) => {
+    if (!isRemovingForm.current) {
+      setColumnsData((prevData) => {
+        const updatedData = [...prevData];
+        updatedData[columnData.id] = columnData;
+        return updatedData;
+      });
     }
-
-    // Update columnsData state by filtering out the removed form
-    setColumnsData((prevData) => prevData.filter((form) => form.id !== id));
-
-    isRemovingForm.current = false;
   };
 
-  /**
-   * Adds a column to the list of selected columns and updates the available columns list.
-   */
+  const onRemoveForm = (id, columnData) => {
+    isRemovingForm.current = true;
+    const removingData = allColumnsDataList.current.filter(
+      (column) => column.COLUMN_NAME === columnData.COLUMN_NAME
+    )[0];
+    columnDetailsRef.current.unshift(removingData);
+
+    setColumnsData((prevData) =>
+      prevData
+        .filter((form) => form.id !== id)
+        .map((form, index) => ({
+          ...form,
+          id: index,
+        }))
+    );
+  };
+
   const updateSelectedColumns = (newColumn) => {
     selectedColumnsRef.current = [...selectedColumnsRef.current, newColumn];
   };
 
-  /**
-   * Updates column details by removing the selected column from the available list.
-   */
   const updateColumnDetails = (columnName) => {
     columnDetailsRef.current = columnDetailsRef.current.filter(
       (column) => column.COLUMN_NAME !== columnName
     );
   };
 
-  /**
-   * Adds a new DynamicColumnForm for the selected column.
-   * The selected column is removed from the available column list.
-   */
   const addColumnForm = () => {
     updateSelectedColumns(currentSelectedRef.current);
     updateColumnDetails(currentSelectedRef.current.COLUMN_NAME);
@@ -246,16 +220,14 @@ const DynamicPageCreation = () => {
     isRemovingForm.current = false;
   };
 
-  /**
-   * Validates all the dynamic column forms.
-   */
   const validateColumnForms = async () => {
     const updatedColumnsData = await Promise.all(
       columnsData.map(async (column, index) => {
         if (!column?.validated) {
+          // Assuming ColumnForm is a component that has a method to trigger validation
           const isUpdatedDetails = await formRefs.current[
             index
-          ].triggerValidation();
+          ].triggerValidation(); // Implement triggerColumnValidation
           return isUpdatedDetails;
         }
         return column;
@@ -264,9 +236,6 @@ const DynamicPageCreation = () => {
     return updatedColumnsData;
   };
 
-  /**
-   * Handles the creation of the dynamic page after validating all forms.
-   */
   const handleCreatePage = async () => {
     const pageDetailsValidation =
       await pageDetailsRef.current.triggerValidation();
@@ -280,7 +249,8 @@ const DynamicPageCreation = () => {
       await trigger();
       return;
     }
-
+    console.log(columnsData.length);
+    
     if (!columnsData.length) {
       return openDialog(
         "warning",
@@ -303,6 +273,8 @@ const DynamicPageCreation = () => {
         }
       );
     }
+
+    // Implement page creation logic here
 
     const updatedColumnsData = await validateColumnForms();
 
@@ -335,30 +307,9 @@ const DynamicPageCreation = () => {
       );
     }
 
-    // Collect validated column data for submission
-    const columnValues = updatedColumnsData.map(
-      (column) => column.columnValues
-    );
-
-    // Final output to be submitted/used for form creation
-    const finalOutputValues = {
-      pageDetails: {
-        ...pageDetailsValidation.pageDetails,
-      },
-      tableName: tableNameRef.current,
-      columnsData: {
-        ...columnValues,
-      },
-    };
-
-    console.log({ finalOutputValues });
-    debugger; // Debugging point to inspect the output
-    return;
+    console.log(updatedColumnsData);
   };
 
-  /**
-   * Clears all selected columns, adding them back to the available list.
-   */
   const handleColumnsClear = () => {
     columnDetailsRef.current = [
       ...columnDetailsRef.current,
@@ -432,12 +383,19 @@ const DynamicPageCreation = () => {
                       field.onChange(data);
                       currentSelectedRef.current = data;
                       addColumnForm(data);
+                      // Delay resetting the field value
                       setTimeout(() => {
                         field.onChange(null);
                       }, 0);
                     }}
                     renderInput={(params) => (
-                      <TextField {...params} label="Select Columns" fullWidth />
+                      <TextField
+                        {...params}
+                        label="Select Columns"
+                        fullWidth
+                        // error={!!errors.tableName}
+                        // helperText={errors.tableName?.message}
+                      />
                     )}
                   />
                 )}
@@ -458,6 +416,7 @@ const DynamicPageCreation = () => {
             {columnsData?.map((data, index) => (
               <DynamicColumnForm
                 key={data.id}
+                onColumnSubmit={onColumnSubmit}
                 data={data}
                 ref={(el) => (formRefs.current[index] = el)}
                 onReset={onRemoveForm}
@@ -474,13 +433,14 @@ const DynamicPageCreation = () => {
         justifyContent="flex-end"
         alignItems="center"
         flexWrap="wrap"
-        gap={2}
+        gap={2} // Adds space between buttons
       >
         <FormButton
           onClick={handleCreatePage}
           type="button"
           variant="contained"
           color="primary"
+          // disabled={columnsData.length === 0}
         >
           Create Form
         </FormButton>

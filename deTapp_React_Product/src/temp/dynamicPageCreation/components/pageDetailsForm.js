@@ -6,12 +6,18 @@ import React, {
   useState,
 } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button, Grid, styled, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Grid,
+  styled,
+  Box,
+  Autocomplete,
+} from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
 
-// Styled Container for the form layout
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
@@ -21,8 +27,7 @@ const Container = styled(Box)(({ theme }) => ({
   background:
     "linear-gradient(to bottom, rgba(249, 251, 255, 1), rgba(249, 251, 255, 1), rgba(249, 250, 255, 1))",
 }));
-
-// Validation schema with Yup, validating form fields
+// Validation schema with regex patterns
 const schema = yup.object().shape({
   menu: yup
     .string()
@@ -35,46 +40,48 @@ const schema = yup.object().shape({
     .transform((value, originalValue) => (originalValue === "" ? null : value))
     .required("SubMenu is required"),
   pageName: yup.string().required("Page name is required"),
-  route: yup.string().required("Route is required"),
+
+  route: yup.string().required("Routeis required"),
 });
 
 /**
- * PageCreationForm is a form component for creating or updating page details.
- * It handles input fields like menu, sub-menu, page name, and route.
- * The form is validated using Yup schema and controlled with React Hook Form.
+ * PageCreationForm renders a form with fields for user details.
+ * The form is validated using Yup schema and managed with React Hook Form.
  *
  * @component
  * @param {Object} props - The component props
- * @param {Object} props.formAction - Object containing the action type (e.g., 'add', 'read')
+ * @param {Object} props.formAction - Object containing action type (e.g., 'add', 'read')
+ * @param {Object} props.defaultValues - Default values for the form fields
  * @param {Function} props.onSubmit - Function to handle form submission
  * @param {Function} props.onReset - Function to handle form reset
- * @param {React.Ref} ref - Forwarded ref for exposing internal methods to parent
- *
+ * @param {Array} props.rolesList - List of roles to populate the Autocomplete
  * @example
+ * // Sample usage
  * const formAction = { action: 'add' };
  * const defaultValues = {
- *   menu: 'Main Menu',
- *   subMenu: 'Settings',
- *   pageName: 'Dashboard',
- *   route: '/dashboard'
+ *   FIRST_NAME: 'John',
+ *   LAST_NAME: 'Doe',
+ *   EMAIL: 'john.doe@example.com',
+ *   MOBILE: '1234567890'
  * };
+ * const rolesList = [
+ *   { ID: 'admin', NAME: 'Admin' },
+ *   { ID: 'user', NAME: 'User' }
+ * ];
  *
  * <PageCreationForm
  *   formAction={formAction}
  *   defaultValues={defaultValues}
  *   onSubmit={handleSubmit}
  *   onReset={handleReset}
+ *   rolesList={rolesList}
  * />
  */
 const PageCreationForm = forwardRef(
   ({ formAction = {}, onSubmit, onReset }, ref) => {
-    // State for managing whether the form fields should be read-only
     const [readOnly, setReadOnly] = useState(false);
-
-    // State to track focus events
     const [isFocused, setIsFocused] = useState(false);
 
-    // React Hook Form setup with validation and default values
     const {
       control,
       handleSubmit,
@@ -87,7 +94,7 @@ const PageCreationForm = forwardRef(
       resolver: yupResolver(schema),
     });
 
-    // Effect to sanitize all input values to prevent XSS attacks using DOMPurify
+    // Effect to sanitize input values
     useEffect(() => {
       const sanitizeInputs = () => {
         const inputs = document.querySelectorAll("input");
@@ -96,34 +103,30 @@ const PageCreationForm = forwardRef(
         });
       };
 
-      sanitizeInputs(); // Call sanitize on initial render
+      sanitizeInputs();
     }, []);
 
     /**
-     * Resets the form to its initial state and calls the parent onReset function.
+     * Resets the form to its initial state
      */
     const handleReset = () => {
-      onReset(); // Parent reset handler
+      onReset();
       reset({
         menu: null,
         subMenu: null,
         pageName: "",
         route: "",
-      }); // Clear form fields
+      });
     };
 
     /**
-     * Handles the form submission by sending the form data to the parent onSubmit handler.
+     * Submits the form data
      */
     const onLocalSubmit = () => {
-      onSubmit(getValues()); // Send form data to parent component
+      onSubmit(getValues());
     };
-
-    // Expose form methods (reset and trigger validation) to parent component via ref
+    // Expose a method to trigger validation via ref
     useImperativeHandle(ref, () => ({
-      /**
-       * Resets the form to its default values.
-       */
       resetForm: async () => {
         reset({
           menu: null,
@@ -132,14 +135,10 @@ const PageCreationForm = forwardRef(
           route: "",
         });
       },
-      /**
-       * Triggers validation of the form and returns the form values if valid.
-       * @returns {Object} Contains page details and validation status
-       */
       triggerValidation: async () => {
-        const isValid = await trigger(); // Trigger validation
-        const values = getValues(); // Get form values
-        return { pageDetails: values, validated: isValid }; // Return validation result and values
+        const isValid = await trigger();
+        const values = getValues();
+        return { ...values, validated: isValid };
       },
     }));
 
@@ -147,10 +146,9 @@ const PageCreationForm = forwardRef(
       <Container
         component="form"
         className="panel-bg"
-        onSubmit={handleSubmit(onLocalSubmit)} // Handle form submission
+        onSubmit={handleSubmit(onLocalSubmit)}
       >
         <Grid container spacing={2}>
-          {/* Menu Field */}
           <Grid item xs={12} sm={6}>
             <Controller
               name="menu"
@@ -163,16 +161,14 @@ const PageCreationForm = forwardRef(
                   variant="outlined"
                   error={!!errors.menu}
                   helperText={errors.menu?.message}
-                  InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
+                  InputLabelProps={{ shrink: field.value }}
                   InputProps={{
-                    readOnly: readOnly, // Make the field read-only if necessary
+                    readOnly: readOnly, // Make the field read-only
                   }}
                 />
               )}
             />
           </Grid>
-
-          {/* SubMenu Field */}
           <Grid item xs={12} sm={6}>
             <Controller
               name="subMenu"
@@ -185,16 +181,15 @@ const PageCreationForm = forwardRef(
                   variant="outlined"
                   error={!!errors.subMenu}
                   helperText={errors.subMenu?.message}
-                  InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
+                  InputLabelProps={{ shrink: field.value }}
                   InputProps={{
-                    readOnly: readOnly, // Make the field read-only if necessary
+                    readOnly: readOnly, // Make the field read-only
                   }}
                 />
               )}
             />
           </Grid>
 
-          {/* Page Name Field */}
           <Grid item xs={12} sm={6}>
             <Controller
               name="pageName"
@@ -207,16 +202,15 @@ const PageCreationForm = forwardRef(
                   variant="outlined"
                   error={!!errors.pageName}
                   helperText={errors.pageName?.message}
-                  InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
+                  InputLabelProps={{ shrink: field.value }}
                   InputProps={{
-                    readOnly: readOnly, // Make the field read-only if necessary
+                    readOnly: readOnly, // Make the field read-only
                   }}
                 />
               )}
             />
           </Grid>
 
-          {/* Route Field */}
           <Grid item xs={12} sm={6}>
             <Controller
               name="route"
@@ -229,18 +223,15 @@ const PageCreationForm = forwardRef(
                   variant="outlined"
                   error={!!errors.route}
                   helperText={errors.route?.message}
-                  InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
+                  InputLabelProps={{ shrink: field.value }}
                   InputProps={{
-                    readOnly: readOnly, // Make the field read-only if necessary
+                    readOnly: readOnly, // Make the field read-only
                   }}
                 />
               )}
             />
           </Grid>
-
-          {/* Submit and Reset Button Section */}
           <Grid item xs={12} sm={12}>
-            {/* Uncomment to add action buttons */}
             {/* <Box
               display="flex"
               justifyContent="flex-end"

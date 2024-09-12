@@ -19,7 +19,6 @@ const OptionsDialogBox = ({
   onSubmit,
   defaultValues,
   onReset,
-  columnName,
 }) => {
   // Use useCallback to memoize the handleClose function if it's defined in the parent
   const memoizedHandleClose = useCallback(() => {
@@ -43,7 +42,7 @@ const OptionsDialogBox = ({
           width="100%"
         >
           <Typography variant="h6" sx={{ color: "white", pr: 2 }}>
-            {columnName} Options Form
+            Options Form
           </Typography>
           <IconButton
             aria-label="close"
