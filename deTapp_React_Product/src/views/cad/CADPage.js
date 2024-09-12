@@ -23,6 +23,7 @@ import {
 } from "./controllers/cadControllers";
 import CADFormComponent from "./components/cadForm";
 import { useOutletContext } from "react-router";
+import { FormatColorFillRounded } from "@mui/icons-material";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -93,6 +94,7 @@ const CMDPage = () => {
     display: false,
     action: "update",
   });
+  const formRef = useRef({});
 
   const [permissionLevels, setPermissionLevels] = useState({
     create: null,
@@ -203,6 +205,7 @@ const CMDPage = () => {
 
       if (response) {
         getTableData();
+        formRef.current.resetForm();
         if (!isAdd) {
           onFormReset();
         }
@@ -407,21 +410,19 @@ const CMDPage = () => {
 
   const handleExport = () => {
     const columnOrder = [
-      { key: "id", name: "id" },
-      { key: "target", name: "target" },
-      { key: "country_of_residence", name: "country_of_residence" },
-      { key: "incorporation_city", name: "incorporation_city" },
-      { key: "sector_classification", name: "sector_classification" },
-      { key: "emirates_id", name: "emirates_id" },
+      "PROJECT_NAME_CODE",
+      "PROJECT_NAME",
+      "CLIENT_ID",
+      "CLIENT_NAME",
+      "PROJECT_TYPE_CODE",
+      "PROJECT_TYPE_NAME",
     ];
-
     generateCSV(
       tableData,
       `central_adjustment_depository_${timeStampFileName(new Date())}`,
       columnOrder
     );
   };
-
   return (
     <>
       {formAction.display && (
@@ -442,6 +443,9 @@ const CMDPage = () => {
             onSubmit={onformSubmit}
             onReset={onFormReset}
             rolesList={rolesList}
+            ref={(ele) => {
+              formRef.current = ele;
+            }}
           />
         </Container>
       )}

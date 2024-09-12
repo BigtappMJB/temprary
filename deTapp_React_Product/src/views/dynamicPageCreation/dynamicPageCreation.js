@@ -20,6 +20,8 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DynamicColumnForm from "./components/DynamicColumnForm";
+import PageCreationForm from "./components/pageDetailsForm";
+import { ScrollToTopButton } from "../utilities/generals";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -85,6 +87,8 @@ const DynamicPageCreation = () => {
   const [inputList, setInputList] = useState([]);
   const [columnsData, setColumnsData] = useState([]);
   const formRefs = useRef([]);
+  const pageDetailsRef = useRef({});
+
   const allColumnsDataList = useRef([]);
 
   const isRemovingForm = useRef(false);
@@ -229,7 +233,16 @@ const DynamicPageCreation = () => {
   };
 
   const handleCreatePage = async () => {
+    const pageDetailsValidation =
+      await pageDetailsRef.current.triggerValidation();
+
+    if (!pageDetailsValidation.validated) {
+      ScrollToTopButton();
+      return;
+    }
+
     // Implement page creation logic here
+
     const updatedColumnsData = await validateColumnForms();
 
     const noOfFormValidated = updatedColumnsData.filter(
@@ -275,9 +288,17 @@ const DynamicPageCreation = () => {
   return (
     <>
       {/* Initial Table Selection Form */}
+
       <Container component="form" onSubmit={handleSubmit(onTableSubmit)}>
         <Header>
-          <Typography variant="h6">Create Page</Typography>
+          <Typography variant="h6">Page Details</Typography>
+        </Header>
+        <PageCreationForm ref={(el) => (pageDetailsRef.current = el)} />
+      </Container>
+
+      <Container component="form" onSubmit={handleSubmit(onTableSubmit)}>
+        <Header>
+          <Typography variant="h6">Table Details</Typography>
         </Header>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -295,6 +316,7 @@ const DynamicPageCreation = () => {
                   value={field.value || null}
                   onChange={(_, data) => {
                     field.onChange(data);
+                    onTableSubmit(data);
                     columnDetailsRef.current = [];
                   }}
                   renderInput={(params) => (
@@ -310,7 +332,7 @@ const DynamicPageCreation = () => {
               )}
             />
           </Grid>
-          {columnDetailsRef.current.length === 0 && (
+          {/* {columnDetailsRef.current.length === 0 && (
             <Grid item xs={12} sm={6}>
               <Box display="flex" justifyContent="flex-end" gap={2}>
                 <Button
@@ -331,7 +353,7 @@ const DynamicPageCreation = () => {
                 </Button>
               </Box>
             </Grid>
-          )}
+          )} */}
         </Grid>
       </Container>
 
@@ -407,27 +429,6 @@ const DynamicPageCreation = () => {
             <Typography variant="h6">
               <b>Add columns to Form</b>
             </Typography>
-            <Box display="flex" justifyContent="space-between" gap={2}>
-              <FormButton
-                onClick={handleCreatePage}
-                type="button"
-                variant="contained"
-                color="primary"
-                disabled={columnsData.length === 0}
-              >
-                Create Form
-              </FormButton>
-
-              <FormButton
-                onClick={handleColumnsClear}
-                type="button"
-                variant="contained"
-                color="error"
-                disabled={columnsData.length === 0}
-              >
-                Clear
-              </FormButton>
-            </Box>
           </SubHeader>
           <StyledColumnBox>
             {columnsData?.map((data, index) => (
@@ -444,6 +445,34 @@ const DynamicPageCreation = () => {
           </StyledColumnBox>
         </SecondContainer>
       )}
+
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        flexWrap="wrap"
+        gap={2} // Adds space between buttons
+      >
+        <FormButton
+          onClick={handleCreatePage}
+          type="button"
+          variant="contained"
+          color="primary"
+          // disabled={columnsData.length === 0}
+        >
+          Create Form
+        </FormButton>
+
+        <FormButton
+          onClick={handleColumnsClear}
+          type="button"
+          variant="contained"
+          color="error"
+          disabled={columnsData.length === 0}
+        >
+          Clear
+        </FormButton>
+      </Box>
     </>
   );
 };

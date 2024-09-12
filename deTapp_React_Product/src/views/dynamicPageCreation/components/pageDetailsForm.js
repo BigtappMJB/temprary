@@ -6,7 +6,14 @@ import React, {
   useState,
 } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button, Grid, styled, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Grid,
+  styled,
+  Box,
+  Autocomplete,
+} from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
@@ -22,30 +29,23 @@ const Container = styled(Box)(({ theme }) => ({
 }));
 // Validation schema with regex patterns
 const schema = yup.object().shape({
-  countryOfResidence: yup
+  menu: yup
     .string()
-    .required("Country of residence is required")
-    .matches(/^[a-zA-Z\s-_]+$/, "Country of residence must be alphabetic"),
-  emiratesId: yup
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .required("Menu is required"),
+  subMenu: yup
     .string()
-    .required("Emirates is required")
-    .matches(/^[a-zA-Z\s-_]+$/, "Emirates must be alphabetic"),
-  target: yup
-    .string()
-    .required("Target is required")
-    .matches(/^[a-zA-Z\s-_]+$/, "Target must be alphabetic"),
-  incorporationCity: yup
-    .string()
-    .required("Incorporation City is required")
-    .matches(/^[a-zA-Z\s-_]+$/, "Incorporation City must be alphabetic"),
-  sectorClassification: yup
-    .string()
-    .required("Sector Classification is required")
-    .matches(/^[a-zA-Z\s-_]+$/, "Sector Classification must be alphabetic"),
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .required("SubMenu is required"),
+  pageName: yup.string().required("Page name is required"),
+
+  route: yup.string().required("Routeis required"),
 });
 
 /**
- * CMDFormComponent renders a form with fields for user details.
+ * PageCreationForm renders a form with fields for user details.
  * The form is validated using Yup schema and managed with React Hook Form.
  *
  * @component
@@ -69,7 +69,7 @@ const schema = yup.object().shape({
  *   { ID: 'user', NAME: 'User' }
  * ];
  *
- * <CMDFormComponent
+ * <PageCreationForm
  *   formAction={formAction}
  *   defaultValues={defaultValues}
  *   onSubmit={handleSubmit}
@@ -77,8 +77,8 @@ const schema = yup.object().shape({
  *   rolesList={rolesList}
  * />
  */
-const CMDFormComponent = forwardRef(
-  ({ formAction, defaultValues, onSubmit, onReset, rolesList }, ref) => {
+const PageCreationForm = forwardRef(
+  ({ formAction = {}, onSubmit, onReset }, ref) => {
     const [readOnly, setReadOnly] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
 
@@ -92,35 +92,7 @@ const CMDFormComponent = forwardRef(
     } = useForm({
       mode: "onChange",
       resolver: yupResolver(schema),
-      defaultValues,
     });
-
-    // Effect to set default values and reset the form
-    useEffect(() => {
-      if (defaultValues) {
-        reset({
-          target: defaultValues?.target ?? "",
-          countryOfResidence: defaultValues?.country_of_residence ?? "",
-          incorporationCity: defaultValues?.incorporation_city ?? "",
-          sectorClassification: defaultValues?.sector_classification ?? "",
-          emiratesId: defaultValues?.emirates_id ?? "",
-        });
-      }
-    }, [defaultValues, reset, rolesList, formAction]);
-
-    // Effect to set read-only state and reset form on formAction change
-    useEffect(() => {
-      setReadOnly(formAction?.action === "read");
-      if (formAction.action === "add") {
-        reset({
-          target: "",
-          emiratesId: "",
-          countryOfResidence: "",
-          incorporationCity: "",
-          sectorClassification: "",
-        });
-      }
-    }, [formAction, reset]);
 
     // Effect to sanitize input values
     useEffect(() => {
@@ -140,11 +112,10 @@ const CMDFormComponent = forwardRef(
     const handleReset = () => {
       onReset();
       reset({
-        target: "",
-        emiratesId: "",
-        countryOfResidence: "",
-        incorporationCity: "",
-        sectorClassification: "",
+        menu: null,
+        subMenu: null,
+        pageName: "",
+        route: "",
       });
     };
 
@@ -154,16 +125,14 @@ const CMDFormComponent = forwardRef(
     const onLocalSubmit = () => {
       onSubmit(getValues());
     };
-
     // Expose a method to trigger validation via ref
     useImperativeHandle(ref, () => ({
       resetForm: async () => {
         reset({
-          target: "",
-          emiratesId: "",
-          countryOfResidence: "",
-          incorporationCity: "",
-          sectorClassification: "",
+          menu: null,
+          subMenu: null,
+          pageName: "",
+          route: "",
         });
       },
       triggerValidation: async () => {
@@ -180,39 +149,59 @@ const CMDFormComponent = forwardRef(
         onSubmit={handleSubmit(onLocalSubmit)}
       >
         <Grid container spacing={2}>
-          {/* <Grid item xs={12} sm={6}>
-          <Controller
-            name="userId"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="User name"
-                fullWidth
-                variant="outlined"
-                error={!!errors.userId}
-                helperText={errors.userId?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid> */}
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="menu"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter menu"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.menu}
+                  helperText={errors.menu?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="subMenu"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter subMenu"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.subMenu}
+                  helperText={errors.subMenu?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
 
           <Grid item xs={12} sm={6}>
             <Controller
-              name="target"
+              name="pageName"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Enter target"
+                  label="Enter page Name"
                   fullWidth
                   variant="outlined"
-                  error={!!errors.target}
-                  helperText={errors.target?.message}
+                  error={!!errors.pageName}
+                  helperText={errors.pageName?.message}
                   InputLabelProps={{ shrink: field.value }}
                   InputProps={{
                     readOnly: readOnly, // Make the field read-only
@@ -221,78 +210,19 @@ const CMDFormComponent = forwardRef(
               )}
             />
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <Controller
-              name="countryOfResidence"
+              name="route"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Enter Country of Residence"
+                  label="Enter route"
                   fullWidth
                   variant="outlined"
-                  error={!!errors.countryOfResidence}
-                  helperText={errors.countryOfResidence?.message}
-                  InputLabelProps={{ shrink: field.value }}
-                  InputProps={{
-                    readOnly: readOnly, // Make the field read-only
-                  }}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="incorporationCity"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Enter Incorporation City "
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.incorporationCity}
-                  helperText={errors.incorporationCity?.message}
-                  InputLabelProps={{ shrink: field.value }}
-                  InputProps={{
-                    readOnly: readOnly, // Make the field read-only
-                  }}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="sectorClassification"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Enter Sector Classification"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.sectorClassification}
-                  helperText={errors.sectorClassification?.message}
-                  InputLabelProps={{ shrink: field.value }}
-                  InputProps={{
-                    readOnly: readOnly, // Make the field read-only
-                  }}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="emiratesId"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Enter Emirates"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.emiratesId}
-                  helperText={errors.emiratesId?.message}
+                  error={!!errors.route}
+                  helperText={errors.route?.message}
                   InputLabelProps={{ shrink: field.value }}
                   InputProps={{
                     readOnly: readOnly, // Make the field read-only
@@ -302,7 +232,7 @@ const CMDFormComponent = forwardRef(
             />
           </Grid>
           <Grid item xs={12} sm={12}>
-            <Box
+            {/* <Box
               display="flex"
               justifyContent="flex-end"
               alignItems="center"
@@ -327,9 +257,9 @@ const CMDFormComponent = forwardRef(
                 className="danger"
                 onClick={handleReset}
               >
-                {formAction.action !== "read" ? "Cancel" : "Close"}
+                Submit
               </Button>
-            </Box>
+            </Box> */}
           </Grid>
         </Grid>
       </Container>
@@ -337,4 +267,4 @@ const CMDFormComponent = forwardRef(
   }
 );
 
-export default CMDFormComponent;
+export default PageCreationForm;

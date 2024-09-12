@@ -4,7 +4,12 @@ import {
   put,
   remove,
 } from "../../utilities/apiservices/apiServices";
-import { titleCaseFirstWord } from "../../utilities/generals";
+import { getCookie } from "../../utilities/cookieServices/cookieServices";
+import {
+  isUserIdCookieName,
+  titleCaseFirstWord,
+} from "../../utilities/generals";
+import { decodeData } from "../../utilities/securities/encodeDecode";
 
 /**
  * Fetches the list of projectRoless from the API.
@@ -57,11 +62,12 @@ export const projectRolesCreationController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      name: titleCaseFirstWord(formData.name.trim()),
-      // description: titleCaseFirstWord(formData.description.trim()),
+      projectRoleName: titleCaseFirstWord(formData.name.trim()),
+      createdBy: decodeData(getCookie(isUserIdCookieName)),
+      isActive: 1,
     };
     // Send the POST request to the projectRoles API endpoint
-    const response = await post("/master/AllProjectRoles", body, "python");
+    const response = await post("master/createProjectRole", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -99,12 +105,12 @@ export const projectRolesupdateController = async (formData) => {
 
     // Prepare the body object with sanitized data
     const body = {
-      name: titleCaseFirstWord(formData.name.trim()),
-      // description: titleCaseFirstWord(formData.description.trim()),
+      projectRoleName: titleCaseFirstWord(formData.name.trim()),
+      updatedBy: decodeData(getCookie(isUserIdCookieName)),
     };
     // Send the PUT request to the projectRoles API endpoint
     const response = await put(
-      `/master/AllProjectRoles/${formData.ID}`,
+      `master/updateProjectRoleById?id=${formData.ID}`,
       body,
       "python"
     );
@@ -136,7 +142,7 @@ export const projectRolesdeleteController = async (projectRolesId) => {
     }
     // Send the DELETE request to the projectRoles API endpoint
     const response = await remove(
-      `master/AllProjectRoles${projectRolesId}`,
+      `master/deleteProjectRole?id=${projectRolesId}`,
       "python"
     );
     // Return the response data

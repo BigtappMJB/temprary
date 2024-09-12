@@ -100,6 +100,7 @@ const CMDPage = () => {
     delete: null,
   });
   const hasFetchedRoles = useRef(false);
+  const formRef = useRef({});
 
   const { openDialog } = useDialog();
 
@@ -202,6 +203,7 @@ const CMDPage = () => {
 
       if (response) {
         getTableData();
+        formRef.current.resetForm();
         if (!isAdd) {
           onFormReset();
         }
@@ -229,7 +231,7 @@ const CMDPage = () => {
       openDialog(
         "warning",
         "Warning",
-        `CMD ${isAdd ? "Addition" : "Updation"} failed`,
+        error?.errorMessage || `CMD ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -340,6 +342,22 @@ const CMDPage = () => {
       );
   };
 
+  const handleExport = () => {
+    const columnOrder = [
+      "PROJECT_NAME_CODE",
+      "PROJECT_NAME",
+      "CLIENT_ID",
+      "CLIENT_NAME",
+      "PROJECT_TYPE_CODE",
+      "PROJECT_TYPE_NAME",
+    ];
+    generateCSV(
+      tableData,
+      `central_manual_depository_${timeStampFileName(new Date())}`,
+      columnOrder
+    );
+  };
+
   /**
    * Removes a user from the table after confirming deletion.
    * @param {Object} selectedRow - The selected user's data.
@@ -404,13 +422,6 @@ const CMDPage = () => {
     }
   };
 
-  const handleExport = () => {
-    generateCSV(
-      tableData,
-      `central_manual_depository_${timeStampFileName(new Date())}`
-    );
-  };
-
   return (
     <>
       {formAction.display && (
@@ -431,6 +442,7 @@ const CMDPage = () => {
             onSubmit={onformSubmit}
             onReset={onFormReset}
             rolesList={rolesList}
+            ref={(ele) => (formRef.current = ele)}
           />
         </Container>
       )}

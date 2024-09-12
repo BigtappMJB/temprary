@@ -1,13 +1,12 @@
 // src/components/FormComponent.js
-import React, { useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { useForm, Controller } from "react-hook-form";
-import {
-  TextField,
-  Button,
-  Grid,
-  styled,
-  Box,
-} from "@mui/material";
+import { TextField, Button, Grid, styled, Box } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
@@ -74,232 +73,219 @@ const schema = yup.object().shape({
  *   rolesList={rolesList}
  * />
  */
-const CMDFormComponent = ({
-  formAction,
-  defaultValues,
-  onSubmit,
-  onReset,
-  rolesList,
-}) => {
-  const [readOnly, setReadOnly] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+const CMDFormComponent = forwardRef(
+  ({ formAction, defaultValues, onSubmit, onReset, rolesList }, ref) => {
+    const [readOnly, setReadOnly] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { errors },
-  } = useForm({
-    mode: "onChange",
-    resolver: yupResolver(schema),
-    defaultValues,
-  });
+    const {
+      control,
+      handleSubmit,
+      reset,
+      getValues,
+      trigger,
+      formState: { errors },
+    } = useForm({
+      mode: "onChange",
+      resolver: yupResolver(schema),
+      defaultValues,
+    });
 
-  // Effect to set default values and reset the form
-  useEffect(() => {
-    if (defaultValues) {
-      reset({
-        target: defaultValues?.target ?? "",
-        subTarget: defaultValues?.sub_target ?? "",
-        incorporationCity: defaultValues?.incorporation_city ?? "",
-        sectorClassification: defaultValues?.sector_classification ?? "",
-      });
-    }
-  }, [defaultValues, reset, rolesList, formAction]);
+    // Effect to set default values and reset the form
+    useEffect(() => {
+      if (defaultValues) {
+        reset({
+          target: defaultValues?.target ?? "",
+          subTarget: defaultValues?.sub_target ?? "",
+          incorporationCity: defaultValues?.incorporation_city ?? "",
+          sectorClassification: defaultValues?.sector_classification ?? "",
+        });
+      }
+    }, [defaultValues, reset, rolesList, formAction]);
 
-  // Effect to set read-only state and reset form on formAction change
-  useEffect(() => {
-    setReadOnly(formAction?.action === "read");
-    if (formAction.action === "add") {
+    // Effect to set read-only state and reset form on formAction change
+    useEffect(() => {
+      setReadOnly(formAction?.action === "read");
+      if (formAction.action === "add") {
+        reset({
+          target: "",
+          subTarget: "",
+          incorporationCity: "",
+          sectorClassification: "",
+        });
+      }
+    }, [formAction, reset]);
+
+    // Effect to sanitize input values
+    useEffect(() => {
+      const sanitizeInputs = () => {
+        const inputs = document.querySelectorAll("input");
+        inputs.forEach((input) => {
+          input.value = DOMPurify.sanitize(input.value);
+        });
+      };
+
+      sanitizeInputs();
+    }, []);
+
+    /**
+     * Resets the form to its initial state
+     */
+    const handleReset = () => {
+      onReset();
       reset({
         target: "",
         subTarget: "",
         incorporationCity: "",
         sectorClassification: "",
       });
-    }
-  }, [formAction, reset]);
-
-  // Effect to sanitize input values
-  useEffect(() => {
-    const sanitizeInputs = () => {
-      const inputs = document.querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.value = DOMPurify.sanitize(input.value);
-      });
     };
 
-    sanitizeInputs();
-  }, []);
+    /**
+     * Submits the form data
+     */
+    const onLocalSubmit = () => {
+      onSubmit(getValues());
+    };
 
-  /**
-   * Resets the form to its initial state
-   */
-  const handleReset = () => {
-    onReset();
-    reset({
-      target: "",
-      subTarget: "",
-      incorporationCity: "",
-      sectorClassification: "",
-    });
-  };
+    // Expose a method to trigger validation via ref
+    useImperativeHandle(ref, () => ({
+      resetForm: async () => {
+        reset({
+          target: "",
+          subTarget: "",
+          incorporationCity: "",
+          sectorClassification: "",
+        });
+      },
+      triggerValidation: async () => {
+        const isValid = await trigger();
+        const values = getValues();
+        return { ...values, validated: isValid };
+      },
+    }));
 
-  /**
-   * Submits the form data
-   */
-  const onLocalSubmit = () => {
-    onSubmit(getValues());
-    reset({
-      target: "",
-      subTarget: "",
-      incorporationCity: "",
-      sectorClassification: "",
-    });
-  };
+    return (
+      <Container
+        component="form"
+        className="panel-bg"
+        onSubmit={handleSubmit(onLocalSubmit)}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="target"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter target"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.target}
+                  helperText={errors.target?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="subTarget"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter target"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.subTarget}
+                  helperText={errors.subTarget?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="incorporationCity"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter Incorporation City "
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.incorporationCity}
+                  helperText={errors.incorporationCity?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="sectorClassification"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Enter Sector Classification"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.sectorClassification}
+                  helperText={errors.sectorClassification?.message}
+                  InputLabelProps={{ shrink: field.value }}
+                  InputProps={{
+                    readOnly: readOnly, // Make the field read-only
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="center"
+              flexWrap="wrap"
+              gap={2} // Adds space between buttons
+            >
+              {formAction.action !== "read" && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className="primary"
+                >
+                  {formAction.action === "add" ? "Add" : "Update"}
+                </Button>
+              )}
 
-  return (
-    <Container
-      component="form"
-      className="panel-bg"
-      onSubmit={handleSubmit(onLocalSubmit)}
-    >
-      <Grid container spacing={2}>
-        {/* <Grid item xs={12} sm={6}>
-          <Controller
-            name="userId"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="User name"
-                fullWidth
-                variant="outlined"
-                error={!!errors.userId}
-                helperText={errors.userId?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid> */}
-
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="target"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Enter target"
-                fullWidth
-                variant="outlined"
-                error={!!errors.target}
-                helperText={errors.target?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="subTarget"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Enter target"
-                fullWidth
-                variant="outlined"
-                error={!!errors.subTarget}
-                helperText={errors.subTarget?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="incorporationCity"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Enter Incorporation City "
-                fullWidth
-                variant="outlined"
-                error={!!errors.incorporationCity}
-                helperText={errors.incorporationCity?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Controller
-            name="sectorClassification"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Enter Sector Classification"
-                fullWidth
-                variant="outlined"
-                error={!!errors.sectorClassification}
-                helperText={errors.sectorClassification?.message}
-                InputLabelProps={{ shrink: field.value }}
-                InputProps={{
-                  readOnly: readOnly, // Make the field read-only
-                }}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12}>
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            flexWrap="wrap"
-            gap={2} // Adds space between buttons
-          >
-            {formAction.action !== "read" && (
               <Button
-                type="submit"
+                type="button"
                 variant="contained"
                 color="primary"
-                className="primary"
+                className="danger"
+                onClick={handleReset}
               >
-                {formAction.action === "add" ? "Add" : "Update"}
+                {formAction.action !== "read" ? "Cancel" : "Close"}
               </Button>
-            )}
-
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              className="danger"
-              onClick={handleReset}
-            >
-              {formAction.action !== "read" ? "Cancel" : "Close"}
-            </Button>
-          </Box>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
-  );
-};
+      </Container>
+    );
+  }
+);
 
 export default CMDFormComponent;
