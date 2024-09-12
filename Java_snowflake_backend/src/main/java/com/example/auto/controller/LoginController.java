@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.auto.repositories.RegisterRepository;
+import com.example.auto.utill.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -32,6 +34,12 @@ public class LoginController {
 	@Autowired
 	private RegisterRepository registerRepository;
 
+	@Autowired
+    private JwtUtil jwtUtil;
+	
+	@Autowired
+    private CustomUserDetailsService userDetailsService;
+	
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Map<String, String> data)
 			throws SQLException, JsonMappingException, JsonProcessingException {
@@ -80,8 +88,15 @@ public class LoginController {
 		List<Map<String, Object>> permissions = registerRepository.getPermissionsByEmail(email);
 		log.info("Permissions for email " + email + ": " + permissions);
 
+		
+		// Generate JWT token for the authenticated user
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        log.info("JWT Token generated for email: " + email);
+        
 		return ResponseEntity.ok()
-				.body(Map.of("message", "Login successful", "permissions", permissions, "is_default_password_changed",
+				.body(Map.of("message", "Login successful","token", jwt, "permissions", permissions, "is_default_password_changed",
 						user.get("is_default_password_changed"), "is_verified", user.get("is_verified"),
 						"last_login_datetime", user.get("last_login_datetime")));
 	}

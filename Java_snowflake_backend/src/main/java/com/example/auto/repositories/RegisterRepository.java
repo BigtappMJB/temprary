@@ -77,6 +77,8 @@ public class RegisterRepository {
 	            userMap.put("is_verified", rs.getBoolean(9));
 	            userMap.put("last_login_datetime", rs.getTimestamp(10) != null ? rs.getTimestamp(10).toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : null);
 	            userMap.put("otp", rs.getString(11));
+	            userMap.put("authorities", "ROLE_USER");
+	            
 	        } else {
 	            return null;
 	        }
