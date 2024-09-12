@@ -38,12 +38,8 @@ const schema = yup.object().shape({
   CHARACTER_MAXIMUM_LENGTH: yup.string(),
   COLUMN_DEFAULT: yup.string().nullable(),
   noOfOptions: yup
-    .number()
-    .nullable()
+    .string()
     .transform((value, originalValue) => (originalValue === "" ? null : value))
-    .positive("Number of options must be positive")
-    .integer("Number of options must be an integer")
-    .min(1, "Number of options must be greater than 1")
     .when("inputType", {
       is: (value) => multipleOptionsList.includes(value?.NAME?.toLowerCase()),
       then: (schema) => schema.required("Field is required"),
@@ -433,18 +429,10 @@ const DynamicColumnForm = forwardRef(({ data, onReset, inputList }, ref) => {
               }}
             >
               <Button
-                {...field}
-                value={field.value ?? ""} // Explicitly bind the value
                 onClick={openOptionDialogList}
                 type="button"
                 variant="contained"
                 color="primary"
-                style={{
-                  textAlign: "center",
-                  padding: "10px",
-                  backgroundColor: "#f0f0f0",
-                  cursor: "pointer",
-                }}
               >
                 Option List
               </Button>

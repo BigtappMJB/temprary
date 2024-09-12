@@ -365,6 +365,7 @@ const DynamicPageCreation = () => {
       ...selectedColumnsRef.current,
     ];
     selectedColumnsRef.current = [];
+    setColumnsData([]);
   };
 
   return (

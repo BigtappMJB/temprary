@@ -126,6 +126,7 @@ const DynamicFormCreationFormComponent = ({
           <Grid container spacing={2}>
             {/* Dynamically render form fields */}
             {columnDetails.map((column) => (
+              
               <Grid item xs={12} sm={6} key={column}>
                 <Controller
                   name={column}
