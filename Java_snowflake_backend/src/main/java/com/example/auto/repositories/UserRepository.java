@@ -1658,7 +1658,7 @@ public class UserRepository {
         Connection conn = connector.getDBConnection();
         List<Map<String, Object>> roles = new ArrayList<>();
         try {
-            stmt = conn.prepareStatement("SELECT PROJECT_ROLE_ID,PROJECT_ROLE_NAME FROM project_role");
+            stmt = conn.prepareStatement("SELECT PROJECT_ROLE_ID,PROJECT_ROLE_NAME FROM project_role ORDER BY CREATED_DATE DESC");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Map<String, Object> role = new HashMap<>();
