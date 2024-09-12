@@ -2,6 +2,7 @@
   "name": "react-admin-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://13.201.216.64:8080/app/",
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",

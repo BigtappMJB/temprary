@@ -97,6 +97,8 @@ const DynamicPageCreation = () => {
   const { openDialog } = useDialog();
 
   const selectedColumnsRef = useRef([]);
+  const tableNameRef = useRef(null);
+
   const columnDetailsRef = useRef([]);
   const currentSelectedRef = useRef(null);
   const hasFetchedRoles = useRef(false);
@@ -151,6 +153,7 @@ const DynamicPageCreation = () => {
         const response = await getColumnsDetailsController(tableName);
         allColumnsDataList.current = response;
         columnDetailsRef.current = response;
+        setColumnsData([]);
       } catch (error) {
         openDialog("critical", "Critical", `Column Details Retrieval Failed`, {
           confirm: { name: "Ok", isNeed: true },
@@ -163,7 +166,8 @@ const DynamicPageCreation = () => {
   );
 
   const onTableSubmit = async (data) => {
-    await getColumnDetails(data.tableName.TABLE_NAME);
+    tableNameRef.current = data.TABLE_NAME;
+    await getColumnDetails(data.TABLE_NAME);
   };
 
   const onColumnSubmit = (columnData) => {
@@ -171,7 +175,6 @@ const DynamicPageCreation = () => {
       setColumnsData((prevData) => {
         const updatedData = [...prevData];
         updatedData[columnData.id] = columnData;
-        console.log({ updatedData });
         return updatedData;
       });
     }
@@ -332,48 +335,7 @@ const DynamicPageCreation = () => {
               )}
             />
           </Grid>
-          {/* {columnDetailsRef.current.length === 0 && (
-            <Grid item xs={12} sm={6}>
-              <Box display="flex" justifyContent="flex-end" gap={2}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className="primary"
-                >
-                  Submit
-                </Button>
-                <Button
-                  type="button"
-                  variant="contained"
-                  color="primary"
-                  className="danger"
-                >
-                  Cancel
-                </Button>
-              </Box>
-            </Grid>
-          )} */}
-        </Grid>
-      </Container>
-
-      {columnDetailsRef.current.length > 0 && selectedColumnsRef.current > 0 ? (
-        <Container component="form">
-          <Header>
-            <Typography variant="h6">Select Columns</Typography>
-          </Header>
-          <Typography variant="h4" className="error">
-            All columns has been selected.
-          </Typography>
-        </Container>
-      ) : null}
-      {columnDetailsRef.current.length > 0 && (
-        <Container component="form">
-          <Header>
-            <Typography variant="h6">Select Columns</Typography>
-          </Header>
-
-          <Grid container spacing={2}>
+          {tableNameRef.current && (
             <Grid item xs={12} sm={6}>
               <Controller
                 name="selectedColumns"
@@ -386,10 +348,15 @@ const DynamicPageCreation = () => {
                     isOptionEqualToValue={(option, value) =>
                       option.COLUMN_NAME === value.COLUMN_NAME
                     }
-                    value={currentSelectedRef.current || null}
+                    value={field.value || null}
                     onChange={(_, data) => {
                       field.onChange(data);
                       currentSelectedRef.current = data;
+                      addColumnForm(data);
+                      // Delay resetting the field value
+                      setTimeout(() => {
+                        field.onChange(null);
+                      }, 0);
                     }}
                     renderInput={(params) => (
                       <TextField
@@ -404,25 +371,10 @@ const DynamicPageCreation = () => {
                 )}
               />
             </Grid>
+          )}
+        </Grid>
+      </Container>
 
-            <Grid item xs={12} sm={6}>
-              <Box display="flex" justifyContent="flex-end" gap={2}>
-                <Button
-                  type="button"
-                  onClick={addColumnForm}
-                  variant="contained"
-                  color="primary"
-                >
-                  Add
-                </Button>
-                <Button type="button" variant="contained" color="primary">
-                  Cancel
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      )}
       {selectedColumnsRef.current.length > 0 && (
         <SecondContainer>
           <SubHeader>

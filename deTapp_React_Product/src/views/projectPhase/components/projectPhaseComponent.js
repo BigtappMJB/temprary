@@ -23,7 +23,7 @@ const schema = yup.object().shape({
   name: yup
     .string()
     .required("Name is required")
-    .matches(validationRegex.isSingleWord, errorMessages.singleWord),
+    // .matches(validationRegex.isSingleWord, errorMessages.singleWord),
   // code: yup
   //   .string()
   //   .required("Description is required")

@@ -7,7 +7,7 @@ export const getTableListDataController = async () => {
   try {
     const email = decodeData(getCookie(isUserIdCookieName));
     // Send the GET request to the projectCreation API endpoint
-    const response = await get("master/AllTables", "python");
+    const response = await get("AllTables", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -18,7 +18,7 @@ export const getTableListDataController = async () => {
 export const getColumnsDetailsController = async (tableName) => {
   try {
     // Send the GET request to the projectCreation API endpoint
-    const response = await get(`master/columnDetails/${tableName}`, "python");
+    const response = await get(`columnDetails/${tableName}`, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -44,7 +44,7 @@ export const generatePythonAPIController = async (tableName) => {
 export const getInputFieldController = async () => {
   try {
     // Send the GET request to the projectCreation API endpoint
-    const response = await get(`master/inputField`, "python");
+    const response = await get(`inputField`, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -64,7 +64,7 @@ export const createReactFormController = async (formData) => {
     console.log({ formData });
 
     // Send the GET request to the projectCreation API endpoint
-    const response = await get("master/AllTables", "python");
+    const response = await get("AllTables", "python");
     // Return the response data
     return response;
   } catch (error) {
