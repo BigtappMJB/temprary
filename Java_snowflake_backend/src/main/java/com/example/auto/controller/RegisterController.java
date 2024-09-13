@@ -126,27 +126,58 @@ public class RegisterController {
 		LOG.info("\"Password updated successfully for email" + email);
 
 		// Send password update notification email
-		// sendPasswordUpdateEmail(email);
+		 sendPasswordUpdateEmail(email);
 
 		return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
 	}
 
-	/*
-	 * public void sendPasswordUpdateEmail(String userEmail) { // Create a
-	 * SimpleMailMessage object SimpleMailMessage message = new SimpleMailMessage();
-	 * 
-	 * // Set the email details message.setFrom(Constants.USER_EMAIL);
-	 * message.setTo(userEmail); message.setSubject("Password Update Notification");
-	 * message.setText("Your password has been successfully updated.");
-	 * 
-	 * try { // Send the email mailSender.send(message);
-	 * LOG.info("Password update notification email sent to {}", userEmail); } catch
-	 * (org.springframework.mail.MailSendException e) {
-	 * LOG.error("SMTP AUTH extension not supported by server: {}", e.getMessage());
-	 * } catch (Exception e) {
-	 * LOG.error("An error occurred while sending password update email: {}",
-	 * e.getMessage()); } }
-	 */
+	// Route for Changing Password
+		@PostMapping("/reset_password")
+		public ResponseEntity<Object> resetPassword(@RequestBody Map<String, String> data) throws SQLException {
+			String email = data.get("email");
+			String otp = data.get("otp");
+			String newPassword = data.get("new_password");
+
+			Objects.requireNonNull(email, "Email must not be null");
+			Objects.requireNonNull(otp, "otp must not be null");
+			Objects.requireNonNull(newPassword, "New password must not be null");
+			LOG.info("Request received to change password for email: " + email);
+
+			Map<String, Object> user = registerRepository.getUserByEmail(email);
+			if (user == null) {
+				LOG.info("\"User not found for email: " + email);
+
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body(Collections.singletonMap("error", "User not found"));
+			}
+			LOG.info("\"User Found: " + email);
+
+			
+			LOG.info("\"Old password verified for email:" + email);
+
+			registerRepository.updateUserPassword(email, newPassword);
+			LOG.info("\"Password updated successfully for email" + email);
+
+			// Send password update notification email
+			 sendPasswordUpdateEmail(email);
+
+			return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
+		}
+	 public void sendPasswordUpdateEmail(String userEmail) { // Create a
+	  SimpleMailMessage message = new SimpleMailMessage();
+	  
+	  // Set the email details message.setFrom(Constants.USER_EMAIL);
+	  message.setTo(userEmail); message.setSubject("Password Update Notification");
+	  message.setText("Your password has been successfully updated.");
+	 
+	 try { // Send the email mailSender.send(message);
+	  LOG.info("Password update notification email sent to {}", userEmail); } catch
+	  (org.springframework.mail.MailSendException e) {
+	 LOG.error("SMTP AUTH extension not supported by server: {}", e.getMessage());
+	 } catch (Exception e) {
+	 LOG.error("An error occurred while sending password update email: {}",
+	  e.getMessage()); } }
+	
 	@PostMapping("/generate_otp")
 	public ResponseEntity<String> generateOtp(@RequestBody Map<String, String> data) {
 		String email = data.get("email");
