@@ -27,6 +27,7 @@ import OptionsDialogBox from "./DynamicOptionDialog";
 const multipleOptionsList = ["dropdown", "radio", "autocomplete", "checkbox"];
 
 // Define validation schema using Yup
+
 const schema = yup.object().shape({
   COLUMN_NAME: yup
     .string()
@@ -35,41 +36,39 @@ const schema = yup.object().shape({
   DATA_TYPE: yup.string().required("Data type is required"),
   IS_NULLABLE: yup.string().required("Mandatory field is required"),
   inputType: yup.object().nullable().required("Input Field is required"),
-  CHARACTER_MAXIMUM_LENGTH: yup.string(),
+  CHARACTER_MAXIMUM_LENGTH: yup.string().nullable(),
   COLUMN_DEFAULT: yup.string().nullable(),
   noOfOptions: yup
     .string()
-    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .nullable()
     .when("inputType", {
-      is: (value) => multipleOptionsList.includes(value?.NAME?.toLowerCase()),
-      then: (schema) => schema.required("Field is required"),
-      otherwise: (schema) => schema,
+      is: (value) =>
+        value && multipleOptionsList.includes(value.NAME.toLowerCase()),
+      then: (schema) => schema.required("Number of options is required"),
+      otherwise: (schema) => schema.notRequired(),
     }),
   optionsList: yup
     .object()
     .nullable()
     .when("inputType", {
-      is: (value) => multipleOptionsList.includes(value?.NAME?.toLowerCase()),
-      then: (schema) => schema.required("Option List is required"),
-      otherwise: (schema) => schema,
-    })
-    .when("noOfOptions", {
-      is: (value) => value === null || value === "" || value <= 0,
+      is: (value) =>
+        value && multipleOptionsList.includes(value.NAME.toLowerCase()),
       then: (schema) =>
-        schema.required(
-          "Number of options should not be empty and must be positive"
-        ),
-      otherwise: (schema) => schema,
-    })
-    .test(
-      "options-length-match",
-      "The number of options must match the length of the options list",
-      function (optionsList) {
-        const { noOfOptions } = this.parent;
-        if (!optionsList) return true; // Skip validation if optionsList is null or undefined
-        return Object.keys(optionsList).length === parseInt(noOfOptions, 10); // Ensure the length matches
-      }
-    ),
+        schema
+          .required("Option List is required")
+          .test(
+            "options-length-match",
+            "The number of options must match the specified count",
+            function (optionsList) {
+              const { noOfOptions } = this.parent;
+              if (!optionsList) return false;
+              return (
+                Object.keys(optionsList).length === parseInt(noOfOptions, 10)
+              );
+            }
+          ),
+      otherwise: (schema) => schema.notRequired(),
+    }),
 });
 
 // Styled Box for the container with flex layout and gap handling
@@ -128,12 +127,25 @@ const DynamicColumnForm = forwardRef(({ data, onReset, inputList }, ref) => {
   const [open, setDialogOpen] = useState(false); // State to control the options dialog visibility
   const [isFocused, setIsFocused] = useState({}); // State to handle input focus
 
-  // Expose a method to trigger form validation through a ref
+  // Expose a method to trigger form validation amd reset the form through a ref
   useImperativeHandle(ref, () => ({
     triggerValidation: async () => {
       const isValid = await trigger(); // Validate form
       const values = getValues(); // Get form values
+      debugger;
       return { columnValues: values, validated: isValid };
+    },
+    resetForm: async () => {
+      reset({
+        COLUMN_NAME: "",
+        DATA_TYPE: "",
+        CHARACTER_MAXIMUM_LENGTH: "",
+        IS_NULLABLE: false,
+        COLUMN_DEFAULT: "",
+        noOfOptions: null,
+        optionsList: null,
+        inputType: null,
+      });
     },
   }));
 

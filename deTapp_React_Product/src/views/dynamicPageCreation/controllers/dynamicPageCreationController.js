@@ -62,7 +62,7 @@ export const createReactFormController = async (formData) => {
     }
 
     console.log({ formData });
-
+    debugger;
     // Send the GET request to the projectCreation API endpoint
     const response = await get("AllTables", "python");
     // Return the response data

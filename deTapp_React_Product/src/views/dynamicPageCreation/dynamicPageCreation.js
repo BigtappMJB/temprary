@@ -12,6 +12,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
 import {
+  createReactFormController,
   getColumnsDetailsController,
   getInputFieldController,
   getTableListDataController,
@@ -268,24 +269,129 @@ const DynamicPageCreation = () => {
    * Handles the creation of the dynamic page after validating all forms.
    */
   const handleCreatePage = async () => {
-    const pageDetailsValidation =
-      await pageDetailsRef.current.triggerValidation();
+    try {
+      startLoading();
 
-    if (!pageDetailsValidation.validated) {
-      ScrollToTopButton();
+      const pageDetailsValidation =
+        await pageDetailsRef.current.triggerValidation();
+
+      if (!pageDetailsValidation.validated) {
+        ScrollToTopButton();
+        return;
+      }
+
+      if (!tableNameRef.current) {
+        await trigger();
+        return;
+      }
+
+      if (!columnsData.length) {
+        return openDialog(
+          "warning",
+          "Warning",
+          "Select Atleast one columns",
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            if (confirmed) {
+              return;
+            }
+          }
+        );
+      }
+
+      const updatedColumnsData = await validateColumnForms();
+
+      const noOfFormValidated = updatedColumnsData.filter(
+        (column) => column?.validated
+      ).length;
+      const totalForms = updatedColumnsData.length;
+      const error = totalForms !== noOfFormValidated;
+
+      if (error) {
+        return openDialog(
+          "warning",
+          "Warning",
+          "Columns are not validated properly.",
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            if (confirmed) {
+              return;
+            }
+          }
+        );
+      }
+
+      // Collect validated column data for submission
+      const columnValues = updatedColumnsData.map(
+        (column) => column.columnValues
+      );
+
+      // Final output to be submitted/used for form creation
+      const finalOutputValues = {
+        pageDetails: {
+          ...pageDetailsValidation.pageDetails,
+        },
+        tableName: tableNameRef.current,
+        columnsData: {
+          ...columnValues,
+        },
+      };
+
+      const response = await createReactFormController(finalOutputValues);
+      debugger;
+      if (response) {
+        columnDetailsRef.current = [];
+        tableNameRef.current = null;
+        currentSelectedRef.current = [];
+        formRefs.current.resetForm();
+        pageDetailsRef.current.resetForm();
+        setColumnsData([]);
+        return openDialog(
+          "success",
+          "Success",
+          "Page are generated Successfully",
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            if (confirmed) {
+              return;
+            }
+          }
+        );
+      }
       return;
-    }
-
-    if (!tableNameRef.current) {
-      await trigger();
-      return;
-    }
-
-    if (!columnsData.length) {
-      return openDialog(
+    } catch (error) {
+      console.error(error);
+      openDialog(
         "warning",
         "Warning",
-        "Select Atleast one columns",
+        error?.errorMessage || "Page are generated Successfully",
         {
           confirm: {
             name: "Ok",
@@ -302,58 +408,9 @@ const DynamicPageCreation = () => {
           }
         }
       );
+    } finally {
+      stopLoading();
     }
-
-    const updatedColumnsData = await validateColumnForms();
-
-    const noOfFormValidated = updatedColumnsData.filter(
-      (column) => column?.validated
-    ).length;
-    const totalForms = updatedColumnsData.length;
-    const error = totalForms !== noOfFormValidated;
-
-    if (error) {
-      return openDialog(
-        "warning",
-        "Warning",
-        "Columns are not validated properly.",
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            return;
-          }
-        }
-      );
-    }
-
-    // Collect validated column data for submission
-    const columnValues = updatedColumnsData.map(
-      (column) => column.columnValues
-    );
-
-    // Final output to be submitted/used for form creation
-    const finalOutputValues = {
-      pageDetails: {
-        ...pageDetailsValidation.pageDetails,
-      },
-      tableName: tableNameRef.current,
-      columnsData: {
-        ...columnValues,
-      },
-    };
-
-    console.log({ finalOutputValues });
-    debugger; // Debugging point to inspect the output
-    return;
   };
 
   /**
