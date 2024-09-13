@@ -60,7 +60,16 @@ const schema = yup.object().shape({
           "Number of options should not be empty and must be positive"
         ),
       otherwise: (schema) => schema,
-    }),
+    })
+    .test(
+      "options-length-match",
+      "The number of options must match the length of the options list",
+      function (optionsList) {
+        const { noOfOptions } = this.parent;
+        if (!optionsList) return true; // Skip validation if optionsList is null or undefined
+        return Object.keys(optionsList).length === parseInt(noOfOptions, 10); // Ensure the length matches
+      }
+    ),
 });
 
 // Styled Box for the container with flex layout and gap handling

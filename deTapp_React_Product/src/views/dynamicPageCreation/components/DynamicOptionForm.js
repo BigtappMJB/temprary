@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { TextField, Button, Grid, styled, Box } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -59,26 +59,32 @@ const DynamicFormCreationFormComponent = ({
    * @param {string[]} columns - List of form field names to be validated
    * @returns {Object} - Yup validation schema object
    */
-  const generateValidationSchema = (columns) => {
-    const schema = {};
+  const generateValidationSchema = useCallback(
+    (columns) => {
+      const schema = {};
+      const customDefaultValues = {};
+      columns.forEach((column) => {
+        customDefaultValues[column] = defaultValues
+          ? defaultValues[column]
+          : null;
+        schema[column] = yup
+          .string()
+          .nullable()
+          .transform((value, originalValue) =>
+            originalValue === "" ? null : value
+          )
+          .required(`${column} is required`);
+      });
 
-    columns.forEach((column) => {
-      schema[column] = yup
-        .string()
-        .nullable()
-        .transform((value, originalValue) =>
-          originalValue === "" ? null : value
-        )
-        .required(`${column} is required`);
-    });
-
-    return yup.object().shape(schema);
-  };
+      return { schema: yup.object().shape(schema), customDefaultValues };
+    },
+    [defaultValues]
+  );
 
   // Memoized validation schema based on column details
-  const validationSchema = useMemo(
+  const { schema, customDefaultValues } = useMemo(
     () => generateValidationSchema(columnDetails),
-    [columnDetails]
+    [columnDetails, generateValidationSchema]
   );
 
   // Initialize React Hook Form with dynamic validation schema
@@ -89,10 +95,10 @@ const DynamicFormCreationFormComponent = ({
     formState: { errors },
   } = useForm({
     mode: "onChange",
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(schema),
     shouldFocusError: true,
     reValidateMode: "onChange",
-    defaultValues,
+    defaultValues: customDefaultValues,
   });
 
   /**
@@ -103,6 +109,7 @@ const DynamicFormCreationFormComponent = ({
   const onDynamicFormSubmit = (data) => {
     onSubmit(data); // Send form data to parent
     reset(); // Reset the form fields
+    debugger;
   };
 
   /**
@@ -126,7 +133,6 @@ const DynamicFormCreationFormComponent = ({
           <Grid container spacing={2}>
             {/* Dynamically render form fields */}
             {columnDetails.map((column) => (
-              
               <Grid item xs={12} sm={6} key={column}>
                 <Controller
                   name={column}
