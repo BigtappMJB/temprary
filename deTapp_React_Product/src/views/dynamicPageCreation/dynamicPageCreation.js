@@ -516,6 +516,7 @@ const DynamicPageCreation = () => {
             {columnsData?.map((data, index) => (
               <DynamicColumnForm
                 key={data.id}
+                remainingColumnList={columnDetailsRef.current}
                 data={data}
                 ref={(el) => (formRefs.current[index] = el)}
                 onReset={onRemoveForm}

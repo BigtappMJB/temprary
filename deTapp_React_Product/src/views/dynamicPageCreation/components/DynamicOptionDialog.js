@@ -27,7 +27,12 @@ const OptionsDialogBox = ({
   }, [handleClose]);
 
   return (
-    <Dialog open={open} onClose={memoizedHandleClose} maxWidth="lg">
+    <Dialog
+      open={open}
+      onClose={memoizedHandleClose}
+      fullWidth={true}
+
+    >
       <DialogTitle
         sx={{
           bgcolor: "primary.main",

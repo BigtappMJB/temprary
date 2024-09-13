@@ -1,6 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button, Grid, styled, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Grid,
+  styled,
+  Box,
+  Typography,
+} from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
@@ -130,35 +137,38 @@ const DynamicFormCreationFormComponent = ({
           component="form"
           onSubmit={handleSubmit(onDynamicFormSubmit)}
         >
-          <Grid container spacing={2}>
-            {/* Dynamically render form fields */}
+          <Grid container spacing={3}>
             {columnDetails.map((column) => (
-              <Grid item xs={12} sm={6} key={column}>
-                <Controller
-                  name={column}
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label={column}
-                      fullWidth
-                      variant="outlined"
-                      error={!!errors[column]} // Show error if validation fails
-                      helperText={errors[column]?.message} // Display validation error message
-                      InputLabelProps={{ shrink: !!field.value }} // Shrink label if field has value
-                    />
-                  )}
-                />
+              <Grid item xs={12} md={12} key={column}>
+                <Box sx={{ display: "flex", justifyContent:"space-evenly", alignItems: "center" }}>
+                  <Typography sx={{ mr: 2 }}  >{column}</Typography>
+                  <Typography sx={{ mr: 2 }}>:</Typography>
+                  <Controller
+                    name={column}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}                        
+                        variant="outlined"
+                        error={!!errors[column]} // Show error if validation fails
+                        helperText={errors[column]?.message} // Display validation error message
+                        InputLabelProps={{ shrink: !!field.value }} // Shrink label if field has value
+                      />
+                    )}
+                  />
+                </Box>
               </Grid>
             ))}
+
             {/* Submit and Cancel buttons */}
-            <Grid item xs={12} sm={12}>
+            <Grid item xs={12}>
               <Box
-                display="flex"
-                justifyContent="flex-end"
-                alignItems="center"
-                flexWrap="wrap"
-                gap={2}
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 2,
+                  mt: 3, // Add margin to separate the buttons from the form fields
+                }}
               >
                 <Button
                   type="submit"
@@ -171,8 +181,7 @@ const DynamicFormCreationFormComponent = ({
                 <Button
                   type="button"
                   variant="contained"
-                  color="primary"
-                  className="danger"
+                  color="secondary" // changed to secondary to represent a Cancel action better
                   onClick={handleReset}
                 >
                   Cancel
