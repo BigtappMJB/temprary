@@ -32,8 +32,8 @@ const schema = yup.object().shape({
   subMenu: yup
     .string()
     .nullable()
-    .transform((value, originalValue) => (originalValue === "" ? null : value))
-    .required("SubMenu is required"),
+    .transform((value, originalValue) => (originalValue === "" ? null : value)),
+  // .required("SubMenu is required"),
   pageName: yup.string().required("Page name is required"),
   route: yup.string().required("Route is required"),
 });

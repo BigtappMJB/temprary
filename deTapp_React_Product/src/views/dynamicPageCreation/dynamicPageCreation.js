@@ -167,6 +167,8 @@ const DynamicPageCreation = () => {
     }
   }, [fetchTableListData, fetchInputList]);
 
+  const generateUniqueId = () =>
+    `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   // Fetch column details when a table is selected
   const getColumnDetails = useCallback(
     async (tableName) => {
@@ -175,8 +177,7 @@ const DynamicPageCreation = () => {
         const response = await getColumnsDetailsController(tableName);
         allColumnsDataList.current = response;
         columnDetailsRef.current = response;
-
-        setColumnsData((prevData) => [...prevData, { id: prevData.length }]);
+        setColumnsData([{ id: generateUniqueId() }]);
       } catch (error) {
         openDialog("critical", "Critical", `Column Details Retrieval Failed`, {
           confirm: { name: "Ok", isNeed: true },
@@ -240,7 +241,7 @@ const DynamicPageCreation = () => {
    * The selected column is removed from the available column list.
    */
   const addColumnForm = () => {
-    setColumnsData((prevData) => [...prevData, { id: prevData.length }]);
+    setColumnsData((prevData) => [...prevData, { id: generateUniqueId() }]);
     isRemovingForm.current = false;
   };
 
