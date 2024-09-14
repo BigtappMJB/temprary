@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -16,11 +17,10 @@ import {
   Autocomplete,
   Button,
   Typography,
+  debounce,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import DOMPurify from "dompurify";
-import { errorMessages, validationRegex } from "../../utilities/Validators";
-import debounce from "lodash/debounce";
 import OptionsDialogBox from "./DynamicOptionDialog";
 
 // List of input types that can have multiple options
@@ -29,10 +29,7 @@ const multipleOptionsList = ["dropdown", "radio", "autocomplete", "checkbox"];
 // Define validation schema using Yup
 
 const schema = yup.object().shape({
-  COLUMN_NAME: yup
-    .string()
-    .required("Column name is required")
-    .matches(validationRegex.COLUMN_NAME, errorMessages.COLUMN_NAME),
+  COLUMN_NAME: yup.object().nullable().required("Column name is required"),
   DATA_TYPE: yup.string().required("Data type is required"),
   IS_NULLABLE: yup.string().required("Mandatory field is required"),
   inputType: yup.object().nullable().required("Input Field is required"),
@@ -100,7 +97,10 @@ const Container = styled(Box)(({ theme }) => ({
  */
 
 const DynamicColumnForm = forwardRef(
-  ({ data, onReset, inputList, remainingColumnList }, ref) => {
+  (
+    { formId, onReset, inputList, remainingColumnList, onColumnChange },
+    ref
+  ) => {
     // Initialize the form with validation schema and default values
     const {
       control,
@@ -113,21 +113,11 @@ const DynamicColumnForm = forwardRef(
     } = useForm({
       resolver: yupResolver(schema),
       mode: "onChange",
-      defaultValues: {
-        COLUMN_NAME: data.COLUMN_NAME ?? "",
-        DATA_TYPE: data.DATA_TYPE ?? "",
-        CHARACTER_MAXIMUM_LENGTH: data.CHARACTER_MAXIMUM_LENGTH ?? "",
-        IS_NULLABLE: data.IS_NULLABLE ?? false,
-        COLUMN_DEFAULT: data.COLUMN_DEFAULT ?? "",
-        noOfOptions: data.noOfOptions ? Number(data.noOfOptions) : null,
-        optionsList: data.optionsList ?? null,
-        inputType: data.inputType ?? null,
-      },
     });
 
     const [open, setDialogOpen] = useState(false); // State to control the options dialog visibility
     const [isFocused, setIsFocused] = useState({}); // State to handle input focus
-
+    const previousValue = useRef(null);
     // Expose a method to trigger form validation amd reset the form through a ref
     useImperativeHandle(ref, () => ({
       triggerValidation: async () => {
@@ -152,6 +142,8 @@ const DynamicColumnForm = forwardRef(
 
     // Handler to reset the form fields and notify parent component via `onReset`
     const handleReset = () => {
+      if (onReset) onReset(formId, getValues().COLUMN_NAME?.COLUMN_NAME); // Notify parent to remove form
+
       reset({
         COLUMN_NAME: "",
         DATA_TYPE: "",
@@ -162,7 +154,6 @@ const DynamicColumnForm = forwardRef(
         optionsList: null,
         inputType: null,
       });
-      if (onReset) onReset(data.id, data); // Notify parent to remove form
     };
 
     // Effect to sanitize input fields using DOMPurify
@@ -173,6 +164,7 @@ const DynamicColumnForm = forwardRef(
         });
       };
 
+      const formValues = getValues();
       sanitizeInputs();
     }, []);
 
@@ -195,6 +187,29 @@ const DynamicColumnForm = forwardRef(
       }
     }, [isInputTypeValid, reset, getValues]);
 
+    const columnWatchType = watch("COLUMN_NAME");
+
+    // Local function to handle column change and avoid redundant resets
+    const onLocalColumnChange = useCallback(
+      (data) => {
+        if (data?.COLUMN_NAME !== previousValue.current?.COLUMN_NAME) {
+          previousValue.current = data;
+          reset({
+            DATA_TYPE: data?.DATA_TYPE,
+            CHARACTER_MAXIMUM_LENGTH: data?.CHARACTER_MAXIMUM_LENGTH,
+            IS_NULLABLE: data?.IS_NULLABLE,
+            COLUMN_DEFAULT: data?.COLUMN_DEFAULT,
+            noOfOptions: null,
+            optionsList: null,
+            inputType: null,
+            COLUMN_NAME: data,
+          });
+          if (onColumnChange) onColumnChange(data); // Call external column change handler if provided
+        }
+      },
+      [reset, onColumnChange]
+    );
+
     // Handle submission of the option list dialog
     const onOptionSubmit = (value) => {
       reset({
@@ -213,39 +228,31 @@ const DynamicColumnForm = forwardRef(
     // Open the option list dialog for input types that allow multiple options
     const openOptionDialogList = async () => {
       const result = await trigger("noOfOptions"); // Validate number of options
+      
       setDialogOpen(result); // Open dialog if validation passes
+      debugger;
     };
+
+    // Watch for COLUMN_NAME changes and trigger local column change
+    useEffect(() => {
+      if (columnWatchType) {
+        onLocalColumnChange(columnWatchType);
+      }
+    }, [columnWatchType, onLocalColumnChange]);
+
+    // Handle Autocomplete value change and debounce it to prevent excessive re-renders
+    const handleAutocompleteColumnChange = useCallback(
+      debounce((_, data) => {
+        if (data && data !== previousValue.current) {
+          onLocalColumnChange(data); // Update form value using setValue from react-hook-form
+        }
+      }, 300),
+      [onLocalColumnChange]
+    );
 
     return (
       <Container component="form">
         {/* Column Name Field */}
-        {/* <Controller
-          name="COLUMN_NAME"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Column Name"
-              value={field.value ?? ""} // Explicitly bind the value
-              variant="outlined"
-              error={!!errors.COLUMN_NAME}
-              helperText={errors.COLUMN_NAME?.message}
-              className="input-field"
-              InputLabelProps={{
-                shrink: Boolean(field.value || isFocused.COLUMN_NAME),
-              }}
-              InputProps={{
-                ...field.InputProps,
-                readOnly: false, // Set to true if you want the field to be read-only
-                onFocus: () =>
-                  setIsFocused({ ...isFocused, COLUMN_NAME: true }),
-                onBlur: () =>
-                  setIsFocused({ ...isFocused, COLUMN_NAME: false }),
-              }}
-            />
-          )}
-        /> */}
-
         <Controller
           name="COLUMN_NAME"
           control={control}
@@ -256,7 +263,7 @@ const DynamicColumnForm = forwardRef(
               getOptionLabel={(option) => option.COLUMN_NAME}
               isOptionEqualToValue={(option, value) => option.ID === value.ID}
               value={field.value || null}
-              onChange={(_, data) => field.onChange(data)}
+              onChange={handleAutocompleteColumnChange}
               className="input-field"
               renderInput={(params) => (
                 <TextField
@@ -267,15 +274,15 @@ const DynamicColumnForm = forwardRef(
                   helperText={errors.COLUMN_NAME?.message}
                   className="input-field"
                   InputLabelProps={{
-                    shrink: Boolean(field.value || isFocused.inputType),
+                    shrink: Boolean(field.value || isFocused.COLUMN_NAME),
                   }}
                   InputProps={{
                     ...params.InputProps,
                     readOnly: false, // Allow editing
                     onFocus: () =>
-                      setIsFocused({ ...isFocused, inputType: true }),
+                      setIsFocused({ ...isFocused, COLUMN_NAME: true }),
                     onBlur: () =>
-                      setIsFocused({ ...isFocused, inputType: false }),
+                      setIsFocused({ ...isFocused, COLUMN_NAME: false }),
                   }}
                 />
               )}
@@ -542,12 +549,12 @@ const DynamicColumnForm = forwardRef(
         <OptionsDialogBox
           onSubmit={onOptionSubmit}
           onReset={onOptionReset}
-          columnName={data?.COLUMN_NAME}
+          columnName={getValues()?.COLUMN_NAME?.COLUMN_NAME}
           noOfOptions={getValues().noOfOptions}
           handleClose={() => setDialogOpen(false)}
           open={open}
           defaultValues={getValues().optionsList}
-          key={"dialogKey"}
+          key={getValues()?.COLUMN_NAME?.COLUMN_NAME}
         />
       </Container>
     );

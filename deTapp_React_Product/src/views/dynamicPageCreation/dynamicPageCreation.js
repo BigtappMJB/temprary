@@ -175,7 +175,8 @@ const DynamicPageCreation = () => {
         const response = await getColumnsDetailsController(tableName);
         allColumnsDataList.current = response;
         columnDetailsRef.current = response;
-        setColumnsData([]);
+
+        setColumnsData((prevData) => [...prevData, { id: prevData.length }]);
       } catch (error) {
         openDialog("critical", "Critical", `Column Details Retrieval Failed`, {
           confirm: { name: "Ok", isNeed: true },
@@ -202,17 +203,16 @@ const DynamicPageCreation = () => {
 
     // Find the column to be removed and add it back to the available column details
     const removingData = allColumnsDataList.current.find(
-      (column) => column.COLUMN_NAME === columnData.COLUMN_NAME
+      (column) => column.COLUMN_NAME === columnData
     );
 
     if (removingData) {
       columnDetailsRef.current = [removingData, ...columnDetailsRef.current];
     }
-
     // Update columnsData state by filtering out the removed form
     setColumnsData((prevData) => prevData.filter((form) => form.id !== id));
-
     isRemovingForm.current = false;
+    debugger;
   };
 
   /**
@@ -231,19 +231,16 @@ const DynamicPageCreation = () => {
     );
   };
 
+  const onColumnChange = (data) => {
+    updateColumnDetails(data.COLUMN_NAME);
+  };
+
   /**
    * Adds a new DynamicColumnForm for the selected column.
    * The selected column is removed from the available column list.
    */
   const addColumnForm = () => {
-    updateSelectedColumns(currentSelectedRef.current);
-    updateColumnDetails(currentSelectedRef.current.COLUMN_NAME);
-    setColumnsData((prevData) => [
-      ...prevData,
-      { id: prevData.length, ...currentSelectedRef.current },
-    ]);
-
-    currentSelectedRef.current = null;
+    setColumnsData((prevData) => [...prevData, { id: prevData.length }]);
     isRemovingForm.current = false;
   };
 
@@ -472,52 +469,40 @@ const DynamicPageCreation = () => {
               )}
             />
           </Grid>
-          {tableNameRef.current && (
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name="selectedColumns"
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    options={columnDetailsRef.current}
-                    getOptionLabel={(option) => option.COLUMN_NAME}
-                    isOptionEqualToValue={(option, value) =>
-                      option.COLUMN_NAME === value.COLUMN_NAME
-                    }
-                    value={field.value || null}
-                    onChange={(_, data) => {
-                      field.onChange(data);
-                      currentSelectedRef.current = data;
-                      addColumnForm(data);
-                      setTimeout(() => {
-                        field.onChange(null);
-                      }, 0);
-                    }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Columns" fullWidth />
-                    )}
-                  />
-                )}
-              />
-            </Grid>
-          )}
         </Grid>
       </Container>
 
-      {selectedColumnsRef.current.length > 0 && (
+      {columnDetailsRef.current.length > 0 && (
         <SecondContainer>
           <SubHeader>
             <Typography variant="h6">
               <b>Add columns to Form</b>
             </Typography>
+
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="center"
+              flexWrap="wrap"
+              gap={2}
+            >
+              <FormButton
+                onClick={addColumnForm}
+                type="button"
+                variant="contained"
+                color="primary"
+              >
+                Add
+              </FormButton>
+            </Box>
           </SubHeader>
           <StyledColumnBox>
             {columnsData?.map((data, index) => (
               <DynamicColumnForm
                 key={data.id}
+                formId={data.id}
+                onColumnChange={onColumnChange}
                 remainingColumnList={columnDetailsRef.current}
-                data={data}
                 ref={(el) => (formRefs.current[index] = el)}
                 onReset={onRemoveForm}
                 inputList={inputList}
