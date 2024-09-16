@@ -86,6 +86,11 @@ const ActivityCodePage = Loadable(
   lazy(() => import("../views/activityCodePage/ActivityCode"))
 );
 
+const TestPage = Loadable(
+  lazy(() => import("../views/testFolder/testPage"))
+);
+
+
 const Router = [
   {
     path: "/",
@@ -111,7 +116,7 @@ const Router = [
       { path: "/projectRole", element: <ProjectRolePage /> },
       { path: "/projectPhase", element: <ProjectPhasePage /> },
       { path: "/activityCode", element: <ActivityCodePage /> },
-
+      { path: "/test", element: <TestPage /> },
       { path: "*", element: <PageNotReady /> },
     ],
   },

@@ -193,6 +193,7 @@ const DynamicPageCreation = () => {
   // Handle table form submission and load columns for the selected table
   const onTableSubmit = async (data) => {
     tableNameRef.current = data.TABLE_NAME;
+    debugger;
     await getColumnDetails(data.TABLE_NAME);
   };
 
@@ -250,9 +251,11 @@ const DynamicPageCreation = () => {
    * Validates all the dynamic column forms.
    */
   const validateColumnForms = async () => {
+    debugger;
     const updatedColumnsData = await Promise.all(
       columnsData.map(async (column, index) => {
-        if (!column?.validated) {
+        if (!column?.validated && formRefs.current[index]) {
+          debugger;
           const isUpdatedDetails = await formRefs.current[
             index
           ].triggerValidation();
@@ -273,7 +276,6 @@ const DynamicPageCreation = () => {
 
       const pageDetailsValidation =
         await pageDetailsRef.current.triggerValidation();
-
       if (!pageDetailsValidation.validated) {
         ScrollToTopButton();
         return;
@@ -283,6 +285,7 @@ const DynamicPageCreation = () => {
         await trigger();
         return;
       }
+      debugger;
 
       if (!columnsData.length) {
         return openDialog(
@@ -307,6 +310,7 @@ const DynamicPageCreation = () => {
         );
       }
 
+      debugger;
       const updatedColumnsData = await validateColumnForms();
 
       const noOfFormValidated = updatedColumnsData.filter(
@@ -315,6 +319,7 @@ const DynamicPageCreation = () => {
       const totalForms = updatedColumnsData.length;
       const error = totalForms !== noOfFormValidated;
 
+      debugger;
       if (error) {
         return openDialog(
           "warning",
@@ -338,6 +343,7 @@ const DynamicPageCreation = () => {
         );
       }
 
+      debugger;
       // Collect validated column data for submission
       const columnValues = updatedColumnsData.map(
         (column) => column.columnValues
@@ -355,42 +361,43 @@ const DynamicPageCreation = () => {
       };
 
       const response = await createReactFormController(finalOutputValues);
+      console.log(response);
+
       debugger;
-      if (response) {
-        columnDetailsRef.current = [];
-        tableNameRef.current = null;
-        currentSelectedRef.current = [];
-        formRefs.current.resetForm();
-        pageDetailsRef.current.resetForm();
-        setColumnsData([]);
-        return openDialog(
-          "success",
-          "Success",
-          "Page are generated Successfully",
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {
-            if (confirmed) {
-              return;
-            }
-          }
-        );
-      }
+      // if (response) {
+      //   columnDetailsRef.current = [];
+      //   tableNameRef.current = null;
+      //   currentSelectedRef.current = [];
+      //   pageDetailsRef.current.resetForm();
+      //   setColumnsData([]);
+      //   return openDialog(
+      //     "success",
+      //     "Success",
+      //     "Page are generated Successfully",
+      //     {
+      //       confirm: {
+      //         name: "Ok",
+      //         isNeed: true,
+      //       },
+      //       cancel: {
+      //         name: "Cancel",
+      //         isNeed: false,
+      //       },
+      //     },
+      //     (confirmed) => {
+      //       if (confirmed) {
+      //         return;
+      //       }
+      //     }
+      //   );
+      // }
       return;
     } catch (error) {
       console.error(error);
       openDialog(
         "warning",
         "Warning",
-        error?.errorMessage || "Page are generated Successfully",
+        error?.errorMessage || "Page generation Failed",
         {
           confirm: {
             name: "Ok",
@@ -460,7 +467,6 @@ const DynamicPageCreation = () => {
                   onChange={(_, data) => {
                     field.onChange(data);
                     onTableSubmit(data);
-                    columnDetailsRef.current = [];
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -477,8 +483,7 @@ const DynamicPageCreation = () => {
           </Grid>
         </Grid>
       </Container>
-
-      {columnDetailsRef.current.length > 0 && (
+      {allColumnsDataList.current.length > 0 && (
         <SecondContainer>
           <SubHeader>
             <Typography variant="h6">
@@ -497,6 +502,9 @@ const DynamicPageCreation = () => {
                 type="button"
                 variant="contained"
                 color="primary"
+                disabled={
+                  columnsData.length === allColumnsDataList.current.length
+                }
               >
                 Add
               </FormButton>
@@ -509,7 +517,11 @@ const DynamicPageCreation = () => {
                 formId={data.id}
                 onColumnChange={onColumnChange}
                 remainingColumnList={columnDetailsRef.current}
-                ref={(el) => (formRefs.current[index] = el)}
+                ref={(el) => {
+                  if (el) {
+                    formRefs.current[index] = el; // Ensure ref is set only when el is available
+                  }
+                }}
                 onReset={onRemoveForm}
                 inputList={inputList}
                 isRemovingForm={isRemovingForm}
