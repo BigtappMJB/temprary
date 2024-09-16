@@ -125,6 +125,7 @@ const DynamicPageCreation = () => {
     control,
     handleSubmit,
     trigger,
+    reset,
     formState: { errors },
   } = useForm({
     mode: "onChange",
@@ -420,6 +421,10 @@ const DynamicPageCreation = () => {
       ...selectedColumnsRef.current,
     ];
     selectedColumnsRef.current = [];
+    pageDetailsRef.current.resetForm();
+    reset({
+      tableName: null,
+    });
     setColumnsData([]);
   };
 
