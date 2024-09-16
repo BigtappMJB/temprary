@@ -64,7 +64,7 @@ export const createReactFormController = async (formData) => {
     const openAIResponse = await handleChatGPTResponse(
       reactGenerationPrompt(formData)
     );
-    const jsxCode = openAIResponse;
+    const jsxCode = extractJSXBetweenMarkers(openAIResponse);
     downloadUpdatedFile(jsxCode, formData?.tableName);
     debugger;
     // Send the GET request to the projectCreation API endpoint
@@ -81,7 +81,7 @@ const reactGenerationPrompt = (
 ) => `Generate a React component for a dynamic form using React Hook Form, Yup validation, and Material UI components. Use the following input data to create the form fields dynamically and generate the validation schema:
 
 Input Data:
-${ JSON.stringify(value)}
+${JSON.stringify(value)}
 
 **Requirements:**
 
@@ -119,6 +119,22 @@ ${ JSON.stringify(value)}
 - Add comments throughout the code to explain the functionality.
 - Include error handling (e.g., for form submission or API calls).
 - Ensure proper file naming conventions are used (e.g., avoid ambiguous or complex names).
+
+
+**Debugging and Issue Resolution:**
+
+1. Debug the code **line by line** to identify and fix any issues or bugs.
+2. If a field is not rendering properly, log the value and inspect it in the developer tools.
+3. Handle potential errors that could arise during form validation, rendering, and submission (e.g., missing props or API errors).
+4. Verify the form's responsive behavior by testing across different screen sizes (mobile, tablet, desktop).
+5. Ensure that validation messages appear appropriately when form fields are invalid.
+6. Test the form submission thoroughly, handling errors for failed API requests, and retry logic where necessary.
+7. Make sure all state changes and form updates are logged to the console during debugging to trace behavior accurately.
+8. Inspect component re-renders to ensure that optimizations (e.g., using 'useMemo' or 'useCallback') are effective.
+9. If any warnings or errors appear in the browser console (such as prop type warnings or key issues), resolve them.
+10. Ensure that the code is compliant with accessibility standards and provides feedback to screen readers.
+
+Ensure the component is fully debugged and working as expected before finalizing the solution.
 `;
 
 const downloadUpdatedFile = (fileContent, fileName) => {
@@ -137,3 +153,18 @@ const downloadUpdatedFile = (fileContent, fileName) => {
   // Clean up
   document.body.removeChild(link);
 };
+
+function extractJSXBetweenMarkers(inputString) {
+  // Use a regular expression to find the JSX code between ```jsx markers
+  const regex = /```jsx([\s\S]*?)```/g;
+  const matches = inputString.match(regex);
+
+  // If a match is found, clean up the markers and return the JSX content
+  if (matches) {
+    matches.map((match) => match.replace(/```jsx|```/g, "").trim());
+    return matches.join("\r\n");
+  }
+
+  // If no matches are found, return an empty array or null
+  return null;
+}

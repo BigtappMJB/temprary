@@ -370,6 +370,7 @@ const DynamicPageCreation = () => {
       //   currentSelectedRef.current = [];
       //   pageDetailsRef.current.resetForm();
       //   setColumnsData([]);
+      //   reset({tableName:null})
       //   return openDialog(
       //     "success",
       //     "Success",

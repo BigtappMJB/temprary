@@ -1,361 +1,182 @@
-// DynamicForm.jsx
-import React, { useMemo, useCallback } from "react";
-import { useForm, Controller } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormHelperText,
-  Button,
-  Grid,
-  Box,
-} from "@mui/material";
-import { css } from "@emotion/react";
-import Axios from "axios";
+import React, { useMemo, useCallback } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import axios from 'axios';
+import { Grid, TextField, Checkbox, FormControlLabel, RadioGroup, FormControl, FormLabel, Radio, Select, MenuItem, Button, FormHelperText, Box } from '@mui/material';
+import { css } from '@emotion/react';
 
 /**
- * Generates validation schema based on columns data configuration.
- * @param {Object} columnsData - Columns data configuration object
- * @returns {Object} - Yup validation schema
- */
-const generateValidationSchema = (columnsData) => {
-  const schema = {};
-
-  Object.values(columnsData).forEach((column) => {
-    const { COLUMN_NAME, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH, optionsList } =
-      column;
-    let validator = yup.string();
-
-    if (column.DATA_TYPE === "date") {
-      validator = yup.date();
-    } else if (column.DATA_TYPE === "varchar") {
-      validator = yup.string().max(CHARACTER_MAXIMUM_LENGTH);
-    }
-
-    if (IS_NULLABLE === "NO") {
-      validator = validator.required("This field is required");
-    }
-
-    if (column.inputType.NAME === "CHECKBOX" && optionsList) {
-      validator = yup
-        .array()
-        .min(1, "At least one option must be selected")
-        .of(yup.string());
-    }
-
-    schema[COLUMN_NAME.COLUMN_NAME] = validator;
-  });
-
-  return yup.object().shape(schema);
-};
-
-/**
- * Component for rendering dynamic form
+ * DynamicForm Component: Renders a dynamic form based on input data
  * @param {Object} props - Component properties
- * @param {Object} props.columnsData - Columns data configuration object
- * @returns {JSX.Element} - Rendered form component
+ * @param {Object} props.columnsData - Data defining the form fields
  */
 const DynamicForm = ({ columnsData }) => {
-  const schema = useMemo(
-    () => generateValidationSchema(columnsData),
-    [columnsData]
-  );
+  // Create validation schema and default values dynamically based on columnsData
+  const validationSchema = useMemo(() => {
+    const schema = {};
+    for (const key in columnsData) {
+      const column = columnsData[key];
+      if (column.IS_NULLABLE === 'NO' && column.DATA_TYPE === 'varchar') {
+        schema[column.COLUMN_NAME.COLUMN_NAME] = yup
+          .string()
+          .required('This field is required')
+          .max(column.CHARACTER_MAXIMUM_LENGTH, `Maximum ${column.CHARACTER_MAXIMUM_LENGTH} characters`);
+      } else if (column.DATA_TYPE === 'date') {
+        schema[column.COLUMN_NAME.COLUMN_NAME] = yup.date().required('This field is required');
+      } else if (column.inputType.NAME === 'CHECKBOX') {
+        schema[column.COLUMN_NAME.COLUMN_NAME] = yup
+          .array()
+          .min(1, 'Select at least one option');
+      } else if (column.inputType.NAME === 'RADIO') {
+        schema[column.COLUMN_NAME.COLUMN_NAME] = yup.string().required('This field is required');
+      }
+    }
+    return yup.object().shape(schema);
+  }, [columnsData]);
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
+  const defaultValues = useMemo(() => {
+    const values = {};
+    for (const key in columnsData) {
+      const column = columnsData[key];
+      values[column.COLUMN_NAME.COLUMN_NAME] = column.inputType.NAME === 'CHECKBOX' ? [] : '';
+    }
+    return values;
+  }, [columnsData]);
+
+  const { handleSubmit, control, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues,
   });
 
   const onSubmit = useCallback(async (data) => {
     try {
-      console.log("Form Data:", data);
-      // Replace this URL with your actual endpoint
-      const response = await Axios.post(
-        "https://your-api-endpoint.com/submit",
-        data
-      );
-      console.log("Form submission response:", response);
+      const response = await axios.post('/api/submit', data);
+      console.log(response.data);
     } catch (error) {
-      console.error("Form submission error:", error);
+      console.error('Form submission error:', error);
     }
   }, []);
 
   return (
-    <Box css={formContainer}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={2}>
-          {Object.values(columnsData).map((column, index) => {
-            const { COLUMN_NAME, inputType, optionsList } = column;
-            const fieldName = COLUMN_NAME.COLUMN_NAME;
-
-            return (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                {inputType.NAME === "TEXT" && (
-                  <Controller
-                    name={fieldName}
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ width: '100%', padding: 2 }}
+      noValidate
+    >
+      <Grid container spacing={3}>
+        {Object.values(columnsData).map((column) => (
+          <Grid item xs={12} sm={6} md={4} key={column.COLUMN_NAME.COLUMN_NAME}>
+            <Controller
+              name={column.COLUMN_NAME.COLUMN_NAME}
+              control={control}
+              render={({ field }) => {
+                switch (column.inputType.NAME) {
+                  case 'TEXT':
+                    return (
                       <TextField
                         {...field}
-                        label={fieldName}
+                        label={column.COLUMN_NAME.COLUMN_NAME}
+                        variant="outlined"
                         fullWidth
-                        error={!!errors[fieldName]}
-                        helperText={errors[fieldName]?.message}
+                        error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}
+                        helperText={errors[column.COLUMN_NAME.COLUMN_NAME]?.message}
                       />
-                    )}
-                  />
-                )}
+                    );
 
-                {inputType.NAME === "DROPDOWN" && (
-                  <Controller
-                    name={fieldName}
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <>
-                        <InputLabel>{fieldName}</InputLabel>
-                        <Select {...field} fullWidth>
-                          {Object.entries(optionsList).map(([key, value]) => (
-                            <MenuItem key={key} value={value}>
-                              {value}
-                            </MenuItem>
+                  case 'DATE':
+                    return (
+                      <TextField
+                        {...field}
+                        label={column.COLUMN_NAME.COLUMN_NAME}
+                        variant="outlined"
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}
+                        helperText={errors[column.COLUMN_NAME.COLUMN_NAME]?.message}
+                      />
+                    );
+
+                  case 'RADIO':
+                    return (
+                      <FormControl component="fieldset" error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}>
+                        <FormLabel component="legend">{column.COLUMN_NAME.COLUMN_NAME}</FormLabel>
+                        <RadioGroup {...field} row>
+                          {Object.values(column.optionsList).map((option, index) => (
+                            <FormControlLabel key={index} value={option} control={<Radio />} label={option} />
+                          ))}
+                        </RadioGroup>
+                        <FormHelperText>{errors[column.COLUMN_NAME.COLUMN_NAME]?.message}</FormHelperText>
+                      </FormControl>
+                    );
+
+                  case 'DROPDOWN':
+                    return (
+                      <FormControl fullWidth error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}>
+                        <Select
+                          {...field}
+                          label={column.COLUMN_NAME.COLUMN_NAME}
+                          variant="outlined"
+                          displayEmpty
+                        >
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          {Object.values(column.optionsList).map((option, index) => (
+                            <MenuItem key={index} value={option}>{option}</MenuItem>
                           ))}
                         </Select>
-                        {errors[fieldName] && (
-                          <FormHelperText error>
-                            {errors[fieldName]?.message}
-                          </FormHelperText>
-                        )}
-                      </>
-                    )}
-                  />
-                )}
+                        <FormHelperText>{errors[column.COLUMN_NAME.COLUMN_NAME]?.message}</FormHelperText>
+                      </FormControl>
+                    );
 
-                {inputType.NAME === "RADIO" && (
-                  <Controller
-                    name={fieldName}
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <RadioGroup {...field} row>
-                        {Object.entries(optionsList).map(([key, value]) => (
+                  case 'CHECKBOX':
+                    return (
+                      <FormControl component="fieldset" error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}>
+                        <FormLabel component="legend">{column.COLUMN_NAME.COLUMN_NAME}</FormLabel>
+                        {Object.values(column.optionsList).map((option, index) => (
                           <FormControlLabel
-                            key={key}
-                            value={value}
-                            control={<Radio />}
-                            label={value}
-                          />
-                        ))}
-                      </RadioGroup>
-                    )}
-                  />
-                )}
-
-                {inputType.NAME === "CHECKBOX" && (
-                  <Controller
-                    name={fieldName}
-                    control={control}
-                    defaultValue={[]}
-                    render={({ field }) => (
-                      <>
-                        {Object.entries(optionsList).map(([key, value]) => (
-                          <FormControlLabel
-                            key={key}
+                            key={index}
                             control={
                               <Checkbox
-                                checked={field.value.includes(value)}
+                                {...field}
+                                value={option}
+                                checked={field.value.includes(option)}
                                 onChange={(e) => {
+                                  const value = [...field.value];
                                   if (e.target.checked) {
-                                    field.onChange([...field.value, value]);
+                                    value.push(option);
                                   } else {
-                                    field.onChange(
-                                      field.value.filter((v) => v !== value)
-                                    );
+                                    value.splice(value.indexOf(option), 1);
                                   }
+                                  field.onChange(value);
                                 }}
                               />
                             }
-                            label={value}
+                            label={option}
                           />
                         ))}
-                        {errors[fieldName] && (
-                          <FormHelperText error>
-                            {errors[fieldName]?.message}
-                          </FormHelperText>
-                        )}
-                      </>
-                    )}
-                  />
-                )}
+                        <FormHelperText>{errors[column.COLUMN_NAME.COLUMN_NAME]?.message}</FormHelperText>
+                      </FormControl>
+                    );
 
-                {inputType.NAME === "DATE" && (
-                  <Controller
-                    name={fieldName}
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <TextField
-                        type="date"
-                        {...field}
-                        label={fieldName}
-                        InputLabelProps={{ shrink: true }}
-                        fullWidth
-                        error={!!errors[fieldName]}
-                        helperText={errors[fieldName]?.message}
-                      />
-                    )}
-                  />
-                )}
-              </Grid>
-            );
-          })}
-        </Grid>
-
-        <Box mt={2}>
+                  default:
+                    return null;
+                }
+              }}
+            />
+          </Grid>
+        ))}
+        <Grid item xs={12}>
           <Button type="submit" variant="contained" color="primary">
             Submit
           </Button>
-        </Box>
-      </form>
+        </Grid>
+      </Grid>
     </Box>
   );
 };
 
-// Custom styling using Emotion
-const formContainer = css`
-  padding: 16px;
-  margin: auto;
-  max-width: 800px;
-`;
-
-// Example usage
-const inputData = {
-  pageDetails: {
-    menu: "asdsa",
-    subMenu: "asd",
-    pageName: "asd",
-    route: "asd",
-  },
-  tableName: "employees",
-  columnsData: {
-    0: {
-      DATA_TYPE: "varchar",
-      CHARACTER_MAXIMUM_LENGTH: 255,
-      IS_NULLABLE: "YES",
-      COLUMN_DEFAULT: null,
-      noOfOptions: null,
-      optionsList: null,
-      inputType: { ID: 1, NAME: "TEXT" },
-      COLUMN_NAME: {
-        CHARACTER_MAXIMUM_LENGTH: 255,
-        COLUMN_DEFAULT: null,
-        COLUMN_KEY: "",
-        COLUMN_NAME: "employee_name",
-        DATA_TYPE: "varchar",
-        EXTRA: "",
-        IS_NULLABLE: "NO",
-        NUMERIC_PRECISION: null,
-        NUMERIC_SCALE: null,
-      },
-    },
-    1: {
-      DATA_TYPE: "varchar",
-      CHARACTER_MAXIMUM_LENGTH: 255,
-      IS_NULLABLE: "YES",
-      COLUMN_DEFAULT: null,
-      noOfOptions: "2",
-      optionsList: { "Option 1": "HR", "Option 2": "IT" },
-      inputType: { ID: 4, NAME: "DROPDOWN" },
-      COLUMN_NAME: {
-        CHARACTER_MAXIMUM_LENGTH: 255,
-        COLUMN_DEFAULT: null,
-        COLUMN_KEY: "",
-        COLUMN_NAME: "department",
-        DATA_TYPE: "varchar",
-        EXTRA: "",
-        IS_NULLABLE: "NO",
-        NUMERIC_PRECISION: null,
-        NUMERIC_SCALE: null,
-      },
-    },
-    2: {
-      DATA_TYPE: "varchar",
-      CHARACTER_MAXIMUM_LENGTH: 255,
-      IS_NULLABLE: "NO",
-      COLUMN_DEFAULT: null,
-      noOfOptions: "3",
-      optionsList: {
-        "Option 1": "Male ",
-        "Option 2": "Female",
-        "Option 3": "Others",
-      },
-      inputType: { ID: 3, NAME: "RADIO" },
-      COLUMN_NAME: {
-        CHARACTER_MAXIMUM_LENGTH: 255,
-        COLUMN_DEFAULT: null,
-        COLUMN_KEY: "",
-        COLUMN_NAME: "gender",
-        DATA_TYPE: "varchar",
-        EXTRA: "",
-        IS_NULLABLE: "NO",
-        NUMERIC_PRECISION: null,
-        NUMERIC_SCALE: null,
-      },
-    },
-    3: {
-      DATA_TYPE: "date",
-      CHARACTER_MAXIMUM_LENGTH: null,
-      IS_NULLABLE: "NO",
-      COLUMN_DEFAULT: null,
-      noOfOptions: null,
-      optionsList: null,
-      inputType: { ID: 2, NAME: "DATE" },
-      COLUMN_NAME: {
-        CHARACTER_MAXIMUM_LENGTH: null,
-        COLUMN_DEFAULT: null,
-        COLUMN_KEY: "",
-        COLUMN_NAME: "joiningDate",
-        DATA_TYPE: "date",
-        EXTRA: "",
-        IS_NULLABLE: "NO",
-        NUMERIC_PRECISION: null,
-        NUMERIC_SCALE: null,
-      },
-    },
-    4: {
-      DATA_TYPE: "varchar",
-      CHARACTER_MAXIMUM_LENGTH: 255,
-      IS_NULLABLE: "NO",
-      COLUMN_DEFAULT: null,
-      noOfOptions: "2",
-      optionsList: { "Option 1": "Office", "Option 2": "WFH" },
-      inputType: { ID: 10, NAME: "CHECKBOX" },
-      COLUMN_NAME: {
-        CHARACTER_MAXIMUM_LENGTH: 255,
-        COLUMN_DEFAULT: null,
-        COLUMN_KEY: "",
-        COLUMN_NAME: "workingMode",
-        DATA_TYPE: "varchar",
-        EXTRA: "",
-        IS_NULLABLE: "NO",
-        NUMERIC_PRECISION: null,
-        NUMERIC_SCALE: null,
-      },
-    },
-  },
-};
-
-export default function App() {
-  return <DynamicForm columnsData={inputData.columnsData} />;
-}
+export default DynamicForm;
