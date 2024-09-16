@@ -228,7 +228,7 @@ const DynamicColumnForm = forwardRef(
     // Open the option list dialog for input types that allow multiple options
     const openOptionDialogList = async () => {
       const result = await trigger("noOfOptions"); // Validate number of options
-      
+
       setDialogOpen(result); // Open dialog if validation passes
       debugger;
     };
@@ -484,7 +484,7 @@ const DynamicColumnForm = forwardRef(
         )}
 
         {/* Options List Button and Dialog */}
-        {!!getValues().noOfOptions && getValues().noOfOptions > 0 && (
+        {!!watch("noOfOptions") && watch("noOfOptions") > 0 && (
           <Controller
             name="optionsList"
             control={control}
