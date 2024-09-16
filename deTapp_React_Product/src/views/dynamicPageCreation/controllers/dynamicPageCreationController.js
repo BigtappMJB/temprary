@@ -81,7 +81,7 @@ const reactGenerationPrompt = (
 ) => `Generate a React component for a dynamic form using React Hook Form, Yup validation, and Material UI components. Use the following input data to create the form fields dynamically and generate the validation schema:
 
 Input Data:
-${value}
+${ JSON.stringify(value)}
 
 **Requirements:**
 
