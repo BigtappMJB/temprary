@@ -193,18 +193,18 @@ const DynamicColumnForm = forwardRef(
     const onLocalColumnChange = useCallback(
       (data) => {
         if (data?.COLUMN_NAME !== previousValue.current?.COLUMN_NAME) {
-          previousValue.current = data;
           reset({
             DATA_TYPE: data?.DATA_TYPE,
             CHARACTER_MAXIMUM_LENGTH: data?.CHARACTER_MAXIMUM_LENGTH,
-            IS_NULLABLE: data?.IS_NULLABLE,
+            IS_NULLABLE: data?.IS_NULLABLE === "NO" && "YES",
             COLUMN_DEFAULT: data?.COLUMN_DEFAULT,
             noOfOptions: null,
             optionsList: null,
             inputType: null,
             COLUMN_NAME: data,
           });
-          if (onColumnChange) onColumnChange(data); // Call external column change handler if provided
+          if (onColumnChange) onColumnChange(data, previousValue.current); // Call external column change handler if provided
+          previousValue.current = data;
         }
       },
       [reset, onColumnChange]
@@ -243,6 +243,10 @@ const DynamicColumnForm = forwardRef(
     // Handle Autocomplete value change and debounce it to prevent excessive re-renders
     const handleAutocompleteColumnChange = useCallback(
       debounce((_, data) => {
+        console.log(data);
+        console.log(previousValue.current);
+
+        debugger;
         if (data && data !== previousValue.current) {
           onLocalColumnChange(data); // Update form value using setValue from react-hook-form
         }

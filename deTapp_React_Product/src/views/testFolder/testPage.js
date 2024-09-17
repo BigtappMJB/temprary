@@ -1,182 +1,301 @@
-import React, { useMemo, useCallback } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import axios from 'axios';
-import { Grid, TextField, Checkbox, FormControlLabel, RadioGroup, FormControl, FormLabel, Radio, Select, MenuItem, Button, FormHelperText, Box } from '@mui/material';
-import { css } from '@emotion/react';
+import React from "react";
 
-/**
- * DynamicForm Component: Renders a dynamic form based on input data
- * @param {Object} props - Component properties
- * @param {Object} props.columnsData - Data defining the form fields
- */
-const DynamicForm = ({ columnsData }) => {
-  // Create validation schema and default values dynamically based on columnsData
-  const validationSchema = useMemo(() => {
-    const schema = {};
-    for (const key in columnsData) {
-      const column = columnsData[key];
-      if (column.IS_NULLABLE === 'NO' && column.DATA_TYPE === 'varchar') {
-        schema[column.COLUMN_NAME.COLUMN_NAME] = yup
-          .string()
-          .required('This field is required')
-          .max(column.CHARACTER_MAXIMUM_LENGTH, `Maximum ${column.CHARACTER_MAXIMUM_LENGTH} characters`);
-      } else if (column.DATA_TYPE === 'date') {
-        schema[column.COLUMN_NAME.COLUMN_NAME] = yup.date().required('This field is required');
-      } else if (column.inputType.NAME === 'CHECKBOX') {
-        schema[column.COLUMN_NAME.COLUMN_NAME] = yup
-          .array()
-          .min(1, 'Select at least one option');
-      } else if (column.inputType.NAME === 'RADIO') {
-        schema[column.COLUMN_NAME.COLUMN_NAME] = yup.string().required('This field is required');
-      }
-    }
-    return yup.object().shape(schema);
-  }, [columnsData]);
+import {
+  Box,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormGroup,
+  Checkbox,
+  FormHelperText,
+  Paper,
+  styled,
+  Typography,
+} from "@mui/material";
 
-  const defaultValues = useMemo(() => {
-    const values = {};
-    for (const key in columnsData) {
-      const column = columnsData[key];
-      values[column.COLUMN_NAME.COLUMN_NAME] = column.inputType.NAME === 'CHECKBOX' ? [] : '';
-    }
-    return values;
-  }, [columnsData]);
+import { useForm, Controller } from "react-hook-form";
 
-  const { handleSubmit, control, formState: { errors } } = useForm({
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import * as yup from "yup";
+
+/* Define Yup validation schema */
+
+const validationSchema = yup.object().shape({
+  employee_name: yup.string().max(255).required("Employee name is required"),
+
+  department: yup.string().required("Department is required"),
+
+  gender: yup.string().required("Gender is required"),
+
+  joiningDate: yup.date().required("Joining date is required"),
+
+  workingMode: yup
+    .array()
+    .of(yup.string())
+    .min(1, "At least one working mode is required"),
+});
+
+/* Define styled components */
+
+const Container = styled(Paper)(({ theme }) => ({
+  paddingBottom: theme.spacing(3),
+
+  marginBottom: theme.spacing(5),
+
+  borderRadius: theme.spacing(1),
+
+  boxShadow: theme.shadows[3],
+
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(2),
+  },
+}));
+
+const Header = styled(Box)(({ theme }) => ({
+  backgroundColor: "#1e88e5",
+
+  color: "#fff",
+
+  padding: theme.spacing(2),
+
+  borderTopLeftRadius: theme.spacing(1),
+
+  borderTopRightRadius: theme.spacing(1),
+
+  marginBottom: theme.spacing(2),
+
+  display: "flex",
+
+  justifyContent: "space-between",
+
+  alignItems: "center",
+}));
+
+const FormButton = styled(Button)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+  },
+}));
+
+/** 
+
+* Employees form component 
+
+* @returns {JSX.Element} 
+
+*/
+
+const EmployeesForm = () => {
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues,
+
+    defaultValues: {
+      employee_name: "",
+
+      department: "",
+
+      gender: "",
+
+      joiningDate: "",
+
+      workingMode: [],
+    },
   });
 
-  const onSubmit = useCallback(async (data) => {
-    try {
-      const response = await axios.post('/api/submit', data);
-      console.log(response.data);
-    } catch (error) {
-      console.error('Form submission error:', error);
-    }
-  }, []);
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
+  const onCancel = () => {
+    reset();
+  };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{ width: '100%', padding: 2 }}
-      noValidate
-    >
-      <Grid container spacing={3}>
-        {Object.values(columnsData).map((column) => (
-          <Grid item xs={12} sm={6} md={4} key={column.COLUMN_NAME.COLUMN_NAME}>
+    <Container>
+      <Header>
+        <Typography variant="h6">Employees Form</Typography>
+      </Header>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Box padding={2}>
+          {/* Employee Name Field */}
+
+          <FormControl fullWidth error={!!errors.employee_name} margin="normal">
             <Controller
-              name={column.COLUMN_NAME.COLUMN_NAME}
+              name="employee_name"
               control={control}
-              render={({ field }) => {
-                switch (column.inputType.NAME) {
-                  case 'TEXT':
-                    return (
-                      <TextField
-                        {...field}
-                        label={column.COLUMN_NAME.COLUMN_NAME}
-                        variant="outlined"
-                        fullWidth
-                        error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}
-                        helperText={errors[column.COLUMN_NAME.COLUMN_NAME]?.message}
-                      />
-                    );
-
-                  case 'DATE':
-                    return (
-                      <TextField
-                        {...field}
-                        label={column.COLUMN_NAME.COLUMN_NAME}
-                        variant="outlined"
-                        type="date"
-                        fullWidth
-                        InputLabelProps={{ shrink: true }}
-                        error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}
-                        helperText={errors[column.COLUMN_NAME.COLUMN_NAME]?.message}
-                      />
-                    );
-
-                  case 'RADIO':
-                    return (
-                      <FormControl component="fieldset" error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}>
-                        <FormLabel component="legend">{column.COLUMN_NAME.COLUMN_NAME}</FormLabel>
-                        <RadioGroup {...field} row>
-                          {Object.values(column.optionsList).map((option, index) => (
-                            <FormControlLabel key={index} value={option} control={<Radio />} label={option} />
-                          ))}
-                        </RadioGroup>
-                        <FormHelperText>{errors[column.COLUMN_NAME.COLUMN_NAME]?.message}</FormHelperText>
-                      </FormControl>
-                    );
-
-                  case 'DROPDOWN':
-                    return (
-                      <FormControl fullWidth error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}>
-                        <Select
-                          {...field}
-                          label={column.COLUMN_NAME.COLUMN_NAME}
-                          variant="outlined"
-                          displayEmpty
-                        >
-                          <MenuItem value="">
-                            <em>None</em>
-                          </MenuItem>
-                          {Object.values(column.optionsList).map((option, index) => (
-                            <MenuItem key={index} value={option}>{option}</MenuItem>
-                          ))}
-                        </Select>
-                        <FormHelperText>{errors[column.COLUMN_NAME.COLUMN_NAME]?.message}</FormHelperText>
-                      </FormControl>
-                    );
-
-                  case 'CHECKBOX':
-                    return (
-                      <FormControl component="fieldset" error={!!errors[column.COLUMN_NAME.COLUMN_NAME]}>
-                        <FormLabel component="legend">{column.COLUMN_NAME.COLUMN_NAME}</FormLabel>
-                        {Object.values(column.optionsList).map((option, index) => (
-                          <FormControlLabel
-                            key={index}
-                            control={
-                              <Checkbox
-                                {...field}
-                                value={option}
-                                checked={field.value.includes(option)}
-                                onChange={(e) => {
-                                  const value = [...field.value];
-                                  if (e.target.checked) {
-                                    value.push(option);
-                                  } else {
-                                    value.splice(value.indexOf(option), 1);
-                                  }
-                                  field.onChange(value);
-                                }}
-                              />
-                            }
-                            label={option}
-                          />
-                        ))}
-                        <FormHelperText>{errors[column.COLUMN_NAME.COLUMN_NAME]?.message}</FormHelperText>
-                      </FormControl>
-                    );
-
-                  default:
-                    return null;
-                }
-              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Employee Name"
+                  variant="outlined"
+                />
+              )}
             />
-          </Grid>
-        ))}
-        <Grid item xs={12}>
-          <Button type="submit" variant="contained" color="primary">
-            Submit
-          </Button>
-        </Grid>
-      </Grid>
-    </Box>
+
+            <FormHelperText>{errors.employee_name?.message}</FormHelperText>
+          </FormControl>
+
+          {/* Department Field */}
+
+          <FormControl fullWidth error={!!errors.department} margin="normal">
+            <InputLabel id="department-label">Department</InputLabel>
+
+            <Controller
+              name="department"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  labelId="department-label"
+                  label="Department"
+                >
+                  <MenuItem value="HR">HR</MenuItem>
+
+                  <MenuItem value="IT">IT</MenuItem>
+                </Select>
+              )}
+            />
+
+            <FormHelperText>{errors.department?.message}</FormHelperText>
+          </FormControl>
+
+          {/* Gender Field */}
+
+          <FormControl
+            component="fieldset"
+            error={!!errors.gender}
+            margin="normal"
+          >
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup {...field} row>
+                  <FormControlLabel
+                    value="Male"
+                    control={<Radio />}
+                    label="Male"
+                  />
+
+                  <FormControlLabel
+                    value="Female"
+                    control={<Radio />}
+                    label="Female"
+                  />
+                </RadioGroup>
+              )}
+            />
+
+            <FormHelperText>{errors.gender?.message}</FormHelperText>
+          </FormControl>
+
+          {/* Joining Date Field */}
+
+          <FormControl fullWidth error={!!errors.joiningDate} margin="normal">
+            <Controller
+              name="joiningDate"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Joining Date"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                />
+              )}
+            />
+
+            <FormHelperText>{errors.joiningDate?.message}</FormHelperText>
+          </FormControl>
+
+          {/* Working Mode Field */}
+
+          <FormControl
+            component="fieldset"
+            error={!!errors.workingMode}
+            margin="normal"
+          >
+            <FormGroup row>
+              <Controller
+                name="workingMode"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={field.value.includes("WFH")}
+                          onChange={(e) => {
+                            const newValue = e.target.checked
+                              ? [...field.value, "WFH"]
+                              : field.value.filter((value) => value !== "WFH");
+
+                            field.onChange(newValue);
+                          }}
+                        />
+                      }
+                      label="WFH"
+                    />
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={field.value.includes("Office")}
+                          onChange={(e) => {
+                            const newValue = e.target.checked
+                              ? [...field.value, "Office"]
+                              : field.value.filter(
+                                  (value) => value !== "Office"
+                                );
+
+                            field.onChange(newValue);
+                          }}
+                        />
+                      }
+                      label="Office"
+                    />
+                  </>
+                )}
+              />
+            </FormGroup>
+
+            <FormHelperText>{errors.workingMode?.message}</FormHelperText>
+          </FormControl>
+
+          {/* Submit and Cancel Buttons */}
+
+          <Box display="flex" justifyContent="space-between" mt={3}>
+            <FormButton type="submit" variant="contained" color="primary">
+              Submit
+            </FormButton>
+
+            <FormButton
+              type="button"
+              variant="outlined"
+              color="secondary"
+              onClick={onCancel}
+            >
+              Cancel
+            </FormButton>
+          </Box>
+        </Box>
+      </form>
+    </Container>
   );
 };
 
-export default DynamicForm;
+export default EmployeesForm;

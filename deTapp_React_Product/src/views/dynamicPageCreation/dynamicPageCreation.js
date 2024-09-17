@@ -228,14 +228,16 @@ const DynamicPageCreation = () => {
   /**
    * Updates column details by removing the selected column from the available list.
    */
-  const updateColumnDetails = (columnName) => {
+  const updateColumnDetails = (columnName, previousValue) => {
     columnDetailsRef.current = columnDetailsRef.current.filter(
       (column) => column.COLUMN_NAME !== columnName
     );
+    if (previousValue)
+      columnDetailsRef.current = [previousValue, ...columnDetailsRef.current];
   };
 
-  const onColumnChange = (data) => {
-    updateColumnDetails(data.COLUMN_NAME);
+  const onColumnChange = (data, previousValue) => {
+    updateColumnDetails(data.COLUMN_NAME, previousValue);
   };
 
   /**
