@@ -3,20 +3,20 @@ import React from "react";
 import {
   Box,
   Button,
-  TextField,
-  Select,
-  MenuItem,
+  Container as MuiContainer,
   FormControl,
-  InputLabel,
-  RadioGroup,
   FormControlLabel,
-  Radio,
-  FormGroup,
-  Checkbox,
   FormHelperText,
+  FormLabel,
+  Grid,
   Paper,
-  styled,
+  Radio,
+  RadioGroup,
+  TextField,
+  Checkbox,
   Typography,
+  styled,
+  MenuItem,
 } from "@mui/material";
 
 import { useForm, Controller } from "react-hook-form";
@@ -25,24 +25,29 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import * as yup from "yup";
 
-/* Define Yup validation schema */
+import { format, parseISO } from "date-fns";
 
-const validationSchema = yup.object().shape({
-  employee_name: yup.string().max(255).required("Employee name is required"),
+// Define form validation schema using Yup
 
-  department: yup.string().required("Department is required"),
+const validationSchema = yup
+  .object({
+    employee_name: yup.string().required("Employee name is required").max(255),
 
-  gender: yup.string().required("Gender is required"),
+    department: yup.string().required("Department is required"),
 
-  joiningDate: yup.date().required("Joining date is required"),
+    gender: yup.string().required("Gender is required"),
 
-  workingMode: yup
-    .array()
-    .of(yup.string())
-    .min(1, "At least one working mode is required"),
-});
+    joiningDate: yup.date().required("Joining date is required").nullable(),
 
-/* Define styled components */
+    workingMode: yup
+      .array()
+      .of(yup.string())
+      .required("Working mode is required")
+      .min(1),
+  })
+  .required();
+
+// Create and style Material UI components
 
 const Container = styled(Paper)(({ theme }) => ({
   paddingBottom: theme.spacing(3),
@@ -78,61 +83,70 @@ const Header = styled(Box)(({ theme }) => ({
   alignItems: "center",
 }));
 
+const SubHeader = styled(Box)(({ theme }) => ({
+  color: "#1e88e5",
+
+  padding: theme.spacing(2),
+
+  borderTopLeftRadius: theme.spacing(1),
+
+  borderTopRightRadius: theme.spacing(1),
+
+  marginBottom: theme.spacing(2),
+
+  display: "flex",
+
+  justifyContent: "space-between",
+
+  alignItems: "center",
+}));
+
 const FormButton = styled(Button)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     width: "100%",
   },
 }));
 
-/** 
+// Define constants for form field options
 
-* Employees form component 
+const DEPARTMENTS = ["1", "2"];
 
-* @returns {JSX.Element} 
+const GENDERS = ["Male", "Female", "Others"];
 
-*/
+const WORKING_MODES = ["WFH", "Online"];
 
-const EmployeesForm = () => {
+// The main Employees component
+
+const Employees = () => {
   const {
     control,
+
     handleSubmit,
+
     reset,
+
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
-
-    defaultValues: {
-      employee_name: "",
-
-      department: "",
-
-      gender: "",
-
-      joiningDate: "",
-
-      workingMode: [],
-    },
   });
+
+  // Form submit handler
 
   const onSubmit = (data) => {
     console.log(data);
   };
 
-  const onCancel = () => {
-    reset();
-  };
-
   return (
-    <Container>
-      <Header>
-        <Typography variant="h6">Employees Form</Typography>
-      </Header>
+    <>
+      <Container component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Header>
+          <Typography variant="h6">Add Employee</Typography>
+        </Header>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box padding={2}>
-          {/* Employee Name Field */}
+        <Grid container spacing={2} paddingX={2}>
+          <Grid item xs={12} sm={6}>
+            {/* Employee Name - Text Field */}
 
-          <FormControl fullWidth error={!!errors.employee_name} margin="normal">
             <Controller
               name="employee_name"
               control={control}
@@ -141,161 +155,195 @@ const EmployeesForm = () => {
                   {...field}
                   label="Employee Name"
                   variant="outlined"
+                  fullWidth
+                  error={!!errors.employee_name}
+                  helperText={
+                    errors.employee_name ? errors.employee_name.message : ""
+                  }
+                  inputProps={{
+                    maxLength: 255,
+                  }}
                 />
               )}
             />
+          </Grid>
 
-            <FormHelperText>{errors.employee_name?.message}</FormHelperText>
-          </FormControl>
-
-          {/* Department Field */}
-
-          <FormControl fullWidth error={!!errors.department} margin="normal">
-            <InputLabel id="department-label">Department</InputLabel>
+          <Grid item xs={12} sm={6}>
+            {/* Department - Dropdown */}
 
             <Controller
               name="department"
               control={control}
               render={({ field }) => (
-                <Select
+                <TextField
                   {...field}
-                  labelId="department-label"
+                  select
                   label="Department"
+                  variant="outlined"
+                  fullWidth
+                  error={!!errors.department}
+                  helperText={
+                    errors.department ? errors.department.message : ""
+                  }
                 >
-                  <MenuItem value="HR">HR</MenuItem>
-
-                  <MenuItem value="IT">IT</MenuItem>
-                </Select>
+                  {DEPARTMENTS.map((dept) => (
+                    <MenuItem key={dept} value={dept}>
+                      {dept}
+                    </MenuItem>
+                  ))}
+                </TextField>
               )}
             />
+          </Grid>
 
-            <FormHelperText>{errors.department?.message}</FormHelperText>
-          </FormControl>
+          <Grid item xs={12} sm={6}>
+            {/* Gender - Radio Buttons */}
 
-          {/* Gender Field */}
+            <FormControl component="fieldset" error={!!errors.gender}>
+              <FormLabel component="legend">Gender</FormLabel>
 
-          <FormControl
-            component="fieldset"
-            error={!!errors.gender}
-            margin="normal"
-          >
-            <Controller
-              name="gender"
-              control={control}
-              render={({ field }) => (
-                <RadioGroup {...field} row>
-                  <FormControlLabel
-                    value="Male"
-                    control={<Radio />}
-                    label="Male"
-                  />
+              <Controller
+                name="gender"
+                control={control}
+                render={({ field }) => (
+                  <RadioGroup {...field} row>
+                    {GENDERS.map((gender) => (
+                      <FormControlLabel
+                        key={gender}
+                        value={gender}
+                        control={<Radio />}
+                        label={gender}
+                      />
+                    ))}
+                  </RadioGroup>
+                )}
+              />
 
-                  <FormControlLabel
-                    value="Female"
-                    control={<Radio />}
-                    label="Female"
-                  />
-                </RadioGroup>
+              {errors.gender && (
+                <FormHelperText>{errors.gender.message}</FormHelperText>
               )}
-            />
+            </FormControl>
+          </Grid>
 
-            <FormHelperText>{errors.gender?.message}</FormHelperText>
-          </FormControl>
+          <Grid item xs={12} sm={6}>
+            {/* Joining Date - Date Field */}
 
-          {/* Joining Date Field */}
-
-          <FormControl fullWidth error={!!errors.joiningDate} margin="normal">
             <Controller
               name="joiningDate"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Joining Date"
                   type="date"
-                  InputLabelProps={{ shrink: true }}
+                  label="Joining Date"
                   variant="outlined"
+                  fullWidth
+                  error={!!errors.joiningDate}
+                  helperText={
+                    errors.joiningDate ? errors.joiningDate.message : ""
+                  }
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  inputProps={{
+                    max: format(new Date(), "yyyy-MM-dd"), // Prevent future dates
+                  }}
+                  value={
+                    field.value
+                      ? format(parseISO(field.value), "yyyy-MM-dd")
+                      : ""
+                  }
                 />
               )}
             />
+          </Grid>
 
-            <FormHelperText>{errors.joiningDate?.message}</FormHelperText>
-          </FormControl>
+          <Grid item xs={12} sm={6}>
+            {/* Working Mode - Checkbox */}
 
-          {/* Working Mode Field */}
+            <FormControl component="fieldset" error={!!errors.workingMode}>
+              <FormLabel component="legend">Working Mode</FormLabel>
 
-          <FormControl
-            component="fieldset"
-            error={!!errors.workingMode}
-            margin="normal"
-          >
-            <FormGroup row>
-              <Controller
-                name="workingMode"
-                control={control}
-                render={({ field }) => (
-                  <>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={field.value.includes("WFH")}
-                          onChange={(e) => {
-                            const newValue = e.target.checked
-                              ? [...field.value, "WFH"]
-                              : field.value.filter((value) => value !== "WFH");
+              <Box>
+                {WORKING_MODES.map((mode) => (
+                  <Controller
+                    key={mode}
+                    name="workingMode"
+                    control={control}
+                    defaultValue={[]}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={field.value.includes(mode)}
+                            onChange={() => {
+                              const newValue = field.value.includes(mode)
+                                ? field.value.filter((val) => val !== mode)
+                                : [...field.value, mode];
 
-                            field.onChange(newValue);
-                          }}
-                        />
-                      }
-                      label="WFH"
-                    />
+                              field.onChange(newValue);
+                            }}
+                          />
+                        }
+                        label={mode}
+                      />
+                    )}
+                  />
+                ))}
+              </Box>
 
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={field.value.includes("Office")}
-                          onChange={(e) => {
-                            const newValue = e.target.checked
-                              ? [...field.value, "Office"]
-                              : field.value.filter(
-                                  (value) => value !== "Office"
-                                );
+              {errors.workingMode && (
+                <FormHelperText>{errors.workingMode.message}</FormHelperText>
+              )}
+            </FormControl>
+          </Grid>
 
-                            field.onChange(newValue);
-                          }}
-                        />
-                      }
-                      label="Office"
-                    />
-                  </>
-                )}
-              />
-            </FormGroup>
+          <Grid item xs={12}>
+            {/* Form action buttons */}
 
-            <FormHelperText>{errors.workingMode?.message}</FormHelperText>
-          </FormControl>
-
-          {/* Submit and Cancel Buttons */}
-
-          <Box display="flex" justifyContent="space-between" mt={3}>
-            <FormButton type="submit" variant="contained" color="primary">
-              Submit
-            </FormButton>
-
-            <FormButton
-              type="button"
-              variant="outlined"
-              color="secondary"
-              onClick={onCancel}
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="center"
+              flexWrap="wrap"
+              gap={2}
             >
-              Cancel
-            </FormButton>
-          </Box>
-        </Box>
-      </form>
-    </Container>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className="primary"
+              >
+                Add
+              </Button>
+
+              <Button
+                type="button"
+                variant="contained"
+                color="primary"
+                className="danger"
+                onClick={() => reset()}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+
+      <Container>
+        <SubHeader>
+          <Typography variant="h6">
+            <b>Users List</b>
+          </Typography>
+
+          <FormButton type="button" variant="contained" color="primary">
+            Add employees
+          </FormButton>
+        </SubHeader>
+      </Container>
+    </>
   );
 };
 
-export default EmployeesForm;
+export default Employees;

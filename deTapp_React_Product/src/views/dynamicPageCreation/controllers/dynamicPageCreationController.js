@@ -161,127 +161,156 @@ const formatColumnValue = (columnData) =>
     .join("\n");
 
 const reactGenerationPrompt = (value) => `
-Generate a React component for a dynamic form using React Hook Form, Yup validation, and Material UI components. 
-
-Page Name: ${value?.tableName}
+Generate a React component using React Hook Form, Yup validation, and Material UI components for a dynamic form.
+The page name should be set to ${value?.tableName}.
 
 **Form Details:**
-${formatColumnValue(value?.columnsData)}
+- Form fields should be dynamically generated based on below details
+  ${formatColumnValue(value.columnsData)}.
 
-**UI Style Template:**
-Please use the following styles for the UI components, using Material UI and Emotions:
+**UI Styling:**
+ - Please follow these Material UI and Emotion styles:
 
-\`\`\`javascript
-/** Define base styles using Material  */
-import { Box, Button, Paper, styled, Typography } from "@mui/material";
+  \`\`\`javascript
+  import { Box, Button, Paper, styled, Typography } from "@mui/material";
 
-// Styled Components
-const Container = styled(Paper)(({ theme }) => ({
-  paddingBottom: theme.spacing(3),
-  marginBottom: theme.spacing(5),
-  borderRadius: theme.spacing(1),
-  boxShadow: theme.shadows[3],
-  [theme.breakpoints.down("sm")]: {
+  // Base styles
+  const Container = styled(Paper)(({ theme }) => ({
+    paddingBottom: theme.spacing(3),
+    marginBottom: theme.spacing(5),
+    borderRadius: theme.spacing(1),
+    boxShadow: theme.shadows[3],
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(2),
+    },
+  }));
+
+  const SecondContainer = styled(Paper)(({ theme }) => ({
+    paddingBottom: theme.spacing(3),
+    marginBottom: theme.spacing(5),
+    borderRadius: theme.spacing(1),
+    boxShadow: theme.shadows[3],
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(2),
+    },
+  }));
+
+  const Header = styled(Box)(({ theme }) => ({
+    backgroundColor: "#1e88e5",
+    color: "#fff",
     padding: theme.spacing(2),
-  },
-}));
+    borderTopLeftRadius: theme.spacing(1),
+    borderTopRightRadius: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  }));
 
-const SecondContainer = styled(Paper)(({ theme }) => ({
-  paddingBottom: theme.spacing(3),
-  marginBottom: theme.spacing(5),
-  borderRadius: theme.spacing(1),
-  boxShadow: theme.shadows[3],
-  [theme.breakpoints.down("sm")]: {
+  const SubHeader = styled(Box)(({ theme }) => ({
+    color: "#1e88e5",
     padding: theme.spacing(2),
-  },
-}));
+    borderTopLeftRadius: theme.spacing(1),
+    borderTopRightRadius: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  }));
 
-const Header = styled(Box)(({ theme }) => ({
-  backgroundColor: "#1e88e5",
-  color: "#fff",
-  padding: theme.spacing(2),
-  borderTopLeftRadius: theme.spacing(1),
-  borderTopRightRadius: theme.spacing(1),
-  marginBottom: theme.spacing(2),
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-}));
+  const FormButton = styled(Button)(({ theme }) => ({
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
+  }));
+  \`\`\`
 
-const SubHeader = styled(Box)(({ theme }) => ({
-  color: "#1e88e5",
-  padding: theme.spacing(2),
-  borderTopLeftRadius: theme.spacing(1),
-  borderTopRightRadius: theme.spacing(1),
-  marginBottom: theme.spacing(2),
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-}));
+**Component:**
+  - ${value?.tableName} should:
+  - Use React Hook Form for form handling.
+  - Validate with Yup, and display error messages below each field using FormHelperText.
 
-const FormButton = styled(Button)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-  },
-}));
+  - The form should dynamically generate fields and support these functionalities:
+    1. A **Submit** button that logs form data.
+    2. A **Cancel** button to reset the form using \`reset\`.
 
-/** Usage of the styles */
-const ${value?.tableName}Component
- = () => {
-  return (
-	<>
-{formAction.display && (
-        <Container>
-          <Header className="panel-header">
-            <Typography variant="h6">
-              ${value?.tableName}
-            </Typography>
-          </Header>
+  - Here’s the basic structure:
 
-   		{/* Form fields here */}
-             </Container>
-      )}
+  \`\`\`javascript
+  const \${value?.tableName ? value.tableName : 'TableComponent'} = () => {
+    const { register, handleSubmit, reset, formState: { errors } } = useForm({
+      resolver: yupResolver(validationSchema),
+    });
 
-      <SecondContainer className="common-table">
-        <SubHeader className="table-header">
-          <Typography variant="h6">
-            <b>Users List</b>
-          </Typography>
-          <Box display="flex" justifyContent="space-between" flexWrap="wrap">
-            <FormButton
+    const onSubmit = (data) => console.log(data);
+
+    return (
+      <>
+        {formAction.display ? (
+          <Container>
+            <Header>
+              <Typography variant="h6">
+                {value?.tableName ? value.tableName : 'Form'}
+              </Typography>
+            </Header>
+
+            <Container component="form" onSubmit={handleSubmit(onSubmit)}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  {/* Dynamically generated form fields */}
+                </Grid>
+              </Grid>
+            Grid item xs={12} sm={12}>
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="center"
+            flexWrap="wrap"
+            gap={2} // Adds space between buttons
+          >
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className="primary"
+              >
+               Add
+              </Button>
+
+            <Button
               type="button"
-              onClick={addUser}
               variant="contained"
               color="primary"
-              style={{ marginRight: "10px" }}
-              className="primary"
+              className="danger"
+              onClick={handleReset}
             >
+             Cancel
+            </Button>
+          </Box>
+        </Grid>
+            </Container>
+          </Container>
+        ) : null}
+
+        <SecondContainer>
+          <SubHeader>
+            <Typography variant="h6">
+              <b>Users List</b>
+            </Typography>
+            <FormButton type="button" onClick={addData} variant="contained" color="primary">
               Add ${value?.tableName}
             </FormButton>
-          </Box>
-        </SubHeader>
-	</SecondContainer>
+          </SubHeader>
+        </SecondContainer>
+      </>
+    );
+  };
+  \`\`\`
 
-);
-};
-\`\`\`
-
-**Requirements:**
-- Use the Emotion CSS-in-JS library for styling.
-- Ensure responsive design and accessibility.
-- Customize the styles for Material UI components, such as TextField, Select, and Button.
-- Allow for dynamic theming based on Material UI's theme system.
-- Ensure that the form follows a clean, modern look with consistent padding and spacing.
-
-The UI should remain responsive and adjust based on different screen sizes (mobile, tablet, desktop).
-
-Additional requirements for the form and functionality:
-1. Use React Hook Form for form handling.
-2. Use Yup for schema validation.
-3. Dynamically generate form fields and validation schema based on the 'Form Details' structure.
-4. Ensure that validation error messages are displayed below the respective form fields using Material UI's FormHelperText.
-5. Include a submit button that triggers form submission and logs form data to the console.
-6. Include a cancel button to  reset the form and form fields using reset function .
+  **Ensure the form**:
+  - Is responsive and accessible.
+- Uses Material UI's dynamic theming.
+- Displays validation messages clearly, with error messages shown below the form fields.
 `;
 
 const downloadUpdatedFile = (fileContent, fileName) => {
