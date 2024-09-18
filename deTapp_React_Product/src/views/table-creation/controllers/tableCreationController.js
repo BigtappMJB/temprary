@@ -28,7 +28,7 @@ export const tableCreationController = async (formData) => {
     // Send the POST request to the cmd API API endpoint
     const response = await post("/generate-create-query", body, "python");
     // Return the response data
-    return response[0];
+    return response;
   } catch (error) {
     throw error;
   }

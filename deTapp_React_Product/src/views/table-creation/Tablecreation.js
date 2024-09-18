@@ -324,7 +324,7 @@ const CreateTableForm = () => {
 
       const response = await tableCreationController(finalObject);
       debugger;
-      if (response.success) {
+      if (response) {
         setTableName("");
         //   setSubmitted(false);
         handleColumnsClear();
@@ -343,27 +343,8 @@ const CreateTableForm = () => {
             },
           },
           (confirmed) => {
-            if (
-              response.trim().toLowerCase() ===
-              `Table ${tableName.toUpperCase()} successfully created.`
-                .trim()
-                .toLowerCase()
-            ) {
-          
-            }
+            
           },
-          () => {
-            if (
-              response.trim().toLowerCase() ===
-              `Table ${tableName.toUpperCase()} successfully created.`
-                .trim()
-                .toLowerCase()
-            ) {
-              setTableName("");
-              //   setSubmitted(false);
-              handleColumnsClear();
-            }
-          }
         );
       }
     } catch (error) {
