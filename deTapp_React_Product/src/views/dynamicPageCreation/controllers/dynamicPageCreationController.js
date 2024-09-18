@@ -234,6 +234,7 @@ The page name should be set to ${value?.tableName}.
     1. A **Submit** button that logs form data.
     2. A **Cancel** button to reset the form using \`reset\`.
 
+  - Ensure the code is in **JavaScript only** (no TypeScript).
   - Here’s the basic structure:
 
   \`\`\`javascript
@@ -295,7 +296,7 @@ The page name should be set to ${value?.tableName}.
         <SecondContainer>
           <SubHeader>
             <Typography variant="h6">
-              <b>Users List</b>
+              <b>${value?.tableName} List</b>
             </Typography>
             <FormButton type="button" onClick={addData} variant="contained" color="primary">
               Add ${value?.tableName}
