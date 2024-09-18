@@ -205,11 +205,11 @@ const CreateTableForm = () => {
       updatedFormData = {
         id: columnsData.length,
         columnName: `${tableName.toLowerCase()}_id`,
-        dataType: "INTEGER",
+        dataType: {id:5,name:"BIGINT"},
         length: "255",
         isPrimary: true,
         isMandatory: true,
-        defaultValue: 0,
+        defaultValue: null,
         validated: true,
       };
     }

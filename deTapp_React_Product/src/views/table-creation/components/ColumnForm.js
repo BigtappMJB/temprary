@@ -29,7 +29,8 @@ const schema = yup.object().shape({
     .string()
     .required("Column name is required")
     .matches(validationRegex.columnName, errorMessages.columnName),
-  dataType: yup.string().required("Data type is required"),
+  dataType: yup.object().nullable()
+  .transform((value, originalValue) => (originalValue === "" ? null : value)).required("Data type is required"),
   length: yup
     .number()
     .typeError("Length must be a number")
@@ -224,41 +225,16 @@ const TableColumnForm = forwardRef(
             />
           )}
         />
-        {data?.id === 0 ? (
-          <Controller
+     <Controller
             name="dataType"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Data Type"
-                variant="outlined"
-                select
-                error={!!errors.dataType}
-                helperText={errors.dataType?.message}
-                className="input-field"
-                InputProps={{
-                  readOnly: data?.id === 0, // Make the field read-only
-                }}
-              >
-                {dataTypes.map((type) => (
-                  <MenuItem key={type} value={type}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
-          />
-        ) : (
-          <Controller
-            name="dataType"
+            readOnly
             control={control}
             render={({ field }) => (
               <Autocomplete
                 {...field}
                 options={dataTypes}
-                getOptionLabel={(option) => option}
-                isOptionEqualToValue={(option, value) => option === value}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={field.value || null}
                 onChange={(_, data) => field.onChange(data)}
                 className="input-field"
@@ -281,13 +257,11 @@ const TableColumnForm = forwardRef(
                       onBlur: () =>
                         setIsFocused({ ...isFocused, dataType: false }),
                     }}
-                    disabled={data?.id === 0} // Disable the input to make it read-only
                   />
                 )}
               />
             )}
           />
-        )}
         <Controller
           name="length"
           control={control}

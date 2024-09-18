@@ -13,7 +13,7 @@ export const tableCreationController = async (formData) => {
       columns: formData.columnsData.map((column) => ({
         column_name: column.columnName,
         data_type: column.dataType,
-        // length: column?.length,
+        length: column?.length,
         nullable: column.isMandatory,
         default: column.defaultValue,
         primary_key: column.isPrimary,
@@ -22,6 +22,8 @@ export const tableCreationController = async (formData) => {
       })),
       // includeAuditColumns: true,
     };
+
+    debugger;
 
     // Send the POST request to the cmd API API endpoint
     const response = await post("master/tableConfigurator", body, "python");
@@ -37,7 +39,7 @@ export const getDataTypesController = async () => {
     // Prepare the body object with sanitized data
     // Send the GET request to the cmd API API endpoint
     const response = await get(
-      "master/tableConfigurator?type=dataType",
+      "/mysqlDataTypes",
       "python"
     );
     // Return the response data
