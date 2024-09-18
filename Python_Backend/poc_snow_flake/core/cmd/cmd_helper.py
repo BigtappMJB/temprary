@@ -4,15 +4,16 @@ import snowflake.connector
 from share.general_utils import snow_conf as conf
 
 def get_snowflake_connection():
-    conn = snowflake.connector.connect(
-        user=conf['user'],
-        password=conf['password'],
-        account=conf['account'],
-        warehouse=conf['warehouse'],
-        database=conf['database'],
-        schema=conf['schema'],
-        role=conf['role']
-    )
+    from mysql.connector import Error
+    import mysql.connector
+    from share.general_utils import mysql_config as conf
+        # Establish a connection
+    conn = mysql.connector.connect(
+            host=conf.get('host'),
+            user=conf.get('user'),
+            password=conf.get('password'),
+            database=conf.get('database')
+        )
     return conn
 
 class CMDHelper:

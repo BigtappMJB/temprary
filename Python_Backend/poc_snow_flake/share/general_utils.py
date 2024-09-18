@@ -39,3 +39,24 @@ snow_conf = {
     "schema": os.getenv('SNOWFLAKE_SCHEMA'),
     "role": os.getenv('SNOWFLAKE_ROLE')
 }
+
+mysql_config = {
+    "user": os.getenv('MYSQL_USER'),
+    "password": os.getenv('MYSQL_PASSWORD'),
+    "host": os.getenv('MYSQL_HOST'),
+    "database": os.getenv('MYSQL_DATABASE'),
+}
+
+
+def get_snowflake_connection():
+    from mysql.connector import Error
+    import mysql.connector
+    from share.general_utils import mysql_config as conf
+        # Establish a connection
+    conn = mysql.connector.connect(
+            host=conf.get('host'),
+            user=conf.get('user'),
+            password=conf.get('password'),
+            database=conf.get('database')
+        )
+    return conn

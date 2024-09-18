@@ -8,3 +8,4 @@ python-dateutil
 requests
 snowflake-connector-python
 python-dotenv
+flask_mail

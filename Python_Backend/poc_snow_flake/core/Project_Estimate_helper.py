@@ -9,14 +9,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_snowflake_connection():
-    conn = snowflake.connector.connect(
-        user=os.getenv('SNOWFLAKE_USER'),
-        password=os.getenv('SNOWFLAKE_PASSWORD'),
-        account=os.getenv('SNOWFLAKE_ACCOUNT'),
-        warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
-        database=os.getenv('SNOWFLAKE_DATABASE'),
-        schema=os.getenv('SNOWFLAKE_SCHEMA')
-    )
+    from mysql.connector import Error
+    import mysql.connector
+    from share.general_utils import mysql_config as conf
+        # Establish a connection
+    conn = mysql.connector.connect(
+            host=conf.get('host'),
+            user=conf.get('user'),
+            password=conf.get('password'),
+            database=conf.get('database')
+        )
     return conn
 
 # Helper methods for Project_Estimate (as previously provided)

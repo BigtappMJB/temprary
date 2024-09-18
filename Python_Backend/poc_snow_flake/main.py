@@ -18,7 +18,7 @@ CORS(app)
 
 # Registering existing blueprints
 app.register_blueprint(login_bp)
-app.register_blueprint(users_bp, url_prefix='/master')
+app.register_blueprint(users_bp, url_prefix='/')
 app.register_blueprint(registration_bp, url_prefix='/register')
 app.register_blueprint(roles_bp, url_prefix='/role')
 app.register_blueprint(cmd_bp, url_prefix='/cmd')

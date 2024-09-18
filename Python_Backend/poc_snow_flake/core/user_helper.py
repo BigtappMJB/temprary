@@ -54,21 +54,160 @@ def create_table(params):
 
 
 def get_data_type():
-    return data_type, 200
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""Select * from mysql_data_types""")
+        users = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
+        data = [dict(zip(column_names, row)) for row in users]
+        return data
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
 
+# Function to validate the incoming JSON and ensure all required keys are present
+def validate_json(data):
+    if "table_name" not in data or not isinstance(data["table_name"], str):
+        return False, "Invalid or missing 'table_name'."
+
+    if "columns" not in data or not isinstance(data["columns"], list):
+        return False, "Invalid or missing 'columns' list."
+
+    for column in data["columns"]:
+        if "column_name" not in column or not isinstance(column["column_name"], str):
+            return False, f"Invalid or missing 'column_name' in one of the columns."
+
+        if "data_type" not in column or not isinstance(column["data_type"], dict):
+            return False, f"Invalid or missing 'data_type' in column {column['column_name']}."
+
+        if "name" not in column["data_type"] or not isinstance(column["data_type"]["name"], str):
+            return False, f"Invalid or missing 'data_type.name' in column {column['column_name']}."
+
+        if "length" not in column or not isinstance(column["length"], int):
+            return False, f"Invalid or missing 'length' in column {column['column_name']}."
+
+        if "primary_key" in column and not isinstance(column["primary_key"], bool):
+            return False, f"Invalid 'primary_key' in column {column['column_name']}."
+
+        if "auto_increment" in column and not isinstance(column["auto_increment"], bool):
+            return False, f"Invalid 'auto_increment' in column {column['column_name']}."
+
+        if "nullable" in column and not isinstance(column["nullable"], bool):
+            return False, f"Invalid 'nullable' in column {column['column_name']}."
+
+        if "foreign_keys" in column and not isinstance(column["foreign_keys"], (list, bool)):
+            return False, f"Invalid 'foreign_keys' in column {column['column_name']}."
+
+    return True, None
+
+# Function to create a MySQL CREATE TABLE query based on input JSON
+def generate_create_query(data):
+    table_name = data.get("table_name")
+    columns = data.get("columns", [])
+
+    dataTypeRequiredLength = [
+    'CHAR',
+    'VARCHAR',
+    'BINARY',
+    'VARBINARY',
+    'DECIMAL',
+    'FLOAT',
+    'DOUBLE',
+    'ENUM',
+    'SET'
+]
+    
+    # Start building the query
+    query = f"CREATE TABLE `{table_name}` ("
+    
+    column_definitions = []
+    primary_keys = []
+    foreign_key_statements = []
+
+    for column in columns:
+        col_name = column.get("column_name")
+        length = column.get("length")
+        col_type = column.get("data_type", {}).get("name")
+        isMandatory = column.get("isMandatory", True)
+        default_value = column.get("default")
+        primary_key = column.get("primary_key", False)
+        auto_increment = column.get("auto_increment", False)
+        unique = column.get("unique", False)
+
+
+        # Start building the column definition
+        col_def = f"`{col_name}` "
+        if col_type in dataTypeRequiredLength:
+             col_def += f"{col_type}({length})"
+        else:
+            col_def += f"{col_type}"
+
+
+        if isMandatory:
+            col_def += " NOT NULL"
+        
+        if auto_increment:
+            col_def += " AUTO_INCREMENT"
+
+        if default_value is not None:
+            if isinstance(default_value, str) and len:
+                col_def += f" DEFAULT '{default_value}'"
+            else:
+                col_def += f" DEFAULT {default_value}"
+
+        if unique:
+            col_def += " UNIQUE"
+
+        # Add primary key
+        if primary_key:
+            primary_keys.append(f"`{col_name}`")
+
+        column_definitions.append(col_def)
+        
+        # Handle foreign keys
+        foreign_keys = column.get("foreign_keys", [])
+        if foreign_keys:
+            for fk in foreign_keys:
+                ref_table = fk.get("referenced_table")
+                ref_column = fk.get("referenced_column")
+                if ref_table and ref_column:
+                    foreign_key_statements.append(
+                        f"FOREIGN KEY (`{col_name}`) REFERENCES `{ref_table}`(`{ref_column}`)"
+                    )
+
+    # Add column definitions
+    query += ", ".join(column_definitions)
+
+    # Add primary key definitions if any
+    if primary_keys:
+        query += ", PRIMARY KEY (" + ", ".join(primary_keys) + ")"
+
+    # Add foreign key constraints if any
+    if foreign_key_statements:
+        query += ", " + ", ".join(foreign_key_statements)
+
+    query += " );"
+
+    return query
 
 
 def get_snowflake_connection():
-    conn = snowflake.connector.connect(
-        user=conf.get('user'),
-        password=conf.get('password'),
-        account=conf.get('account'),
-        warehouse=conf.get('warehouse'),
-        database=conf.get('database'),
-        schema=conf.get('schema')
-    )
+    from mysql.connector import Error
+    import mysql.connector
+    from share.general_utils import mysql_config as conf
+        # Establish a connection
+    conn = mysql.connector.connect(
+            host=conf.get('host'),
+            user=conf.get('user'),
+            password=conf.get('password'),
+            database=conf.get('database')
+        )
     return conn
+
 
 
 def generate_default_password(length=8):
@@ -212,7 +351,7 @@ def fetch_all_tables():
     try:
         cursor.execute("""SELECT TABLE_NAME
 FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA = CURRENT_SCHEMA() AND TABLE_CATALOG = CURRENT_DATABASE();
+WHERE TABLE_SCHEMA = DATABASE();
                        """)
         users = cursor.fetchall()
         column_names = [description[0] for description in cursor.description]
@@ -228,18 +367,17 @@ def fetch_column_details(table_name):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        query = f"""SELECT
-   COLUMN_NAME,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,NUMERIC_SCALE,NUMERIC_PRECISION,IS_IDENTITY
+     
+        query = f"""   SELECT
+COLUMN_NAME,COLUMN_KEY,EXTRA, IS_NULLABLE, DATA_TYPE,COLUMN_DEFAULT, CHARACTER_MAXIMUM_LENGTH, NUMERIC_SCALE, NUMERIC_PRECISION
 FROM
-    INFORMATION_SCHEMA.COLUMNS
+   INFORMATION_SCHEMA.COLUMNS
 WHERE
-    TABLE_NAME = '{table_name.upper()}' 
-     AND IS_IDENTITY = 'NO'
-    AND TABLE_SCHEMA = CURRENT_SCHEMA()
-    AND TABLE_CATALOG = CURRENT_DATABASE()
-    
+   TABLE_NAME = '{table_name.upper()}' 
+   AND EXTRA NOT LIKE '%auto_increment%'  -- No identity/auto_increment
+   AND TABLE_SCHEMA = DATABASE()
 ORDER BY
-    ORDINAL_POSITION;"""
+   ORDINAL_POSITION;"""
         cursor.execute(query)
         users = cursor.fetchall()
         column_names = [description[0] for description in cursor.description]
@@ -250,6 +388,47 @@ ORDER BY
     finally:
         cursor.close()
         conn.close()
+        
+        
+
+def dynamic_page_creation(data):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.USERS WHERE ID = %s", (user_id,))
+     
+        query ="INSERT INTO dynamic_page_creation (tableName,tableUniqueKey,pageDetails,columnDetails) VALUES (%s,%s,%s,%s)"
+        cursor.execute(query,(data.tableName,False,data.pageDetails,False))
+        users = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
+        data = [dict(zip(column_names, row)) for row in users]
+        return data
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def dynamic_page_creation(data):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.USERS WHERE ID = %s", (user_id,))
+     
+        query ="INSERT INTO dynamic_page_creation (tableName,tableUniqueKey,pageDetails,columnDetails) VALUES (%s,%s,%s,%s)"
+        cursor.execute(query,(data.tableName,False,data.pageDetails,False))
+        users = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
+        data = [dict(zip(column_names, row)) for row in users]
+        return data
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+
 
 
 

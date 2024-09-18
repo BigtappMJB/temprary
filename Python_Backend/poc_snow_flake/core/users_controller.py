@@ -110,7 +110,19 @@ def get_input_field_details():
         return jsonify(users), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+   
+   
+
+@users_bp.route('/dynamicPageCreation', methods=['POST'])
+def get_page_creation():
+    try:
+        data = request.json
+        print(data)
+        users = dynamic_page_creation(data)
+        # return jsonify(users), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+      
 
 
 @users_bp.route('/tableConfigurator', methods=['GET', 'POST'])
@@ -124,9 +136,41 @@ def table_configurator():
     elif request.method == 'GET':
         param_type = request.args.get('type')
         if param_type == 'dataType':
-            response, status_code = get_data_type()
+            response, status_code = get_data_type(),200
 
-    return response, status_code
+
+@users_bp.route('/mysqlDataTypes', methods=['GET'])
+def getDataTypes():
+    response, status_code = get_data_type(),200
+    return jsonify(response), status_code
+
+
+# API endpoint to accept JSON and return MySQL CREATE TABLE query
+@users_bp.route('/generate-create-query', methods=['POST'])
+def generate_create_query_api():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON"}), 400
+        
+        # Validate input JSON structure
+        is_valid, error_message = validate_json(data)
+        if not is_valid:
+            return jsonify({"error": error_message}), 400
+        
+        # Generate the MySQL create query
+        create_query = generate_create_query(data)
+
+        conn = get_snowflake_connection()
+        cursor = conn.cursor()
+        cursor.execute(create_query)
+        
+        return jsonify({"create_query": create_query,"success":True})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 
 @users_bp.route('/permission', methods=['GET', 'POST', 'PUT', 'DELETE'])
@@ -158,13 +202,15 @@ def permission():
     return jsonify(response), status_code
 
 
-@users_bp.route('/user-permission/<string:email>', methods=['GET'])
-def user_permission_details(email):
+@users_bp.route('/user-permission', methods=['POST'])
+def user_permission_details():
     try:
-        response= get_permissions_by_email(email)
+        data = request.json
+        print(data)
+        response= get_permissions_by_email(data.get("email"))
         if(len(response) ==0):
-            return jsonify(response), 404
-        return jsonify(response), 200
+            return jsonify({'permissions': response}), 404
+        return jsonify({'permissions': response}), 200
     except:
         return jsonify({"error": "Error fetching user permissions"}), 500
 
