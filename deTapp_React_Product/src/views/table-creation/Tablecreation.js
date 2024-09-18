@@ -206,7 +206,7 @@ const CreateTableForm = () => {
         id: columnsData.length,
         columnName: `${tableName.toLowerCase()}_id`,
         dataType: {id:5,name:"BIGINT"},
-        length: "255",
+        length: null,
         isPrimary: true,
         isMandatory: true,
         defaultValue: null,
@@ -323,17 +323,15 @@ const CreateTableForm = () => {
       };
 
       const response = await tableCreationController(finalObject);
-
-      if (response) {
-        const success =
-          response.trim().toLowerCase() ===
-          `Table ${tableName.toUpperCase()} successfully created.`
-            .trim()
-            .toLowerCase();
+      debugger;
+      if (response.success) {
+        setTableName("");
+        //   setSubmitted(false);
+        handleColumnsClear();
         openDialog(
-          success ? "success" : "warning",
-          success ? "Success" : "Warning ",
-          response,
+          response.success ? "success" : "warning",
+          response.success ? "Success" : "Warning ",
+          "Table Created Successfully",
           {
             confirm: {
               name: "Ok",
@@ -351,9 +349,7 @@ const CreateTableForm = () => {
                 .trim()
                 .toLowerCase()
             ) {
-              setTableName("");
-              //   setSubmitted(false);
-              handleColumnsClear();
+          
             }
           },
           () => {

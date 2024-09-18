@@ -23,6 +23,17 @@ import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../utilities/Validators";
 import debounce from "lodash/debounce";
 
+const  dataTypeRequiredLength = [
+  'CHAR',
+  'VARCHAR',
+  'BINARY',
+  'VARBINARY',
+  'DECIMAL',
+  'FLOAT',
+  'DOUBLE',
+  'ENUM',
+  'SET'
+]
 // Define validation schema using Yup
 const schema = yup.object().shape({
   columnName: yup
@@ -33,12 +44,20 @@ const schema = yup.object().shape({
   .transform((value, originalValue) => (originalValue === "" ? null : value)).required("Data type is required"),
   length: yup
     .number()
+    .nullable()
     .typeError("Length must be a number")
     .positive("Length must be a positive number")
     .integer("Length must be an integer")
     .min(1, "Length must be greater than 1")
     .max(255, "Length must be lesser or equal to 255")
-    .required("Length is required"),
+    .when("dataType", {
+      is: (value) =>{        
+        return  value && dataTypeRequiredLength.includes(value?.name)
+      },
+       
+      then: (schema) => schema.required("Length is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   isPrimary: yup.boolean().required("Primary status is required"),
   isForeign: yup.boolean().required("Foreign status is required"),
   isMandatory: yup.boolean(),
@@ -58,7 +77,7 @@ const schema = yup.object().shape({
 const defaultValue = {
   columnName: "",
   dataType: "",
-  length: "",
+  length: null,
   isPrimary: false,
   isForeign: false,
   isMandatory: false,
@@ -151,7 +170,7 @@ const TableColumnForm = forwardRef(
         reset({
           columnName: data.columnName ?? "",
           dataType: data.dataType ?? "",
-          length: data.length ?? "",
+          length: data.length ?? null,
           isPrimary: data.isPrimary ?? false,
           isForeign: data.isForeign ?? false,
           isMandatory: data.isMandatory ?? false,

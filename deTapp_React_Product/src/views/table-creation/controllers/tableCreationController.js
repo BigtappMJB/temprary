@@ -13,9 +13,9 @@ export const tableCreationController = async (formData) => {
       columns: formData.columnsData.map((column) => ({
         column_name: column.columnName,
         data_type: column.dataType,
-        length: column?.length,
-        nullable: column.isMandatory,
-        default: column.defaultValue,
+        length: Number(column?.length),
+        isMandatory: column.isMandatory,
+        default: column.defaultValue === "" ? null : column.defaultValue,
         primary_key: column.isPrimary,
         auto_increment: column.isPrimary,
         foreign_keys:false,
@@ -26,7 +26,7 @@ export const tableCreationController = async (formData) => {
     debugger;
 
     // Send the POST request to the cmd API API endpoint
-    const response = await post("master/tableConfigurator", body, "python");
+    const response = await post("/generate-create-query", body, "python");
     // Return the response data
     return response[0];
   } catch (error) {
