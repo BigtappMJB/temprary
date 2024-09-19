@@ -96,6 +96,8 @@ const LoginPage = () => {
         name: isUserIdCookieName,
         value: encodeData(formData?.username),
       });
+      const token = response.token;
+      localStorage.setItem('token',token);
 
       if (response) {
         // Set a cookie to indicate the email verification status

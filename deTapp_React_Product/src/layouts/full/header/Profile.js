@@ -42,6 +42,7 @@ const Profile = () => {
       startLoading();
       // const response = await loginOutController();
       clearCookies();
+      localStorage.clear()
       dispatch(resetStore());
       navigate("/auth/login");
       // if (response) {

@@ -38,6 +38,7 @@ export const pythonInstance = axios.create({
    * Base URL for the API requests.
    * This value is taken from the environment variable `REACT_APP_PYTHON_API_URL`.
    */
+  
   baseURL:
     process.env.REACT_APP_SPRINGBOOT_API_URL,
       headers: {
@@ -45,6 +46,7 @@ export const pythonInstance = axios.create({
      * Content-Type header set to application/json.
      */
     "Content-Type": "application/json",
+    "Authorization": "Bearer " + localStorage.getItem('token')
     // Add other headers as needed
   },
 });
