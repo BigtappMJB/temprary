@@ -123,7 +123,6 @@ const DynamicColumnForm = forwardRef(
       triggerValidation: async () => {
         const isValid = await trigger(); // Validate form
         const values = getValues(); // Get form values
-        debugger;
         return { columnValues: values, validated: isValid };
       },
       resetForm: async () => {
