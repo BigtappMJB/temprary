@@ -193,7 +193,6 @@ const DynamicPageCreation = () => {
   // Handle table form submission and load columns for the selected table
   const onTableSubmit = async (data) => {
     tableNameRef.current = data.TABLE_NAME;
-    debugger;
     await getColumnDetails(data.TABLE_NAME);
   };
 
@@ -215,7 +214,6 @@ const DynamicPageCreation = () => {
     // Update columnsData state by filtering out the removed form
     setColumnsData((prevData) => prevData.filter((form) => form.id !== id));
     isRemovingForm.current = false;
-    debugger;
   };
 
   /**
@@ -253,11 +251,9 @@ const DynamicPageCreation = () => {
    * Validates all the dynamic column forms.
    */
   const validateColumnForms = async () => {
-    debugger;
     const updatedColumnsData = await Promise.all(
       columnsData.map(async (column, index) => {
         if (!column?.validated && formRefs.current[index]) {
-          debugger;
           const isUpdatedDetails = await formRefs.current[
             index
           ].triggerValidation();
@@ -287,7 +283,6 @@ const DynamicPageCreation = () => {
         await trigger();
         return;
       }
-      debugger;
 
       if (!columnsData.length) {
         return openDialog(
@@ -312,7 +307,6 @@ const DynamicPageCreation = () => {
         );
       }
 
-      debugger;
       const updatedColumnsData = await validateColumnForms();
 
       const noOfFormValidated = updatedColumnsData.filter(
@@ -321,7 +315,6 @@ const DynamicPageCreation = () => {
       const totalForms = updatedColumnsData.length;
       const error = totalForms !== noOfFormValidated;
 
-      debugger;
       if (error) {
         return openDialog(
           "warning",
@@ -345,7 +338,6 @@ const DynamicPageCreation = () => {
         );
       }
 
-      debugger;
       // Collect validated column data for submission
       const columnValues = updatedColumnsData.map(
         (column) => column.columnValues

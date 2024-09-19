@@ -225,16 +225,37 @@ The page name should be set to ${value?.tableName}.
   }));
   \`\`\`
 
-**Component:**
-  - ${value?.tableName} should:
-  - Use React Hook Form for form handling.
-  - Validate with Yup, and display error messages below each field using FormHelperText.
+Component Logic with Axios: 
 
-  - The form should dynamically generate fields and support these functionalities:
-    1. A **Submit** button that logs form data.
-    2. A **Cancel** button to reset the form using \`reset\`.
+- The form should: 
 
-  - Ensure the code is in **JavaScript only** (no TypeScript).
+  1. Use React Hook Form for form handling. 
+
+  2. Implement Yup validation and display error messages below each field using FormHelperText. 
+
+  3. Dynamically generate form fields based on [object Object] array. 
+
+  4. Include a **Submit** button to log form data and make an API call. 
+
+  5. Include a **Cancel** button to reset the form using 'reset'. 
+
+  
+
+API Integration: 
+
+- Use Axios to make a POST request with form values as the payload. 
+
+- The API endpoint should be 'https://example.com/api/submit', and the form values should be passed in the request body. 
+
+  
+
+Grid Layout: 
+
+- The form should have a two-column layout, using Material UI's 'Grid' component. 
+
+- Each form element should occupy one column (sm={6}), and full-width elements should span both columns (xs={12}). 
+
+  
   - Here’s the basic structure:
 
   \`\`\`javascript
