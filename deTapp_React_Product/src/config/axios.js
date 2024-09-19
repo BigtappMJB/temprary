@@ -68,6 +68,14 @@ pythonInstance.interceptors.request.use(
       "geolocation 'elf'; microphone 'none'; camera 'none'"; // Feature-Policy header
     config.headers["Cache-Control"] = "no-store"; // Cache-Control header
 
+     // Retrieve the token from localStorage before each request
+     const token = localStorage.getItem('token');
+    
+     // If token exists, attach it to the Authorization header
+     if (token) {
+       config.headers['Authorization'] = `Bearer ${token}`;
+     }
+
     // Return the modified request config
     return config;
   },
