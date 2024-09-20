@@ -742,6 +742,7 @@ def create_role_permission(data):
     finally:
         cursor.close()
         conn.close()
+        
 
 def get_role_permission(role_permission_id):
     conn = get_snowflake_connection()
