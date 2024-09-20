@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import React, { lazy, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 import Loadable from "../layouts/full/shared/loadable/Loadable";
 import { getDynamicPages } from "./controllers/routingController";
@@ -92,25 +92,42 @@ const Employee = Loadable(
   lazy(() => import("../views/generatedPages/Employee/Employee"))
 );
 
-/* Dynamic Route Generator */
-const generateDynamicRoutes = async () => {
-  const dynamicPages = await getDynamicPages();
+// Pre-load all files from 'generatedPages' directory
+const context = require.context('../', true, /\.jsx?$/);
 
-  return dynamicPages.map(async (page) => {
-    const path = '.'+convertToRelativePath(page.file_path)
-    const Component = Loadable(
-      lazy(() => import(path))
-    )
-    console.log(Component);
+
+// const generateDynamicRoutes = async () => {
+//   const dynamicPages = await getDynamicPages();
+
+//   const loadComponent = (relativePath) => {
+//     const resolvedPath = `./${relativePath}.jsx`;  // Adjust based on how your files are structured
+//     console.log(context.keys());
     
-    const object = {
-      path: `${page.routePath}`, // Generate route path based on pageName
-      element: Component, // Lazy load using file path from API
-    };
-    debugger;
-    return object;
-  });
-};
+//     if (context.keys().includes(resolvedPath)) {
+//       return context(resolvedPath).default;
+//     } else {
+//       console.error(`Module not found: ${resolvedPath}`);
+      
+//       // throw new Error(`Module not found: ${resolvedPath}`);
+//     }
+//   };
+
+//   return dynamicPages.map((page) => {
+//     const relativePath = "."+convertToRelativePath(page.file_path);  // Adjust to match your project structure
+//     const LazyComponent = lazy(() =>
+//       Promise.resolve(loadComponent(relativePath)) // Dynamically resolve the component
+//     );
+
+//     return {
+//       path: page.routePath,
+//       element: (
+//         <Suspense fallback={<div>Loading...</div>}>
+//           <LazyComponent />
+//         </Suspense>
+//       ),
+//     };
+//   });
+// };
 
 const staticRoutes = [
   {
@@ -154,33 +171,33 @@ const staticRoutes = [
   },
 ];
 
-/* Router Setup with Dynamic Routes */
-const setupRouter = () => {
-  return generateDynamicRoutes() // Get dynamic routes
-    .then((dynamicRoutes) => {
-      // If dynamicRoutes contains promises, resolve them
-      return Promise.all(dynamicRoutes);  // Wait for all promises to resolve
-    })
-    .then((resolvedRoutes) => {
-      // Find the first route (FullLayout) and add the dynamic routes inside its `children`
-      const fullLayoutRoute = staticRoutes.find((route) => route.path === "/");
-      if (fullLayoutRoute) {
-        fullLayoutRoute.children = [
-          ...fullLayoutRoute.children,
-          ...resolvedRoutes, // Use the resolved routes here
-          { path: "*", element: <PageNotReady /> },
-        ];
-      }
+// /* Router Setup with Dynamic Routes */
+// const setupRouter = () => {
+//   return generateDynamicRoutes() // Get dynamic routes
+//     .then((dynamicRoutes) => {
+//       // If dynamicRoutes contains promises, resolve them
+//       return Promise.all(dynamicRoutes);  // Wait for all promises to resolve
+//     })
+//     .then((resolvedRoutes) => {
+//       // Find the first route (FullLayout) and add the dynamic routes inside its `children`
+//       const fullLayoutRoute = staticRoutes.find((route) => route.path === "/");
+//       if (fullLayoutRoute) {
+//         fullLayoutRoute.children = [
+//           ...fullLayoutRoute.children,
+//           ...resolvedRoutes, // Use the resolved routes here
+//           { path: "*", element: <PageNotReady /> },
+//         ];
+//       }
 
-      return staticRoutes; // Return updated routes
-    })
-    .catch((error) => {
-      console.error("Error generating dynamic routes:", error);
-      throw error; // Optionally rethrow or handle the error
-    });
-};
+//       return staticRoutes; // Return updated routes
+//     })
+//     .catch((error) => {
+//       console.error("Error generating dynamic routes:", error);
+//       throw error; // Optionally rethrow or handle the error
+//     });
+// };
 
 
-console.log(await setupRouter());
+// console.log(await setupRouter());
 
-export default await setupRouter();
+export default await staticRoutes;
