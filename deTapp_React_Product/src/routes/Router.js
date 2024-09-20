@@ -87,47 +87,70 @@ const ProjectPhasePage = Loadable(
 const ActivityCodePage = Loadable(
   lazy(() => import("../views/activityCodePage/ActivityCode"))
 );
-
-const Employee = Loadable(
-  lazy(() => import("../views/generatedPages/Employee/Employee"))
-);
-
 // Pre-load all files from 'generatedPages' directory
-// const context = require.context('../views/generatedPages', true, /\.jsx?$/);
+const context = require.context("../views/generatedPages", true, /\.jsx?$/);
+const generateDynamicRoutes = async () => {
+  const dynamicPages = await getDynamicPages();
+  if (dynamicPages.length === 0) return [];
+  const loadComponent = (relativePath) => {
+    try {
+      const resolvedPath = `${relativePath}.jsx`; // Adjust based on your file structure
 
+      if (context.keys().includes(resolvedPath)) {
+        const module = context(resolvedPath); // Load the module from context
+        // Ensure the module has a default export
+        if (!module.default) {
+          throw new Error(
+            `Module at ${resolvedPath} does not have a default export.`
+          );
+        }
 
-// const generateDynamicRoutes = async () => {
-//   const dynamicPages = await getDynamicPages();
+        const component = module.default;
 
-//   const loadComponent = (relativePath) => {
-//     const resolvedPath = `./${relativePath}.jsx`;  // Adjust based on how your files are structured
-//     console.log(context.keys());
-    
-//     if (context.keys().includes(resolvedPath)) {
-//       return context(resolvedPath).default;
-//     } else {
-//       console.error(`Module not found: ${resolvedPath}`);
-      
-//       // throw new Error(`Module not found: ${resolvedPath}`);
-//     }
-//   };
+        // Ensure the component is a function (React component)
+        if (typeof component !== "function") {
+          console.error(
+            `Invalid component type at ${resolvedPath}. Expected a function or class.`
+          );
+        }
+        return Promise.resolve({ default: component }); // Wrap in a Promise
+      } else {
+        // If the module is not found, return a Promise that resolves to a fallback component
+        console.error(`Module not found: ${resolvedPath}`);
+        return Promise.resolve({
+          default: () => <div>Component not found</div>, // Return fallback as default export
+        });
+      }
+    } catch (error) {
+      console.error(`Error loading component at ${relativePath}`, error);
+      return Promise.resolve({
+        default: () => <div>Error loading component</div>, // Fallback for errors
+      });
+    }
+  };
 
-//   return dynamicPages.map((page) => {
-//     const relativePath = "."+convertToRelativePath(page.file_path);  // Adjust to match your project structure
-//     const LazyComponent = lazy(() =>
-//       Promise.resolve(loadComponent(relativePath)) // Dynamically resolve the component
-//     );
-
-//     return {
-//       path: page.routePath,
-//       element: (
-//         <Suspense fallback={<div>Loading...</div>}>
-//           <LazyComponent />
-//         </Suspense>
-//       ),
-//     };
-//   });
-// };
+  return dynamicPages.map((page) => {
+    const relativePath = "." + convertToRelativePath(page.file_path); // Adjust to match your project structure
+    // Correct lazy loading setup
+    const LazyComponent = lazy(() =>
+      Promise.resolve(loadComponent(relativePath)).then((module) => {
+        // Return the default export, which is the React component
+        if (!module) {
+          throw new Error(`Module not found for ${relativePath}`);
+        }
+        return module;
+      })
+    );
+    return {
+      path: page.routePath,
+      element: (
+        <Suspense fallback={<div>Loading...</div>}>
+          <LazyComponent />
+        </Suspense>
+      ),
+    };
+  });
+};
 
 const staticRoutes = [
   {
@@ -171,33 +194,31 @@ const staticRoutes = [
   },
 ];
 
-// /* Router Setup with Dynamic Routes */
-// const setupRouter = () => {
-//   return generateDynamicRoutes() // Get dynamic routes
-//     .then((dynamicRoutes) => {
-//       // If dynamicRoutes contains promises, resolve them
-//       return Promise.all(dynamicRoutes);  // Wait for all promises to resolve
-//     })
-//     .then((resolvedRoutes) => {
-//       // Find the first route (FullLayout) and add the dynamic routes inside its `children`
-//       const fullLayoutRoute = staticRoutes.find((route) => route.path === "/");
-//       if (fullLayoutRoute) {
-//         fullLayoutRoute.children = [
-//           ...fullLayoutRoute.children,
-//           ...resolvedRoutes, // Use the resolved routes here
-//           { path: "*", element: <PageNotReady /> },
-//         ];
-//       }
+/* Router Setup with Dynamic Routes */
+const setupRouter = () => {
+  return generateDynamicRoutes() // Get dynamic routes
+    .then((dynamicRoutes) => {
+      // If dynamicRoutes contains promises, resolve them
+      return Promise.all(dynamicRoutes); // Wait for all promises to resolve
+    })
+    .then((resolvedRoutes) => {
+      // Find the first route (FullLayout) and add the dynamic routes inside its `children`
+      const fullLayoutRoute = staticRoutes.find((route) => route.path === "/");
+      if (fullLayoutRoute) {
+        fullLayoutRoute.children = [
+          ...fullLayoutRoute.children,
+          ...resolvedRoutes, // Use the resolved routes here
+          { path: "*", element: <PageNotReady /> },
+        ];
+      }
 
-//       return staticRoutes; // Return updated routes
-//     })
-//     .catch((error) => {
-//       console.error("Error generating dynamic routes:", error);
-//       throw error; // Optionally rethrow or handle the error
-//     });
-// };
+      return staticRoutes; // Return updated routes
+    })
+    .catch((error) => {
+      console.error("Error generating dynamic routes:", error);
+      throw error; // Optionally rethrow or handle the error
+    });
+};
 
-
-// console.log(await setupRouter());
-
-export default staticRoutes;
+// Export the promise, not staticRoutes directly
+export default setupRouter();
