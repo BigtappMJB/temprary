@@ -62,7 +62,10 @@ public class SecurityConfig {
     // Configure HTTP security with JWT filter
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+    	 http
+         .cors()  // Apply CORS configuration
+         .and()
+         .csrf().disable()
             .authorizeRequests()
             .requestMatchers("/authenticate","/login","/register/registration","register/verify_otp","register/change_password","register/generate_otp","register/reset_password").permitAll()
             .anyRequest().authenticated()
@@ -76,11 +79,12 @@ public class SecurityConfig {
     }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow your frontend origin
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow specific methods
+    	CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Frontend origin
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true); // Allow credentials (cookies, headers)
+        configuration.setAllowCredentials(true); // Important for sending cookies, Authorization header
+        configuration.setExposedHeaders(Arrays.asList("Authorization")); // Expose Authorization header
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
