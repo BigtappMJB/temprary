@@ -2,6 +2,7 @@ import React, { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import Loadable from "../layouts/full/shared/loadable/Loadable";
 import { getDynamicPages } from "./controllers/routingController";
+import { convertToRelativePath } from "../views/utilities/generals";
 
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import("../layouts/full/FullLayout")));
@@ -87,13 +88,28 @@ const ActivityCodePage = Loadable(
   lazy(() => import("../views/activityCodePage/ActivityCode"))
 );
 
+const Employee = Loadable(
+  lazy(() => import("../views/generatedPages/Employee/Employee"))
+);
+
 /* Dynamic Route Generator */
 const generateDynamicRoutes = async () => {
   const dynamicPages = await getDynamicPages();
-  return dynamicPages.map((page) => ({
-    path: `${page.routePath}`,  // Generate route path based on pageName
-    element: Loadable(lazy(() => import(`${page.file_path}`))),  // Lazy load using file path from API
-  }));
+
+  return dynamicPages.map(async (page) => {
+    const path = '.'+convertToRelativePath(page.file_path)
+    const Component = Loadable(
+      lazy(() => import(path))
+    )
+    console.log(Component);
+    
+    const object = {
+      path: `${page.routePath}`, // Generate route path based on pageName
+      element: Component, // Lazy load using file path from API
+    };
+    debugger;
+    return object;
+  });
 };
 
 const staticRoutes = [
@@ -121,7 +137,6 @@ const staticRoutes = [
       { path: "/projectRole", element: <ProjectRolePage /> },
       { path: "/projectPhase", element: <ProjectPhasePage /> },
       { path: "/activityCode", element: <ActivityCodePage /> },
-      { path: "*", element: <PageNotReady /> },
     ],
   },
   {
@@ -140,19 +155,32 @@ const staticRoutes = [
 ];
 
 /* Router Setup with Dynamic Routes */
-const setupRouter = async () => {
-  const dynamicRoutes = await generateDynamicRoutes();  // Get dynamic routes
-  // Find the first route (FullLayout) and add the dynamic routes inside its `children`
-  const fullLayoutRoute = staticRoutes.find((route) => route.path === "/");
-  if (fullLayoutRoute) {
-    fullLayoutRoute.children = [...fullLayoutRoute.children, ...dynamicRoutes];
-  }
-  console.log(staticRoutes);
-  debugger;
-  
-  return staticRoutes;  // Return updated routes
-};
-console.log( await setupRouter());
+const setupRouter = () => {
+  return generateDynamicRoutes() // Get dynamic routes
+    .then((dynamicRoutes) => {
+      // If dynamicRoutes contains promises, resolve them
+      return Promise.all(dynamicRoutes);  // Wait for all promises to resolve
+    })
+    .then((resolvedRoutes) => {
+      // Find the first route (FullLayout) and add the dynamic routes inside its `children`
+      const fullLayoutRoute = staticRoutes.find((route) => route.path === "/");
+      if (fullLayoutRoute) {
+        fullLayoutRoute.children = [
+          ...fullLayoutRoute.children,
+          ...resolvedRoutes, // Use the resolved routes here
+          { path: "*", element: <PageNotReady /> },
+        ];
+      }
 
+      return staticRoutes; // Return updated routes
+    })
+    .catch((error) => {
+      console.error("Error generating dynamic routes:", error);
+      throw error; // Optionally rethrow or handle the error
+    });
+};
+
+
+console.log(await setupRouter());
 
 export default await setupRouter();
