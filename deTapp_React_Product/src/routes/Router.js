@@ -93,7 +93,7 @@ const Employee = Loadable(
 );
 
 // Pre-load all files from 'generatedPages' directory
-const context = require.context('../', true, /\.jsx?$/);
+// const context = require.context('../views/generatedPages', true, /\.jsx?$/);
 
 
 // const generateDynamicRoutes = async () => {
@@ -200,4 +200,4 @@ const staticRoutes = [
 
 // console.log(await setupRouter());
 
-export default await staticRoutes;
+export default staticRoutes;
