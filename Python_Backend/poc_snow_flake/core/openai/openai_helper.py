@@ -114,7 +114,7 @@ UI Styling:
 - Please use these Material UI and Emotion styles:
 
   \'''
-import DataTable from "../user-management/users/components/DataTable";
+import DataTable from "../../user-management/users/components/DataTable";
 import {{ yupResolver }} from '@hookform/resolvers/yup';
 import * as Mui from "@mui/material";
 
@@ -177,7 +177,7 @@ import axios from 'axios';
 import {{ useForm }} from 'react-hook-form';
 import * as yup from "yup";
 import {{ yupResolver }} from '@hookform/resolvers/yup';
-import DataTable from "../user-management/users/components/DataTable";
+import DataTable from "../../user-management/users/components/DataTable";
 
 /**
  * Validation schema using Yup.
@@ -207,6 +207,12 @@ const TableComponent = ({{ handleUpdateLogic, handleDelete, columns, permissionL
 
   // Store Table Data in useState
   const [tableData, setTableData] = useState([]);
+    const [formAction, setFormAction] = useState({{
+    display: false,
+    action: "update",
+  }});
+  
+  const runAPIOnUseEffect= useRef(false);
 
   /**
    * Fetch and store table data from server using Axios.
@@ -222,7 +228,12 @@ const TableComponent = ({{ handleUpdateLogic, handleDelete, columns, permissionL
   }};
 
   useEffect(() => {{
-    getTableData();
+      if(!runAPIOnUseEffect.current)
+      {{
+              getTableData();
+              runAPIOnUseEffect.current=false
+      }}
+
   }}, []);
 
   /**
@@ -238,6 +249,16 @@ const TableComponent = ({{ handleUpdateLogic, handleDelete, columns, permissionL
       console.error('Error submitting the form:', error);
     }}
   }};
+  
+   /**
+   * Initiates the process to add a new user.
+   */
+  const addUser = () => {{
+       setFormAction({{
+        display: true,
+        action: "add",
+      }});
+  }};
 
   /**
    * Handles form reset, resetting the form fields.
@@ -248,10 +269,11 @@ const TableComponent = ({{ handleUpdateLogic, handleDelete, columns, permissionL
 
   return (
     <>
+     {{formAction.display && (
       <Container>
         <Header>
           <Mui.Typography variant="h6">
-            {value.get("pageDetails", {}).get("pageName", 'Form')}
+            {value.get("pageDetails", {}).get("pageName", 'Form')} Form
           </Mui.Typography>
         </Header>
 
@@ -281,19 +303,30 @@ const TableComponent = ({{ handleUpdateLogic, handleDelete, columns, permissionL
           </Mui.Grid>
         </Mui.Box>
       </Container>
-
-      <Mui.Box className="common-table">
-        <Mui.Typography variant="h6">
+ )}}
+      <SecondContainer className="common-table">
+      
+        <SubHeader className="table-header">
+          <Typography variant="h6">
           <b>{value.get("pageDetails", {}).get("pageName", '')} List</b>
-        </Mui.Typography>
+          </Typography>
+         <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+            <FormButton
+              type="button"
+              onClick={{addUser}}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}
+              className="primary"
+            >
+              Add {value.get("pageDetails", {}).get("pageName", '')}
+            </FormButton>
+          </Box>
+          </SubHeader>
         <DataTable
           tableData={{tableData}}
-          handleUpdateLogic={{handleUpdateLogic}}
-          handleDelete={{handleDelete}}
-          columns={{columns}}
-          permissionLevels={{permissionLevels}}
         />
-      </Mui.Box>
+      </SecondContainer>
     </>
   );
 }};

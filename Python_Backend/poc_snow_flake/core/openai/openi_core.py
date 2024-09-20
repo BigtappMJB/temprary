@@ -5,7 +5,7 @@ def openapi_function(prompt):
   client = OpenAI(api_key= os.getenv("OPEN_AI_KEY"))
 
   stream = client.chat.completions.create(
-      model="gpt-4o-mini",
+      model="gpt-4o",
       messages=[ {"role": "system", "content": """
                   You are a React coding assistant specializing in React 18 and Material UI.
                   Provide secure, performant, and accessible React 18 code snippets using Material UI components.
