@@ -215,6 +215,17 @@ def user_permission_details():
         return jsonify({"error": "Error fetching user permissions"}), 500
 
 
+@users_bp.route('/integrateReactCode', methods=['POST'])
+def integrateReactCode():
+    try:
+        data = request.json
+        print(data)
+        return jsonify({'permissions': data}), 200
+    except:
+        return jsonify({"error": "Error fetching user permissions"}), 500
+
+
+
 
 @users_bp.route('/rolePermission', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def role_permission():

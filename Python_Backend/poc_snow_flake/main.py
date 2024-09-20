@@ -9,7 +9,7 @@ from core.users_controller import users_bp
 from core.registration_controller import registration_bp
 from core.role_controller import roles_bp
 from core.cmd.cmd_controller import cmd_bp
-
+from core.openai.openai_controller import  openai_bp
 # Importing the new project_estimate blueprints
 from core.project_estimate_controller import project_estimate_bp
 
@@ -22,6 +22,7 @@ app.register_blueprint(users_bp, url_prefix='/')
 app.register_blueprint(registration_bp, url_prefix='/register')
 app.register_blueprint(roles_bp, url_prefix='/role')
 app.register_blueprint(cmd_bp, url_prefix='/cmd')
+app.register_blueprint(openai_bp, url_prefix='/gpt')
 
 # Registering the new project_estimate blueprints
 app.register_blueprint(project_estimate_bp, url_prefix='/estimate')
