@@ -66,8 +66,14 @@ export const createReactFormController = async (formData) => {
     console.log(prompt);
 
     const openAIResponse = await handleChatGPTResponse(prompt);
-
     const jsxCode = extractJSXBetweenMarkers(openAIResponse);
+    console.log(jsxCode);
+    debugger;
+
+    const body={
+      ...formData,
+      code: jsxCode
+    }
     downloadUpdatedFile(openAIResponse, formData?.tableName);
     debugger;
     // Send the GET request to the projectCreation API endpoint
@@ -78,6 +84,23 @@ export const createReactFormController = async (formData) => {
     throw error;
   }
 };
+
+function extractJSXBetweenMarkers(response) {
+  // Regular expression to match code blocks enclosed in triple backticks
+  const codeBlocks = [];
+  const regex = /```[\s\S]*?```/g;
+  let match;
+  
+  // Iterate through all matches of the regex in the response
+  while ((match = regex.exec(response)) !== null) {
+    // Remove the backticks and language identifier (if any)
+    let code = match[0].replace(/```[\w]*\n?/, '').replace(/```$/, '');
+    // Trim extra spaces/newlines and push the cleaned code into the array
+    codeBlocks.push(code.trim());
+  }
+  
+  return codeBlocks.join("\n");
+}
 
 
 const formatColumnValue = (columnData) =>
@@ -505,7 +528,7 @@ const formatColumnValue = (columnData) =>
 // - Ensure the form adapts to smaller screen sizes, switching to a single-column layout.
 // `;
 
- const reactGenerationPrompt = (value) => `
+const reactGenerationPrompt = (value) => `
 Generate a React component using React Hook Form, Yup validation, and Material UI components for a dynamic form. 
 The form should follow a two-column grid layout, and an API call should be triggered upon form submission, passing 
 the form values as arguments using Axios for HTTP requests. Additionally, retrieve data from the server using Axios 
@@ -516,7 +539,7 @@ Additional API Integration:
 - The component should also handle update and delete logic using the provided handler functions.
 
 Form Details:
-- The page name should be set to ${value?.tableName}.
+- The page name should be set to ${value?.pageDetails?.pageName}.
 - Form fields should be dynamically generated based on the following details:
   ${formatColumnValue(value.columnsData)}.
 
@@ -608,7 +631,7 @@ const validationSchema = yup.object().shape({
  * @component
  * @returns {JSX.Element} The rendered React component.
  */
-const ${value?.tableName ? value.tableName : 'TableComponent'} = ({ handleUpdateLogic, handleDelete, columns, permissionLevels }) => {
+const ${value?.pageDetails?.pageName? value?.pageDetails?.pageName : 'TableComponent'} = ({ handleUpdateLogic, handleDelete, columns, permissionLevels }) => {
   // Initialize React Hook Form with Yup resolver
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     mode: "onChange",
@@ -664,7 +687,7 @@ const ${value?.tableName ? value.tableName : 'TableComponent'} = ({ handleUpdate
         <Container>
           <Header sx={{ backgroundColor: '#1e88e5', color: '#fff', p: 2 }}>
             <Mui.Typography variant="h6">
-              ${value?.tableName ? value.tableName : 'Form'}
+              ${value?.pageDetails?.pageName? value?.pageDetails?.pageName : 'Form'}
             </Mui.Typography>
           </Header>
 
@@ -700,7 +723,7 @@ const ${value?.tableName ? value.tableName : 'TableComponent'} = ({ handleUpdate
       <SecondContainer className="common-table">
         <SubHeader className="table-header">
           <Mui.Typography variant="h6">
-            <b>${value?.tableName} List</b>
+            <b>${value?.pageDetails?.pageName} List</b>
           </Mui.Typography>
           <Mui.Box display="flex" justifyContent="space-between" flexWrap="wrap">
             <FormButton
@@ -711,7 +734,7 @@ const ${value?.tableName ? value.tableName : 'TableComponent'} = ({ handleUpdate
               style={{ marginRight: "10px" }}
               className='primary'
             >
-              Add ${value?.tableName}
+              Add ${value?.pageDetails?.pageName}
             </FormButton>
           </Mui.Box>
         </SubHeader>
@@ -727,7 +750,7 @@ const ${value?.tableName ? value.tableName : 'TableComponent'} = ({ handleUpdate
   );
 };
 
-export default ${value?.tableName ? value.tableName : 'TableComponent'};
+export default ${value?.pageDetails?.pageName ? value?.pageDetails?.pageName : 'TableComponent'};
 `;
 
 
@@ -748,18 +771,3 @@ const downloadUpdatedFile = (fileContent, fileName) => {
   // Clean up
   document.body.removeChild(link);
 };
-
-function extractJSXBetweenMarkers(inputString) {
-  // Use a regular expression to find the JSX code between ```jsx markers
-  const regex = /```jsx([\s\S]*?)```/g;
-  const matches = inputString.match(regex);
-
-  // If a match is found, clean up the markers and return the JSX content
-  if (matches) {
-    matches.map((match) => match.replace(/```jsx|```/g, "").trim());
-    return matches.join("\r\n");
-  }
-
-  // If no matches are found, return an empty array or null
-  return null;
-}

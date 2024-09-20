@@ -1,6 +1,7 @@
 import React, { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import Loadable from "../layouts/full/shared/loadable/Loadable";
+import { getDynamicPages } from "./controllers/routingController";
 
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import("../layouts/full/FullLayout")));
@@ -86,12 +87,16 @@ const ActivityCodePage = Loadable(
   lazy(() => import("../views/activityCodePage/ActivityCode"))
 );
 
-const TestPage = Loadable(
-  lazy(() => import("../views/testFolder/testPage"))
-);
+/* Dynamic Route Generator */
+const generateDynamicRoutes = async () => {
+  const dynamicPages = await getDynamicPages();
+  return dynamicPages.map((page) => ({
+    path: `${page.routePath}`,  // Generate route path based on pageName
+    element: Loadable(lazy(() => import(`${page.file_path}`))),  // Lazy load using file path from API
+  }));
+};
 
-
-const Router = [
+const staticRoutes = [
   {
     path: "/",
     element: <FullLayout />,
@@ -116,7 +121,6 @@ const Router = [
       { path: "/projectRole", element: <ProjectRolePage /> },
       { path: "/projectPhase", element: <ProjectPhasePage /> },
       { path: "/activityCode", element: <ActivityCodePage /> },
-      { path: "/test", element: <TestPage /> },
       { path: "*", element: <PageNotReady /> },
     ],
   },
@@ -135,4 +139,20 @@ const Router = [
   },
 ];
 
-export default Router;
+/* Router Setup with Dynamic Routes */
+const setupRouter = async () => {
+  const dynamicRoutes = await generateDynamicRoutes();  // Get dynamic routes
+  // Find the first route (FullLayout) and add the dynamic routes inside its `children`
+  const fullLayoutRoute = staticRoutes.find((route) => route.path === "/");
+  if (fullLayoutRoute) {
+    fullLayoutRoute.children = [...fullLayoutRoute.children, ...dynamicRoutes];
+  }
+  console.log(staticRoutes);
+  debugger;
+  
+  return staticRoutes;  // Return updated routes
+};
+console.log( await setupRouter());
+
+
+export default await setupRouter();
