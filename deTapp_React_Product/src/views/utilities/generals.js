@@ -246,7 +246,7 @@ export const generateCSV = (apiData, baseFilename, columnOrder = null) => {
 export const convertToRelativePath = (absolutePath) => {
   // Strip everything up to 'src/' and replace backslashes with forward slashes
   const relativePath = absolutePath
-    .replace(/^.*\\views\\/, './views/')  // Keep 'views' as the start
+    .replace(/^.*\\generatedPages\\/, '/')  // Keep 'views' as the start
     .replace(/\\/g, '/');             // Replace backslashes with forward slashes
   
   return relativePath;

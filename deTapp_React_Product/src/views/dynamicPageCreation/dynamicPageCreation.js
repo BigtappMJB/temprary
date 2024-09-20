@@ -358,34 +358,34 @@ const DynamicPageCreation = () => {
       console.log(response);
 
       debugger;
-      // if (response) {
-      //   columnDetailsRef.current = [];
-      //   tableNameRef.current = null;
-      //   currentSelectedRef.current = [];
-      //   pageDetailsRef.current.resetForm();
-      //   setColumnsData([]);
-      //   reset({tableName:null})
-      //   return openDialog(
-      //     "success",
-      //     "Success",
-      //     "Page are generated Successfully",
-      //     {
-      //       confirm: {
-      //         name: "Ok",
-      //         isNeed: true,
-      //       },
-      //       cancel: {
-      //         name: "Cancel",
-      //         isNeed: false,
-      //       },
-      //     },
-      //     (confirmed) => {
-      //       if (confirmed) {
-      //         return;
-      //       }
-      //     }
-      //   );
-      // }
+      if (response?.message) {
+        columnDetailsRef.current = [];
+        tableNameRef.current = null;
+        currentSelectedRef.current = [];
+        pageDetailsRef.current.resetForm();
+        setColumnsData([]);
+        reset({ tableName: null });
+        return openDialog(
+          "success",
+          "Success",
+          response?.message || "Page are generated Successfully",
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          (confirmed) => {
+            if (confirmed) {
+              return;
+            }
+          }
+        );
+      }
       return;
     } catch (error) {
       console.error(error);

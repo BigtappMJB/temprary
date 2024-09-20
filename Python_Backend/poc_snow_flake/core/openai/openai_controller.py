@@ -22,7 +22,6 @@ def generateCode():
         folder_path = os.path.join("D:\React Project\Rapid_Development_Application","deTapp_React_Product","src","views","generatedPages",data.get("pageDetails", {}).get("pageName", ''))
         file_name =f'{data.get("pageDetails", {}).get("pageName", '')}.jsx'
         file_created =  handle_file_operations(code_content=react_code,file_name=file_name,folder_path=folder_path)
-        print(file_created)
         if file_created:
             status,error = store_details(data,folder_path,file_name)
             if status:

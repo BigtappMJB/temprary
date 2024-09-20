@@ -1,3 +1,4 @@
+import axios from "axios";
 import { handleChatGPTResponse } from "../../../core/openai";
 import { get, post } from "../../utilities/apiservices/apiServices";
 import { getCookie } from "../../utilities/cookieServices/cookieServices";
@@ -62,24 +63,25 @@ export const createReactFormController = async (formData) => {
       throw new Error("Invalid form data");
     }
 
-    const prompt = reactGenerationPrompt(formData);
-    console.log(prompt);
+    const response = await post("gpt/generateCode",formData)
+    // const prompt = reactGenerationPrompt(formData);
+    // console.log(prompt);
 
-    const openAIResponse = await handleChatGPTResponse(prompt);
-    const jsxCode = extractJSXBetweenMarkers(openAIResponse);
-    console.log(jsxCode);
-    debugger;
+    // const openAIResponse = await handleChatGPTResponse(prompt);
+    // const jsxCode = extractJSXBetweenMarkers(openAIResponse);
+    // console.log(jsxCode);
+    // debugger;
 
-    const body={
-      ...formData,
-      code: jsxCode
-    }
-    downloadUpdatedFile(openAIResponse, formData?.tableName);
-    debugger;
+    // const body={
+    //   ...formData,
+    //   code: jsxCode
+    // }
+    // downloadUpdatedFile(openAIResponse, formData?.tableName);
+    // debugger;
     // Send the GET request to the projectCreation API endpoint
     // const response = await get("AllTables", "python");
     // Return the response data
-    return jsxCode;
+    return response;
   } catch (error) {
     throw error;
   }
