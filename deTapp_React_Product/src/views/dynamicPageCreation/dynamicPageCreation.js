@@ -383,6 +383,10 @@ const DynamicPageCreation = () => {
             if (confirmed) {
               return;
             }
+          },
+          () => {
+            // This will reload the current page
+            window.location.reload();
           }
         );
       }
