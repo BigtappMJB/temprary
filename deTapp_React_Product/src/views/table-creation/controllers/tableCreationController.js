@@ -1,4 +1,7 @@
 import { get, post } from "../../utilities/apiservices/apiServices";
+import { getCookie } from "../../utilities/cookieServices/cookieServices";
+import { isUserIdCookieName } from "../../utilities/generals";
+import { decodeData } from "../../utilities/securities/encodeDecode";
 
 export const tableCreationController = async (formData) => {
   try {
@@ -18,9 +21,12 @@ export const tableCreationController = async (formData) => {
         default: column.defaultValue === "" ? null : column.defaultValue,
         primary_key: column.isPrimary,
         auto_increment: column.isPrimary,
-        foreign_keys:false,
+        foreign_key: column?.isForeign,
+        fk_table_name: column?.fkTableName?.TABLE_NAME,
+        fk_column_name: column?.fkTableFieldName?.COLUMN_NAME,
       })),
-      // includeAuditColumns: true,
+      includeAuditColumns: true,
+      created_by: decodeData(getCookie(isUserIdCookieName)),
     };
 
     debugger;
@@ -38,10 +44,7 @@ export const getDataTypesController = async () => {
   try {
     // Prepare the body object with sanitized data
     // Send the GET request to the cmd API API endpoint
-    const response = await get(
-      "/mysqlDataTypes",
-      "python"
-    );
+    const response = await get("/mysqlDataTypes", "python");
     // Return the response data
     return Object.values(response);
   } catch (error) {

@@ -78,11 +78,16 @@ const schema = yup.object().shape({
       then: (schema) => schema.required("FK Table Field Name is required "),
       otherwise: (schema) => schema,
     }),
-  fkTableName: yup.object().when("isForeign", {
-    is: true,
-    then: (schema) => schema.required("FK Table Name is required "),
-    otherwise: (schema) => schema,
-  }),
+  fkTableName: yup
+    .object()
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+
+    .when("isForeign", {
+      is: true,
+      then: (schema) => schema.required("FK Table Name is required "),
+      otherwise: (schema) => schema,
+    }),
 });
 
 const defaultValue = {
@@ -180,6 +185,14 @@ const TableColumnForm = forwardRef(
       triggerValidation: async () => {
         const isValid = await trigger();
         const values = getValues();
+        console.log(Object.keys(errors));
+
+        // Iterate over errors and log the error messages
+        Object.keys(errors).forEach((field) => {
+          console.log(`Field: ${field}, Message: ${errors[field]?.message}`);
+        });
+        debugger;
+
         return { ...values, validated: isValid };
       },
     }));
