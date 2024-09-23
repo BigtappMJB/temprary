@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -22,26 +23,31 @@ import { styled } from "@mui/material/styles";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../utilities/Validators";
 import debounce from "lodash/debounce";
+import { getColumnsDetailsController } from "../../dynamicPageCreation/controllers/dynamicPageCreationController";
+import { useLoading } from "../../../components/Loading/loadingProvider";
 
-const  dataTypeRequiredLength = [
-  'CHAR',
-  'VARCHAR',
-  'BINARY',
-  'VARBINARY',
-  'DECIMAL',
-  'FLOAT',
-  'DOUBLE',
-  'ENUM',
-  'SET'
-]
+const dataTypeRequiredLength = [
+  "CHAR",
+  "VARCHAR",
+  "BINARY",
+  "VARBINARY",
+  "DECIMAL",
+  "FLOAT",
+  "DOUBLE",
+  "ENUM",
+  "SET",
+];
 // Define validation schema using Yup
 const schema = yup.object().shape({
   columnName: yup
     .string()
     .required("Column name is required")
     .matches(validationRegex.columnName, errorMessages.columnName),
-  dataType: yup.object().nullable()
-  .transform((value, originalValue) => (originalValue === "" ? null : value)).required("Data type is required"),
+  dataType: yup
+    .object()
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .required("Data type is required"),
   length: yup
     .number()
     .nullable()
@@ -51,10 +57,10 @@ const schema = yup.object().shape({
     .min(1, "Length must be greater than 1")
     .max(255, "Length must be lesser or equal to 255")
     .when("dataType", {
-      is: (value) =>{        
-        return  value && dataTypeRequiredLength.includes(value?.name)
+      is: (value) => {
+        return value && dataTypeRequiredLength.includes(value?.name);
       },
-       
+
       then: (schema) => schema.required("Length is required"),
       otherwise: (schema) => schema.notRequired(),
     }),
@@ -62,12 +68,17 @@ const schema = yup.object().shape({
   isForeign: yup.boolean().required("Foreign status is required"),
   isMandatory: yup.boolean(),
   defaultValue: yup.string(),
-  fkTableFieldName: yup.string().when("isForeign", {
-    is: true,
-    then: (schema) => schema.required("FK Table Field Name is required "),
-    otherwise: (schema) => schema,
-  }),
-  fkTableName: yup.string().when("isForeign", {
+  fkTableFieldName: yup
+    .object()
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+
+    .when("isForeign", {
+      is: true,
+      then: (schema) => schema.required("FK Table Field Name is required "),
+      otherwise: (schema) => schema,
+    }),
+  fkTableName: yup.object().when("isForeign", {
     is: true,
     then: (schema) => schema.required("FK Table Name is required "),
     otherwise: (schema) => schema,
@@ -124,7 +135,10 @@ const Container = styled(Box)(({ theme }) => ({
  */
 
 const TableColumnForm = forwardRef(
-  ({ data, onColumnSubmit, onReset, dataTypes, isRemovingForm }, ref) => {
+  (
+    { data, onColumnSubmit, onReset, dataTypes, isRemovingForm, tableList },
+    ref
+  ) => {
     const [isFocused, setIsFocused] = useState({
       dataType: false,
     });
@@ -144,6 +158,11 @@ const TableColumnForm = forwardRef(
 
     const watchIsForeign = watch("isForeign");
     const watchIsPrimary = watch("isPrimary");
+    const watchTableName = watch("fkTableName");
+
+    const { startLoading, stopLoading } = useLoading();
+    const allColumnsDataList = useRef([]);
+    const previousTableValue = useRef();
 
     const updateParent = useCallback(async () => {
       const fullValue = {
@@ -178,6 +197,7 @@ const TableColumnForm = forwardRef(
           fkTableName: data.fkTableName ?? "",
           fkTableFieldName: data.fkTableFieldName ?? "",
         });
+        debugger;
       }
     }, [data, reset]);
 
@@ -187,6 +207,22 @@ const TableColumnForm = forwardRef(
       reset(defaultValue);
       if (onReset) onReset(data.id);
     };
+
+    // Fetch column details when a table is selected
+    const getColumnDetails = useCallback(
+      async (tableName) => {
+        try {
+          startLoading();
+          const response = await getColumnsDetailsController(tableName);
+          allColumnsDataList.current = response;
+        } catch (error) {
+          console.error(error);
+        } finally {
+          stopLoading();
+        }
+      },
+      [startLoading, stopLoading]
+    );
 
     // Effect to sanitize input values
     useEffect(() => {
@@ -199,24 +235,61 @@ const TableColumnForm = forwardRef(
 
       sanitizeInputs();
     }, []);
+    const stableReset = useCallback((values) => reset(values), [reset]);
 
+    // Effect for handling form reset logic
     useEffect(() => {
-      if (watchIsForeign === false) {
-        reset((values) => ({
-          ...values,
+      if (watchIsForeign === true) {
+        stableReset((prevValues) => ({
+          ...prevValues,
+          isMandatory: true,
+        }));
+        return;
+      }
+
+      if (!data?.isForeign && watchIsForeign === true) {
+        stableReset((prevValues) => ({
+          ...prevValues,
           fkTableName: "",
           fkTableFieldName: "",
         }));
+        return;
       }
 
       if (watchIsPrimary === true) {
-        reset((values) => ({
-          ...values,
+        stableReset((prevValues) => ({
+          ...prevValues,
           isMandatory: true,
         }));
+        return;
       }
-    }, [watchIsForeign, watchIsPrimary, reset]);
+      if (data?.isForeign) {
+        stableReset((prevValues) => ({
+          ...prevValues,
+          fkTableName: data.fkTableName ?? "",
+          fkTableFieldName: data.fkTableFieldName ?? "",
+        }));
+        debugger;
+        return;
+      }
+      debugger;
+    }, [watchIsForeign, watchIsPrimary, stableReset, data]);
 
+    // Effect for handling API call logic
+    useEffect(() => {
+      if (
+        watchTableName?.TABLE_NAME &&
+        previousTableValue.current !== watchTableName?.TABLE_NAME
+      ) {
+        // Call the API to get column details only if the table name has changed
+        getColumnDetails(watchTableName?.TABLE_NAME);
+        stableReset((prevValues) => ({
+          ...prevValues,
+          fkTableFieldName: data?.fkTableFieldName ?? null,
+        }));
+        previousTableValue.current = watchTableName?.TABLE_NAME; // Update the previous value to avoid rerun
+      }
+    }, [watchTableName]); // Only depend on watchTableName
     // Watch for changes and update parent on change
     useEffect(() => {
       const subscription = watch(() => {
@@ -244,43 +317,43 @@ const TableColumnForm = forwardRef(
             />
           )}
         />
-     <Controller
-            name="dataType"
-            readOnly
-            control={control}
-            render={({ field }) => (
-              <Autocomplete
-                {...field}
-                options={dataTypes}
-                getOptionLabel={(option) => option.name}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                value={field.value || null}
-                onChange={(_, data) => field.onChange(data)}
-                className="input-field"
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select datatype"
-                    fullWidth
-                    error={!!errors.dataType}
-                    helperText={errors.dataType?.message}
-                    className="input-field"
-                    InputLabelProps={{
-                      shrink: Boolean(field.value || isFocused.dataType),
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      readOnly: data?.id === 0, // Make the field read-only
-                      onFocus: () =>
-                        setIsFocused({ ...isFocused, dataType: true }),
-                      onBlur: () =>
-                        setIsFocused({ ...isFocused, dataType: false }),
-                    }}
-                  />
-                )}
-              />
-            )}
-          />
+        <Controller
+          name="dataType"
+          readOnly
+          control={control}
+          render={({ field }) => (
+            <Autocomplete
+              {...field}
+              options={dataTypes}
+              getOptionLabel={(option) => option.name}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              value={field.value || null}
+              onChange={(_, data) => field.onChange(data)}
+              className="input-field"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select datatype"
+                  fullWidth
+                  error={!!errors.dataType}
+                  helperText={errors.dataType?.message}
+                  className="input-field"
+                  InputLabelProps={{
+                    shrink: Boolean(field.value || isFocused.dataType),
+                  }}
+                  InputProps={{
+                    ...params.InputProps,
+                    readOnly: data?.id === 0, // Make the field read-only
+                    onFocus: () =>
+                      setIsFocused({ ...isFocused, dataType: true }),
+                    onBlur: () =>
+                      setIsFocused({ ...isFocused, dataType: false }),
+                  }}
+                />
+              )}
+            />
+          )}
+        />
         <Controller
           name="length"
           control={control}
@@ -319,27 +392,7 @@ const TableColumnForm = forwardRef(
             </TextField>
           )}
         />
-        <Controller
-          name="isForeign"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Is Foreign Key"
-              variant="outlined"
-              select
-              error={!!errors.isForeign}
-              helperText={errors.isForeign?.message}
-              className="input-field"
-              InputProps={{
-                readOnly: data?.id === 0, // Make the field read-only
-              }}
-            >
-              <MenuItem value={true}>Yes</MenuItem>
-              <MenuItem value={false}>No</MenuItem>
-            </TextField>
-          )}
-        />
+
         <Controller
           name="isMandatory"
           control={control}
@@ -379,49 +432,87 @@ const TableColumnForm = forwardRef(
           )}
         />
         <Controller
-          name="fkTableName"
+          name="isForeign"
           control={control}
           render={({ field }) => (
             <TextField
               {...field}
-              label="FK Table ID"
+              label="Is Foreign Key"
               variant="outlined"
               select
-              error={!!errors.fkTableName}
-              helperText={errors.fkTableName?.message}
+              error={!!errors.isForeign}
+              helperText={errors.isForeign?.message}
               className="input-field"
-              InputProps={{
-                readOnly: data?.id === 0, // Make the field read-only
-              }}
             >
-              <MenuItem value="string">String</MenuItem>
-              <MenuItem value="number">Number</MenuItem>
-              <MenuItem value="boolean">Boolean</MenuItem>
+              <MenuItem value={true}>Yes</MenuItem>
+              <MenuItem value={false}>No</MenuItem>
             </TextField>
           )}
         />
-        <Controller
-          name="fkTableFieldName"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="FK Table Field Name"
-              variant="outlined"
-              select
-              error={!!errors.fkTableFieldName}
-              helperText={errors.fkTableFieldName?.message}
-              className="input-field"
-              InputProps={{
-                readOnly: data?.id === 0, // Make the field read-only
-              }}
-            >
-              <MenuItem value="string">String</MenuItem>
-              <MenuItem value="number">Number</MenuItem>
-              <MenuItem value="boolean">Boolean</MenuItem>
-            </TextField>
-          )}
-        />
+
+        {watch("isForeign") && watch("isForeign") === true && (
+          <>
+            <Controller
+              name="fkTableName"
+              control={control}
+              render={({ field }) => (
+                <Autocomplete
+                  {...field}
+                  options={tableList}
+                  getOptionLabel={(option) => option.TABLE_NAME}
+                  isOptionEqualToValue={(option, value) =>
+                    option.TABLE_NAME === value.TABLE_NAME
+                  }
+                  className="input-field"
+                  value={field.value || null}
+                  onChange={(_, data) => {
+                    field.onChange(data);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select FK table"
+                      fullWidth
+                      className="input-field"
+                      error={!!errors.fkTableName}
+                      helperText={errors.fkTableName?.message}
+                    />
+                  )}
+                />
+              )}
+            />
+            <Controller
+              name="fkTableFieldName"
+              control={control}
+              render={({ field }) => (
+                <Autocomplete
+                  {...field}
+                  options={allColumnsDataList.current}
+                  getOptionLabel={(option) => option.COLUMN_NAME}
+                  isOptionEqualToValue={(option, value) =>
+                    option.COLUMN_NAME === value.COLUMN_NAME
+                  }
+                  className="input-field"
+                  value={field.value || null}
+                  onChange={(_, data) => {
+                    field.onChange(data);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select FK Column"
+                      fullWidth
+                      className="input-field"
+                      error={!!errors.fkTableFieldName}
+                      helperText={errors.fkTableFieldName?.message}
+                    />
+                  )}
+                />
+              )}
+            />
+          </>
+        )}
+
         {data?.id !== 0 && (
           <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
             {/* <Tooltip title="Delete" arrow>

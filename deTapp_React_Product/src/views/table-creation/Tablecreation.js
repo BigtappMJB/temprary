@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { validationFunction } from "../utilities/Validators";
@@ -12,6 +12,7 @@ import { useLoading } from "../../components/Loading/loadingProvider";
 import { useSelector } from "react-redux";
 import { getCurrentPathName, getSubmenuDetails } from "../utilities/generals";
 import { useOutletContext } from "react-router";
+import { getTableListDataController } from "../dynamicPageCreation/controllers/dynamicPageCreationController";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -117,6 +118,8 @@ const CreateTableForm = () => {
     view: null,
     delete: null,
   });
+  const [tableList, setTableList] = useState([]);
+  const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
   const { startLoading, stopLoading } = useLoading();
@@ -160,6 +163,20 @@ const CreateTableForm = () => {
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || [];
 
+  
+  // Fetch the table list from the API
+  const fetchTableListData = useCallback(async () => {
+    try {
+      startLoading();
+      const response = await getTableListDataController();
+      setTableList(response);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      stopLoading();
+    }
+  }, [startLoading, stopLoading]);
+
   useEffect(() => {
     const submenuDetails = getSubmenuDetails(
       menuList,
@@ -177,6 +194,7 @@ const CreateTableForm = () => {
       delete: permissionList?.includes("delete"),
     });
     inputRef.current.focus();
+    
     const getDataTypes = async () => {
       try {
         startLoading();
@@ -187,7 +205,13 @@ const CreateTableForm = () => {
         stopLoading();
       }
     };
-    getDataTypes();
+    if (!hasFetchedRoles.current) {
+      getDataTypes();
+      fetchTableListData()
+      hasFetchedRoles.current = true;
+
+    }
+    
   }, [menuList]);
 
   const addColumnForm = () => {
@@ -447,6 +471,7 @@ const CreateTableForm = () => {
             {columnsData?.map((data, index) => (
               <TableColumnForm
                 key={data.id}
+                tableList={tableList}
                 onColumnSubmit={onColumnSubmit}
                 data={data}
                 ref={(el) => (formRefs.current[index] = el)}

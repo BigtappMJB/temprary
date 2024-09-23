@@ -159,10 +159,8 @@ const DynamicColumnForm = forwardRef(
 
     useEffect(() => {
       if (data) {
-        console.log(data);
-
         reset({
-          COLUMN_NAME: data.COLUMN_NAME ?? "",
+          COLUMN_NAME: "",
           DATA_TYPE: data.DATA_TYPE ?? "",
           CHARACTER_MAXIMUM_LENGTH: data.CHARACTER_MAXIMUM_LENGTH ?? "",
           IS_NULLABLE: data.IS_NULLABLE ?? false,
