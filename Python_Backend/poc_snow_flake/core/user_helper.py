@@ -14,7 +14,6 @@ def create_table(params):
     query_part = [f"CREATE TABLE IF NOT EXISTS {params['table_name']} ("]
     try:
         for column in params['columns']:
-            print(column['default'])
             if column['column_name']:
                 query_part.append(f"{column['column_name']}")
             if column['data_type']:
@@ -31,13 +30,9 @@ def create_table(params):
             if column['nullable']:
                 query_part.append(f" NOT NULL")
             query_part.append(",")
-        for re_check in params.get('columns', []):
-            if re_check['foreign_keys']:
-                foreign_key = re_check['foreign_keys']
-                query_part.append(
-                    f"FOREIGN KEY ({re_check['column_name']}) REFERENCES {foreign_key['table']}({foreign_key['ref_column']})")
-                query_part.append(",")
-        query_part.pop()
+            if column['foreign_key']:
+                 query_part.append(
+                    f"FOREIGN KEY ({column['column_name']}) REFERENCES {column['fk_table_name']}({column['fk_column_name']})")
         query_part.append(");")
 
         create_table_query = " ".join(query_part)
@@ -106,9 +101,6 @@ def validate_json(data):
 
 # Function to create a MySQL CREATE TABLE query based on input JSON
 def generate_create_query(data):
-    table_name = data.get("table_name")
-    columns = data.get("columns", [])
-
     dataTypeRequiredLength = [
     'CHAR',
     'VARCHAR',
@@ -121,77 +113,62 @@ def generate_create_query(data):
     'SET'
 ]
     
+    table_name = data.get("table_name")
+    columns = data.get("columns")
+    include_audit = data.get("includeAuditColumns", False)
+    created_by = data.get("created_by")
+
     # Start building the query
-    query = f"CREATE TABLE `{table_name}` ("
-    
+    query = f"CREATE TABLE {table_name} (\n"
+
     column_definitions = []
-    primary_keys = []
-    foreign_key_statements = []
 
+    # Loop through each column in the input data
     for column in columns:
-        col_name = column.get("column_name")
-        length = column.get("length")
-        col_type = column.get("data_type", {}).get("name")
-        isMandatory = column.get("isMandatory", True)
-        default_value = column.get("default")
+        column_name = column["column_name"]
+        data_type = column["data_type"]["name"]
+        length = column["length"]
+        is_mandatory = "NOT NULL" if column["isMandatory"] else "NULL"
+        auto_increment = "AUTO_INCREMENT" if column.get("auto_increment", False) else ""
         primary_key = column.get("primary_key", False)
-        auto_increment = column.get("auto_increment", False)
-        unique = column.get("unique", False)
 
+        # If length is greater than 0, include it in the data type
+        if length > 0 and data_type in dataTypeRequiredLength:
+            data_type = f"{data_type}({length})"
 
-        # Start building the column definition
-        col_def = f"`{col_name}` "
-        if col_type in dataTypeRequiredLength:
-             col_def += f"{col_type}({length})"
-        else:
-            col_def += f"{col_type}"
+        # Build the column definition
+        column_def = f"    {column_name} {data_type} {is_mandatory} {auto_increment}"
+        column_definitions.append(column_def.strip())
 
+        # Check if the column is a foreign key
+        if column.get("foreign_key", False):
+            fk_table_name = column["fk_table_name"]
+            fk_column_name = column["fk_column_name"]
+            foreign_key_constraint = f"    CONSTRAINT fk_{column_name} FOREIGN KEY ({column_name}) REFERENCES {fk_table_name}({fk_column_name})"
+            column_definitions.append(foreign_key_constraint)
 
-        if isMandatory:
-            col_def += " NOT NULL"
-        
-        if auto_increment:
-            col_def += " AUTO_INCREMENT"
+    # Add the column definitions to the query
+    query += ",\n".join(column_definitions)
 
-        if default_value is not None:
-            if isinstance(default_value, str) and len:
-                col_def += f" DEFAULT '{default_value}'"
-            else:
-                col_def += f" DEFAULT {default_value}"
+    # Add audit columns if specified
+    if include_audit:
+        audit_columns = """
+     created_by VARCHAR(255) DEFAULT "System",   
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(255) DEFAULT "System", 
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"""
+        query += f",\n{audit_columns}"
 
-        if unique:
-            col_def += " UNIQUE"
-
-        # Add primary key
-        if primary_key:
-            primary_keys.append(f"`{col_name}`")
-
-        column_definitions.append(col_def)
-        
-        # Handle foreign keys
-        foreign_keys = column.get("foreign_keys", [])
-        if foreign_keys:
-            for fk in foreign_keys:
-                ref_table = fk.get("referenced_table")
-                ref_column = fk.get("referenced_column")
-                if ref_table and ref_column:
-                    foreign_key_statements.append(
-                        f"FOREIGN KEY (`{col_name}`) REFERENCES `{ref_table}`(`{ref_column}`)"
-                    )
-
-    # Add column definitions
-    query += ", ".join(column_definitions)
-
-    # Add primary key definitions if any
+    # Add primary key if defined
+    primary_keys = [col["column_name"] for col in columns if col.get("primary_key", False)]
     if primary_keys:
-        query += ", PRIMARY KEY (" + ", ".join(primary_keys) + ")"
+        primary_key_def = f"    PRIMARY KEY ({', '.join(primary_keys)})"
+        query += f",\n{primary_key_def}"
 
-    # Add foreign key constraints if any
-    if foreign_key_statements:
-        query += ", " + ", ".join(foreign_key_statements)
+    # End the query
+    query += "\n) ENGINE=InnoDB;"
 
-    query += " );"
-
+    return query
     return query
 
 
@@ -374,7 +351,7 @@ FROM
    INFORMATION_SCHEMA.COLUMNS
 WHERE
    TABLE_NAME = '{table_name.upper()}' 
-   AND EXTRA NOT LIKE '%auto_increment%'  -- No identity/auto_increment
+#    AND EXTRA NOT LIKE '%auto_increment%'  -- No identity/auto_increment
    AND TABLE_SCHEMA = DATABASE()
 ORDER BY
    ORDINAL_POSITION;"""
