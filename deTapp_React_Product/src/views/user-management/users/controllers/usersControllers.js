@@ -115,7 +115,7 @@ export const userCreationController = async (formData) => {
  * @function userupdateController
  * @param {Object} formData - The form data for updating the user.
  * @param {string} formData.userId - The user ID.
- * @param {string} formData.ID - The primary key for user ID.*
+ * @param {string} formData.id - The primary key for user ID.*
  * @param {string} formData.firstName - The first name.
  * @param {string} formData.lastName - The last name.
  * @param {string} formData.email - The email address.
@@ -153,8 +153,9 @@ export const userupdateController = async (formData) => {
       role_id: formData?.role.id,
     };
     // Send the PUT request to the user API endpoint
+    debugger;
     const response = await put(
-      `/master/user?id=${formData.ID}`,
+      `/master/user?id=${formData.id}`,
       body,
       "python"
     );

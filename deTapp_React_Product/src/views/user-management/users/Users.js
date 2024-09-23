@@ -70,15 +70,6 @@ const FormButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-/**
- * UsersPage component displays a user management interface with a form and a data table.
- *
- * @component
- * @example
- * return (
- *   <UsersPage />
- * )
- */
 const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
@@ -152,7 +143,6 @@ const UsersPage = () => {
   }, []);
 
   const columns = {
-    // USER_ID: "Username",
     FIRST_NAME: "First Name",
     LAST_NAME: "Last Name",
     EMAIL: "Email",
@@ -160,9 +150,6 @@ const UsersPage = () => {
     ROLE_NAME: "Role",
   };
 
-  /**
-   * Initiates the process to add a new user.
-   */
   const addUser = () => {
     if (permissionLevels?.create)
       setFormAction({
@@ -174,7 +161,6 @@ const UsersPage = () => {
         "critical",
         `Access Denied`,
         "Your access is denied, Kindly contact system administrator.",
-
         {
           confirm: {
             name: "Ok",
@@ -190,21 +176,20 @@ const UsersPage = () => {
     }
   };
 
-  /**
-   * Handles form submission for adding or updating a user.
-   * @param {Object} formData - The data from the form.
-   */
   const onformSubmit = async (formData) => {
     try {
       startLoading();
       let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await userCreationController(formData);
-      else {
-        formData = {
-          ...formData,
-          ID: selectedValue.ID,
-        };
+      
+      if (isAdd) {
+        response = await userCreationController(formData);
+      } else {
+        if (!selectedValue.id) {
+          console.error("No user ID available for updating.");
+          return;
+        }
+        formData = { ...formData, id: selectedValue.id };
         response = await userupdateController(formData);
       }
 
@@ -216,17 +201,10 @@ const UsersPage = () => {
         openDialog(
           "success",
           `User ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message ||
-            `User has been ${isAdd ? "addded" : "updated"} successfully`,
+          response.message || `User has been ${isAdd ? "added" : "updated"} successfully`,
           {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
+            confirm: { name: "Ok", isNeed: true },
+            cancel: { name: "Cancel", isNeed: false },
           },
           (confirmed) => {}
         );
@@ -239,19 +217,11 @@ const UsersPage = () => {
         "Warning",
         `User ${isAdd ? "Addition" : "Updation"} failed`,
         {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
+          confirm: { name: "Ok", isNeed: true },
+          cancel: { name: "Cancel", isNeed: false },
         },
         (confirmed) => {
-          if (confirmed) {
-            return;
-          }
+          if (confirmed) return;
         }
       );
     } finally {
@@ -259,9 +229,6 @@ const UsersPage = () => {
     }
   };
 
-  /**
-   * Resets the form and hides it.
-   */
   const onFormReset = () => {
     setFormAction({
       display: false,
@@ -269,12 +236,12 @@ const UsersPage = () => {
     });
   };
 
-  /**
-   * Initiates the process to update a user's information.
-   * @param {Object} selectedRow - The selected user's data.
-   */
   const handleUpdateLogic = (selectedRow) => {
     if (permissionLevels?.edit) {
+      if (!selectedRow.id) {
+        console.error("Selected row does not contain an ID:", selectedRow);
+        return;
+      }
       setSelectedValue(selectedRow);
       ScrollToTopButton();
       setFormAction({
@@ -286,26 +253,15 @@ const UsersPage = () => {
         "critical",
         `Access Denied`,
         "Your access is denied, Kindly contact system administrator.",
-
         {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
+          confirm: { name: "Ok", isNeed: true },
+          cancel: { name: "Cancel", isNeed: false },
         },
         (confirmed) => {}
       );
     }
   };
 
-  /**
-   * Initiates the process to delete a user.
-   * @param {Object} selectedRow - The selected user's data.
-   */
   const handleDelete = (selectedRow) => {
     if (permissionLevels?.delete)
       openDialog(
@@ -315,14 +271,8 @@ const UsersPage = () => {
           selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
         }"?`,
         {
-          confirm: {
-            name: "Yes",
-            isNeed: true,
-          },
-          cancel: {
-            name: "No",
-            isNeed: true,
-          },
+          confirm: { name: "Yes", isNeed: true },
+          cancel: { name: "No", isNeed: true },
         },
         (confirmed) => {
           if (confirmed) {
@@ -335,25 +285,14 @@ const UsersPage = () => {
         "critical",
         `Access Denied`,
         "Your access is denied, Kindly contact system administrator.",
-
         {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
+          confirm: { name: "Ok", isNeed: true },
+          cancel: { name: "Cancel", isNeed: false },
         },
         (confirmed) => {}
       );
   };
 
-  /**
-   * Removes a user from the table after confirming deletion.
-   * @param {Object} selectedRow - The selected user's data.
-   */
   const removeDataFromTable = async (selectedRow) => {
     try {
       startLoading();
@@ -361,31 +300,19 @@ const UsersPage = () => {
         display: false,
         action: null,
       });
-      const response = await userdeleteController(selectedRow.ID);
+      const response = await userdeleteController(selectedRow.id);
 
       if (response) {
         getTableData();
-
         openDialog(
           "success",
           `User Deletion Success`,
-          response.message || `User has been deleted successfully  `,
+          response.message || `User has been deleted successfully`,
           {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
+            confirm: { name: "Ok", isNeed: true },
+            cancel: { name: "Cancel", isNeed: false },
           },
-          (confirmed) => {
-            // getTableData();
-          },
-          () => {
-            // getTableData();
-          }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -394,19 +321,11 @@ const UsersPage = () => {
         "Warning",
         `User Deletion failed`,
         {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
+          confirm: { name: "Ok", isNeed: true },
+          cancel: { name: "Cancel", isNeed: false },
         },
         (confirmed) => {
-          if (confirmed) {
-            return;
-          }
+          if (confirmed) return;
         }
       );
     } finally {
