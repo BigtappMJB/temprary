@@ -216,7 +216,8 @@ const setupRouter = () => {
     })
     .catch((error) => {
       console.error("Error generating dynamic routes:", error);
-      throw error; // Optionally rethrow or handle the error
+      // throw error; // Optionally rethrow or handle the error
+      return staticRoutes
     });
 };
 
