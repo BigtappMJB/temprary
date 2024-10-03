@@ -160,7 +160,7 @@ def generate_create_query_api():
         
         # Generate the MySQL create query
         create_query = generate_create_query(data)
-
+        print(create_query)
         conn = get_snowflake_connection()
         cursor = conn.cursor()
         cursor.execute(create_query)
