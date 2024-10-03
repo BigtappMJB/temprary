@@ -158,7 +158,7 @@ export const projectDeleteController = async (cmdId) => {
     if (typeof cmdId !== "string") {
       throw new Error("Invalid form data");
     }
-    debugger;
+    
 
     // Send the DELETE request to the projectCreation API endpoint
     const response = await remove(

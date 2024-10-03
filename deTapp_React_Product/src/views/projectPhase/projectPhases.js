@@ -105,7 +105,7 @@ const Roles = () => {
       startLoading();
       const response = await getprojectPhasesController();
       setTableData(response);
-      // debugger;
+      // 
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {

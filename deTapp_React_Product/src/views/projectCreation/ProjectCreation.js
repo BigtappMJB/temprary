@@ -416,12 +416,12 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      debugger;
+      
       const response = await projectDeleteController(
         selectedRow.PROJECT_NAME_CODE
       );
       console.log(response);
-      debugger;
+      
       if (response) {
         getTableData();
         openDialog(

@@ -418,12 +418,12 @@ const ActivityCodePage = () => {
         display: false,
         action: null,
       });
-      debugger;
+      
       const response = await projectDeleteController(
         selectedRow.ACTIVITY_CODE
       );
       console.log(response);
-      debugger;
+      
       if (response) {
         getTableData();
         openDialog(

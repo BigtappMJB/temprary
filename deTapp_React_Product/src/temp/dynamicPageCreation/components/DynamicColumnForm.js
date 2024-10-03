@@ -142,7 +142,7 @@ const DynamicColumnForm = forwardRef(
         validated: false,
         ...getValues(),
       };
-      debugger;
+ 
       onColumnSubmit(fullValue);
     }, [data.id, getValues, onColumnSubmit]);
 
@@ -170,7 +170,7 @@ const DynamicColumnForm = forwardRef(
           inputType: data.inputType ?? null,
         });
         console.log(getValues());
-        debugger;
+        
       }
     }, [data, reset]);
 
@@ -186,7 +186,7 @@ const DynamicColumnForm = forwardRef(
         optionsList: null,
         inputType: null,
       });
-      debugger;
+      
       if (onReset) onReset(data.id, data);
     };
 

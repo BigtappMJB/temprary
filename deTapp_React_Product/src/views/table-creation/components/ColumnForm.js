@@ -191,7 +191,7 @@ const TableColumnForm = forwardRef(
         Object.keys(errors).forEach((field) => {
           console.log(`Field: ${field}, Message: ${errors[field]?.message}`);
         });
-        debugger;
+        
 
         return { ...values, validated: isValid };
       },
@@ -210,7 +210,7 @@ const TableColumnForm = forwardRef(
           fkTableName: data.fkTableName ?? "",
           fkTableFieldName: data.fkTableFieldName ?? "",
         });
-        debugger;
+        
       }
     }, [data, reset]);
 
@@ -282,10 +282,10 @@ const TableColumnForm = forwardRef(
           fkTableName: data.fkTableName ?? "",
           fkTableFieldName: data.fkTableFieldName ?? "",
         }));
-        debugger;
+        
         return;
       }
-      debugger;
+      
     }, [watchIsForeign, watchIsPrimary, stableReset, data]);
 
     // Effect for handling API call logic

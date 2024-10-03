@@ -116,7 +116,7 @@ const DynamicFormCreationFormComponent = ({
   const onDynamicFormSubmit = (data) => {
     onSubmit(data); // Send form data to parent
     reset(); // Reset the form fields
-    debugger;
+    
   };
 
   /**

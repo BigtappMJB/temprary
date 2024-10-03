@@ -70,14 +70,14 @@ export const createReactFormController = async (formData) => {
     // const openAIResponse = await handleChatGPTResponse(prompt);
     // const jsxCode = extractJSXBetweenMarkers(openAIResponse);
     // console.log(jsxCode);
-    // debugger;
+    // 
 
     // const body={
     //   ...formData,
     //   code: jsxCode
     // }
     // downloadUpdatedFile(openAIResponse, formData?.tableName);
-    // debugger;
+    // 
     // Send the GET request to the projectCreation API endpoint
     // const response = await get("AllTables", "python");
     // Return the response data

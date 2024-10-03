@@ -29,7 +29,7 @@ export const tableCreationController = async (formData) => {
       created_by: decodeData(getCookie(isUserIdCookieName)),
     };
 
-    debugger;
+    
 
     // Send the POST request to the cmd API API endpoint
     const response = await post("/generate-create-query", body, "python");

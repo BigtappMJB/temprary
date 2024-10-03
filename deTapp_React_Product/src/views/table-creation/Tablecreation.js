@@ -347,7 +347,7 @@ const CreateTableForm = () => {
       };
 
       const response = await tableCreationController(finalObject);
-      debugger;
+      
       if (response) {
         setTableName("");
         //   setSubmitted(false);

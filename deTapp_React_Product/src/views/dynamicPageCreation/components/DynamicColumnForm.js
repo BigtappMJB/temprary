@@ -229,7 +229,7 @@ const DynamicColumnForm = forwardRef(
       const result = await trigger("noOfOptions"); // Validate number of options
 
       setDialogOpen(result); // Open dialog if validation passes
-      debugger;
+      
     };
 
     // Watch for COLUMN_NAME changes and trigger local column change
@@ -245,7 +245,7 @@ const DynamicColumnForm = forwardRef(
         console.log(data);
         console.log(previousValue.current);
 
-        debugger;
+        
         if (data && data !== previousValue.current) {
           onLocalColumnChange(data); // Update form value using setValue from react-hook-form
         }

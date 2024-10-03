@@ -269,7 +269,7 @@ const ProjectEstimationPage = () => {
         getTableData();
         formRef.current?.resetForm();
         if (!isAdd) {
-          debugger;
+          
           onFormReset();
         }
         openDialog(
@@ -346,7 +346,7 @@ const ProjectEstimationPage = () => {
    * Resets the form and hides it.
    */
   const onFormReset = () => {
-    debugger;
+    
     setFormAction({
       display: false,
       action: null,

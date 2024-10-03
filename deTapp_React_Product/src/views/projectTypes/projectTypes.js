@@ -108,7 +108,7 @@ const Roles = () => {
       startLoading();
       const response = await getprojectTypesController();
       setTableData(response);
-      // debugger;
+      // 
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {
@@ -377,7 +377,7 @@ const Roles = () => {
       });
 
       const response = await projectTypesdeleteController(selectedRow.id);
-      debugger;
+      
       if (response) {
         getRoles();
 

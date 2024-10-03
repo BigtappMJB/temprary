@@ -138,7 +138,7 @@ const LoginPage = () => {
         dispatch(storeLoginDetails(loginDetails));
         dispatch(storeMenuDetails(response?.permissions));
 
-        debugger;
+        
 
         // Remember the user if the rememberMe flag is set
         if (formData.rememberMe) {

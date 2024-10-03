@@ -14,7 +14,7 @@ export const handleChatGPTResponse = async (prompt) => {
             Include proper JSDoc comments, follow React and Material UI best practices, and adhere to ESLint rules.
             Implement proper error handling, avoid using 'any' type, and follow the principle of least privilege.
             Always sanitize user inputs and use appropriate security measures.
-            `
+            `,
           },
           { role: "user", content: prompt },
         ],
@@ -26,9 +26,9 @@ export const handleChatGPTResponse = async (prompt) => {
         },
       }
     );
-    debugger;
     return response.data.choices[0].message.content;
   } catch (err) {
     throw err;
   }
 };
+

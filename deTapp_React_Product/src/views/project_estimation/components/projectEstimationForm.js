@@ -252,7 +252,7 @@ const ProjectEstimateFormComponent = forwardRef(
         });
         console.log({ defaultValues });
         console.log(getValues());
-        debugger;
+        
 
         formAction.action !== "add" &&
           defaultValues?.ACTIVITY_CODE &&
@@ -263,7 +263,7 @@ const ProjectEstimateFormComponent = forwardRef(
     // Expose a method to trigger validation via ref
     useImperativeHandle(ref, () => ({
       resetForm: async () => {
-        debugger;
+        
         reset({
           projectName: null,
           role: null,
@@ -276,7 +276,7 @@ const ProjectEstimateFormComponent = forwardRef(
           workingDays: "",
         });
         console.log(getValues());
-        debugger;
+        
       },
     }));
 
@@ -314,7 +314,7 @@ const ProjectEstimateFormComponent = forwardRef(
      * Resets the form to its initial state
      */
     const handleReset = () => {
-      debugger;
+      
       onReset();
       reset({
         projectName: null,
