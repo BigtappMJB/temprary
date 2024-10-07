@@ -64,6 +64,7 @@ const Header = styled(Box)(({ theme }) => ({
 // Box to hold dynamic forms
 const StyledColumnBox = styled(Box)(({ theme }) => ({
   overflow: "auto",
+  scrollBehavior: "smooth", // This adds smooth scrolling
 }));
 
 // Sub-header styling
@@ -119,7 +120,7 @@ const DynamicPageCreation = () => {
   const columnDetailsRef = useRef([]);
   const currentSelectedRef = useRef(null);
   const hasFetchedRoles = useRef(false);
-
+  const columnBoxRef = useRef();
   // Form control for managing inputs and validation
   const {
     control,
@@ -244,6 +245,7 @@ const DynamicPageCreation = () => {
    */
   const addColumnForm = () => {
     setColumnsData((prevData) => [...prevData, { id: generateUniqueId() }]);
+    columnBoxRef.current.scrollTo({ left: 0, behavior: "smooth" });
     isRemovingForm.current = false;
   };
 
@@ -508,7 +510,7 @@ const DynamicPageCreation = () => {
               </FormButton>
             </Box>
           </SubHeader>
-          <StyledColumnBox>
+          <StyledColumnBox ref={columnBoxRef}>
             {columnsData?.map((data, index) => (
               <DynamicColumnForm
                 key={data.id}
