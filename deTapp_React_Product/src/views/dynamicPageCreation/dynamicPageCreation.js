@@ -357,7 +357,6 @@ const DynamicPageCreation = () => {
       const response = await createReactFormController(finalOutputValues);
       console.log(response);
 
-      
       if (response?.message) {
         columnDetailsRef.current = [];
         tableNameRef.current = null;

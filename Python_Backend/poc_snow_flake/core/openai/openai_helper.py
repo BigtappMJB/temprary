@@ -104,6 +104,49 @@ def create_role_permission(role_id,menu_id,submenu_id,permission_id):
     finally:
         cursor.close()
         conn.close()
+        
+
+def value_exists_in_table(table, column, value):
+    try:
+        conn = get_snowflake_connection()
+        cursor = conn.cursor()
+        print(value)
+        # SQL query to check if value exists in the table
+        query = f"SELECT EXISTS(SELECT 1 FROM {table} WHERE {column} = %s)"
+        print(query)
+        cursor.execute(query, (value,))
+
+        # Fetch the result (1 if exists, 0 if not)
+        result = cursor.fetchone()[0]
+        print(result)
+        # Return True if value exists, otherwise False
+        return bool(result)
+
+    except Exception as e:
+      return False ,{"error": str(e)}
+    finally:
+      cursor.close()
+      conn.close()
+        
+def check_if_value_exists(data):
+  try:
+    is_menu_exists = value_exists_in_table('menus','NAME',data.get("menu", ''))
+    if(is_menu_exists) :
+      return True, "Given menu already exists."
+    is_submenu_exists= value_exists_in_table('sub_menus','NAME',data.get("subMenu", ''))
+    if(is_submenu_exists) :
+      return True, "Given subMenu already exists."
+    is_page_exists =  value_exists_in_table('dynamic_page_creation','pageName',data.get("pageName", ''))
+    if(is_page_exists) :
+      return True, "Given pageName exists."
+    is_route_exists = value_exists_in_table('sub_menus','ROUTE',data.get("route", ''))
+    if(is_route_exists) :
+      return True, "Given route already exists."
+  
+    return False,None
+  except Exception as e:
+      return False ,{"error": str(e)}
+  
  
 def store_details(data,folder_path,file_name):
     import os
@@ -167,7 +210,9 @@ def generate_react_code(value):
         from core.openai.openi_core import openapi_function
         prompt = react_generation_prompt(value)
         response =  openapi_function(prompt=prompt)
+        print(response)
         react_code = extract_jsx_between_markers(response=response)
+        
         return react_code
     except Exception as e:
         raise e

@@ -35,7 +35,16 @@ const schema = yup.object().shape({
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
   // .required("SubMenu is required"),
   pageName: yup.string().required("Page name is required"),
-  route: yup.string().required("Route is required"),
+  route: yup
+    .string()
+    .required("Route is required")
+    .transform((value) => {
+      // Ensure the value starts with a "/" by checking and adding it if necessary
+      if (value && !value.startsWith("/")) {
+        return `/${value}`;
+      }
+      return value;
+    }),
 });
 
 /**

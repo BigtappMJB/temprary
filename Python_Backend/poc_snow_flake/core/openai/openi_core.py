@@ -1,23 +1,50 @@
 
 def openapi_function(prompt):
-  from openai import OpenAI
-  import os
-  client = OpenAI(api_key= os.getenv("OPEN_AI_KEY"))
 
-  stream = client.chat.completions.create(
-      model="gpt-4o",
-      messages=[ {"role": "system", "content": """
-                  You are a React coding assistant specializing in React 18 and Material UI.
-                  Provide secure, performant, and accessible React 18 code snippets using Material UI components.
-                  Include proper JSDoc comments, follow React and Material UI best practices, and adhere to ESLint rules.
-                  Implement proper error handling, avoid using 'any' type, and follow the principle of least privilege.
-                  Always sanitize user inputs and use appropriate security measures.
-              """},
-                  {"role": "user", "content": prompt}
-                ],
-      stream=False,
-  )
-  # for chunk in stream:
-  #     if chunk.choices[0].delta.content is not None:
-  #         print(chunk.choices[0].delta.content, end="")
-  return stream.choices[0].message.content
+    import openai
+    import os
+
+    # Initialize the OpenAI client with the API key from environment variable
+    openai.api_key = os.getenv("OPEN_AI_KEY")
+
+    # temperature=0.7
+    # max_tokens=300
+    # top_p=1
+    # frequency_penalty=0
+    # presence_penalty=0
+    stream=False
+    # Create a chat completion using the GPT-4 model with additional parameters for control
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": """
+                You are a React coding assistant specializing in React 18 and Material UI.
+                Provide secure, performant, and accessible React 18 code snippets using Material UI components.
+                Include proper JSDoc comments, follow React and Material UI best practices, and adhere to ESLint rules.
+                Implement proper error handling, avoid using 'any' type, and follow the principle of least privilege.
+                Always sanitize user inputs and use appropriate security measures.
+            """},
+            {"role": "user", "content": prompt}
+        ],
+        
+        # temperature=temperature,        # Controls randomness
+        # max_tokens=max_tokens,          # Limits response length
+        # top_p=top_p,                    # Nucleus sampling
+        # frequency_penalty=frequency_penalty,  # Reduces repetitive text
+        # presence_penalty=presence_penalty,    # Encourages new topics
+        # stream=stream,                  # Set stream to True or False
+    )
+
+    if stream:
+        # Handle streaming response
+        full_response = ""
+        for chunk in response:
+            if "choices" in chunk and "delta" in chunk.choices[0]:
+                # Collect content from each chunk
+                content_part = chunk.choices[0].delta.get("content", "")
+                full_response += content_part
+                print(content_part, end="")  # Output the streamed content as it comes
+        return full_response
+    else:
+        # Return the full response in one go
+        return response.choices[0].message.content
