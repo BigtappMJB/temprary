@@ -14,6 +14,7 @@ import * as Yup from "yup";
 import CustomTextField from "../../../../components/forms/theme-elements/CustomTextField"; // Ensure the correct path
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { validationRegex } from "../../../utilities/Validators";
+import PropTypes from "prop-types";
 
 /**
  * ForgotPasswordFormComponent handles the login form functionality.
@@ -50,7 +51,7 @@ const validationSchema = Yup.object().shape({
   newPassword: Yup.string()
     .required("Password is required")
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^()-_=+/*-+])[A-Za-z\d@$!%*?&^()-_=+/*-+]{8,}$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^()\-_=+\/])[A-Za-z\d@$!%*?&^()\-_=+\/]{8,}$/,
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
   confirmNewPassword: Yup.string()
@@ -249,4 +250,8 @@ const ForgotPasswordFormComponent = React.forwardRef(
   }
 );
 
+ForgotPasswordFormComponent.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  handleReset: PropTypes.func.isRequired,
+};
 export default ForgotPasswordFormComponent;

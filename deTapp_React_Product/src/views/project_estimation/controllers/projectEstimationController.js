@@ -8,7 +8,6 @@ import {
 import { getCookie } from "../../utilities/cookieServices/cookieServices";
 import {
   isUserIdCookieName,
-  titleCaseFirstWord,
 } from "../../utilities/generals";
 import { decodeData } from "../../utilities/securities/encodeDecode";
 
@@ -129,8 +128,6 @@ export const projectEstimateCreationController = async (formData) => {
 
     // console.log({formData});
 
-    
-
     const email = decodeData(getCookie(isUserIdCookieName));
 
     // Prepare the body object with sanitized data
@@ -191,7 +188,7 @@ export const projectEstimateUpdateController = async (formData) => {
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
-    const email = decodeData(getCookie(isUserIdCookieName));
+    // const email = decodeData(getCookie(isUserIdCookieName));
 
     // Prepare the body object with sanitized data
     const body = {

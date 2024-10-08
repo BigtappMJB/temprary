@@ -3,7 +3,6 @@ import { Box, List } from "@mui/material";
 import NavItem from "./NavItem";
 import NavGroup from "./NavGroup/NavGroup";
 import { People } from "@mui/icons-material";
-import { useLoginProvider } from "../../../views/authentication/provider/LoginProvider";
 import { useNavigate } from "react-router";
 import { getUserPermissionsController } from "../../../views/user-management/users/controllers/usersControllers";
 import { setCookie } from "../../../views/utilities/cookieServices/cookieServices";
@@ -11,6 +10,7 @@ import { isPermissionDetailsCookieName } from "../../../views/utilities/generals
 import { encodeData } from "../../../views/utilities/securities/encodeDecode";
 import { storeMenuDetails } from "../../../redux/slices/slice";
 import { useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 
 const SidebarItems = ({ navItemClicked }) => {
   const [menuList, setMenuList] = useState([]);
@@ -37,7 +37,6 @@ const SidebarItems = ({ navItemClicked }) => {
       if (error.statusCode === 404) {
         setMenuList([]);
       }
-    } finally {
     }
   };
   useEffect(() => {
@@ -47,9 +46,8 @@ const SidebarItems = ({ navItemClicked }) => {
     }
   }, []);
   const transformApiData = (data) => {
-    return (
-      data &&
-      data?.map((menu, index) => ({
+    if (data) {
+      return data?.map((menu, index) => ({
         id: index,
         subheader: menu.menu_name,
         children: menu.submenus.map((submenu, subIndex) => ({
@@ -58,8 +56,10 @@ const SidebarItems = ({ navItemClicked }) => {
           href: submenu.submenu_path,
           icon: People, // Adjust the icon as per your needs
         })),
-      }))
-    );
+      }));
+    }
+
+    return [];
   };
   // const dashobardSubItem = {
   //   id: -1,
@@ -106,5 +106,9 @@ const SidebarItems = ({ navItemClicked }) => {
       </List>
     </Box>
   );
+};
+
+SidebarItems.propTypes = {
+  navItemClicked: PropTypes.func.isRequired,
 };
 export default SidebarItems;

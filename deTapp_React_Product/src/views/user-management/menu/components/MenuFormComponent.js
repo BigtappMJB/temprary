@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../../utilities/Validators";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -181,7 +182,12 @@ const RoleFormComponent = ({
             gap={2} // Adds space between buttons
           >
             {formAction.action !== "read" && (
-              <Button type="submit" variant="contained" color="primary" className="primary">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className="primary"
+              >
                 {formAction.action === "add" ? "Add" : "Update"}
               </Button>
             )}
@@ -200,6 +206,19 @@ const RoleFormComponent = ({
       </Grid>
     </Container>
   );
+};
+RoleFormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction should have an 'action' key and is required
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    NAME: PropTypes.string, // NAME is an optional string
+    DESCRIPTION: PropTypes.string, // DESCRIPTION is an optional string
+  }).isRequired, // defaultValues is required
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
 };
 
 export default RoleFormComponent;

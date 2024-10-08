@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import PropTypes from "prop-types";
 
 // Styled Container for dynamic form layout
 const Container = styled(Box)(({ theme }) => ({
@@ -116,7 +117,6 @@ const DynamicFormCreationFormComponent = ({
   const onDynamicFormSubmit = (data) => {
     onSubmit(data); // Send form data to parent
     reset(); // Reset the form fields
-    
   };
 
   /**
@@ -140,15 +140,21 @@ const DynamicFormCreationFormComponent = ({
           <Grid container spacing={3}>
             {columnDetails.map((column) => (
               <Grid item xs={12} md={12} key={column}>
-                <Box sx={{ display: "flex", justifyContent:"space-evenly", alignItems: "center" }}>
-                  <Typography sx={{ mr: 2 }}  >{column}</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography sx={{ mr: 2 }}>{column}</Typography>
                   <Typography sx={{ mr: 2 }}>:</Typography>
                   <Controller
                     name={column}
                     control={control}
                     render={({ field }) => (
                       <TextField
-                        {...field}                        
+                        {...field}
                         variant="outlined"
                         error={!!errors[column]} // Show error if validation fails
                         helperText={errors[column]?.message} // Display validation error message
@@ -193,6 +199,12 @@ const DynamicFormCreationFormComponent = ({
       )}
     </>
   );
+};
+DynamicFormCreationFormComponent.propTypes = {
+  noOfOptions: PropTypes.number.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  handleReset: PropTypes.func.isRequired,
+  defaultValues: PropTypes.any.isRequired,
 };
 
 export default DynamicFormCreationFormComponent;

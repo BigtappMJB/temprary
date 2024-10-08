@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../../utilities/Validators";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -19,10 +20,8 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for form validation using Yup
 const schema = yup.object().shape({
-  name: yup
-    .string()
-    .required("Name is required"),
-    // .matches(validationRegex.isSingleWord, errorMessages.singleWord),
+  name: yup.string().required("Name is required"),
+  // .matches(validationRegex.isSingleWord, errorMessages.singleWord),
   description: yup
     .string()
     .required("Description is required")
@@ -61,7 +60,6 @@ const RoleFormComponent = ({
   defaultValues,
   onSubmit,
   onReset,
-  rolesList,
 }) => {
   const [readOnly, setReadOnly] = useState(false);
 
@@ -85,7 +83,7 @@ const RoleFormComponent = ({
         description: defaultValues.description ?? "",
       });
     }
-  }, [defaultValues, reset, rolesList, formAction]);
+  }, [defaultValues, reset, formAction]);
 
   // Effect to set read-only state and reset form on formAction change
   useEffect(() => {
@@ -212,6 +210,20 @@ const RoleFormComponent = ({
       </Grid>
     </Container>
   );
+};
+// Define PropTypes for validation
+RoleFormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction should have an 'action' key and is required
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    name: PropTypes.string, // name is an optional string
+    description: PropTypes.string, // description is an optional string
+  }).isRequired, // defaultValues is required
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
 };
 
 export default RoleFormComponent;

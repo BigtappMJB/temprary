@@ -22,6 +22,7 @@ import {
 import { styled } from "@mui/material/styles";
 import DOMPurify from "dompurify";
 import OptionsDialogBox from "./DynamicOptionDialog";
+import PropTypes from "prop-types";
 
 // List of input types that can have multiple options
 const multipleOptionsList = ["dropdown", "radio", "autocomplete", "checkbox"];
@@ -104,7 +105,6 @@ const DynamicColumnForm = forwardRef(
     // Initialize the form with validation schema and default values
     const {
       control,
-      handleSubmit,
       reset,
       getValues,
       watch,
@@ -163,7 +163,6 @@ const DynamicColumnForm = forwardRef(
         });
       };
 
-      const formValues = getValues();
       sanitizeInputs();
     }, []);
 
@@ -229,7 +228,6 @@ const DynamicColumnForm = forwardRef(
       const result = await trigger("noOfOptions"); // Validate number of options
 
       setDialogOpen(result); // Open dialog if validation passes
-      
     };
 
     // Watch for COLUMN_NAME changes and trigger local column change
@@ -245,7 +243,6 @@ const DynamicColumnForm = forwardRef(
         console.log(data);
         console.log(previousValue.current);
 
-        
         if (data && data !== previousValue.current) {
           onLocalColumnChange(data); // Update form value using setValue from react-hook-form
         }
@@ -563,5 +560,19 @@ const DynamicColumnForm = forwardRef(
     );
   }
 );
+DynamicColumnForm.propTypes = {
+  formId: PropTypes.oneOfType([
+    // formId can be a string or a number
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired, // formId is required
 
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  inputList: PropTypes.any.isRequired, // inputList is required
+
+  remainingColumnList: PropTypes.any.isRequired, // remainingColumnList is required
+
+  onColumnChange: PropTypes.func.isRequired, // onColumnChange is a required function
+};
 export default DynamicColumnForm;

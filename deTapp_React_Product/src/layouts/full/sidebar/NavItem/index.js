@@ -70,7 +70,6 @@ const NavItem = ({ item, level, onClick }) => {
 NavItem.propTypes = {
   item: PropTypes.object,
   level: PropTypes.number,
-  pathDirect: PropTypes.any,
   onClick: PropTypes.func,
 };
 

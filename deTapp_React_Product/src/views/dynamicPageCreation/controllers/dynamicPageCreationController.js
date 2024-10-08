@@ -1,13 +1,7 @@
-import axios from "axios";
-import { handleChatGPTResponse } from "../../../core/openai";
 import { get, post } from "../../utilities/apiservices/apiServices";
-import { getCookie } from "../../utilities/cookieServices/cookieServices";
-import { isUserIdCookieName } from "../../utilities/generals";
-import { decodeData } from "../../utilities/securities/encodeDecode";
 
 export const getTableListDataController = async () => {
   try {
-    const email = decodeData(getCookie(isUserIdCookieName));
     // Send the GET request to the projectCreation API endpoint
     const response = await get("AllTables", "python");
     // Return the response data
@@ -56,28 +50,28 @@ export const getInputFieldController = async () => {
 
 export const createReactFormController = async (formData) => {
   try {
-    const email = decodeData(getCookie(isUserIdCookieName));
+    // const email = decodeData(getCookie(isUserIdCookieName));
 
     // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
 
-    const response = await post("gpt/generateCode",formData)
+    const response = await post("gpt/generateCode", formData);
     // const prompt = reactGenerationPrompt(formData);
     // console.log(prompt);
 
     // const openAIResponse = await handleChatGPTResponse(prompt);
     // const jsxCode = extractJSXBetweenMarkers(openAIResponse);
     // console.log(jsxCode);
-    // 
+    //
 
     // const body={
     //   ...formData,
     //   code: jsxCode
     // }
     // downloadUpdatedFile(openAIResponse, formData?.tableName);
-    // 
+    //
     // Send the GET request to the projectCreation API endpoint
     // const response = await get("AllTables", "python");
     // Return the response data
@@ -86,24 +80,6 @@ export const createReactFormController = async (formData) => {
     throw error;
   }
 };
-
-function extractJSXBetweenMarkers(response) {
-  // Regular expression to match code blocks enclosed in triple backticks
-  const codeBlocks = [];
-  const regex = /```[\s\S]*?```/g;
-  let match;
-  
-  // Iterate through all matches of the regex in the response
-  while ((match = regex.exec(response)) !== null) {
-    // Remove the backticks and language identifier (if any)
-    let code = match[0].replace(/```[\w]*\n?/, '').replace(/```$/, '');
-    // Trim extra spaces/newlines and push the cleaned code into the array
-    codeBlocks.push(code.trim());
-  }
-  
-  return codeBlocks.join("\n");
-}
-
 
 const formatColumnValue = (columnData) =>
   Object.entries(columnData)
@@ -189,37 +165,32 @@ const formatColumnValue = (columnData) =>
 //   }));
 //   \`\`\`
 
-// Component Logic with Axios: 
+// Component Logic with Axios:
 
-// - The form should: 
+// - The form should:
 
-//   1. Use React Hook Form for form handling. 
+//   1. Use React Hook Form for form handling.
 
-//   2. Implement Yup validation and display error messages below each field using FormHelperText. 
+//   2. Implement Yup validation and display error messages below each field using FormHelperText.
 
-//   3. Dynamically generate form fields based on [object Object] array. 
+//   3. Dynamically generate form fields based on [object Object] array.
 
-//   4. Include a **Submit** button to log form data and make an API call. 
+//   4. Include a **Submit** button to log form data and make an API call.
 
-//   5. Include a **Cancel** button to reset the form using 'reset'. 
+//   5. Include a **Cancel** button to reset the form using 'reset'.
 
-  
+// API Integration:
 
-// API Integration: 
+// - Use Axios to make a POST request with form values as the payload.
 
-// - Use Axios to make a POST request with form values as the payload. 
+// - The API endpoint should be 'https://example.com/api/submit', and the form values should be passed in the request body.
 
-// - The API endpoint should be 'https://example.com/api/submit', and the form values should be passed in the request body. 
+// Grid Layout:
 
-  
+// - The form should have a two-column layout, using Material UI's 'Grid' component.
 
-// Grid Layout: 
+// - Each form element should occupy one column (sm={6}), and full-width elements should span both columns (xs={12}).
 
-// - The form should have a two-column layout, using Material UI's 'Grid' component. 
-
-// - Each form element should occupy one column (sm={6}), and full-width elements should span both columns (xs={12}). 
-
-  
 //   - Here’s the basic structure:
 
 //   \`\`\`javascript
@@ -300,9 +271,9 @@ const formatColumnValue = (columnData) =>
 // `;
 
 // const reactGenerationPrompt = (value) =>  `
-// Generate a React component using React Hook Form, Yup validation, and Material UI components for a dynamic form. 
-// The form should follow a two-column grid layout, and an API call should be triggered upon form submission, passing 
-// the form values as arguments using Axios for HTTP requests. Additionally, retrieve data from the server using Axios 
+// Generate a React component using React Hook Form, Yup validation, and Material UI components for a dynamic form.
+// The form should follow a two-column grid layout, and an API call should be triggered upon form submission, passing
+// the form values as arguments using Axios for HTTP requests. Additionally, retrieve data from the server using Axios
 // and store it in useState when the component is mounted.
 
 // Additional API Integration:
@@ -368,7 +339,7 @@ const formatColumnValue = (columnData) =>
 // - Use Axios to make a POST request with form values as the payload.
 // - The API endpoint should be \`https://example.com/api/submit\`, and the form values should be passed in the request body.
 
-// - Include a function to retrieve table data using Axios and store it in useState. 
+// - Include a function to retrieve table data using Axios and store it in useState.
 // - Add an additional API call to retrieve data from the table and display the data using the <DataTable> component.
 
 // Grid Layout:
@@ -407,8 +378,8 @@ const formatColumnValue = (columnData) =>
 //   // Initialize React Hook Form with Yup resolver
 //   const { register, handleSubmit, reset, formState: { errors } } = useForm({
 //     mode: "onChange",
-//     shouldFocusError: true, 
-//     reValidateMode: "onChange", 
+//     shouldFocusError: true,
+//     reValidateMode: "onChange",
 //     resolver: yupResolver(validationSchema),
 //   });
 
@@ -591,7 +562,9 @@ Component Logic with Axios:
 - The form should:
   1. Use React Hook Form for form handling.
   2. Implement Yup validation and display error messages below each field using FormHelperText.
-  3. Dynamically generate form fields based on ${value.columnsData} array, ensuring proper names and validation.
+  3. Dynamically generate form fields based on ${
+    value.columnsData
+  } array, ensuring proper names and validation.
   4. Include a **Submit** button to log form data and make an API call.
   5. Include a **Cancel** button to reset the form using \`reset\`.
 
@@ -633,7 +606,9 @@ const validationSchema = yup.object().shape({
  * @component
  * @returns {JSX.Element} The rendered React component.
  */
-const ${value?.pageDetails?.pageName? value?.pageDetails?.pageName : 'TableComponent'} = ({ handleUpdateLogic, handleDelete, columns, permissionLevels }) => {
+const ${
+  value?.pageDetails?.pageName ? value?.pageDetails?.pageName : "TableComponent"
+} = ({ handleUpdateLogic, handleDelete, columns, permissionLevels }) => {
   // Initialize React Hook Form with Yup resolver
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     mode: "onChange",
@@ -689,7 +664,11 @@ const ${value?.pageDetails?.pageName? value?.pageDetails?.pageName : 'TableCompo
         <Container>
           <Header sx={{ backgroundColor: '#1e88e5', color: '#fff', p: 2 }}>
             <Mui.Typography variant="h6">
-              ${value?.pageDetails?.pageName? value?.pageDetails?.pageName : 'Form'}
+              ${
+                value?.pageDetails?.pageName
+                  ? value?.pageDetails?.pageName
+                  : "Form"
+              }
             </Mui.Typography>
           </Header>
 
@@ -752,24 +731,7 @@ const ${value?.pageDetails?.pageName? value?.pageDetails?.pageName : 'TableCompo
   );
 };
 
-export default ${value?.pageDetails?.pageName ? value?.pageDetails?.pageName : 'TableComponent'};
-`;
-
-
-
-const downloadUpdatedFile = (fileContent, fileName) => {
-  // Create a Blob with the updated content
-  const blob = new Blob([fileContent], { type: "text/plain" });
-
-  // Create a link element to trigger file download
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `${fileName}.txt`; // Set the download file name
-
-  // Trigger the download
-  document.body.appendChild(link);
-  link.click();
-
-  // Clean up
-  document.body.removeChild(link);
+export default ${
+  value?.pageDetails?.pageName ? value?.pageDetails?.pageName : "TableComponent"
 };
+`;

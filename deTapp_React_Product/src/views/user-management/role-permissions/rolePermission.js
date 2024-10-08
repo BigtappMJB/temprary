@@ -20,7 +20,6 @@ import {
   ScrollToTopButton,
 } from "../../utilities/generals";
 import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
-import { useSelector } from "react-redux";
 import { useOutletContext } from "react-router";
 
 // Styled Components
@@ -95,7 +94,7 @@ const RolePermissionPage = () => {
     display: false,
     action: "update",
   });
-  const [permissionLevels, setPermissionLevels] = useState({
+  const [permissionLevels] = useState({
     create: true,
     edit: true,
     view: true,
@@ -182,14 +181,14 @@ const RolePermissionPage = () => {
         stopLoading();
       }
     };
-    const submenuDetails = getSubmenuDetails(
-      menuList,
-      getCurrentPathName(),
-      "path"
-    );
-    const permissionList = submenuDetails?.permission_level
-      .split(",")
-      .map((ele) => ele.trim().toLowerCase());
+    // const submenuDetails = getSubmenuDetails(
+    //   menuList,
+    //   getCurrentPathName(),
+    //   "path"
+    // );
+    // const permissionList = submenuDetails?.permission_level
+    //   .split(",")
+    //   .map((ele) => ele.trim().toLowerCase());
 
     if (!hasFetchedRoles.current) {
       getTableData();
@@ -233,7 +232,7 @@ const RolePermissionPage = () => {
             isNeed: false,
           },
         },
-        (confirmed) => { }
+        (confirmed) => {}
       );
     }
   };
@@ -262,8 +261,9 @@ const RolePermissionPage = () => {
           "success",
           `Role Permission ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-          `Role Permission has been ${isAdd ? "addded" : "updated"
-          } successfully`,
+            `Role Permission has been ${
+              isAdd ? "addded" : "updated"
+            } successfully`,
           {
             confirm: {
               name: "Ok",
@@ -274,7 +274,7 @@ const RolePermissionPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => { }
+          (confirmed) => {}
         );
       }
     } catch (error) {
@@ -342,7 +342,7 @@ const RolePermissionPage = () => {
             isNeed: false,
           },
         },
-        (confirmed) => { }
+        (confirmed) => {}
       );
     }
   };
@@ -389,7 +389,7 @@ const RolePermissionPage = () => {
             isNeed: false,
           },
         },
-        (confirmed) => { }
+        (confirmed) => {}
       );
     }
   };
@@ -458,18 +458,23 @@ const RolePermissionPage = () => {
     }
   };
 
+  const getActionText = () => {
+    if (formAction.action === "add") {
+      return "Add";
+    } else if (formAction.action === "update") {
+      return "Update";
+    } else {
+      return "Read";
+    }
+  };
+
   return (
     <>
       {formAction.display && (
         <Container>
           <Header className="panel-header">
             <Typography variant="h6">
-              {formAction.action === "add"
-                ? "Add"
-                : formAction.action === "update"
-                  ? "Update"
-                  : "Read "}{" "}
-              Role Permission
+              {getActionText()} Role Permission
             </Typography>
           </Header>
           <RolePermissionFormComponent
@@ -497,8 +502,9 @@ const RolePermissionPage = () => {
               variant="contained"
               color="primary"
               style={{ marginRight: "10px" }}
-              className={`${permissionLevels?.create ? "primary" : "custom-disabled"
-                }`}
+              className={`${
+                permissionLevels?.create ? "primary" : "custom-disabled"
+              }`}
               disabled={formAction.action === "add" && formAction.display}
             >
               Add Role Permission

@@ -12,7 +12,6 @@ import {
 } from "./controllers/cmdControllers";
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
-import { useSelector } from "react-redux";
 import {
   generateCSV,
   getCurrentPathName,
@@ -85,7 +84,7 @@ const FormButton = styled(Button)(({ theme }) => ({
 const CMDPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
-  const [rolesList, setRolesList] = useState([]);
+  const [rolesList] = useState([]);
   const { startLoading, stopLoading } = useLoading();
 
   const [formAction, setFormAction] = useState({
@@ -421,6 +420,15 @@ const CMDPage = () => {
       stopLoading();
     }
   };
+  const getActionText = () => {
+    if (formAction.action === "add") {
+      return "Add";
+    } else if (formAction.action === "update") {
+      return "Update";
+    } else {
+      return "Read";
+    }
+  };
 
   return (
     <>
@@ -428,12 +436,7 @@ const CMDPage = () => {
         <Container>
           <Header className="panel-header">
             <Typography variant="h6">
-              {formAction.action === "add"
-                ? "Add"
-                : formAction.action === "update"
-                ? "Update"
-                : "Read "}{" "}
-              Central Manual Depository
+              {getActionText()} Central Manual Depository
             </Typography>
           </Header>
           <CMDFormComponent

@@ -3,14 +3,13 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
   Typography,
   Box,
   IconButton,
 } from "@mui/material";
 import DynamicFormCreationFormComponent from "./DynamicOptionForm";
 import CloseIcon from "@mui/icons-material/Close";
+import PropTypes from "prop-types";
 
 const OptionsDialogBox = ({
   open,
@@ -27,12 +26,7 @@ const OptionsDialogBox = ({
   }, [handleClose]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={memoizedHandleClose}
-      fullWidth={true}
-
-    >
+    <Dialog open={open} onClose={memoizedHandleClose} fullWidth={true}>
       <DialogTitle
         sx={{
           bgcolor: "primary.main",
@@ -69,6 +63,22 @@ const OptionsDialogBox = ({
       </DialogContent>
     </Dialog>
   );
+};
+
+OptionsDialogBox.propTypes = {
+  open: PropTypes.bool.isRequired, // open should be a required boolean
+
+  handleClose: PropTypes.func.isRequired, // handleClose should be a required function
+
+  noOfOptions: PropTypes.number, // noOfOptions should be a number (optional)
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit should be a required function
+
+  defaultValues: PropTypes.any,
+
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  columnName: PropTypes.string.isRequired, // columnName should be a required string
 };
 
 export default OptionsDialogBox;

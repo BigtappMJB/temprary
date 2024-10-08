@@ -6,10 +6,11 @@ import React, {
   useState,
 } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button, Grid, styled, Box } from "@mui/material";
+import { TextField, Grid, styled, Box } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
 
 // Styled Container for the form layout
 const Container = styled(Box)(({ theme }) => ({
@@ -75,182 +76,178 @@ const schema = yup.object().shape({
  *   onReset={handleReset}
  * />
  */
-const PageCreationForm = forwardRef(
-  ({ formAction = {}, onSubmit, onReset }, ref) => {
-    // State for managing whether the form fields should be read-only
-    const [readOnly, setReadOnly] = useState(false);
+const PageCreationForm = forwardRef(({ onSubmit, onReset }, ref) => {
+  // State for managing whether the form fields should be read-only
+  const [readOnly] = useState(false);
 
-    // State to track focus events
-    const [isFocused, setIsFocused] = useState(false);
+  // React Hook Form setup with validation and default values
+  const {
+    control,
+    handleSubmit,
+    reset,
+    getValues,
+    trigger,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+  });
 
-    // React Hook Form setup with validation and default values
-    const {
-      control,
-      handleSubmit,
-      reset,
-      getValues,
-      trigger,
-      formState: { errors },
-    } = useForm({
-      mode: "onChange",
-      resolver: yupResolver(schema),
-    });
+  // Effect to sanitize all input values to prevent XSS attacks using DOMPurify
+  useEffect(() => {
+    const sanitizeInputs = () => {
+      const inputs = document.querySelectorAll("input");
+      inputs.forEach((input) => {
+        input.value = DOMPurify.sanitize(input.value);
+      });
+    };
 
-    // Effect to sanitize all input values to prevent XSS attacks using DOMPurify
-    useEffect(() => {
-      const sanitizeInputs = () => {
-        const inputs = document.querySelectorAll("input");
-        inputs.forEach((input) => {
-          input.value = DOMPurify.sanitize(input.value);
-        });
-      };
+    sanitizeInputs(); // Call sanitize on initial render
+  }, []);
 
-      sanitizeInputs(); // Call sanitize on initial render
-    }, []);
+  /**
+   * Resets the form to its initial state and calls the parent onReset function.
+   */
+  // const handleReset = () => {
+  //   onReset(); // Parent reset handler
+  //   reset({
+  //     menu: null,
+  //     subMenu: null,
+  //     pageName: "",
+  //     route: "",
+  //   }); // Clear form fields
+  // };
 
+  /**
+   * Handles the form submission by sending the form data to the parent onSubmit handler.
+   */
+  const onLocalSubmit = () => {
+    onSubmit(getValues()); // Send form data to parent component
+  };
+
+  // Expose form methods (reset and trigger validation) to parent component via ref
+  useImperativeHandle(ref, () => ({
     /**
-     * Resets the form to its initial state and calls the parent onReset function.
+     * Resets the form to its default values.
      */
-    const handleReset = () => {
-      onReset(); // Parent reset handler
+    resetForm: async () => {
       reset({
         menu: null,
         subMenu: null,
         pageName: "",
         route: "",
-      }); // Clear form fields
-    };
-
+      });
+    },
     /**
-     * Handles the form submission by sending the form data to the parent onSubmit handler.
+     * Triggers validation of the form and returns the form values if valid.
+     * @returns {Object} Contains page details and validation status
      */
-    const onLocalSubmit = () => {
-      onSubmit(getValues()); // Send form data to parent component
-    };
+    triggerValidation: async () => {
+      const isValid = await trigger(); // Trigger validation
+      const values = getValues(); // Get form values
+      return { pageDetails: values, validated: isValid }; // Return validation result and values
+    },
+  }));
 
-    // Expose form methods (reset and trigger validation) to parent component via ref
-    useImperativeHandle(ref, () => ({
-      /**
-       * Resets the form to its default values.
-       */
-      resetForm: async () => {
-        reset({
-          menu: null,
-          subMenu: null,
-          pageName: "",
-          route: "",
-        });
-      },
-      /**
-       * Triggers validation of the form and returns the form values if valid.
-       * @returns {Object} Contains page details and validation status
-       */
-      triggerValidation: async () => {
-        const isValid = await trigger(); // Trigger validation
-        const values = getValues(); // Get form values
-        return { pageDetails: values, validated: isValid }; // Return validation result and values
-      },
-    }));
+  return (
+    <Container
+      component="form"
+      className="panel-bg"
+      onSubmit={handleSubmit(onLocalSubmit)} // Handle form submission
+    >
+      <Grid container spacing={2}>
+        {/* Menu Field */}
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="menu"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Enter menu"
+                fullWidth
+                variant="outlined"
+                error={!!errors.menu}
+                helperText={errors.menu?.message}
+                InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
+                InputProps={{
+                  readOnly: readOnly, // Make the field read-only if necessary
+                }}
+              />
+            )}
+          />
+        </Grid>
 
-    return (
-      <Container
-        component="form"
-        className="panel-bg"
-        onSubmit={handleSubmit(onLocalSubmit)} // Handle form submission
-      >
-        <Grid container spacing={2}>
-          {/* Menu Field */}
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="menu"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Enter menu"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.menu}
-                  helperText={errors.menu?.message}
-                  InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
-                  InputProps={{
-                    readOnly: readOnly, // Make the field read-only if necessary
-                  }}
-                />
-              )}
-            />
-          </Grid>
+        {/* SubMenu Field */}
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="subMenu"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Enter subMenu"
+                fullWidth
+                variant="outlined"
+                error={!!errors.subMenu}
+                helperText={errors.subMenu?.message}
+                InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
+                InputProps={{
+                  readOnly: readOnly, // Make the field read-only if necessary
+                }}
+              />
+            )}
+          />
+        </Grid>
 
-          {/* SubMenu Field */}
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="subMenu"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Enter subMenu"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.subMenu}
-                  helperText={errors.subMenu?.message}
-                  InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
-                  InputProps={{
-                    readOnly: readOnly, // Make the field read-only if necessary
-                  }}
-                />
-              )}
-            />
-          </Grid>
+        {/* Page Name Field */}
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="pageName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Enter page Name"
+                fullWidth
+                variant="outlined"
+                error={!!errors.pageName}
+                helperText={errors.pageName?.message}
+                InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
+                InputProps={{
+                  readOnly: readOnly, // Make the field read-only if necessary
+                }}
+              />
+            )}
+          />
+        </Grid>
 
-          {/* Page Name Field */}
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="pageName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Enter page Name"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.pageName}
-                  helperText={errors.pageName?.message}
-                  InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
-                  InputProps={{
-                    readOnly: readOnly, // Make the field read-only if necessary
-                  }}
-                />
-              )}
-            />
-          </Grid>
+        {/* Route Field */}
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="route"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Enter route"
+                fullWidth
+                variant="outlined"
+                error={!!errors.route}
+                helperText={errors.route?.message}
+                InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
+                InputProps={{
+                  readOnly: readOnly, // Make the field read-only if necessary
+                }}
+              />
+            )}
+          />
+        </Grid>
 
-          {/* Route Field */}
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="route"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Enter route"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.route}
-                  helperText={errors.route?.message}
-                  InputLabelProps={{ shrink: field.value }} // Shrink label when field has value
-                  InputProps={{
-                    readOnly: readOnly, // Make the field read-only if necessary
-                  }}
-                />
-              )}
-            />
-          </Grid>
-
-          {/* Submit and Reset Button Section */}
-          <Grid item xs={12} sm={12}>
-            {/* Uncomment to add action buttons */}
-            {/* <Box
+        {/* Submit and Reset Button Section */}
+        <Grid item xs={12} sm={12}>
+          {/* Uncomment to add action buttons */}
+          {/* <Box
               display="flex"
               justifyContent="flex-end"
               alignItems="center"
@@ -278,11 +275,16 @@ const PageCreationForm = forwardRef(
                 Submit
               </Button>
             </Box> */}
-          </Grid>
         </Grid>
-      </Container>
-    );
-  }
-);
+      </Grid>
+    </Container>
+  );
+});
+
+PageCreationForm.propTypes = {
+  // formAction is required
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+};
 
 export default PageCreationForm;

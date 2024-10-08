@@ -4,7 +4,6 @@ import {
   put,
   remove,
 } from "../../../utilities/apiservices/apiServices";
-import { titleCaseFirstWord } from "../../../utilities/generals";
 
 /**
  * Fetches the list of role permissions from the API.

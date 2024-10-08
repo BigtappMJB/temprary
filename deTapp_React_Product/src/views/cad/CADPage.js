@@ -3,8 +3,6 @@ import { useEffect, useRef, useState } from "react";
 
 import DataTable from "../user-management/users/components/DataTable";
 
-import { useSelector } from "react-redux";
-
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
 import {
@@ -23,7 +21,6 @@ import {
 } from "./controllers/cadControllers";
 import CADFormComponent from "./components/cadForm";
 import { useOutletContext } from "react-router";
-import { FormatColorFillRounded } from "@mui/icons-material";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -87,7 +84,7 @@ const FormButton = styled(Button)(({ theme }) => ({
 const CMDPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
-  const [rolesList, setRolesList] = useState([]);
+  const [rolesList] = useState([]);
   const { startLoading, stopLoading } = useLoading();
 
   const [formAction, setFormAction] = useState({
@@ -423,18 +420,23 @@ const CMDPage = () => {
       columnOrder
     );
   };
+
+  const getActionText = () => {
+    if (formAction.action === "add") {
+      return "Add";
+    } else if (formAction.action === "update") {
+      return "Update";
+    } else {
+      return "Read";
+    }
+  };
   return (
     <>
       {formAction.display && (
         <Container>
           <Header className="panel-header">
             <Typography variant="h6">
-              {formAction.action === "add"
-                ? "Add"
-                : formAction.action === "update"
-                ? "Update"
-                : "Read "}{" "}
-              Central Adjustment Depository
+              {getActionText()} Central Adjustment Depository
             </Typography>
           </Header>
           <CADFormComponent

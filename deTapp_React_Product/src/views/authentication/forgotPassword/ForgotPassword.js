@@ -8,10 +8,8 @@ import AuthCardComponent from "../generalComponents/CardComponent";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import {
   getCookie,
-  removeCookie,
 } from "../../utilities/cookieServices/cookieServices";
 import {
-  isForgotPasswordCookieName,
   isUserIdCookieName,
 } from "../../utilities/generals";
 import ForgotPasswordFormComponent from "./components/ForgotPasswordFormComponent";
