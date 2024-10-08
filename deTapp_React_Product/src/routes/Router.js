@@ -34,7 +34,7 @@ const UserRole = Loadable(
   lazy(() => import("../views/user-management/userRole/UserRole"))
 );
 
-const Error = Loadable(lazy(() => import("../views/authentication/Error")));
+const ErrorPage = Loadable(lazy(() => import("../views/authentication/Error")));
 const Register = Loadable(
   lazy(() => import("../views/authentication/registration/Register"))
 );
@@ -183,7 +183,7 @@ const staticRoutes = [
     path: "/auth",
     element: <BlankLayout />,
     children: [
-      { path: "404", element: <Error /> },
+      { path: "404", element: <ErrorPage /> },
       { path: "/auth/register", element: <Register /> },
       { path: "/auth/login", element: <Login /> },
       { path: "/auth/emailVerification", element: <EmailVerification /> },

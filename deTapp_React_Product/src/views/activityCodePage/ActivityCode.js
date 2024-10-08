@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import ProjectCreationForm from "./components/activityCodeForm";
 import DataTable from "../user-management/users/components/DataTable";
 
-import { useSelector } from "react-redux";
-
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
 import {
@@ -23,7 +21,6 @@ import {
   projectUpdateController,
 } from "./controllers/activityCodeControllers";
 import { useOutletContext } from "react-router";
-import { getprojectTypesController } from "../projectTypes/controllers/projectTypesControllers";
 import { getprojectPhasesController } from "../projectPhase/controllers/projectPhaseControllers";
 import { getprojectRolesController } from "../projectRole/controllers/projectRoleControllers";
 
@@ -226,96 +223,99 @@ const ActivityCodePage = () => {
    * @param {Object} formData - The data from the form.
    */
   const onformSubmit = async (formData) => {
+    const isAdd = formAction.action === "add";
     try {
       startLoading();
-      let response = null;
-      const isAdd = formAction.action === "add";
-      if (isAdd) response = await projectCreationController(formData);
-      else {
-        formData = {
-          ...formData,
-          ID: selectedValue.ACTIVITY_CODE,
-        };
-        response = await projectUpdateController(formData);
-      }
 
-      if (response.message) {
-        getTableData();
-        formRef.current.resetForm();
-        if (!isAdd) {
-          onFormReset();
-        }
-        openDialog(
-          "success",
-          `Activity Code ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message ||
-            `Activity Code has been ${
-              isAdd ? "addded" : "updated"
-            } successfully`,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
-      }
-      if (response.error) {
-        getTableData();
-        formRef.current.resetForm();
-        if (!isAdd) {
-          onFormReset();
-        }
-        openDialog(
-          "success",
-          `Activity Code ${isAdd ? "Addition" : "Updation"} Failed`,
-          response.error ||
-            `Activity Code  ${isAdd ? "addded" : "updated"} Failed`,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
-      }
+      // Prepare the form data for add or update
+      const updatedFormData = isAdd
+        ? formData
+        : {
+            ...formData,
+            ID: selectedValue.ACTIVITY_CODE,
+          };
+
+      // Make the appropriate API call
+      const response = isAdd
+        ? await projectCreationController(updatedFormData)
+        : await projectUpdateController(updatedFormData);
+
+      // Handle success and error cases
+      handleResponse(response, isAdd);
     } catch (error) {
-      console.error(error);
-      const isAdd = formAction.action === "add";
-      openDialog(
-        "warning",
-        "Warning",
-        error.errorMessage ||
-          `Activity Code ${isAdd ? "Addition" : "Updation"} failed`,
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            return;
-          }
-        }
-      );
+      handleError(error, isAdd);
     } finally {
       stopLoading();
     }
+  };
+
+  // Helper function to handle API response
+  const handleResponse = (response, isAdd) => {
+    const actionType = isAdd ? "Addition" : "Updation";
+
+    // If the response contains a message (success)
+    if (response.message) {
+      processSuccessResponse(response.message, actionType, isAdd);
+    }
+
+    // If the response contains an error (failure)
+    if (response.error) {
+      processErrorResponse(response.error, actionType, isAdd);
+    }
+  };
+
+  // Process successful response
+  const processSuccessResponse = (message, actionType, isAdd) => {
+    getTableData();
+    formRef.current.resetForm();
+    if (!isAdd) {
+      onFormReset();
+    }
+    openDialog(
+      "success",
+      `Activity Code ${actionType} Success`,
+      message ||
+        `Activity Code has been ${actionType.toLowerCase()} successfully`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      }
+    );
+  };
+
+  // Process error response
+  const processErrorResponse = (error, actionType, isAdd) => {
+    getTableData();
+    formRef.current.resetForm();
+    if (!isAdd) {
+      onFormReset();
+    }
+    openDialog(
+      "error",
+      `Activity Code ${actionType} Failed`,
+      error || `Activity Code ${actionType.toLowerCase()} Failed`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      }
+    );
+  };
+
+  // Helper function to handle errors
+  const handleError = (error, isAdd) => {
+    const actionType = isAdd ? "Addition" : "Updation";
+    openDialog(
+      "warning",
+      "Warning",
+      error.errorMessage || `Activity Code ${actionType} failed`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {
+        if (confirmed) return;
+      }
+    );
   };
 
   /**
@@ -418,12 +418,10 @@ const ActivityCodePage = () => {
         display: false,
         action: null,
       });
-      
-      const response = await projectDeleteController(
-        selectedRow.ACTIVITY_CODE
-      );
+
+      const response = await projectDeleteController(selectedRow.ACTIVITY_CODE);
       console.log(response);
-      
+
       if (response) {
         getTableData();
         openDialog(

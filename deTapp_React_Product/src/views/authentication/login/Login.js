@@ -42,7 +42,7 @@ const LoginPage = () => {
   const [isDefaultPasswordUpdated, setIsDefaultPasswordUpdated] = useState(
     getCookie(isDefaultPasswordChangedCookieName) !== null
   );
-  const [isForgotPasswordUpdated, setForgotPasswordUpdated] = useState(
+  const [forgotPasswordUpdated, setForgotPasswordUpdated] = useState(
     getCookie(isForgotPasswordCookieName) !== null
   );
 
@@ -74,104 +74,103 @@ const LoginPage = () => {
 
   const onLogin = async (formData) => {
     try {
-      // Remove the default password status cookie and reset the state variable
-      removeCookie(isEmailVerifiedForDefaultPasswordCookieName);
-      removeCookie(isDefaultPasswordChangedCookieName);
-      removeCookie(isForgotPasswordCookieName);
-      removeCookie(isDefaultPasswordUpdated);
-      removeCookie(isPermissionDetailsCookieName);
-      removeCookie(isLoginTokenCookieName);
-      setIsDefaultPasswordUpdated(false);
-      setIsDefaultPassword(false);
-      setForgotPasswordUpdated(false);
+      resetCookiesAndState();
 
-      // Start the loading indicator and reset any existing API errors
       startLoading();
       setApiError(null);
 
-      // Send the login credentials to the server for authentication
       const response = await loginController(formData);
-      // Set a cookie to store the encoded username
-      setCookie({
-        name: isUserIdCookieName,
-        value: encodeData(formData?.username),
-      });
-      const token = response.token;
-      localStorage.setItem('token',token);
-
-      if (response) {
-        // Set a cookie to indicate the email verification status
-        setCookie({
-          name: isEmailVerifiedStatusCookieName,
-          value: encodeData(response?.is_verified ? 1 : 0),
-        });
-
-        // Set a cookie to indicate the default password status
-        setCookie({
-          name: isDefaultPasswordStatusCookieName,
-          value: encodeData(response?.is_default_password_changed ? 1 : 0),
-        });
-
-        // Set a cookie to indicate the default password status
-        setCookie({
-          name: isDefaultPasswordStatusCookieName,
-          value: encodeData(response?.is_default_password_changed ? 1 : 0),
-        });
-
-        // Redirect to the email verification page if the email is not verified
-        if (!response?.is_verified) {
-          navigate("/auth/emailVerification");
-          return;
-        }
-
-        // Redirect to the change password page if the default password is not changed
-        if (!response?.is_default_password_changed) {
-          navigate("/auth/changePassword");
-          return;
-        }
-
-        const loginDetails = {
-          username: formData.username,
-          userDetails: response,
-        };
-
-        dispatch(storeLoginDetails(loginDetails));
-        dispatch(storeMenuDetails(response?.permissions));
-
-        
-
-        // Remember the user if the rememberMe flag is set
-        if (formData.rememberMe) {
-          rememberMeFunction(response);
-        }
-
-        // Set a cookie to indicate the loginStatus status
-        setCookie({
-          name: isLoginSuccessCookieName,
-          value: encodeData(1),
-        });
-        // Set a cookie to store permissionList
-        // setCookie({
-        //   name: isLoginTokenCookieName,
-        //   value: encodeData(response?.token),
-        // });
-        const firstSubMenuPath =
-          response?.permissions[0]?.submenus[0]?.submenu_path;
-        // await triggerOTPEmail();
-        navigate(firstSubMenuPath || "/dashboard");
-        // Log the successful login and navigate to the dashboard
-      }
+      handleLoginResponse(response, formData);
     } catch (error) {
-      // Log the error and set an appropriate API error message
-      console.error(error);
-      setApiError(
-        error.errorMessage ||
-          "Failed to login. Please check your credentials and try again."
-      );
+      handleLoginError(error);
     } finally {
-      // Stop the loading indicator
       stopLoading();
     }
+  };
+
+  // Helper function to reset cookies and state variables
+  const resetCookiesAndState = () => {
+    const cookiesToRemove = [
+      isEmailVerifiedForDefaultPasswordCookieName,
+      isDefaultPasswordChangedCookieName,
+      isForgotPasswordCookieName,
+      isDefaultPasswordUpdated,
+      isPermissionDetailsCookieName,
+      isLoginTokenCookieName,
+    ];
+
+    cookiesToRemove.forEach(removeCookie);
+    setIsDefaultPasswordUpdated(false);
+    setIsDefaultPassword(false);
+    setForgotPasswordUpdated(false);
+  };
+
+  // Helper function to handle the response from loginController
+  const handleLoginResponse = (response, formData) => {
+    if (response) {
+      storeLoginCookies(response, formData);
+      if (!response?.is_verified) {
+        navigate("/auth/emailVerification");
+        return;
+      }
+      if (!response?.is_default_password_changed) {
+        navigate("/auth/changePassword");
+        return;
+      }
+
+      storeLoginDetailsInState(response, formData);
+
+      if (formData.rememberMe) {
+        rememberMeFunction(response);
+      }
+
+      setCookie({
+        name: isLoginSuccessCookieName,
+        value: encodeData(1),
+      });
+
+      const firstSubMenuPath =
+        response?.permissions[0]?.submenus[0]?.submenu_path;
+      navigate(firstSubMenuPath || "/dashboard");
+    }
+  };
+
+  // Helper function to store login cookies
+  const storeLoginCookies = (response, formData) => {
+    setCookie({
+      name: isUserIdCookieName,
+      value: encodeData(formData?.username),
+    });
+
+    setCookie({
+      name: isEmailVerifiedStatusCookieName,
+      value: encodeData(response?.is_verified ? 1 : 0),
+    });
+
+    setCookie({
+      name: isDefaultPasswordStatusCookieName,
+      value: encodeData(response?.is_default_password_changed ? 1 : 0),
+    });
+  };
+
+  // Helper function to store login details in the state
+  const storeLoginDetailsInState = (response, formData) => {
+    const loginDetails = {
+      username: formData.username,
+      userDetails: response,
+    };
+
+    dispatch(storeLoginDetails(loginDetails));
+    dispatch(storeMenuDetails(response?.permissions));
+  };
+
+  // Helper function to handle login error
+  const handleLoginError = (error) => {
+    console.error(error);
+    setApiError(
+      error.errorMessage ||
+        "Failed to login. Please check your credentials and try again."
+    );
   };
 
   return (
@@ -199,9 +198,9 @@ const LoginPage = () => {
         </Alert>
       )}
 
-      {isForgotPasswordUpdated && (
+      {forgotPasswordUpdated && (
         <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
-          Your password has been reseted successfully.
+          Your password has been reset successfully.
         </Alert>
       )}
 

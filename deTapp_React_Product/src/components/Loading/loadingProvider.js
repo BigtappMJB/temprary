@@ -1,4 +1,5 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useMemo, useState } from "react";
+import PropTypes from "prop-types";
 
 // Create a new context instance
 const LoadingContext = createContext();
@@ -20,11 +21,24 @@ export const LoadingProvider = ({ children }) => {
   // Function to set loading state to false
   const stopLoading = () => setIsLoading(false);
 
+  const contextValue = useMemo(
+    () => ({
+      isLoading,
+      startLoading,
+      stopLoading,
+    }),
+    [isLoading]
+  );
+
   return (
-    <LoadingContext.Provider value={{ isLoading, startLoading, stopLoading }}>
+    <LoadingContext.Provider value={contextValue}>
       {children}
     </LoadingContext.Provider>
   );
+};
+
+LoadingProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 /**

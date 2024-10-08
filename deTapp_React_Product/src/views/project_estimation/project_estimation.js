@@ -9,7 +9,6 @@ import {
   getProjectEstimationControllers,
   getProjectPhaseControllers,
   getProjectRoleControllers,
-  getActivityCodeController,
   projectEstimateDeletionController,
   projectEstimateUpdateController,
 } from "./controllers/projectEstimationController";
@@ -92,7 +91,6 @@ const ProjectEstimationPage = () => {
   const [project, setProject] = useState([]);
   const [role, setRole] = useState([]);
   const [phase, setPhase] = useState([]);
-  const [activityCode, setActivityCode] = useState([]);
 
   const { startLoading, stopLoading } = useLoading();
   const formRef = useRef({});
@@ -255,98 +253,95 @@ const ProjectEstimationPage = () => {
   const onformSubmit = async (formData) => {
     try {
       startLoading();
-      let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await projectEstimateCreationController(formData);
-      else {
-        formData = {
-          ...formData,
-          ID: selectedValue.ESTIMATE_ID,
-        };
-        response = await projectEstimateUpdateController(formData);
-      }
+
+      // Handle form submission
+      const response = await handleFormSubmission(formData, isAdd);
+
       if (response?.message) {
-        getTableData();
-        formRef.current?.resetForm();
-        if (!isAdd) {
-          
-          onFormReset();
-        }
-        openDialog(
-          "success",
-          `Project Estimation ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message ||
-            `Project Estimation has been ${
-              isAdd ? "addded" : "updated"
-            } successfully`,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
+        handleSuccessResponse(response.message, isAdd);
       } else {
-        openDialog(
-          "warning",
-          "Warning",
-          response?.error ||
-            `Project Estimation ${isAdd ? "Addition" : "Updation"} failed`,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {
-            if (confirmed) {
-              return;
-            }
-          }
-        );
+        handleWarningResponse(response?.error, isAdd);
       }
     } catch (error) {
-      console.error(error);
       const isAdd = formAction.action === "add";
-      openDialog(
-        "warning",
-        "Warning",
-        `Project Estimation ${isAdd ? "Addition" : "Updation"} failed`,
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            return;
-          }
-        }
-      );
+      handleErrorResponse(error, isAdd);
     } finally {
       stopLoading();
     }
+  };
+
+  // Helper function to handle form submission logic
+  const handleFormSubmission = async (formData, isAdd) => {
+    if (isAdd) {
+      return await projectEstimateCreationController(formData);
+    } else {
+      const updatedFormData = {
+        ...formData,
+        ID: selectedValue.ESTIMATE_ID,
+      };
+      return await projectEstimateUpdateController(updatedFormData);
+    }
+  };
+
+  // Helper function to handle success response
+  const handleSuccessResponse = (message, isAdd) => {
+    getTableData();
+    formRef.current?.resetForm();
+
+    if (!isAdd) {
+      onFormReset();
+    }
+
+    openDialog(
+      "success",
+      `Project Estimation ${isAdd ? "Addition" : "Updation"} Success`,
+      message ||
+        `Project Estimation has been ${
+          isAdd ? "added" : "updated"
+        } successfully`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {}
+    );
+  };
+
+  // Helper function to handle warning response
+  const handleWarningResponse = (error, isAdd) => {
+    openDialog(
+      "warning",
+      `Project Estimation ${isAdd ? "Addition" : "Updation"} Failed`,
+      error || `Project Estimation ${isAdd ? "Addition" : "Updation"} failed`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {}
+    );
+  };
+
+  // Helper function to handle error responses
+  const handleErrorResponse = (error, isAdd) => {
+    console.error(error);
+    openDialog(
+      "warning",
+      `Project Estimation ${isAdd ? "Addition" : "Updation"} Failed`,
+      error?.errorMessage ||
+        `Project Estimation ${isAdd ? "Addition" : "Updation"} failed`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {}
+    );
   };
 
   /**
    * Resets the form and hides it.
    */
   const onFormReset = () => {
-    
     setFormAction({
       display: false,
       action: null,
@@ -521,18 +516,23 @@ const ProjectEstimationPage = () => {
     );
   };
 
+  const getActionText = () => {
+    if (formAction.action === "add") {
+      return "Add";
+    } else if (formAction.action === "update") {
+      return "Update";
+    } else {
+      return "Read";
+    }
+  };
+
   return (
     <>
       {formAction.display && (
         <Container>
           <Header className="panel-header">
             <Typography variant="h6">
-              {formAction.action === "add"
-                ? "Add"
-                : formAction.action === "update"
-                ? "Update"
-                : "Read "}{" "}
-              Project Estimation
+              {getActionText()} Project Estimation
             </Typography>
           </Header>
           <ProjectEstimateFormComponent
@@ -544,7 +544,6 @@ const ProjectEstimationPage = () => {
             roleList={role}
             phaseList={phase}
             ref={(el) => (formRef.current = el)}
-            activityList={activityCode}
           />
         </Container>
       )}

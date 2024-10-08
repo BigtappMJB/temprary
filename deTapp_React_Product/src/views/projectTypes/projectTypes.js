@@ -20,7 +20,6 @@ import {
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
 import DataTable from "../user-management/users/components/DataTable";
-import { errorMessages } from "../utilities/Validators";
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({
@@ -108,7 +107,7 @@ const Roles = () => {
       startLoading();
       const response = await getprojectTypesController();
       setTableData(response);
-      // 
+      //
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {
@@ -194,85 +193,88 @@ const Roles = () => {
   const onformSubmit = async (formData) => {
     try {
       startLoading();
-      let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await projectTypesCreationController(formData);
-      else {
-        formData = { ...formData, ID: selectedValue.id };
-        response = await projectTypesupdateController(formData);
-      }
 
+      // Handle form submission
+      const response = await handleFormSubmission(formData, isAdd);
+
+      // Process the response
       if (response.message) {
-        getRoles();
-        formRef.current.resetForm();
-        if (!isAdd) {
-          onFormReset();
-        }
-        openDialog(
-          "success",
-          `Project Type ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message ||
-            `Project Type has been ${
-              isAdd ? "addded" : "updated"
-            } successfully  `,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
-      }
-      if (response.error) {
-        openDialog(
-          "success",
-          `Project Type ${isAdd ? "Addition" : "Updation"} Failed`,
-          response.error ||
-            `Project Type ${isAdd ? "addded" : "updated"} Failed `,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
+        handleSuccessResponse(response.message, isAdd);
+      } else if (response.error) {
+        handleErrorResponse(response.error, isAdd);
       }
     } catch (error) {
       const isAdd = formAction.action === "add";
-      openDialog(
-        "warning",
-        "Warning",
-        error?.errorMessages ||
-          `Project Type ${isAdd ? "Addition" : "Updation"} failed`,
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            return;
-          }
-        }
-      );
+      handleCatchError(error, isAdd);
     } finally {
       stopLoading();
     }
+  };
+
+  // Helper function to handle form submission
+  const handleFormSubmission = async (formData, isAdd) => {
+    if (isAdd) {
+      return await projectTypesCreationController(formData);
+    } else {
+      const updatedFormData = { ...formData, ID: selectedValue.id };
+      return await projectTypesupdateController(updatedFormData);
+    }
+  };
+
+  // Helper function to handle success response
+  const handleSuccessResponse = (message, isAdd) => {
+    getRoles();
+    formRef.current?.resetForm();
+
+    if (!isAdd) {
+      onFormReset();
+    }
+
+    openDialog(
+      "success",
+      `Project Type ${isAdd ? "Addition" : "Updation"} Success`,
+      message ||
+        `Project Type has been ${isAdd ? "added" : "updated"} successfully`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {}
+    );
+  };
+
+  // Helper function to handle error response
+  const handleErrorResponse = (error, isAdd) => {
+    openDialog(
+      "warning",
+      `Project Type ${isAdd ? "Addition" : "Updation"} Failed`,
+      error || `Project Type ${isAdd ? "Addition" : "Updation"} failed`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {}
+    );
+  };
+
+  // Helper function to handle catch block errors
+  const handleCatchError = (error, isAdd) => {
+    openDialog(
+      "warning",
+      "Warning",
+      error?.errorMessages ||
+        `Project Type ${isAdd ? "Addition" : "Updation"} failed`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {
+        if (confirmed) {
+          return;
+        }
+      }
+    );
   };
 
   /**
@@ -377,7 +379,7 @@ const Roles = () => {
       });
 
       const response = await projectTypesdeleteController(selectedRow.id);
-      
+
       if (response) {
         getRoles();
 
@@ -428,19 +430,22 @@ const Roles = () => {
     }
   };
 
+  const getActionText = () => {
+    if (formAction.action === "add") {
+      return "Add";
+    } else if (formAction.action === "update") {
+      return "Update";
+    } else {
+      return "Read";
+    }
+  };
+
   return (
     <>
       {formAction.display && (
         <Container>
           <Header className="panel-header">
-            <Typography variant="h6">
-              {formAction.action === "add"
-                ? "Add"
-                : formAction.action === "update"
-                ? "Update"
-                : "Read "}{" "}
-              Project Type
-            </Typography>
+            <Typography variant="h6">{getActionText()} Project Type</Typography>
           </Header>
           <FormComponent
             formAction={formAction}

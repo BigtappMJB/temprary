@@ -2,7 +2,7 @@ import { Box, Container, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import ErrorImg from '../../assets/images/backgrounds/404-error-idea.gif';
 
-const Error = () => (
+const ErrorPage = () => (
   <Box
     display="flex"
     flexDirection="column"
@@ -25,4 +25,4 @@ const Error = () => (
   </Box>
 );
 
-export default Error;
+export default ErrorPage;

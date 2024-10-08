@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { css } from "@emotion/react";
+import PropTypes from "prop-types";
 
 // Define validation schema
 const formSchema = Yup.object().shape({
@@ -139,14 +140,14 @@ const UserForm = ({ formAction }) => {
             flexWrap="wrap"
             gap={2} // Adds space between buttons
           >
-            {'reaad' !== "read" && (
+            {formAction?.action !== "read" && (
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
                 className="primary"
               >
-                {'add '=== "add" ? "Add" : "Update"}
+                {"add " === "add" ? "Add" : "Update"}
               </Button>
             )}
             <Button
@@ -156,13 +157,17 @@ const UserForm = ({ formAction }) => {
               className="danger"
               onClick={handleReset}
             >
-              {'read' !== "read" ? "Cancel" : "Close"}
+              {formAction?.action !== "read" ? "Cancel" : "Close"}
             </Button>
           </Box>
         </Grid>
       </Grid>
     </form>
   );
+};
+
+UserForm.propTypes = {
+  formAction: PropTypes.object,
 };
 
 const formStyles = css`

@@ -23,6 +23,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import { getActivityCodecontroller } from "../controllers/projectEstimationController";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -245,14 +246,15 @@ const ProjectEstimateFormComponent = forwardRef(
           endDate: defaultValues?.END_DATE
             ? moment(defaultValues?.END_DATE, "YYYY-MM-DD")
             : null,
-          hoursPerDay: Number(defaultValues?.NO_OF_HOURS_PER_DAY) ?? null,
+          hoursPerDay: defaultValues?.NO_OF_HOURS_PER_DAY
+            ? Number(defaultValues?.NO_OF_HOURS_PER_DAY)
+            : null,
           totalHours: defaultValues?.TOTAL_HOURS ?? null,
           workingDays: defaultValues?.No_of_working_days ?? null,
           activityCode: null,
         });
         console.log({ defaultValues });
         console.log(getValues());
-        
 
         formAction.action !== "add" &&
           defaultValues?.ACTIVITY_CODE &&
@@ -263,7 +265,6 @@ const ProjectEstimateFormComponent = forwardRef(
     // Expose a method to trigger validation via ref
     useImperativeHandle(ref, () => ({
       resetForm: async () => {
-        
         reset({
           projectName: null,
           role: null,
@@ -276,7 +277,6 @@ const ProjectEstimateFormComponent = forwardRef(
           workingDays: "",
         });
         console.log(getValues());
-        
       },
     }));
 
@@ -314,7 +314,6 @@ const ProjectEstimateFormComponent = forwardRef(
      * Resets the form to its initial state
      */
     const handleReset = () => {
-      
       onReset();
       reset({
         projectName: null,
@@ -719,5 +718,15 @@ const ProjectEstimateFormComponent = forwardRef(
     );
   }
 );
-
+ProjectEstimateFormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // Assuming formAction has an 'action' key as a string
+  }).isRequired, // Ensure formAction is an object and required
+  defaultValues: PropTypes.object, // defaultValues can be any object
+  onSubmit: PropTypes.func.isRequired, // onSubmit should be a function and is required
+  onReset: PropTypes.func, // onReset should be a function (optional)
+  projectList: PropTypes.arrayOf(PropTypes.object), // projectList is an array of objects
+  roleList: PropTypes.arrayOf(PropTypes.object), // roleList is an array of objects
+  phaseList: PropTypes.arrayOf(PropTypes.object), // phaseList is an array of objects
+};
 export default ProjectEstimateFormComponent;

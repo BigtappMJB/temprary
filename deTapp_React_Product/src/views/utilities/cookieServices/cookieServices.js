@@ -9,12 +9,12 @@
  */
 function setCookie({ name, value, time, unit }) {
   // Initialize an empty string to store the expiration time
-  var expires = "";
+  let expires = "";
 
   // Check if time and unit are provided
   if (time && unit) {
     // Create a new Date object
-    var date = new Date();
+    let date = new Date();
 
     // Switch based on the unit provided
     switch (unit) {
@@ -60,8 +60,8 @@ const getCookie = (name) => {
   let cookies = document.cookie.split(";");
 
   // Iterate over the cookies
-  for (var i = 0; i < cookies.length; i++) {
-    var cookie = cookies[i];
+  for (let i = 0; i < cookies.length; i++) {
+    let cookie = cookies[i];
 
     // Remove leading spaces from the cookie
     while (cookie.charAt(0) === " ") {

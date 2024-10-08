@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import ProjectCreationForm from "./components/projectCreationForm";
 import DataTable from "../user-management/users/components/DataTable";
 
-import { useSelector } from "react-redux";
-
 import { useLoading } from "../../components/Loading/loadingProvider";
 import { useDialog } from "../utilities/alerts/DialogContent";
 import {
@@ -19,7 +17,6 @@ import TableErrorDisplay from "../../components/tableErrorDisplay/TableErrorDisp
 import {
   getClientInfoController,
   getProjectController,
-  getProjectTypesController,
   projectCreationController,
   projectDeleteController,
   projectUpdateController,
@@ -229,91 +226,84 @@ const CMDPage = () => {
   const onformSubmit = async (formData) => {
     try {
       startLoading();
-      let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await projectCreationController(formData);
-      else {
-        formData = {
-          ...formData,
-          ID: selectedValue.PROJECT_NAME_CODE,
-        };
-        response = await projectUpdateController(formData);
-      }
 
-      if (response.message) {
-        getTableData();
-        formRef.current.resetForm();
-        if (!isAdd) {
-          onFormReset();
-        }
-        openDialog(
-          "success",
-          `Project ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message ||
-            `Project has been ${isAdd ? "addded" : "updated"} successfully`,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
-      }
-      if (response.error) {
-        getTableData();
-        formRef.current.resetForm();
-        if (!isAdd) {
-          onFormReset();
-        }
-        openDialog(
-          "success",
-          `Project ${isAdd ? "Addition" : "Updation"} Failed`,
-          response.error || `Project  ${isAdd ? "addded" : "updated"} Failed`,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
-      }
+      // Handle form submission
+      const response = await handleFormSubmission(formData, isAdd);
+
+      // Process the response
+      processResponse(response, isAdd);
     } catch (error) {
-      console.error(error);
       const isAdd = formAction.action === "add";
-      openDialog(
-        "warning",
-        "Warning",
-        error.errorMessage ||
-          `Project ${isAdd ? "Addition" : "Updation"} failed`,
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            return;
-          }
-        }
-      );
+      handleErrorResponse(error, isAdd);
     } finally {
       stopLoading();
     }
+  };
+
+  // Helper function to handle form submission
+  const handleFormSubmission = async (formData, isAdd) => {
+    if (isAdd) {
+      return await projectCreationController(formData);
+    } else {
+      const updatedFormData = {
+        ...formData,
+        ID: selectedValue.PROJECT_NAME_CODE,
+      };
+      return await projectUpdateController(updatedFormData);
+    }
+  };
+
+  // Helper function to process the response
+  const processResponse = (response, isAdd) => {
+    if (response.message) {
+      handleSuccessResponse(response.message, isAdd);
+    } else if (response.error) {
+      handleErrorResponse(response.error, isAdd);
+    }
+  };
+
+  // Helper function for success response handling
+  const handleSuccessResponse = (message, isAdd) => {
+    getTableData();
+    formRef.current?.resetForm();
+
+    if (!isAdd) {
+      onFormReset();
+    }
+
+    openDialog(
+      "success",
+      `Project ${isAdd ? "Addition" : "Updation"} Success`,
+      message || `Project has been ${isAdd ? "added" : "updated"} successfully`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {}
+    );
+  };
+
+  // Helper function for error response handling
+  const handleErrorResponse = (error, isAdd) => {
+    getTableData();
+    formRef.current?.resetForm();
+
+    if (!isAdd) {
+      onFormReset();
+    }
+
+    openDialog(
+      "warning",
+      `Project ${isAdd ? "Addition" : "Updation"} Failed`,
+      error?.errorMessage ||
+        `Project ${isAdd ? "Addition" : "Updation"} failed`,
+      {
+        confirm: { name: "Ok", isNeed: true },
+        cancel: { name: "Cancel", isNeed: false },
+      },
+      (confirmed) => {}
+    );
   };
 
   /**
@@ -416,12 +406,12 @@ const CMDPage = () => {
         display: false,
         action: null,
       });
-      
+
       const response = await projectDeleteController(
         selectedRow.PROJECT_NAME_CODE
       );
       console.log(response);
-      
+
       if (response) {
         getTableData();
         openDialog(
@@ -484,19 +474,22 @@ const CMDPage = () => {
     );
   };
 
+  const getActionText = () => {
+    if (formAction.action === "add") {
+      return "Add";
+    } else if (formAction.action === "update") {
+      return "Update";
+    } else {
+      return "Read";
+    }
+  };
+
   return (
     <>
       {formAction.display && (
         <Container>
           <Header className="panel-header">
-            <Typography variant="h6">
-              {formAction.action === "add"
-                ? "Add"
-                : formAction.action === "update"
-                ? "Update"
-                : "Read "}{" "}
-              Project
-            </Typography>
+            <Typography variant="h6">{getActionText()} Project</Typography>
           </Header>
           <ProjectCreationForm
             formAction={formAction}

@@ -106,7 +106,7 @@ const Roles = () => {
       startLoading();
       const response = await getRolesController();
       setTableData(response);
-      // 
+      //
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {
@@ -182,81 +182,100 @@ const Roles = () => {
   const onformSubmit = async (formData) => {
     try {
       startLoading();
-      let response = null;
       const isAdd = formAction.action === "add";
-      if (isAdd) response = await clientCreationController(formData);
-      else {
-        formData = { ...formData, ID: selectedValue.id };
-        response = await clientupdateController(formData);
-      }
+      const response = await handleFormSubmit(formData, isAdd);
+
       if (response?.message) {
-        getRoles();
-        formRef.current.resetForm();
-        if (!isAdd) {
-          onFormReset();
-        }
-        openDialog(
-          "success",
-          `Client ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message ||
-            `Client has been ${isAdd ? "addded" : "updated"} successfully  `,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
+        processSuccess(response.message, isAdd);
       }
+
       if (response?.error) {
-        openDialog(
-          "success",
-          `Client ${isAdd ? "Addition" : "Updation"} Failed`,
-          response?.error || `Client ${isAdd ? "addded" : "updated"} Failed `,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          (confirmed) => {}
-        );
+        processError(response.error, isAdd);
       }
     } catch (error) {
       const isAdd = formAction.action === "add";
-      openDialog(
-        "warning",
-        "Warning",
-        error?.errorMessage ||
-          `Client ${isAdd ? "Addition" : "Updation"} failed`,
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            return;
-          }
-        }
-      );
+
+      handleFormError(error, isAdd);
     } finally {
       stopLoading();
     }
+  };
+
+  // Helper function to handle form submission logic
+  const handleFormSubmit = async (formData, isAdd) => {
+    if (isAdd) {
+      return await clientCreationController(formData);
+    } else {
+      const updatedFormData = { ...formData, ID: selectedValue.id };
+      return await clientupdateController(updatedFormData);
+    }
+  };
+
+  // Helper function to handle successful form submission
+  const processSuccess = (message, isAdd) => {
+    getRoles();
+    formRef.current.resetForm();
+    if (!isAdd) {
+      onFormReset();
+    }
+    openDialog(
+      "success",
+      `Client ${isAdd ? "Addition" : "Updation"} Success`,
+      message || `Client has been ${isAdd ? "added" : "updated"} successfully`,
+      {
+        confirm: {
+          name: "Ok",
+          isNeed: true,
+        },
+        cancel: {
+          name: "Cancel",
+          isNeed: false,
+        },
+      },
+      (confirmed) => {}
+    );
+  };
+
+  // Helper function to handle form submission error
+  const processError = (error, isAdd) => {
+    openDialog(
+      "error",
+      `Client ${isAdd ? "Addition" : "Updation"} Failed`,
+      error || `Client ${isAdd ? "added" : "updated"} failed`,
+      {
+        confirm: {
+          name: "Ok",
+          isNeed: true,
+        },
+        cancel: {
+          name: "Cancel",
+          isNeed: false,
+        },
+      },
+      (confirmed) => {}
+    );
+  };
+
+  // Helper function to handle errors during form submission
+  const handleFormError = (error, isAdd) => {
+    openDialog(
+      "warning",
+      "Warning",
+      error?.errorMessage || `Client ${isAdd ? "Addition" : "Updation"} failed`,
+      {
+        confirm: {
+          name: "Ok",
+          isNeed: true,
+        },
+        cancel: {
+          name: "Cancel",
+          isNeed: false,
+        },
+      },
+      (confirmed) => {
+        if (confirmed) return;
+      }
+    );
   };
 
   /**
@@ -418,19 +437,22 @@ const Roles = () => {
     }
   };
 
+  const getActionText = () => {
+    if (formAction.action === "add") {
+      return "Add";
+    } else if (formAction.action === "update") {
+      return "Update";
+    } else {
+      return "Read";
+    }
+  };
+
   return (
     <>
       {formAction.display && (
         <Container>
           <Header className="panel-header">
-            <Typography variant="h6">
-              {formAction.action === "add"
-                ? "Add"
-                : formAction.action === "update"
-                ? "Update"
-                : "Read "}{" "}
-              Client
-            </Typography>
+            <Typography variant="h6">{getActionText()} Client</Typography>
           </Header>
           <FormComponent
             formAction={formAction}
