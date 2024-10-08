@@ -131,6 +131,7 @@ const LoginPage = () => {
 
       const firstSubMenuPath =
         response?.permissions[0]?.submenus[0]?.submenu_path;
+      localStorage.setItem("token", response.token);
       navigate(firstSubMenuPath || "/dashboard");
     }
   };
