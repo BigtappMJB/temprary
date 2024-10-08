@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../../utilities/Validators";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -291,6 +292,30 @@ const SubMenuFormComponent = ({
       </Grid>
     </Container>
   );
+};
+
+// Define PropTypes for validation
+SubMenuFormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction should have an 'action' key and is required
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    MENU_ID: PropTypes.any.isRequired, // MENU_ID should be a number and required
+    NAME: PropTypes.string, // NAME is a string
+    DESCRIPTION: PropTypes.string, // DESCRIPTION is a string
+    ROUTE: PropTypes.string, // ROUTE is a string
+  }).isRequired, // defaultValues is required
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  menuList: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID: PropTypes.number.isRequired, // ID should be a number and required in menuList
+      NAME: PropTypes.string, // menuName is optional and should be a string
+    })
+  ).isRequired, // menuList is a required array of objects
 };
 
 export default SubMenuFormComponent;

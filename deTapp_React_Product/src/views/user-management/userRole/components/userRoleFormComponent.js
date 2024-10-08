@@ -12,6 +12,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
 
 // Styled container for form layout
 const Container = styled(Box)(({ theme }) => ({
@@ -249,6 +250,35 @@ const UserRoleFormComponent = ({
       </Grid>
     </Container>
   );
+};
+
+// Define PropTypes for validation
+UserRoleFormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction has an 'action' key and is required
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    ID: PropTypes.number.isRequired, // ID is a number and required
+    ROLE: PropTypes.number.isRequired, // ROLE is a number and required
+  }).isRequired, // defaultValues is required
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  rolesList: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID: PropTypes.number.isRequired, // ID is a number and required in rolesList
+      roleName: PropTypes.string, // roleName is optional and should be a string
+    })
+  ).isRequired, // rolesList is a required array of objects
+
+  userList: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID: PropTypes.number.isRequired, // ID is a number and required in userList
+      userName: PropTypes.string, // userName is optional and should be a string
+    })
+  ).isRequired, // userList is a required array of objects
 };
 
 export default UserRoleFormComponent;

@@ -34,8 +34,6 @@ export const getActivityCodeController = async () => {
   }
 };
 
-
-
 export const projectCreationController = async (formData) => {
   try {
     // Data Validation and Sanitization
@@ -138,7 +136,6 @@ export const projectDeleteController = async (cmdId) => {
     if (typeof cmdId !== "string") {
       throw new Error("Invalid form data");
     }
-    
 
     // Send the DELETE request to the projectCreation API endpoint
     const response = await remove(

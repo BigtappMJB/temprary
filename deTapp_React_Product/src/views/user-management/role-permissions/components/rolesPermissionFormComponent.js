@@ -12,6 +12,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -94,7 +95,6 @@ const RolePermissionFormComponent = ({
   rolesList,
 }) => {
   const [readOnly, setReadOnly] = useState(false);
-  const [subMenuList, setSubMenuList] = useState(subMenusList);
 
   const [isFocused, setIsFocused] = useState({
     role: false,
@@ -218,7 +218,11 @@ const RolePermissionFormComponent = ({
   };
 
   return (
-    <Container component="form" className="panel-bg" onSubmit={handleSubmit(onLocalSubmit)}>
+    <Container
+      component="form"
+      className="panel-bg"
+      onSubmit={handleSubmit(onLocalSubmit)}
+    >
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Controller
@@ -391,6 +395,50 @@ const RolePermissionFormComponent = ({
       </Grid>
     </Container>
   );
+};
+// Define PropTypes for validation
+RolePermissionFormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // Example: formAction has an 'action' key
+  }).isRequired,
+
+  defaultValues: PropTypes.shape({
+    MENU_ID: PropTypes.number, // Assuming MENU_ID is a number
+    SUB_MENU_ID: PropTypes.number, // Assuming SUB_MENU_ID is a number
+    ROLE_ID: PropTypes.number, // Assuming ROLE_ID is a number
+    PERMISSION_LEVEL: PropTypes.number, // Assuming PERMISSION_LEVEL is a number
+  }),
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  menuList: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID: PropTypes.number.isRequired, // ID is a number and required
+      name: PropTypes.string, // Example property
+    })
+  ).isRequired, // menuList is a required array of objects
+
+  permissionLevelList: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID: PropTypes.number.isRequired, // ID is a number and required
+      level: PropTypes.string, // Example property
+    })
+  ).isRequired, // permissionLevelList is a required array of objects
+
+  subMenusList: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID: PropTypes.number.isRequired, // ID is a number and required
+      name: PropTypes.string, // Example property
+    })
+  ).isRequired, // subMenusList is a required array of objects
+
+  rolesList: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired, // id is a number and required
+      roleName: PropTypes.string, // Example property
+    })
+  ).isRequired, // rolesList is a required array of objects
 };
 
 export default RolePermissionFormComponent;

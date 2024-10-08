@@ -10,6 +10,7 @@ import { TextField, Button, Grid, styled, Box } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -23,10 +24,8 @@ const Container = styled(Box)(({ theme }) => ({
 
 // Schema for form validation using Yup
 const schema = yup.object().shape({
-  name: yup
-    .string()
-    .required("Name is required")
-    // .matches(validationRegex.isSingleWord, errorMessages.singleWord),
+  name: yup.string().required("Name is required"),
+  // .matches(validationRegex.isSingleWord, errorMessages.singleWord),
   // description: yup
   //   .string()
   //   .required("Description is required")
@@ -61,7 +60,7 @@ const schema = yup.object().shape({
  * />
  */
 const FormComponent = forwardRef(
-  ({ formAction, defaultValues, onSubmit, onReset, rolesList }, ref) => {
+  ({ formAction, defaultValues, onSubmit, onReset }, ref) => {
     const [readOnly, setReadOnly] = useState(false);
 
     const {
@@ -84,7 +83,7 @@ const FormComponent = forwardRef(
           description: defaultValues.description ?? "",
         });
       }
-    }, [defaultValues, reset, rolesList, formAction]);
+    }, [defaultValues, reset, formAction]);
 
     // Effect to set read-only state and reset form on formAction change
     useEffect(() => {
@@ -222,5 +221,24 @@ const FormComponent = forwardRef(
     );
   }
 );
+
+// Define PropTypes for validation
+FormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction should have an 'action' key and is required
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    name: PropTypes.string, // name is a string (if it exists in defaultValues)
+    id: PropTypes.oneOfType([
+      // id can be a string or a number
+      PropTypes.string,
+      PropTypes.number,
+    ]),
+  }).isRequired, // defaultValues is required
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+};
 
 export default FormComponent;

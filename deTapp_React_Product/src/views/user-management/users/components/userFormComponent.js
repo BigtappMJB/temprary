@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../../utilities/Validators";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -106,7 +107,7 @@ const UserFormComponent = ({
     if (defaultValues) {
       const role =
         rolesList.find((role) => role.id === defaultValues.ROLE_ID) || null;
-      
+
       reset({
         // userId: defaultValues.USER_ID ?? "",
         role: role,
@@ -350,6 +351,30 @@ const UserFormComponent = ({
       </Grid>
     </Container>
   );
+};
+
+UserFormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction has an 'action' key and is required
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    ROLE_ID: PropTypes.number, // ROLE_ID is a number (optional but assumed to be used)
+    FIRST_NAME: PropTypes.string, // FIRST_NAME is a string
+    LAST_NAME: PropTypes.string, // LAST_NAME is a string
+    EMAIL: PropTypes.string, // EMAIL is a string
+    MOBILE: PropTypes.string, // MOBILE is a string
+  }),
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  rolesList: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired, // id should be a number and required in rolesList
+      name: PropTypes.string, // roleName is optional and should be a string
+    })
+  ).isRequired, // rolesList is a required array of objects
 };
 
 export default UserFormComponent;

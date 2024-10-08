@@ -17,6 +17,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -310,5 +311,35 @@ const ProjectCreationForm = forwardRef(
     );
   }
 );
+
+// Define PropTypes for validation
+ProjectCreationForm.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction has an 'action' key and is required
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    PHASE_CODE: PropTypes.number.isRequired, // PHASE_CODE should be a number
+    PROJECT_ROLE_ID: PropTypes.number.isRequired, // PROJECT_ROLE_ID should be a number
+    ACTIVITY_CODE: PropTypes.string, // ACTIVITY_CODE should be a string
+  }).isRequired, // defaultValues is required
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  projectRole: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired, // id should be a number and required in projectRole
+      name: PropTypes.string, // roleName is optional and should be a string
+    })
+  ).isRequired, // projectRole is a required array of objects
+
+  projectPhase: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired, // id should be a number and required in projectPhase
+      name: PropTypes.string, // phaseName is optional and should be a string
+    })
+  ).isRequired, // projectPhase is a required array of objects
+};
 
 export default ProjectCreationForm;

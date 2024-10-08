@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -22,6 +16,7 @@ import {
 import { Edit, Delete } from "@mui/icons-material";
 import { validationRegex } from "../../../utilities/Validators";
 import { debounce } from "lodash";
+import PropTypes from "prop-types";
 
 // Styled components for the table
 const StyledTableHead = styled(TableHead)(({ theme }) => ({
@@ -101,14 +96,25 @@ const DataTable = ({
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage
     );
-    sendUpdatedPaginatedData && sendUpdatedPaginatedData(sortedDataValue);
+    if (sendUpdatedPaginatedData) {
+      sendUpdatedPaginatedData(sortedDataValue);
+    }
     return sortedDataValue;
   }, [sortedData, page, rowsPerPage]);
 
+  const setOrderValue = (isDesc, isAsc) => {
+    if (isDesc) {
+      return "original";
+    }
+    if (isAsc) {
+      return "desc";
+    }
+    return "asc";
+  };
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
     const isDesc = orderBy === property && order === "desc";
-    setOrder(isDesc ? "original" : isAsc ? "desc" : "asc");
+    setOrder(setOrderValue(isDesc, isAsc));
     setOrderBy(property);
   };
 
@@ -271,6 +277,24 @@ const DataTable = ({
       />
     </>
   );
+};
+
+DataTable.propTypes = {
+  handleDelete: PropTypes.func.isRequired, // handleDelete should be a required function
+  handleUpdateLogic: PropTypes.func.isRequired, // handleUpdateLogic should be a required function
+  tableData: PropTypes.any.isRequired, // tableData is a required array of objects
+
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.any.isRequired, // Column title should be a string
+      field: PropTypes.any.isRequired, // Column field should be a string
+      // Add other column properties if necessary
+    })
+  ).isRequired, // columns is a required array of objects
+
+  permissionLevels: PropTypes.any.isRequired, // permissionLevels should be a required array of strings
+
+  sendUpdatedPaginatedData: PropTypes.func, // sendUpdatedPaginatedData should be a required function
 };
 
 export default DataTable;

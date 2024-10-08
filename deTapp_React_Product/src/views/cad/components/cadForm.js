@@ -10,6 +10,7 @@ import { TextField, Button, Grid, styled, Box } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -80,7 +81,6 @@ const schema = yup.object().shape({
 const CMDFormComponent = forwardRef(
   ({ formAction, defaultValues, onSubmit, onReset, rolesList }, ref) => {
     const [readOnly, setReadOnly] = useState(false);
-    const [isFocused, setIsFocused] = useState(false);
 
     const {
       control,
@@ -336,5 +336,30 @@ const CMDFormComponent = forwardRef(
     );
   }
 );
+
+// Define PropTypes for validation
+CMDFormComponent.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction has an 'action' key
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    target: PropTypes.string, // target is a string
+    country_of_residence: PropTypes.string, // country_of_residence is a string
+    incorporation_city: PropTypes.string, // incorporation_city is a string
+    sector_classification: PropTypes.string, // sector_classification is a string
+    emirates_id: PropTypes.string, // emirates_id is a string
+  }),
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  rolesList: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired, // id is a number and required in rolesList
+      roleName: PropTypes.string, // roleName is a string in rolesList
+    })
+  ).isRequired, // rolesList is a required array of objects
+};
 
 export default CMDFormComponent;

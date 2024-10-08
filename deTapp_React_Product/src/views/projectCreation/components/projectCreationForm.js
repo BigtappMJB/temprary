@@ -17,6 +17,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -335,5 +336,35 @@ const ProjectCreationForm = forwardRef(
     );
   }
 );
+
+ProjectCreationForm.propTypes = {
+  formAction: PropTypes.shape({
+    action: PropTypes.string.isRequired, // formAction has an 'action' key and is required
+  }).isRequired, // formAction is required
+
+  defaultValues: PropTypes.shape({
+    CLIENT_ID: PropTypes.number, // CLIENT_ID should be a number
+    PROJECT_TYPE_CODE: PropTypes.number, // PROJECT_TYPE_CODE should be a number
+    PROJECT_NAME: PropTypes.string, // PROJECT_NAME should be a string
+    PROJECT_NAME_CODE: PropTypes.string, // PROJECT_NAME_CODE should be a string
+  }),
+
+  onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
+  onReset: PropTypes.func.isRequired, // onReset is a required function
+
+  projectType: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired, // id should be a number and is required in projectType
+      name: PropTypes.string, // name is optional and should be a string
+    })
+  ).isRequired, // projectType is a required array of objects
+
+  clientInfo: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired, // id should be a number and is required in clientInfo
+      name: PropTypes.string, // clientName is optional and should be a string
+    })
+  ).isRequired, // clientInfo is a required array of objects
+};
 
 export default ProjectCreationForm;
