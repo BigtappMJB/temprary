@@ -80,10 +80,11 @@ pythonInstance.interceptors.request.use(
   (error) => {
     if (!(error instanceof Error)) {
       error = new Error(
-        typeof error === "string" ? error : JSON.stringify(error)
+        typeof error === "string" ? error : "An unknown error occurred"
       );
     }
-    // Handle request error
-    return Promise.reject(error);
+
+    // Handle request error by passing the Error object
+    return Promise.reject(error); // Rejection is now always an instance of Error
   }
 );

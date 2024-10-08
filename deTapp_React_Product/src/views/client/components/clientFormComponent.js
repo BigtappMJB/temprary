@@ -10,7 +10,6 @@ import { TextField, Button, Grid, styled, Box } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import DOMPurify from "dompurify";
-import { errorMessages, validationRegex } from "../../utilities/Validators";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",

@@ -4,6 +4,7 @@ import { Box, AppBar, Toolbar, styled, Stack, IconButton } from "@mui/material";
 // components
 import Profile from "./Profile";
 import MenuIcon from "@mui/icons-material/Menu";
+import PropTypes from "prop-types";
 
 const Header = ({ handleDrawerToggle, open }) => {
   // const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
@@ -44,6 +45,11 @@ const Header = ({ handleDrawerToggle, open }) => {
       </ToolbarStyled>
     </AppBarStyled>
   );
+};
+
+Header.propTypes = {
+  handleDrawerToggle: PropTypes.func,
+  open: PropTypes.bool,
 };
 
 export default Header;

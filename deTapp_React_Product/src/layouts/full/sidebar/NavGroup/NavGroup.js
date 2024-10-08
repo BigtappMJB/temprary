@@ -10,7 +10,7 @@ const NavGroup = ({ item, onClick }) => {
     <ListSubheader disableSticky {...props} />
   ))(({ theme }) => ({
     ...theme.typography.overline,
-    fontWeight:   !(isOneSubMenu && pathName === item.children[0].href) && "700",
+    fontWeight: !(isOneSubMenu && pathName === item.children[0].href) && "700",
     marginBottom: "2px",
     padding: "8px 10px",
     borderRadius: "8px",
@@ -31,16 +31,13 @@ const NavGroup = ({ item, onClick }) => {
     },
   }));
   return (
-    <ListSubheaderStyle
-      onClick={onClick}
-    >
-      {item.subheader}
-    </ListSubheaderStyle>
+    <ListSubheaderStyle onClick={onClick}>{item.subheader}</ListSubheaderStyle>
   );
 };
 
 NavGroup.propTypes = {
   item: PropTypes.object,
+  onClick: PropTypes.func,
 };
 
 export default NavGroup;

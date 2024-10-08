@@ -4,6 +4,7 @@ import SidebarItems from "./SidebarItems";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import PropTypes from "prop-types";
 
 /**
  * Sidebar component renders a navigation drawer.
@@ -22,8 +23,6 @@ const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
     isMobile && handleDrawerToggle();
   };
 
-
-  
   return (
     <Drawer
       variant={isMobile ? "temporary" : "persistent"}
@@ -51,6 +50,11 @@ const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
       </Box>
     </Drawer>
   );
+};
+Sidebar.propTypes = {
+  isMobile: PropTypes.bool.isRequired,
+  open: PropTypes.bool.isRequired,
+  handleDrawerToggle: PropTypes.func.isRequired,
 };
 
 export default Sidebar;

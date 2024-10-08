@@ -9,22 +9,14 @@ import React, {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import {
-  TextField,
-  MenuItem,
-  Box,
-  IconButton,
-  Tooltip,
-  Autocomplete,
-  Button,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { TextField, MenuItem, Box, Autocomplete, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../utilities/Validators";
 import debounce from "lodash/debounce";
 import { getColumnsDetailsController } from "../../dynamicPageCreation/controllers/dynamicPageCreationController";
 import { useLoading } from "../../../components/Loading/loadingProvider";
+import PropTypes from "prop-types";
 
 const dataTypeRequiredLength = [
   "CHAR",
@@ -191,7 +183,6 @@ const TableColumnForm = forwardRef(
         Object.keys(errors).forEach((field) => {
           console.log(`Field: ${field}, Message: ${errors[field]?.message}`);
         });
-        
 
         return { ...values, validated: isValid };
       },
@@ -202,7 +193,7 @@ const TableColumnForm = forwardRef(
         reset({
           columnName: data.columnName ?? "",
           dataType: data.dataType ?? "",
-          length: data.length ?? null,
+          length: data.length ? Number(data.length) : null,
           isPrimary: data.isPrimary ?? false,
           isForeign: data.isForeign ?? false,
           isMandatory: data.isMandatory ?? false,
@@ -210,7 +201,6 @@ const TableColumnForm = forwardRef(
           fkTableName: data.fkTableName ?? "",
           fkTableFieldName: data.fkTableFieldName ?? "",
         });
-        
       }
     }, [data, reset]);
 
@@ -282,10 +272,9 @@ const TableColumnForm = forwardRef(
           fkTableName: data.fkTableName ?? "",
           fkTableFieldName: data.fkTableFieldName ?? "",
         }));
-        
+
         return;
       }
-      
     }, [watchIsForeign, watchIsPrimary, stableReset, data]);
 
     // Effect for handling API call logic
@@ -549,5 +538,33 @@ const TableColumnForm = forwardRef(
     );
   }
 );
-
+// Define PropTypes validation
+TableColumnForm.propTypes = {
+  data: PropTypes.shape({
+    columnName: PropTypes.string, // columnName should be a string
+    dataType: PropTypes.string, // dataType should be a string
+    length: PropTypes.oneOfType([
+      // length can be a number or null
+      PropTypes.number,
+      PropTypes.oneOf([null]),
+    ]),
+    isPrimary: PropTypes.bool, // isPrimary should be a boolean
+    isForeign: PropTypes.bool, // isForeign should be a boolean
+    isMandatory: PropTypes.bool, // isMandatory should be a boolean
+    defaultValue: PropTypes.any, // defaultValue should be a any
+    fkTableName: PropTypes.any, // fkTableName should be a any
+    fkTableFieldName: PropTypes.any, // fkTableFieldName should be a any
+  }).isRequired, // data object is required
+  onColumnSubmit: PropTypes.func.isRequired, // onColumnSubmit should be a function and required
+  onReset: PropTypes.func.isRequired, // onReset should be a function and required
+  dataTypes: PropTypes.arrayOf(PropTypes.any), // dataTypes should be an array of strings
+  isRemovingForm: PropTypes.bool, // isRemovingForm should be a boolean
+  tableList: PropTypes.arrayOf(
+    // tableList should be an array of objects
+    PropTypes.shape({
+      tableName: PropTypes.string, // Define the structure for each table object
+      tableId: PropTypes.number,
+    })
+  ),
+};
 export default TableColumnForm;
