@@ -94,9 +94,16 @@ const generateDynamicRoutes = async () => {
   if (dynamicPages.length === 0) return [];
   const loadComponent = (relativePath) => {
     try {
-      const resolvedPath = `${relativePath}.jsx`; // Adjust based on your file structure
+      const resolvedPath = `${relativePath}.jsx`.replace(/ /g, '_'); // Adjust based on your file structure
+      debugger;
+      console.log(context.keys());
 
-      if (context.keys().includes(resolvedPath)) {
+      if (
+        context
+          .keys()
+          .map((key) => key.toLowerCase())
+          .includes(resolvedPath.toLowerCase())
+      ) {
         const module = context(resolvedPath); // Load the module from context
         // Ensure the module has a default export
         if (!module.default) {
@@ -115,6 +122,7 @@ const generateDynamicRoutes = async () => {
         }
         return Promise.resolve({ default: component }); // Wrap in a Promise
       } else {
+        debugger;
         // If the module is not found, return a Promise that resolves to a fallback component
         console.error(`Module not found: ${resolvedPath}`);
         return Promise.resolve({
@@ -220,7 +228,6 @@ const setupRouter = () => {
       return staticRoutes;
     });
 };
-
 
 // Export the promise, not staticRoutes directly
 export default setupRouter();
