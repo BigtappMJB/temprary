@@ -541,6 +541,11 @@ const TableColumnForm = forwardRef(
 // Define PropTypes validation
 TableColumnForm.propTypes = {
   data: PropTypes.shape({
+    id: PropTypes.oneOfType([
+      // length can be a number or null
+      PropTypes.number,
+      PropTypes.oneOf([null]),
+    ]),
     columnName: PropTypes.string, // columnName should be a string
     dataType: PropTypes.string, // dataType should be a string
     length: PropTypes.oneOfType([

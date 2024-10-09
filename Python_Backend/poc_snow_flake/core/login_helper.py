@@ -235,13 +235,17 @@ def get_permissions_by_email(email):
                             automationutil.SUB_MENUS sm ON rp.SUB_MENU_ID = sm.ID
                         WHERE
                             u.EMAIL = %s
+                             AND r.NAME IS NOT NULL
+                        AND pl.LEVEL IS NOT NULL
+                        AND m.NAME IS NOT NULL
+                        AND sm.ID IS NOT NULL  
+                        AND sm.NAME IS NOT NULL  
                     ) AS MenuData
                 GROUP BY
                     role_name, menu_name, menu_id
                 ORDER BY
                     menu_id ASC;
             """
-
             # Execute the query
             cursor.execute(select_query, (email,))
             rows = cursor.fetchall()

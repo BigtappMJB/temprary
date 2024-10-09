@@ -23,8 +23,8 @@ def generateCode():
         react_code = generate_react_code(data)
         print(react_code)
         if react_code:
-            folder_path = os.path.join("D:\React Project\Rapid_Development_Application","deTapp_React_Product","src","views","generatedPages",data.get("pageDetails", {}).get("pageName", ''))
-            file_name =f'{data.get("pageDetails", {}).get("pageName", '')}.jsx'
+            folder_path = os.path.join("D:\React Project\Rapid_Development_Application","deTapp_React_Product","src","views","generatedPages",data.get("pageDetails", {}).get("pageName", '').replace(' ', '_'))
+            file_name =f'{data.get("pageDetails", {}).get("pageName", '')}.jsx'.replace(' ', '_')
             file_created =  handle_file_operations(code_content=react_code,file_name=file_name,folder_path=folder_path)
             if file_created:
                 status,error = store_details(data,folder_path,file_name)
