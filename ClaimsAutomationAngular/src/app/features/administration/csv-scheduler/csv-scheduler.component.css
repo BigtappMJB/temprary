@@ -1,0 +1,62 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 800px;
+  margin: 10px 2%;
+}
+
+.date-time-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.time-container {
+  display: flex;
+  gap: 10px;
+}
+
+
+.schedularName {
+  width: 50%;
+}
+
+.radioBtn {
+padding: 12px 10px;
+}
+
+.checkbox-container {
+  display: flex;
+  flex-wrap: wrap; /* Allows items to wrap onto multiple lines */
+  gap: 10px; /* Space between checkboxes */
+  padding-top: 12px;
+}
+
+.checkbox-container mat-checkbox {
+  flex: 0 0 45%; /* Adjusts width to fit two checkboxes per row */
+  padding: 2px 2px;
+}
+
+.repeat-container {
+
+  align-items: center; /* Vertically aligns items in the center */
+  display: block;
+}
+
+mat-form-field {
+  margin: 0 8px; /* Adds space between the form field and the labels */
+  width: 80px;    /* Set a custom width for the input */
+}
+
+.mat-paginator {
+  width: calc(100% - 0px) !important;
+}

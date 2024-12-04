@@ -1,0 +1,73 @@
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light ">
+    <div class="container-fluid">
+        <div class="row w-100">
+            <div class="col-4">
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Masthead-->
+<div class="container-fluid">
+    <div class="container-padding">
+
+        <div class="signup-content row">
+            <div class="signup-form col-md-5 pt-5">
+                <div class="login-btlogo">
+                    <img src="../../../../assets/images/bt-logo.png" class="" alt="BTLogo" />
+                </div>
+                <form class="login-form" [formGroup]="LoginForm" (ngSubmit)="clkSignin()">
+
+                    <div *ngIf="errorFlag">
+                        <mat-error>{{authorizationMessage}}</mat-error>
+                    </div><br>
+                    <div class="form-group inrne-addon ">
+                        <mat-form-field>
+                            <input matInput type="text" autocomplete="off" name="email" id="email"
+                                placeholder=" Login ID" [formControl]="LoginForm.controls['email']">
+                            <span matPrefix> <i class="far fa-user" aria-hidden="true"></i> </span>
+                            <mat-error *ngFor="let validation of validation_messages.email_id">
+                                <span *ngIf="LoginForm.get('email').hasError(validation.type)">
+                                    {{ validation.message}}
+                                </span>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="form-group inner-addon">
+                        <mat-form-field>
+                            <input matInput type="password" name="password" id="password" placeholder="Password"
+                                [formControl]="LoginForm.controls['password']" />
+                            <span matPrefix> <i class="fas fa-key" aria-hidden="true"></i> </span>
+                            <mat-error *ngFor="let validation of validation_messages.password">
+                                <span *ngIf="LoginForm.get('password').hasError(validation.type)">
+                                    {{ validation.message}}
+                                </span>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="remember-forget-container">
+                        <div class="remember-me">
+                            <input type="checkbox" id="rememberMe" (change)="checkRemember($event)" name="rememberMe"  />
+                            <label for="rememberMe" style="margin-top: 10px;">Remember Me</label>
+                        </div>
+                        <div class="forget-password-container">
+                            <a [routerLink]="['/forgetPassword']" style="margin-left: auto; margin-top: 10px;">Forget Password?</a>
+                        </div>
+                    </div>
+                    <div class="form-group form-button float-center">
+                        <button type="submit" name="signup" id="signup" class="btn login-button btn-rounded ">
+                            <i class="fa fa-sign-in-alt " aria-hidden="true"></i> Login </button>
+                    </div>
+                    <div class="center-link" style="margin-top: 11px;color: #006eff;margin-right: 2px;">
+                        <a [routerLink]="['/register']">create an account </a>
+                    </div>
+                </form>
+            </div>
+            <div class="signup-image col-md-5 ">
+                <figure><img src="assets/images/financial-image.png " alt="sing up" width="75% ">
+                </figure>
+            </div>
+        </div>
+    </div>
+</div>
