@@ -1,0 +1,77 @@
+2024-12-04 10:26:37.498  INFO 2824 --- [main] c.c.c.ConfigServicePropertySourceLocator : Fetching config from server at : http://localhost:8888
+2024-12-04 10:26:37.630  INFO 2824 --- [main] c.c.c.ConfigServicePropertySourceLocator : Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2024-12-04 10:26:37.631  WARN 2824 --- [main] c.c.c.ConfigServicePropertySourceLocator : Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/dmapp/local": Connection refused: getsockopt; nested exception is java.net.ConnectException: Connection refused: getsockopt
+2024-12-04 10:26:37.633  INFO 2824 --- [main] com.cmd.excel.CmdAppApplication          : The following 1 profile is active: "local"
+2024-12-04 10:26:42.143  INFO 2824 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-12-04 10:26:42.396  INFO 2824 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 151 ms. Found 23 JPA repository interfaces.
+2024-12-04 10:26:42.591  INFO 2824 --- [main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=54abf434-b36a-3a51-98f8-7e25506eef3b
+2024-12-04 10:26:43.041  INFO 2824 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 9090 (http)
+2024-12-04 10:26:43.063  INFO 2824 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-12-04 10:26:43.063  INFO 2824 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.60]
+2024-12-04 10:26:43.221  INFO 2824 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-12-04 10:26:43.221  INFO 2824 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 5543 ms
+2024-12-04 10:26:43.565  INFO 2824 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-12-04 10:26:43.629  INFO 2824 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.7.Final
+2024-12-04 10:26:43.905  INFO 2824 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-12-04 10:26:44.094  WARN 2824 --- [main] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout has been set but has no effect because the pool is operating as a fixed size pool.
+2024-12-04 10:26:44.096  INFO 2824 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-12-04 10:26:44.678  INFO 2824 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-12-04 10:26:44.698  INFO 2824 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+2024-12-04 10:26:45.297  WARN 2824 --- [main] org.hibernate.mapping.RootClass          : HHH000038: Composite-id class does not override equals(): com.cmd.excel.model.embed.EntityXreferenceRequestEmbed
+2024-12-04 10:26:45.298  WARN 2824 --- [main] org.hibernate.mapping.RootClass          : HHH000039: Composite-id class does not override hashCode(): com.cmd.excel.model.embed.EntityXreferenceRequestEmbed
+2024-12-04 10:26:46.736  INFO 2824 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-12-04 10:26:46.740  INFO 2824 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-12-04 10:26:47.682  INFO 2824 --- [main] tionInformation$PropertyDescriptorSource : Couldn't read class metadata for interface java.util.Map. Input property calculation might fail!
+2024-12-04 10:26:47.995  INFO 2824 --- [main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: private static java.lang.String com.cmd.excel.repository.RegisterRepository.emailUsername
+2024-12-04 10:26:47.995  INFO 2824 --- [main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: private static java.lang.String com.cmd.excel.repository.RegisterRepository.emailPassword
+2024-12-04 10:26:48.082  INFO 2824 --- [main] org.quartz.impl.StdSchedulerFactory      : Using default implementation for ThreadExecutor
+2024-12-04 10:26:48.145  INFO 2824 --- [main] org.quartz.core.SchedulerSignalerImpl    : Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2024-12-04 10:26:48.145  INFO 2824 --- [main] org.quartz.core.QuartzScheduler          : Quartz Scheduler v.2.3.2 created.
+2024-12-04 10:26:48.145  INFO 2824 --- [main] org.quartz.simpl.RAMJobStore             : RAMJobStore initialized.
+2024-12-04 10:26:48.146  INFO 2824 --- [main] org.quartz.core.QuartzScheduler          : Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2024-12-04 10:26:48.146  INFO 2824 --- [main] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
+2024-12-04 10:26:48.146  INFO 2824 --- [main] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler version: 2.3.2
+2024-12-04 10:26:48.146  INFO 2824 --- [main] org.quartz.core.QuartzScheduler          : JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@16eca98a
+2024-12-04 10:26:48.329  INFO 2824 --- [main] tionInformation$PropertyDescriptorSource : Couldn't read class metadata for interface java.util.Map. Input property calculation might fail!
+2024-12-04 10:26:48.409  INFO 2824 --- [main] tionInformation$PropertyDescriptorSource : Couldn't read class metadata for interface java.util.Map. Input property calculation might fail!
+2024-12-04 10:26:48.517  INFO 2824 --- [main] tionInformation$PropertyDescriptorSource : Couldn't read class metadata for interface java.util.Map. Input property calculation might fail!
+2024-12-04 10:26:48.609  INFO 2824 --- [main] tionInformation$PropertyDescriptorSource : Couldn't read class metadata for interface java.util.Map. Input property calculation might fail!
+2024-12-04 10:26:49.594  WARN 2824 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-12-04 10:26:50.462  INFO 2824 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 17 endpoint(s) beneath base path '/actuator'
+2024-12-04 10:26:50.587  INFO 2824 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 9090 (http) with context path ''
+2024-12-04 10:26:50.595  INFO 2824 --- [main] o.s.s.quartz.SchedulerFactoryBean        : Starting Quartz Scheduler now
+2024-12-04 10:26:50.596  INFO 2824 --- [main] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED started.
+2024-12-04 10:26:50.638  INFO 2824 --- [main] com.cmd.excel.CmdAppApplication          : Started CmdAppApplication in 14.467 seconds (JVM running for 31.054)
+2024-12-04 10:26:51.194  INFO 2824 --- [RMI TCP Connection(9)-127.0.0.1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-04 10:26:51.195  INFO 2824 --- [RMI TCP Connection(9)-127.0.0.1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-12-04 10:26:51.196  INFO 2824 --- [RMI TCP Connection(9)-127.0.0.1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-12-04 10:27:23.694  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : Checking bad request
+2024-12-04 10:27:23.695  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : Getting User from db after checking user exists
+2024-12-04 10:27:23.696  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : SSO is : false 
+2024-12-04 10:27:23.696  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : Decrypting pwd
+2024-12-04 10:27:23.697  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : Check delete flag
+2024-12-04 10:27:23.697  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : Checking user exists
+2024-12-04 10:27:23.770  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : Getting user details
+2024-12-04 10:27:24.407  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : Exception while login
+2024-12-04 10:27:24.407  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : A different object with the same identifier value was already associated with the session : [com.cmd.excel.model.UserToken#0]; nested exception is javax.persistence.EntityExistsException: A different object with the same identifier value was already associated with the session : [com.cmd.excel.model.UserToken#0]
+2024-12-04 10:27:24.407  INFO 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : A different object with the same identifier value was already associated with the session : [com.cmd.excel.model.UserToken#0]; nested exception is javax.persistence.EntityExistsException: A different object with the same identifier value was already associated with the session : [com.cmd.excel.model.UserToken#0]
+2024-12-04 10:27:24.407 ERROR 2824 --- [http-nio-9090-exec-4] com.cmd.excel.service.LoginService       : A different object with the same identifier value was already associated with the session : [com.cmd.excel.model.UserToken#0]; nested exception is javax.persistence.EntityExistsException: A different object with the same identifier value was already associated with the session : [com.cmd.excel.model.UserToken#0]
+2024-12-04 10:28:01.446  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : Checking bad request
+2024-12-04 10:28:01.446  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : Getting User from db after checking user exists
+2024-12-04 10:28:01.447  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : SSO is : false 
+2024-12-04 10:28:01.448  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : Decrypting pwd
+2024-12-04 10:28:01.448  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : Check delete flag
+2024-12-04 10:28:01.448  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : Checking user exists
+2024-12-04 10:28:01.488  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : Getting user details
+2024-12-04 10:28:04.470  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : Checking user details contains user id
+2024-12-04 10:28:04.619  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : Login successfull
+2024-12-04 10:28:04.620  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : test User logged in successfully
+2024-12-04 10:28:04.620  INFO 2824 --- [http-nio-9090-exec-6] com.cmd.excel.service.LoginService       : test User logged in successfully
+2024-12-04 10:28:04.726  INFO 2824 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
