@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { BaseHttp } from 'src/app/core/services/baseHttp.service';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class FileUploadService extends BaseHttp {
-    fileUploadDetails = "uploaData"
+  fileUploadDetails = 'uploaData';
 
-    uploadToAPI(formData: FormData) {
-        return this.post<any>(this.fileUploadDetails, formData)
-    }
+  uploadToAPI(formData: FormData) {
+    return this.filePostPython<any>(this.fileUploadDetails, formData);
+  }
 }

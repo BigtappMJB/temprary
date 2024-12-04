@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  url: "http://localhost:9090/"
-
+  url: 'http://localhost:9090/',
+  pythonUrl: 'http://127.0.0.1:8081/',
 };
 
 /*
@@ -15,4 +15,3 @@ export const environment = {
  * This import should be commented out in production mode because it will have a negative impact
  * on performance if an error is thrown.
  */
-

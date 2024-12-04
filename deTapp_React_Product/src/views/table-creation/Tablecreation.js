@@ -163,7 +163,6 @@ const CreateTableForm = () => {
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || [];
 
-  
   // Fetch the table list from the API
   const fetchTableListData = useCallback(async () => {
     try {
@@ -194,7 +193,7 @@ const CreateTableForm = () => {
       delete: permissionList?.includes("delete"),
     });
     inputRef.current.focus();
-    
+
     const getDataTypes = async () => {
       try {
         startLoading();
@@ -207,11 +206,9 @@ const CreateTableForm = () => {
     };
     if (!hasFetchedRoles.current) {
       getDataTypes();
-      fetchTableListData()
+      fetchTableListData();
       hasFetchedRoles.current = true;
-
     }
-    
   }, [menuList]);
 
   const addColumnForm = () => {
@@ -229,7 +226,7 @@ const CreateTableForm = () => {
       updatedFormData = {
         id: columnsData.length,
         columnName: `${tableName.toLowerCase()}_id`,
-        dataType: {id:5,name:"BIGINT"},
+        dataType: { id: 5, name: "BIGINT" },
         length: null,
         isPrimary: true,
         isMandatory: true,
@@ -347,7 +344,7 @@ const CreateTableForm = () => {
       };
 
       const response = await tableCreationController(finalObject);
-      
+
       if (response) {
         setTableName("");
         //   setSubmitted(false);
@@ -366,9 +363,7 @@ const CreateTableForm = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            
-          },
+          (confirmed) => {}
         );
       }
     } catch (error) {

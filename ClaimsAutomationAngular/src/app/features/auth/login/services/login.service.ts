@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { BaseHttp } from 'src/app/core/services/baseHttp.service';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class LoginService extends BaseHttp {
-    signInUrl: string = 'login';
+  signInUrl: string = 'login';
 
-    getLoginDetails(requestBody: any) {
-        return this.login<any>(this.signInUrl, requestBody);
-    }
+  getLoginDetails(requestBody: any) {
+    return this.login<any>(this.signInUrl, requestBody);
+  }
 }

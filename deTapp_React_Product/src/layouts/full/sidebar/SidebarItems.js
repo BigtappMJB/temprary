@@ -76,17 +76,8 @@ const SidebarItems = ({ navItemClicked }) => {
     }
   };
   return (
-    <Box sx={{ px: 3 }}>
-      <List sx={{ pt: 0 }} className="sidebarNav">
-        {/* <React.Fragment key={dashobardSubItem.id}>
-          <NavGroup item={"Dashboard"} />
-
-          <NavItem
-            onClick={navItemClicked}
-            item={dashobardSubItem}
-            key={dashobardSubItem.id}
-          />
-        </React.Fragment> */}
+    <Box sx={{ px: 1 }}>
+      <List sx={{ p: 0 }} className="sidebarNav">
         {MenuItems.map((item) => (
           <React.Fragment key={item.id}>
             <NavGroup

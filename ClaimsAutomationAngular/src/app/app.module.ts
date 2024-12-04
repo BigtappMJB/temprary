@@ -22,7 +22,12 @@ import { SendReceiveService } from './shared/services/sendReceive.service';
 import { ToastrModule } from 'ngx-toastr';
 import { AuthGuard } from './core/services/auth/auth.service';
 import { ViewDataService } from './features/view-data/service/view-data.service';
-import { DatePipe, APP_BASE_HREF, HashLocationStrategy, LocationStrategy } from '@angular/common';
+import {
+  DatePipe,
+  APP_BASE_HREF,
+  HashLocationStrategy,
+  LocationStrategy,
+} from '@angular/common';
 import { BnNgIdleService } from 'bn-ng-idle';
 import { DialogComponent } from './dialog/dialog.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -34,6 +39,7 @@ import { EmailVerificationComponent } from './features/auth/email-verification/e
 import { ForgetPasswordComponent } from './features/auth/forget-password/forget-password.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -43,7 +49,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     DialogComponent,
     RegisterationComponent,
     EmailVerificationComponent,
-    ForgetPasswordComponent
+    ForgetPasswordComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,12 +75,22 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatSnackBarModule,
     UserIdleModule.forRoot({ idle: 600, timeout: 300, ping: 120 }),
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatTabsModule,
   ],
   // providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, DataStorageService, SendReceiveService, AuthGuard, ViewDataService, DatePipe, BnNgIdleService],
-  providers: [{ provide: APP_BASE_HREF, useValue: 'dm' }, { provide: LocationStrategy, useClass: HashLocationStrategy }, DataStorageService, SendReceiveService, AuthGuard, ViewDataService, DatePipe, BnNgIdleService],
+  providers: [
+    { provide: APP_BASE_HREF, useValue: 'dm' },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    DataStorageService,
+    SendReceiveService,
+    AuthGuard,
+    ViewDataService,
+    DatePipe,
+    BnNgIdleService,
+  ],
   // providers: [{ provide: APP_BASE_HREF, useValue: '/inv/dm' }, DataStorageService, SendReceiveService, AuthGuard, ViewDataService, DatePipe, BnNgIdleService],
   // providers: [{ provide: APP_BASE_HREF, useValue: 'dm' }, DataStorageService, SendReceiveService, AuthGuard, ViewDataService, DatePipe, BnNgIdleService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

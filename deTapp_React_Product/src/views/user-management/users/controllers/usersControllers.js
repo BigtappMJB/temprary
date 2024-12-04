@@ -5,7 +5,10 @@ import {
   remove,
 } from "../../../utilities/apiservices/apiServices";
 import { getCookie } from "../../../utilities/cookieServices/cookieServices";
-import { isUserIdCookieName, titleCaseFirstWord } from "../../../utilities/generals";
+import {
+  isUserIdCookieName,
+  titleCaseFirstWord,
+} from "../../../utilities/generals";
 import { decodeData } from "../../../utilities/securities/encodeDecode";
 
 /**
@@ -47,9 +50,9 @@ export const getUserPermissionsController = async () => {
   try {
     // Send the GET request to the user API endpoint
     const body = {
-      email: decodeData(getCookie(isUserIdCookieName))
-    }
-    const response = await post(`/user-permission`,body, "python");
+      email: decodeData(getCookie(isUserIdCookieName)),
+    };
+    const response = await post(`/user-permission`, body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -153,7 +156,7 @@ export const userupdateController = async (formData) => {
       role_id: formData?.role.id,
     };
     // Send the PUT request to the user API endpoint
-    
+
     const response = await put(
       `/master/user?id=${formData.id}`,
       body,

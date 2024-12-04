@@ -39,7 +39,16 @@ const NavItem = ({ item, level, onClick }) => {
   }));
 
   return (
-    <List component="li" disablePadding key={item.id}>
+    <List
+      component="li"
+      disablePadding
+      key={item.id}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
       <ListItemStyled
         button
         component={item.external ? "a" : NavLink}
@@ -53,7 +62,6 @@ const NavItem = ({ item, level, onClick }) => {
         <ListItemIcon
           sx={{
             minWidth: "36px",
-            p: "3px 0",
             color: "inherit",
           }}
         >
