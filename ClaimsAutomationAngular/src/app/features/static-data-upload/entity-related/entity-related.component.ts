@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 export class EntityRelatedComponent {
   inputSubModuleId: number;
   constructor() {
-    this.inputSubModuleId = 6;
+    this.inputSubModuleId = 19;
   }
 }

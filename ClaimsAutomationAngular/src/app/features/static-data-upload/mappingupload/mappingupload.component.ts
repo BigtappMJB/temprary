@@ -45,16 +45,24 @@ export class MappinguploadComponent implements OnInit {
       alert('Please select a file first!');
       return;
     }
+    this.isSpinner = true;
     const formData = new FormData();
     formData.append('file', this.selectedFile);
     console.log('FormData content:', formData);
     console.log(formData.get('file') as File);
     this.uploadToAPI(formData).subscribe(
       (response) => {
+        this.notifierService.showNotification(
+          'Success',
+          'File uploaded successfully!'
+        );
+        this.files = [];
         console.log('File uploaded successfully!', response);
+        this.isSpinner = false;
       },
       (error) => {
-        console.error('Error uploading file', error);
+        console.error('Error uploading file', error)
+        this.isSpinner = false;;
       }
     );;
 

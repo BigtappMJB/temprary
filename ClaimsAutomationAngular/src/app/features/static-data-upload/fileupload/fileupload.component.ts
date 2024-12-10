@@ -89,6 +89,10 @@ export class FileuploadComponent implements OnInit {
       (response) => {
         this.responseValue = response;
         this.isSpinner = false;
+        this.notifierService.showNotification(
+          'Success',
+          'File uploaded successfully!'
+        );
         console.log('File uploaded successfully!', response);
       },
       (error) => {

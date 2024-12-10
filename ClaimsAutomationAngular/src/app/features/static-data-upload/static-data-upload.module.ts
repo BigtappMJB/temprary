@@ -16,6 +16,7 @@ import { MatTableModule } from '@angular/material/table';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MappinguploadComponent } from '../static-data-upload/mappingupload/mappingupload.component';
 import { FileuploadComponent } from '../static-data-upload/fileupload/fileupload.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { FileuploadComponent } from '../static-data-upload/fileupload/fileupload
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    SharedModule
+    SharedModule,
+    MatProgressSpinnerModule
   ],
   providers: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
