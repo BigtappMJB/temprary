@@ -56,7 +56,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "baseHref": "dm",
+              "baseHref": "claims",
               "budgets": [
                 {
                   "type": "initial",
@@ -84,7 +84,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "baseHref": "dm",
+              "baseHref": "claims",
               "budgets": [
                 {
                   "type": "initial",
@@ -112,7 +112,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "baseHref": "dm",
+              "baseHref": "claims",
               "budgets": [
                 {
                   "type": "initial",

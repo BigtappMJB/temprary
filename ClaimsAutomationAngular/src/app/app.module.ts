@@ -80,7 +80,7 @@ import { MatTabsModule } from '@angular/material/tabs';
   ],
   // providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, DataStorageService, SendReceiveService, AuthGuard, ViewDataService, DatePipe, BnNgIdleService],
   providers: [
-    { provide: APP_BASE_HREF, useValue: 'dm' },
+    { provide: APP_BASE_HREF, useValue: 'claims' },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     DataStorageService,
     SendReceiveService,
