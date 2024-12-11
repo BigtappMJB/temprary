@@ -27,7 +27,6 @@ export class FileuploadComponent implements OnInit {
   responseValue: any = null;
   constructor(
     private formBuilder: FormBuilder,
-
     public sendReceiveService: SendReceiveService,
     public datepipe: DatePipe,
     private apiService: FileUploadService,
@@ -36,7 +35,7 @@ export class FileuploadComponent implements OnInit {
 
   ngOnInit(): void {
     this.tableUploadForm = this.formBuilder.group({
-      tableId: [null, Validators.compose([Validators.required])],
+      // tableId: [null, Validators.compose([Validators.required])],
       file: [
         null,
         Validators.compose([Validators.required, this.fileValidator]),
@@ -81,7 +80,7 @@ export class FileuploadComponent implements OnInit {
       return;
     }
     const formData = new FormData();
-    formData.append('mapping_table', this.tableUploadForm.value.tableId);
+    // formData.append('mapping_table', this.tableUploadForm.value.tableId);
     formData.append('file', this.selectedFile);
     console.log('FormData content:', formData);
     this.isSpinner = true;

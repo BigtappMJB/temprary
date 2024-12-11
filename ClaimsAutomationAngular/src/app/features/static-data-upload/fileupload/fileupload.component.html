@@ -1,6 +1,14 @@
 <div *ngIf="isSpinner" class="loader">
   <mat-spinner
-  style="position:absolute;left:0px;right:0px;top:0px;bottom:0px;margin:auto;"></mat-spinner>
+    style="
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      top: 0px;
+      bottom: 0px;
+      margin: auto;
+    "
+  ></mat-spinner>
 </div>
 <div class="ConfigurationTypes_downloadCsv w-100">
   <div class="container">
@@ -9,7 +17,7 @@
         [ngClass]="{ 'col-md-6': responseValue, 'col-md-12': !responseValue }"
       >
         <form [formGroup]="tableUploadForm" (ngSubmit)="ontableUploadSubmit()">
-          <div class="form-group inrne-addon">
+          <!-- <div class="form-group inrne-addon">
             <mat-form-field>
               <input
                 matInput
@@ -20,9 +28,7 @@
                 placeholder=" Table Name"
                 [formControl]="tableUploadForm.controls['tableId']"
               />
-              <span matPrefix>
-                <!-- <i class="far fa-user" aria-hidden="true"></i> -->
-              </span>
+              <span matPrefix> </span>
               <mat-error *ngFor="let validation of validation_messages.tableId">
                 <span
                   *ngIf="
@@ -33,7 +39,7 @@
                 </span>
               </mat-error>
             </mat-form-field>
-          </div>
+          </div> -->
           <!-- <mat-form-field appearance="fill">
                   <mat-label>Select Table</mat-label>
                   <mat-select formControlName="tableId" disableOptionCentering>
@@ -182,11 +188,11 @@
             class="d-flex flex-row flex-wrap align-items-center justify-content-between"
           >
             <div class="">
-              <strong>Table :</strong> {{ responseValue?.table_name }}
+              <strong>Status :</strong> {{ responseValue?.status }}
             </div>
             <div class="">
               <strong>Total Column :</strong>
-              {{ responseValue?.mapped_columns.total_in_mapping }}
+              {{ responseValue?.total_rows }}
             </div>
           </div>
           <br />
@@ -195,27 +201,24 @@
           >
             <div class="">
               <strong>Mapped Column :</strong>
-              {{ responseValue?.mapped_columns.total_mapped }}
+              {{ responseValue?.inserted_rows }}
             </div>
             <div class="">
               <strong>UnMapped Column :</strong>
-              {{
-                responseValue?.mapped_columns.total_in_mapping -
-                  responseValue?.mapped_columns.total_mapped
-              }}
+              {{ responseValue?.total_rows - responseValue?.inserted_rows }}
             </div>
           </div>
           <br />
 
           <div class="">
-            <strong>Mapped Columns : </strong><br />
-            {{ responseValue?.mapped_columns?.found?.join(", ") }}
+            <strong>Processed Columns : </strong><br />
+            {{ responseValue?.processed_columns?.join(", ") }}
           </div>
           <br />
 
           <div class="">
-            <strong>UnMapped Columns :</strong><br />
-            {{ responseValue?.unmapped_source_columns?.join(", ") }}
+            <strong>Missing Columns :</strong><br />
+            {{ responseValue?.missing_columns?.join(", ") }}
           </div>
         </div>
       </div>

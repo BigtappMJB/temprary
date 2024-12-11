@@ -4,8 +4,8 @@ import { BaseHttp } from 'src/app/core/services/baseHttp.service';
 @Injectable({
   providedIn: 'root',
 })
-export class FileUploadService extends BaseHttp {
-  fileUploadDetails = 'uploadVidalClaims';
+export class MappingUploadService extends BaseHttp {
+  fileUploadDetails = 'uploadMapping';
 
   uploadToAPI(formData: FormData) {
     return this.filePostPython<any>(this.fileUploadDetails, formData);
