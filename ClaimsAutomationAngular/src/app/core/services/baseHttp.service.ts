@@ -10,6 +10,11 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { DataStorageService } from 'src/app/shared/services/data-storage.service';
 import { environment } from '../../../environments/environment';
 
+const apiUrls: any = {
+  springBoot: environment.url,
+  python: environment.pythonUrl,
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -20,40 +25,40 @@ export abstract class BaseHttp {
     public router: Router
   ) {}
 
-  get<T>(url: string): Observable<T> {
+  get<T>(url: string, tech: any = 'springBoot'): Observable<T> {
     let bearer: any = localStorage.getItem('userToken');
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       token: bearer,
     });
-    return this.http.get<T>(environment.url + url, { headers: header }).pipe(
+    return this.http.get<T>(apiUrls[tech] + url, { headers: header }).pipe(
       map((response) => response),
       catchError(this.handleError)
     );
   }
 
-  post<T>(url: string, body: any): Observable<T> {
+  post<T>(url: string, body: any, tech: any = 'springBoot'): Observable<T> {
     let bearer: any = localStorage.getItem('userToken');
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       token: bearer,
     });
     return this.http
-      .post<T>(environment.url + url, JSON.stringify(body), { headers: header })
+      .post<T>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
       .pipe(
         map((response) => response),
         catchError(this.handleError)
       );
   }
 
-  filePost<T>(url: string, body: any): Observable<T> {
+  filePost<T>(url: string, body: any, tech: any = 'springBoot'): Observable<T> {
     let bearer: any = localStorage.getItem('userToken');
     const header = new HttpHeaders({
       'Content-Type': 'multipart/form-data',
       token: bearer,
     });
     return this.http
-      .post<T>(environment.url + url, body, { headers: header })
+      .post<T>(apiUrls[tech] + url, body, { headers: header })
       .pipe(
         map((response) => response),
         catchError(this.handleError)
@@ -73,38 +78,38 @@ export abstract class BaseHttp {
       );
   }
 
-  put<T>(url: string, body: any): Observable<T> {
+  put<T>(url: string, body: any, tech: any = 'springBoot'): Observable<T> {
     let bearer: any = localStorage.getItem('userToken');
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       token: bearer,
     });
     return this.http
-      .put<T>(environment.url + url, JSON.stringify(body), { headers: header })
+      .put<T>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
       .pipe(
         map((response) => response),
         catchError(this.handleError)
       );
   }
 
-  delete<T>(url: string): Observable<T> {
+  delete<T>(url: string, tech: any = 'springBoot'): Observable<T> {
     let bearer: any = localStorage.getItem('userToken');
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       token: bearer,
     });
-    return this.http.delete<T>(environment.url + url, { headers: header }).pipe(
+    return this.http.delete<T>(apiUrls[tech] + url, { headers: header }).pipe(
       map((response) => response),
       catchError(this.handleError)
     );
   }
 
-  login<T>(url: string, body: any): Observable<T> {
+  login<T>(url: string, body: any, tech: any = 'springBoot'): Observable<T> {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
     });
     return this.http
-      .post<T>(environment.url + url, JSON.stringify(body), { headers: header })
+      .post<T>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
       .pipe(
         map((response) => response),
         catchError(this.handleError)
@@ -146,7 +151,7 @@ export abstract class BaseHttp {
     throw new Error('Method not implemented.');
   }
 
-  getchangepassword<T>(url: string): Observable<T> {
+  getchangepassword<T>(url: string,tech:any="springBoot"): Observable<T> {
     let bearer: any = localStorage.getItem('LoginData');
     if (bearer) {
       bearer = JSON.parse(bearer);
@@ -154,7 +159,7 @@ export abstract class BaseHttp {
         'Content-Type': 'application/json',
         token: bearer.userToken,
       });
-      return this.http.get<T>(environment.url + url, { headers: header }).pipe(
+      return this.http.get<T>(apiUrls[tech] + url, { headers: header }).pipe(
         map((response) => response),
         catchError(this.handleError)
       );

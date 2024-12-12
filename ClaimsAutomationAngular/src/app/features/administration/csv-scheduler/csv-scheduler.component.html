@@ -1,56 +1,82 @@
 <div class="ConfigurationTypes_textpadding">
   <div class="card border-light" *ngIf="isAddSchedulerForm">
-
-    <div class="card-header text-white bg-secondary">
-      Add Scheduler
-    </div>
-
+    <div class="card-header text-white bg-secondary">Add Scheduler</div>
 
     <form [formGroup]="csvSchedulerForm" (ngSubmit)="onConfirm()">
       <div class="card-body">
-
         <div class="date-time-container">
           <div class="form-section">
             <mat-form-field appearance="outline">
               <mat-label>Scheduler Name</mat-label>
-              <input matInput formControlName="schedulerName">
+              <input matInput formControlName="schedulerName" />
             </mat-form-field>
             <mat-error
-              *ngIf="csvSchedulerForm.get('schedulerName')?.touched && csvSchedulerForm.get('schedulerName')?.invalid"
-              class="error">Scheduler Name is required</mat-error>
+              *ngIf="
+                csvSchedulerForm.get('schedulerName')?.touched &&
+                csvSchedulerForm.get('schedulerName')?.invalid
+              "
+              class="error"
+              >Scheduler Name is required</mat-error
+            >
           </div>
 
-
-          <div class="form-section" style="width: 30%;">
+          <div class="form-section" style="width: 30%">
             <mat-form-field appearance="outline">
               <mat-label>Start Date</mat-label>
-              <input matInput [matDatepicker]="startPicker" formControlName="startDate">
-              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="startPicker"
+                formControlName="startDate"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="startPicker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #startPicker></mat-datepicker>
             </mat-form-field>
-            <mat-error *ngIf="csvSchedulerForm.get('startDate')?.touched && csvSchedulerForm.get('startDate')?.invalid"
-              class="error">Start Date is required</mat-error>
+            <mat-error
+              *ngIf="
+                csvSchedulerForm.get('startDate')?.touched &&
+                csvSchedulerForm.get('startDate')?.invalid
+              "
+              class="error"
+              >Start Date is required</mat-error
+            >
 
-            <div class="time-container" style="width: 32%;">
+            <div class="time-container" style="width: 32%">
               <mat-form-field appearance="outline">
                 <mat-label>Time</mat-label>
                 <mat-select formControlName="startHour">
-                  <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
+                  <mat-option *ngFor="let hour of hours" [value]="hour">{{
+                    hour
+                  }}</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-error
-                *ngIf="csvSchedulerForm.get('startHour')?.touched && csvSchedulerForm.get('startHour')?.invalid"
-                class="error">Hour is required</mat-error>
+                *ngIf="
+                  csvSchedulerForm.get('startHour')?.touched &&
+                  csvSchedulerForm.get('startHour')?.invalid
+                "
+                class="error"
+                >Hour is required</mat-error
+              >
 
               <mat-form-field appearance="outline">
                 <mat-label>Minutes</mat-label>
                 <mat-select formControlName="startMinute">
-                  <mat-option *ngFor="let minute of minutes" [value]="minute">{{ minute }}</mat-option>
+                  <mat-option *ngFor="let minute of minutes" [value]="minute">{{
+                    minute
+                  }}</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-error
-                *ngIf="csvSchedulerForm.get('startMinute')?.touched && csvSchedulerForm.get('startMinute')?.invalid"
-                class="error">Minute is required</mat-error>
+                *ngIf="
+                  csvSchedulerForm.get('startMinute')?.touched &&
+                  csvSchedulerForm.get('startMinute')?.invalid
+                "
+                class="error"
+                >Minute is required</mat-error
+              >
 
               <mat-form-field appearance="outline">
                 <mat-label>AM/PM</mat-label>
@@ -59,208 +85,310 @@
                   <mat-option value="PM">PM</mat-option>
                 </mat-select>
               </mat-form-field>
-
             </div>
           </div>
 
-
           <div class="form-section">
-
-            <mat-form-field appearance="outline" *ngIf="!csvSchedulerForm.get('neverEnd')?.value">
+            <mat-form-field
+              appearance="outline"
+              *ngIf="!csvSchedulerForm.get('neverEnd')?.value"
+            >
               <mat-label>End Date</mat-label>
-              <input matInput [matDatepicker]="endPicker" formControlName="endDate">
-              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="endPicker"
+                formControlName="endDate"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="endPicker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #endPicker></mat-datepicker>
             </mat-form-field>
-            <mat-error *ngIf="csvSchedulerForm.get('endDate')?.touched && csvSchedulerForm.get('endDate')?.invalid"
-              class="error">End Date is required</mat-error>
+            <mat-error
+              *ngIf="
+                csvSchedulerForm.get('endDate')?.touched &&
+                csvSchedulerForm.get('endDate')?.invalid
+              "
+              class="error"
+              >End Date is required</mat-error
+            >
 
-            <mat-checkbox style="padding-left: 50px;" formControlName="neverEnd">Never</mat-checkbox>
+            <mat-checkbox style="padding-left: 50px" formControlName="neverEnd"
+              >Never</mat-checkbox
+            >
           </div>
         </div>
 
-
         <div>
-          <mat-label for="Select repeat" style="font-size: 17px;font-weight: bold;">Select repeat: </mat-label><br>
-          <mat-radio-group formControlName="repeatUnit" aria-label="Select an option"
-            (change)="onOccuranceChange($event)" style="padding-top: 10px;">
-            <mat-radio-button class="radioBtn" value="Daily">Daily</mat-radio-button>
-            <mat-radio-button class="radioBtn" value="Weekly">Weekly</mat-radio-button>
-            <mat-radio-button class="radioBtn" value="Monthly">Monthly</mat-radio-button>
-            <mat-radio-button class="radioBtn" value="Yearly">Yearly</mat-radio-button>
+          <mat-label
+            for="Select repeat"
+            style="font-size: 17px; font-weight: bold"
+            >Select repeat: </mat-label
+          ><br />
+          <mat-radio-group
+            formControlName="repeatUnit"
+            aria-label="Select an option"
+            (change)="onOccuranceChange($event)"
+            style="padding-top: 10px"
+          >
+            <mat-radio-button class="radioBtn" value="Daily"
+              >Daily</mat-radio-button
+            >
+            <mat-radio-button class="radioBtn" value="Weekly"
+              >Weekly</mat-radio-button
+            >
+            <mat-radio-button class="radioBtn" value="Monthly"
+              >Monthly</mat-radio-button
+            >
+            <mat-radio-button class="radioBtn" value="Yearly"
+              >Yearly</mat-radio-button
+            >
           </mat-radio-group>
         </div>
 
-
-
         <div *ngIf="isWeekly" class="form-section">
-
-          <div style="width: 30%;">
-            <mat-label style="font-size: 17px;font-weight: bold;">Select Day</mat-label>
+          <div style="width: 30%">
+            <mat-label style="font-size: 17px; font-weight: bold"
+              >Select Day</mat-label
+            >
             <mat-radio-group formControlName="selectedWeekDay">
               <div class="checkbox-container">
                 <div *ngFor="let day of daysOfWeek">
-                  <mat-radio-button [value]="day.value">{{ day.name }}</mat-radio-button>
+                  <mat-radio-button [value]="day.value">{{
+                    day.name
+                  }}</mat-radio-button>
                 </div>
               </div>
             </mat-radio-group>
           </div>
         </div>
 
-
         <div *ngIf="isMonthly" class="form-section">
-
-          <div class="repeat-container" style="width: 17%;">
+          <div class="repeat-container" style="width: 17%">
             <mat-form-field appearance="outline">
               <mat-label>Select Day</mat-label>
               <mat-select formControlName="repeatDayOfMonth">
-                <mat-option *ngFor="let dayNum of days" [value]="dayNum">{{ dayNum }}</mat-option>
+                <mat-option *ngFor="let dayNum of days" [value]="dayNum">{{
+                  dayNum
+                }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-
         </div>
 
         <div *ngIf="isYearly" class="form-section">
-
           <div class="repeat-container">
-            <mat-form-field appearance="outline" style="width: 16% !important;">
+            <mat-form-field appearance="outline" style="width: 16% !important">
               <mat-label>Select Month</mat-label>
               <mat-select formControlName="repeatMonthYear">
-                <mat-option *ngFor="let month of MonthOptions" [value]="month.id">
+                <mat-option
+                  *ngFor="let month of MonthOptions"
+                  [value]="month.id"
+                >
                   {{ month.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-label>of Day</mat-label>
-            <mat-form-field appearance="outline" style="width: 15% !important;">
+            <mat-form-field appearance="outline" style="width: 15% !important">
               <mat-select formControlName="repeatDayOfMonthyear">
-                <mat-option *ngFor="let dayNum of days" [value]="dayNum">{{ dayNum }}</mat-option>
+                <mat-option *ngFor="let dayNum of days" [value]="dayNum">{{
+                  dayNum
+                }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
         </div>
-       
+
         <div class="row">
           <div class="col-md-6"></div>
           <div class="col-md-6">
             <div class="mb-3 mt-1 pt-1 float-end">
-              <button type="submit" class="btn btn-outline-secondary btn-rounded d-inline-block m-2">
+              <button
+                type="submit"
+                class="btn btn-outline-secondary btn-rounded d-inline-block m-2"
+              >
                 Submit
               </button>
-              <button type="button" class="btn btn-outline-secondary btn-rounded d-inline-block m-2"
-                (click)="onCancel()"> Cancel
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-rounded d-inline-block m-2"
+                (click)="onCancel()"
+              >
+                Cancel
               </button>
             </div>
           </div>
         </div>
       </div>
     </form>
-
-
   </div>
 
-
-  <h4 cl> Scheduler List
+  <h4 cl>
+    Scheduler List
     <span class="float-end mb-2">
-      <button type="button" class="btn btn-outline-secondary btn-rounded" *ngIf="!isAddSchedulerForm "
-        (click)="onAddscheduler()"> Add
-        scheduler </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-rounded"
+        *ngIf="!isAddSchedulerForm"
+        (click)="onAddscheduler()"
+      >
+        Add scheduler
+      </button>
     </span>
-   
   </h4>
   <div class="clearfix"></div>
 
-  <table mat-table [dataSource]="this.filterData.dataSource" matSort class="mat-elevation-z8 mat-datagrid w-100"
-    aria-label="users">
+  <table
+    mat-table
+    [dataSource]="this.filterData.dataSource"
+    matSort
+    class="mat-elevation-z8 mat-datagrid w-100"
+    aria-label="users"
+  >
     <ng-container matColumnDef="sno">
-      <th mat-header-cell *matHeaderCellDef style="width: 30px;" scope="col">
-        <label mat-sort-header for="sno-input">
-          S.No
-        </label>
-        <input type="text" id="sno-input" (keyup)="updatePagination()" [(ngModel)]="filterData.filterColumnNames[0].Value"
-          [filter]="filterData" />
+      <th mat-header-cell *matHeaderCellDef style="width: 30px" scope="col">
+        <label mat-sort-header for="sno-input"> S.No </label>
+        <input
+          type="text"
+          id="sno-input"
+          (keyup)="updatePagination()"
+          [(ngModel)]="filterData.filterColumnNames[0].Value"
+          [filter]="filterData"
+        />
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.sno}} </td>
+      <td mat-cell *matCellDef="let element">{{ element.sno }}</td>
     </ng-container>
 
     <ng-container matColumnDef="schedulerName">
       <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header  for="scheduler-name-input">
+        <label mat-sort-header for="scheduler-name-input">
           Scheduler name
         </label>
-        <input type="text" id="scheduler-name-input" (keyup)="updatePagination()" [(ngModel)]="filterData.filterColumnNames[1].Value"
-          [filter]="filterData" />
+        <input
+          type="text"
+          id="scheduler-name-input"
+          (keyup)="updatePagination()"
+          [(ngModel)]="filterData.filterColumnNames[1].Value"
+          [filter]="filterData"
+        />
       </th>
-      <td mat-cell *matCellDef="let element2"> {{element2.schedularName}} </td>
+      <td mat-cell *matCellDef="let element2">{{ element2.schedularName }}</td>
     </ng-container>
 
     <ng-container matColumnDef="startDate">
-
       <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="start-date-input">
-          Start date
-        </label>
-        <input type="text" id="start-date-input" (keyup)="updatePagination()" [(ngModel)]="filterData.filterColumnNames[2].Value"
-          [filter]="filterData" />
+        <label mat-sort-header for="start-date-input"> Start date </label>
+        <input
+          type="text"
+          id="start-date-input"
+          (keyup)="updatePagination()"
+          [(ngModel)]="filterData.filterColumnNames[2].Value"
+          [filter]="filterData"
+        />
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.startDateTime | date:'longDate'}} </td>
+      <td mat-cell *matCellDef="let element">
+        {{ element.startDateTime | date : "longDate" }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="startTime">
       <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="start-time-input">
-          Start time
-        </label>
-        <input type="text" id="start-time-input" (keyup)="updatePagination()" [(ngModel)]="filterData.filterColumnNames[2].Value"
-          [filter]="filterData" />
+        <label mat-sort-header for="start-time-input"> Start time </label>
+        <input
+          type="text"
+          id="start-time-input"
+          (keyup)="updatePagination()"
+          [(ngModel)]="filterData.filterColumnNames[2].Value"
+          [filter]="filterData"
+        />
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.startDateTime | date:'mediumTime'}} </td>
+      <td mat-cell *matCellDef="let element">
+        {{ element.startDateTime | date : "mediumTime" }}
+      </td>
     </ng-container>
-
 
     <ng-container matColumnDef="endDate">
       <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="end-date-input">
-          End date
-        </label>
-        <input type="text" id="end-date-input" (keyup)="updatePagination()" [(ngModel)]="filterData.filterColumnNames[2].Value"
-          [filter]="filterData" />
+        <label mat-sort-header for="end-date-input"> End date </label>
+        <input
+          type="text"
+          id="end-date-input"
+          (keyup)="updatePagination()"
+          [(ngModel)]="filterData.filterColumnNames[2].Value"
+          [filter]="filterData"
+        />
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.endDateTime | date:'longDate'}} </td>
+      <td mat-cell *matCellDef="let element">
+        {{ element.endDateTime | date : "longDate" }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="endTime">
       <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="end-time-input">
-          End time
-        </label>
-        <input type="text" id="end-time-input" (keyup)="updatePagination()" [(ngModel)]="filterData.filterColumnNames[2].Value"
-          [filter]="filterData" />
+        <label mat-sort-header for="end-time-input"> End time </label>
+        <input
+          type="text"
+          id="end-time-input"
+          (keyup)="updatePagination()"
+          [(ngModel)]="filterData.filterColumnNames[2].Value"
+          [filter]="filterData"
+        />
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.endDateTime | date:'mediumTime'}} </td>
+      <td mat-cell *matCellDef="let element">
+        {{ element.endDateTime | date : "mediumTime" }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef scope="col" >
-        <span>
-          Actions
-        </span>
+      <th mat-header-cell *matHeaderCellDef scope="col">
+        <span> Actions </span>
       </th>
       <td mat-cell *matCellDef="let element">
-        <mat-slide-toggle [checked]="element.status == '0'? false : true"
-          (change)="onActivatescheduler(element,$event)"></mat-slide-toggle>
-        <span matTooltip="Edit" (click)="onEditScheduler(element)" (keydown)="onEditScheduler(element)"> <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+        <mat-slide-toggle
+          [checked]="element.status == '0' ? false : true"
+          (change)="onActivatescheduler(element, $event)"
+        ></mat-slide-toggle>
+        <span
+          matTooltip="Edit"
+          (click)="onEditScheduler(element)"
+          (keydown)="onEditScheduler(element)"
+        >
+          <i class="fas fa-pencil-alt" aria-hidden="true"></i>
         </span>
-        <span matTooltip="Delete" style="cursor: pointer;" (click)="onSchedulerDelete(element)" (keydown)="onSchedulerDelete(element)"> <i
-            class="far fa-trash-alt" aria-hidden="true"></i> </span>
+        <span
+          matTooltip="Delete"
+          style="cursor: pointer"
+          (click)="onSchedulerDelete(element)"
+          (keydown)="onSchedulerDelete(element)"
+        >
+          <i class="far fa-trash-alt" aria-hidden="true"></i>
+        </span>
+        <span
+          *ngIf="!element.isSchedulerRunning"
+          matTooltip="Start"
+          style="cursor: pointer"
+          (click)="onStartScheduler(element)"
+          (keydown)="onStartScheduler(element)"
+        >
+          <i class="fas fa-play" aria-hidden="true"></i>
+        </span>
+        <span
+          style="cursor: none; pointer-events: none"
+          *ngIf="element.isSchedulerRunning"
+          matTooltip="Running"
+          style="cursor: pointer"
+        >
+          <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+        </span>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
-  <mat-paginator [pageSizeOptions]="[ 10,25, 50, 100]" aria-label="Select page">
+  <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Select page">
   </mat-paginator>
 </div>
