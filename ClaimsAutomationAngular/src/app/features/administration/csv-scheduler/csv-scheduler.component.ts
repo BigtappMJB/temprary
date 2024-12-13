@@ -134,60 +134,14 @@ export class CsvSchedulerComponent {
         }
         endDate?.updateValueAndValidity();
       });
-    this.getDefaultSchedulerList();
     this.getSchedulerList();
-    this.schedulerData = [
-      {
-        sno: 1,
-        schedularName: 'Claims',
-        startDateTime: new Date(),
-        endDateTime: new Date(),
-      },
-      {
-        sno: 2,
-        schedularName: 'Claims Health',
-        startDateTime: new Date(),
-        endDateTime: new Date(),
-      },
-      {
-        sno: 3,
-        schedularName: 'Claims Settle Details',
-        startDateTime: new Date(),
-        startTime: new Date().getTime(),
-        endDateTime: new Date(),
-      },
-    ];
-    this.filterData.gridData = this.schedulerData;
-    this.dataSource = new MatTableDataSource(this.schedulerData);
-    this.filterData.dataSource = this.dataSource;
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.filterData.sort = this.sort;
-    for (let col of this.filterData.filterColumnNames) {
-      col.Value = '';
-    }
-  }
 
-  getDefaultSchedulerList() {
-    this.csvSchedulerService
-      .getDefaultSchedulers()
-      .subscribe(
-        (response) => {
-          // Handle the success response here
-          console.log('Schedulers fetched successfully:', response);
-        },
-        (error) => {
-          // Handle the error response here
-          console.error('Error fetching schedulers:', error);
-        }
-      )
-      .unsubscribe();
   }
 
   getSchedulerList() {
     this.csvSchedulerService.getAllSchedulerDetails().subscribe((response) => {
       const totalLength: any = this.schedulerData.length + response.length;
-      for (let i = this.schedulerData.length; i < totalLength; i++) {
+      for (let i = 0; i < response.length; i++) {
         response[i].sno = i + 1;
         this.schedulerData.push(response[i]);
       }
