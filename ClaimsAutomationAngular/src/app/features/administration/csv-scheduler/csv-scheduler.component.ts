@@ -140,7 +140,7 @@ export class CsvSchedulerComponent {
 
   getSchedulerList() {
     this.csvSchedulerService.getAllSchedulerDetails().subscribe((response) => {
-      const totalLength: any = this.schedulerData.length + response.length;
+      this.schedulerData = []
       for (let i = 0; i < response.length; i++) {
         response[i].sno = i + 1;
         this.schedulerData.push(response[i]);
