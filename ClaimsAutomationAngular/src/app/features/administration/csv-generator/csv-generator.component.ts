@@ -157,9 +157,9 @@ export class CsvGeneratorComponent implements OnInit {
     // });
   }
   onExportCSV() {
-    if (this.dataSource.filteredData.length !== 0) {
+    if (this.filterData.dataSource.filteredData.length !== 0) {
       exportToCSV(
-        this.dataSource.filteredData,
+        this.filterData.dataSource.filteredData,
         `scheduler_result_${new Date().toISOString()}.csv`
       );
     }

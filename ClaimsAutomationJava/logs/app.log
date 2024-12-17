@@ -1851,3 +1851,41 @@ org.hibernate.PropertyValueException: not-null property references a null or tra
 2024-12-17 16:46:54.906  INFO 2732 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
 2024-12-17 16:47:01.890  INFO 2732 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
 2024-12-17 16:47:07.946  INFO 2732 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 17:30:11.637  WARN 2732 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m41s163ms80µs700ns).
+2024-12-17 17:32:24.003  INFO 2732 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:32:45.662  INFO 2732 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:33:17.277  INFO 2732 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:34:33.244  INFO 2732 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:34:46.680  INFO 2732 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 17:34:46.952  INFO 2732 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : ALL Modules Fetched Successfully
+2024-12-17 17:34:47.231  INFO 2732 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : ALL Submodules Fetched Successfully
+2024-12-17 17:34:47.442  INFO 2732 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : ALL Tables Fetched Successfully
+2024-12-17 17:34:47.588  INFO 2732 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : ALL Access Permissionss Fetched Successfully
+2024-12-17 17:34:47.632  INFO 2732 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:34:50.204  INFO 2732 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:35:02.099  INFO 2732 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:35:02.141  INFO 2732 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:35:05.104  INFO 2732 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:35:34.346  INFO 2732 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-17 17:35:34.426  INFO 2732 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-17 17:35:34.725  INFO 2732 --- [http-nio-9090-exec-8] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-17 17:35:35.459  INFO 2732 --- [http-nio-9090-exec-6] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-17 17:35:35.822  INFO 2732 --- [task-1] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_ENTITY_20241217.csv (The system cannot find the path specified)
+2024-12-17 17:35:35.824 ERROR 2732 --- [task-1] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_ENTITY_20241217.csv (The system cannot find the path specified)
+2024-12-17 17:35:40.080  INFO 2732 --- [task-1] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-17 17:35:40.081 ERROR 2732 --- [task-1] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-17 17:36:26.337  INFO 2732 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 17:36:26.535  INFO 2732 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : ALL Modules Fetched Successfully
+2024-12-17 17:36:26.692  INFO 2732 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : ALL Submodules Fetched Successfully
+2024-12-17 17:36:26.833  INFO 2732 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : ALL Tables Fetched Successfully
+2024-12-17 17:36:27.049  INFO 2732 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : ALL Access Permissionss Fetched Successfully
+2024-12-17 17:36:27.142  INFO 2732 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:36:28.273  INFO 2732 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 17:36:46.709  INFO 2732 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-17 17:36:46.747  INFO 2732 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-17 17:36:46.859  INFO 2732 --- [http-nio-9090-exec-9] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-17 17:36:46.976  INFO 2732 --- [task-2] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_ENTITY_20241217.csv (The system cannot find the path specified)
+2024-12-17 17:36:46.977 ERROR 2732 --- [task-2] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_ENTITY_20241217.csv (The system cannot find the path specified)
+2024-12-17 17:36:47.013  INFO 2732 --- [http-nio-9090-exec-10] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-17 17:36:49.897  INFO 2732 --- [task-2] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-17 17:36:49.898 ERROR 2732 --- [task-2] com.cmd.excel.service.CmdEmailService    : IOException while sending message
