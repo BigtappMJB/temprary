@@ -6,6 +6,7 @@ import { RolesComponent } from './roles/roles.component';
 import { TableConfiguratorComponent } from './table-configurator/table-configurator.component';
 import { UserComponent } from './user/user.component';
 import { CsvSchedulerComponent } from './csv-scheduler/csv-scheduler.component';
+import { SchedulerRecordDetailsComponent } from './scheduler-record-details/scheduler-record-details.component';
 
 const routes: Routes = [
   { path: 'users', component: UserComponent },
@@ -13,11 +14,16 @@ const routes: Routes = [
   { path: 'rBAPermission', component: RolePermissionsComponent },
   { path: 'tableConfigurator', component: TableConfiguratorComponent },
   { path: 'cSVGenerator', component: CsvGeneratorComponent },
-  { path: 'schedulerDetails', component: CsvSchedulerComponent }
+  {
+    path: 'schedulerDetails/:id/:schedularName/:status',
+    component: SchedulerRecordDetailsComponent,
+  },
+  { path: 'schedulerDetails', component: CsvSchedulerComponent },
+
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AdministrationRoutingModule { }
+export class AdministrationRoutingModule {}

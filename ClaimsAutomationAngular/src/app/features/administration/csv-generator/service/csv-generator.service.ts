@@ -2,33 +2,38 @@ import { Injectable } from '@angular/core';
 import { BaseHttp } from 'src/app/core/services/baseHttp.service';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class CsvGeneratorService extends BaseHttp {
-    getAllTablesListdUrl: string = 'um/getAllCsvTables';
-    getSchedulerListUrl: string = 'um/getSchedulerMaster';
-    SaveTableDetails: string = 'um/updateSchedulerMaster';
+  getAllTablesListdUrl: string = 'um/getAllCsvTables';
+  getSchedulerListUrl: string = 'um/getSchedulerMaster';
+  SaveTableDetails: string = 'um/updateSchedulerMaster';
 
-    getCSVGeneratorUrl: string = 'api/scheduler/GetAllSchedulerLog';
-    fileNamesBySchedulerIdUrl: string = 'api/scheduler/scheduler-file-details/'
+  getCSVGeneratorUrl: string = 'api/scheduler/GetAllSchedulerLog';
+  fileNamesBySchedulerIdUrl: string = 'api/scheduler/scheduler-file-details/';
+  getSchedulerRecordsUrl: string = 'api/scheduler/scheduler-file-details/';
 
-    getAllTables() {
-        return this.get<any>(this.getAllTablesListdUrl);
-    }
+  getAllTables() {
+    return this.get<any>(this.getAllTablesListdUrl);
+  }
 
-    getSchedularList() {
-        return this.get<any>(this.getSchedulerListUrl);
-    }
+  getSchedulerRecords(id: Number, status: any) {
+    return this.get<any>(this.getSchedulerRecordsUrl + id + '/' + status);
+  }
 
-    saveTableDetails(tableDetails: any) {
-        return this.post<any>(this.SaveTableDetails, tableDetails)
-    }
+  getSchedularList() {
+    return this.get<any>(this.getSchedulerListUrl);
+  }
 
-    getCSVGeneratorDetails() {
-        return this.get<any>(this.getCSVGeneratorUrl)
-    }
+  saveTableDetails(tableDetails: any) {
+    return this.post<any>(this.SaveTableDetails, tableDetails);
+  }
 
-    getFileNamesBySchedulerId(id: any) {
-        return this.get<any>(this.fileNamesBySchedulerIdUrl + id);
-    }
+  getCSVGeneratorDetails() {
+    return this.get<any>(this.getCSVGeneratorUrl);
+  }
+
+  getFileNamesBySchedulerId(id: any) {
+    return this.get<any>(this.fileNamesBySchedulerIdUrl + id);
+  }
 }

@@ -1,0 +1,73 @@
+/* Main container to ensure responsiveness */
+.table-responsive-container {
+  width: 100% !important;
+  margin: 0 auto;
+  overflow-x: auto !important; /* Horizontal scroll for smaller screens */
+  box-sizing: border-box !important;
+  padding: 8px; /* Optional padding */
+}
+
+/* Ensure the table takes up full width */
+.table-scroll-container {
+  width: 100% !important;
+  overflow-x: auto !important; /* Scroll table horizontally on overflow */
+}
+
+mat-table {
+  width: 100%;
+  min-width: 600px !important; /* Set minimum width to avoid content collapse */
+  border-collapse: collapse !important;
+}
+
+/* Align the paginator with the table */
+mat-paginator {
+  width: 100% !important;
+  margin-top: 8px !important;
+}
+
+/* Responsive Table Styling */
+th,
+td {
+  padding: 8px !important;
+  text-align: center !important;
+  white-space: nowrap !important; /* Prevent text wrapping */
+  font-size: 14px !important;
+}
+
+th {
+  background-color: #f4f4f4 !important; /* Light gray for headers */
+}
+
+tr:nth-child(even) {
+  background-color: #fafafa !important; /* Zebra striping */
+}
+
+/* Media query for smaller screens (e.g., tablets and phones) */
+@media screen and (max-width: 768px) {
+  th,
+  td {
+    font-size: 12px !important; /* Reduce font size for better fit */
+    padding: 4px !important; /* Reduce padding */
+  }
+
+  .table-responsive-container {
+    padding: 4px !important; /* Reduce padding */
+  }
+
+  mat-paginator {
+    font-size: 12px !important;
+  }
+}
+
+/* Media query for extra small screens (e.g., mobile devices) */
+@media screen and (max-width: 480px) {
+  th,
+  td {
+    font-size: 10px !important; /* Even smaller font size */
+    padding: 2px !important; /* Minimal padding */
+  }
+
+  mat-paginator {
+    font-size: 10px !important;
+  }
+}

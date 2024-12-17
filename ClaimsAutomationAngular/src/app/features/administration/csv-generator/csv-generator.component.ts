@@ -10,6 +10,7 @@ import { NotifierService } from 'src/app/notifier.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CsvFileNameDialogComponent } from 'src/app/shared/components/csv-file-name-dialog/csv-file-name-dialog.component';
 import { exportToCSV } from 'src/app/shared/generals';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-csv-generator',
@@ -96,6 +97,7 @@ export class CsvGeneratorComponent implements OnInit {
     private formBuilder: FormBuilder,
     public sendReceiveService: SendReceiveService,
     private notifierService: NotifierService,
+    private router: Router,
     public dialog: MatDialog
   ) {}
 
@@ -192,70 +194,16 @@ export class CsvGeneratorComponent implements OnInit {
     });
   }
 
-  getFiles(el: any, status: any, columnName: any) {
-    const currentList = [
-      {
-        id: 151,
-        fileName: 'Record 1',
-        schedulerId: 163,
-        status: 1,
-        sno: 1,
-        reason: null,
-      },
-      {
-        id: 152,
-        fileName: 'Record 2',
-        schedulerId: 163,
-        status: 1,
-        sno: 2,
-        reason: null,
-      },
-      {
-        id: 153,
-        fileName: 'Record 3',
-        schedulerId: 163,
-        status: 1,
-        sno: 3,
-        reason: null,
-      },
-      {
-        id: 154,
-        fileName: 'Record 4',
-        schedulerId: 163,
-        status: 0,
-        sno: 4,
-        reason: 'Failure',
-      },
-    ];
-    const dialogRef = this.dialog.open(CsvFileNameDialogComponent, {
-      data: { currentList, title: `${el.schedularName} - ${columnName}` },
-      panelClass: 'custom-dialog-container', // Apply custom class to the dialog
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
-    });
-    // this.csvGenertorService
-    //   .getFileNamesBySchedulerId(el.id)
-    //   .subscribe((response) => {
-    //     console.log(response);
-    //     let currentList = [];
-    //     if (status == 1) {
-    //       currentList = response.filter(
-    //         (item: { status: number }) => item.status === 1
-    //       );
-    //     } else {
-    //       currentList = response.filter(
-    //         (item: { status: number }) => item.status === 0
-    //       );
-    //     }
-    //     const dialogRef = this.dialog.open(CsvFileNameDialogComponent, {
-    //       data: { currentList, title: `${el.schedularName} - ${columnName}` },
-    //       panelClass: 'custom-dialog-container', // Apply custom class to the dialog
-    //     });
-    //     dialogRef.afterClosed().subscribe((result) => {
-    //       console.log('The dialog was closed');
-    //     });
-    //   });
+  getFiles(element: any, status: any) {
+    console.log(element);
+    const { id, schedularName } = element;
+    //  0 - Failure , 1- Success ,2- Total Records
+    this.router.navigate([
+      '/administration/schedulerDetails',
+      id,
+      schedularName,
+      status,
+    ]);
   }
 
   getSchedulerList() {

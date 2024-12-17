@@ -132,7 +132,7 @@
         </span>
         <a
           *ngIf="element.csvFileCount !== 0"
-          (click)="getFiles(element, 1, 'Total Records')"
+          (click)="getFiles(element, 2)"
           style="cursor: pointer; text-decoration: underline; color: blue"
         >
           {{ element.csvFileCount }}
@@ -157,7 +157,7 @@
         </span>
         <a
           *ngIf="element.numberOfCsvFiles !== 0"
-          (click)="getFiles(element, 1, 'Records Inserted')"
+          (click)="getFiles(element, 1)"
           style="cursor: pointer; text-decoration: underline; color: blue"
         >
           {{ element.numberOfCsvFiles }}
@@ -179,7 +179,7 @@
       <td mat-cell *matCellDef="let element">
         <a
           *ngIf="element.numberOfCsvFailed !== 0"
-          (click)="getFiles(element, 0, 'Failed Records')"
+          (click)="getFiles(element, 0)"
           style="cursor: pointer; text-decoration: underline; color: blue"
         >
           {{ element.numberOfCsvFailed }}

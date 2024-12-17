@@ -29,6 +29,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CsvSchedulerService } from './csv-scheduler/service/csv-scheduler.service';
 import { MatRadioModule } from '@angular/material/radio';
+import { SchedulerRecordDetailsComponent } from './scheduler-record-details/scheduler-record-details.component';
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import { MatRadioModule } from '@angular/material/radio';
     TableConfiguratorComponent,
     CsvGeneratorComponent,
     CsvSchedulerComponent,
+    SchedulerRecordDetailsComponent,
 
   ],
   imports: [

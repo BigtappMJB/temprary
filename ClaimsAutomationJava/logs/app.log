@@ -1889,3 +1889,50 @@ org.hibernate.PropertyValueException: not-null property references a null or tra
 2024-12-17 17:36:47.013  INFO 2732 --- [http-nio-9090-exec-10] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
 2024-12-17 17:36:49.897  INFO 2732 --- [task-2] com.cmd.excel.service.CmdEmailService    : IOException while sending message
 2024-12-17 17:36:49.898 ERROR 2732 --- [task-2] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-17 19:34:20.580  WARN 2732 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h45m38s765ms416µs600ns).
+2024-12-17 19:51:19.497  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : Checking bad request
+2024-12-17 19:51:19.502  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : Getting User from db after checking user exists
+2024-12-17 19:51:19.508  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : SSO is : false 
+2024-12-17 19:51:19.509  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : Decrypting pwd
+2024-12-17 19:51:19.513  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : Check delete flag
+2024-12-17 19:51:19.514  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : Checking user exists
+2024-12-17 19:51:19.568  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : Getting user details
+2024-12-17 19:51:22.024  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : Checking user details contains user id
+2024-12-17 19:51:22.111  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : Login successfull
+2024-12-17 19:51:22.112  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : test User logged in successfully
+2024-12-17 19:51:22.112  INFO 2732 --- [http-nio-9090-exec-7] com.cmd.excel.service.LoginService       : test User logged in successfully
+2024-12-17 19:51:22.286  INFO 2732 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:51:29.547  INFO 2732 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:51:32.428  INFO 2732 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:52:47.455  INFO 2732 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:52:54.001  INFO 2732 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:52:56.922  INFO 2732 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:53:07.274  INFO 2732 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:53:11.976  INFO 2732 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:53:26.061  INFO 2732 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:53:33.181  INFO 2732 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:53:35.712  INFO 2732 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:53:48.173  INFO 2732 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:54:01.738  INFO 2732 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:54:06.429  INFO 2732 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:54:13.432  INFO 2732 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:54:15.602  INFO 2732 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:55:05.487  INFO 2732 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:55:09.583  INFO 2732 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:55:12.742  INFO 2732 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:55:13.472  INFO 2732 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:55:45.195  INFO 2732 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:55:49.110  INFO 2732 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:55:49.800  INFO 2732 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:56:02.417  INFO 2732 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:56:03.531  INFO 2732 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:56:07.975  INFO 2732 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:56:10.326  INFO 2732 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:56:13.640  INFO 2732 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:56:13.817  INFO 2732 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : ALL Modules Fetched Successfully
+2024-12-17 19:56:13.995  INFO 2732 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : ALL Submodules Fetched Successfully
+2024-12-17 19:56:14.179  INFO 2732 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : ALL Tables Fetched Successfully
+2024-12-17 19:56:14.351  INFO 2732 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : ALL Access Permissionss Fetched Successfully
+2024-12-17 19:56:14.474  INFO 2732 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-17 19:56:19.717  INFO 2732 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-17 19:56:20.449  INFO 2732 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
