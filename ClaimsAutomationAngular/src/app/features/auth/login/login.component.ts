@@ -11,7 +11,7 @@ import { UserIdleService } from 'angular-user-idle';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
   LoginForm!: FormGroup;
@@ -21,14 +21,8 @@ export class LoginComponent implements OnInit {
   rememberMe: boolean = false;
   dataDumm: any;
   validation_messages = {
-    email_id: [
-      { type: 'required', message: 'Please enter login Id' }
-      
-    ],
-    password: [
-      { type: 'required', message: 'Please enter password' }
-    
-    ]
+    email_id: [{ type: 'required', message: 'Please enter login Id' }],
+    password: [{ type: 'required', message: 'Please enter password' }],
   };
   errorFlag: boolean = false;
   authorizationMessage: any;
@@ -41,10 +35,10 @@ export class LoginComponent implements OnInit {
     public sendReceiveService: SendReceiveService,
     private userIdle: UserIdleService,
     private headerService: HeaderService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    if ((this.router.url) == "/logout" || this.router.url == "/inv/dm/logout") {
+    if (this.router.url == '/logout' || this.router.url == '/inv/dm/logout') {
       this.dataStorageService.isUserLoggedIn = false;
       this.onSignOut();
     }
@@ -55,94 +49,85 @@ export class LoginComponent implements OnInit {
     this.LoginForm = this.formBuilder.group({
       email: [
         null,
-        Validators.compose([
-          Validators.required,
-          Validators.maxLength(50)
-         
-        ]),
+        Validators.compose([Validators.required, Validators.maxLength(50)]),
       ],
-      password: [
-        '',
-        Validators.compose([
-          Validators.required,
-         
-        ])
-      ],
-
+      password: ['', Validators.compose([Validators.required])],
     });
 
-    if (!(this.router.url).includes("/logout")) {
-
+    if (!this.router.url.includes('/logout')) {
       let scode = true;
       if (scode) {
         this.validateScode(scode);
       } else {
         if (!this.dataStorageService.isUserLoggedIn) {
-          this.router.navigateByUrl("");
+          this.router.navigateByUrl('');
         }
       }
     }
-    console.log(document.getElementsByTagName('meta'))
-    
-    const firstTime = localStorage.getItem('key')
-    if (!firstTime) {
-      localStorage.setItem('key', 'loaded')
-      location.reload()
-    } else {
-      localStorage.removeItem('key')
-    }
+    console.log(document.getElementsByTagName('meta'));
 
+    const firstTime = localStorage.getItem('key');
+    if (!firstTime) {
+      localStorage.setItem('key', 'loaded');
+      location.reload();
+    } else {
+      localStorage.removeItem('key');
+    }
 
     const storedUsername = localStorage.getItem('username');
     const storedPassword = localStorage.getItem('password');
-    if (storedUsername &&storedPassword) {
-      (document.getElementById('rememberMe') as HTMLInputElement).checked = true;
-      this.LoginForm.controls['email'].setValue( storedUsername);
-      this.LoginForm.controls['password'].setValue( storedPassword);
+    if (storedUsername && storedPassword) {
+      (document.getElementById('rememberMe') as HTMLInputElement).checked =
+        true;
+      this.LoginForm.controls['email'].setValue(storedUsername);
+      this.LoginForm.controls['password'].setValue(storedPassword);
     }
   }
 
   onSignOut() {
-    let data = localStorage.getItem("LoginData");
+    let data = localStorage.getItem('LoginData');
     if (data) {
       this.loginData = JSON.parse(data);
     }
     if (this.loginData) {
-      this.headerService.UserLogout(this.loginData.userId).subscribe((response) => {
-
-        localStorage.removeItem('LoginData');
-        localStorage.removeItem('MenuList');
-        localStorage.removeItem('userToken');
-        this.dataStorageService.isUserLoggedIn = false;
-        this.router.navigateByUrl('logout');
-      });
+      this.headerService
+        .UserLogout(this.loginData.userId)
+        .subscribe((response) => {
+          localStorage.removeItem('LoginData');
+          localStorage.removeItem('MenuList');
+          localStorage.removeItem('userToken');
+          this.dataStorageService.isUserLoggedIn = false;
+          this.router.navigateByUrl('logout');
+        });
     }
   }
 
   validateScode(scode: any) {
     console.log(scode);
     this.errorFlag = false;
-    this.loginService.getLoginDetails(scode).subscribe((response) => {
-      if (response.roleStatus == "N") {
+    this.loginService.getLoginDetails(scode).subscribe(
+      (response) => {
+        if (response.roleStatus == 'N') {
+          this.errorFlag = true;
+          this.authorizationMessage = MyAppHttp.ToasterMessage.activeOrNot;
+          return;
+        }
+        if (response.response.statusCode == 200) {
+          this.onSuccessfullLogin(response);
+        } else {
+          this.errorFlag = true;
+          this.authorizationMessage = response.message;
+        }
+      },
+      (error) => {
         this.errorFlag = true;
-        this.authorizationMessage = MyAppHttp.ToasterMessage.activeOrNot;
-        return;
+        this.authorizationMessage = error.error.response.message;
       }
-      if (response.response.statusCode == 200) {
-        this.onSuccessfullLogin(response);
-      }
-      else {
-        this.errorFlag = true;
-        this.authorizationMessage = response.message;
-      }
-    }, (error) => {
-      this.errorFlag = true;
-      this.authorizationMessage = error.error.response.message;
-    })
+    );
   }
 
   getModules() {
-    let data = localStorage.getItem("LoginData");
+    let data = localStorage.getItem('LoginData');
     if (data) {
       this.loginData = JSON.parse(data);
     }
@@ -166,45 +151,47 @@ export class LoginComponent implements OnInit {
     console.log(this.validation_messages);
 
     this.dataDumm = {
-      "userName": this.LoginForm.value.email,
-      "passWord": "sad"
-    }
+      userName: this.LoginForm.value.email,
+      passWord: 'sad',
+    };
 
     if (this.LoginForm.valid) {
-      localStorage.setItem("username", this.LoginForm.value.email);
-      localStorage.setItem("password", this.LoginForm.value.password);
+      localStorage.setItem('username', this.LoginForm.value.email);
+      localStorage.setItem('password', this.LoginForm.value.password);
       let encryptedPassword = btoa(this.LoginForm.value.password);
-      this.loginService.getLoginDetails(
-        {
-          "userName": this.LoginForm.value.email,
-          "passWord": encryptedPassword
-        }
-      ).subscribe((response) => {
-        if (response.roleStatus == "N") {
-          this.errorFlag = true;
-          this.authorizationMessage = MyAppHttp.ToasterMessage.activeOrNot;
-          return;
-        }
+      this.loginService
+        .getLoginDetails({
+          userName: this.LoginForm.value.email,
+          passWord: encryptedPassword,
+        })
+        .subscribe(
+          (response) => {
+            if (response.roleStatus == 'N') {
+              this.errorFlag = true;
+              this.authorizationMessage = MyAppHttp.ToasterMessage.activeOrNot;
+              return;
+            }
 
-        if(response.isDefaultPasswordChanged == null){
-          localStorage.setItem("LoginData", JSON.stringify(response));
-          this.router.navigateByUrl("/changepassword")
-          return;
-        }
-        if (response.response.statusCode == 200) {
-          this.onSuccessfullLogin(response);
-        }
-        else {
-          this.errorFlag = true;
-          this.authorizationMessage = response.message;
-        }
-      }, (error) => {
-        this.errorFlag = true;
-        this.authorizationMessage = error.error.response.message;
-      })
+            if (response.isDefaultPasswordChanged == null) {
+              localStorage.setItem('LoginData', JSON.stringify(response));
+              this.router.navigateByUrl('/changepassword');
+              return;
+            }
+            if (response.response.statusCode == 200) {
+              this.onSuccessfullLogin(response);
+            } else {
+              this.errorFlag = true;
+              this.authorizationMessage = response.message;
+            }
+          },
+          (error) => {
+            this.errorFlag = true;
+            this.authorizationMessage = error.error.response.message;
+          }
+        );
     }
   }
-  
+
   stopWatching() {
     this.userIdle.stopWatching();
   }
@@ -222,30 +209,27 @@ export class LoginComponent implements OnInit {
     let subMenuName = tempSubMenuName[0];
     this.sendReceiveService.navigateToMenu(subMenuName);
   }
-  checkRemember(event: any){
+  checkRemember(event: any) {
     const checkbox = event.target as HTMLInputElement;
     this.rememberMe = checkbox.checked;
-    console.log(this.rememberMe)
+    console.log(this.rememberMe);
   }
   onSuccessfullLogin(response: any) {
-
     localStorage.removeItem('LoginData');
     localStorage.removeItem('MenuList');
     localStorage.removeItem('userToken');
     this.dataStorageService.isUserLoggedIn = true;
 
-    localStorage.setItem("LoginData", JSON.stringify(response));
-    localStorage.setItem("userToken", response.userToken);
+    localStorage.setItem('LoginData', JSON.stringify(response));
+    localStorage.setItem('userToken', response.userToken);
     if (this.rememberMe) {
-
       localStorage.setItem('username', this.LoginForm.value.email);
       localStorage.setItem('password', this.LoginForm.value.password);
     } else {
-
       localStorage.removeItem('username');
       localStorage.removeItem('password');
     }
-    let data = localStorage.getItem("LoginData");
+    let data = localStorage.getItem('LoginData');
     if (data) {
       this.loginData = JSON.parse(data);
     }
@@ -254,24 +238,20 @@ export class LoginComponent implements OnInit {
     }
     this.userIdle.startWatching();
     this.userIdle.onTimerStart().subscribe((count) => {
-
       if (count > 1) {
-        this.headerService.UserLogout(this.loginData.userId).subscribe((resp: any) => {
-
-          localStorage.removeItem('LoginData');
-          localStorage.removeItem('MenuList');
-          localStorage.removeItem('userToken');
-          this.dataStorageService.isUserLoggedIn = false;
-          this.router.navigateByUrl('/');
-        });
-        console.log(count)
+        this.headerService
+          .UserLogout(this.loginData.userId)
+          .subscribe((resp: any) => {
+            localStorage.removeItem('LoginData');
+            localStorage.removeItem('MenuList');
+            localStorage.removeItem('userToken');
+            this.dataStorageService.isUserLoggedIn = false;
+            this.router.navigateByUrl('/');
+          });
+        console.log(count);
         this.stopWatching();
       }
-
     });
     this.userIdle.onTimeout().subscribe(() => console.log('Time is up!'));
   }
-
-
-
 }

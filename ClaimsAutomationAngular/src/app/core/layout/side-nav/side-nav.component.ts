@@ -9,7 +9,7 @@ import { SendReceiveService } from 'src/app/shared/services/sendReceive.service'
   selector: 'app-side-nav',
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.css'],
-  providers: [ LengthPipe ]
+  providers: [LengthPipe],
 })
 export class SideNavComponent implements OnInit {
   menuList: any = [];
@@ -26,25 +26,26 @@ export class SideNavComponent implements OnInit {
   }
   sidebar: boolean = false;
 
-  constructor(private dataStorageService: DataStorageService,
+  constructor(
+    private dataStorageService: DataStorageService,
     public router: Router,
     public sendReceiveService: SendReceiveService,
-    private lengthPipe: LengthPipe) { 
-      this.lengthPipe.transform('Yet-another-string');
-    }
+    private lengthPipe: LengthPipe
+  ) {
+    this.lengthPipe.transform('Yet-another-string');
+  }
 
   ngOnInit(): void {
-    if (localStorage.getItem("LoginData")) {
-      let data = localStorage.getItem("LoginData");
+    if (localStorage.getItem('LoginData')) {
+      let data = localStorage.getItem('LoginData');
       if (data) {
         this.loginData = JSON.parse(data);
-        if(this.loginData.isDefaultPasswordChanged == null){
-          this.menuList =[]
-        }else{
-
+        if (this.loginData.isDefaultPasswordChanged == null) {
+          this.menuList = [];
+        } else {
           this.menuList = this.loginData.permissions;
         }
-        localStorage.setItem("MenuList", JSON.stringify(this.menuList));
+        localStorage.setItem('MenuList', JSON.stringify(this.menuList));
       }
       this.className = false;
       this.isRefresh = browserRefresh;
@@ -65,7 +66,7 @@ export class SideNavComponent implements OnInit {
     this.selectedSubModuleId = localStorage.getItem('selectedSubModuleId');
     const selectedSubMenuId = Number(this.selectedSubModuleId);
     this.menuList.forEach((module: any) => {
-      (module.submodules).forEach((subModule: any) => {
+      module.submodules.forEach((subModule: any) => {
         if (subModule.subModuleId === selectedSubMenuId) {
           this.menuId = subModule.subModuleId;
         }
@@ -75,7 +76,7 @@ export class SideNavComponent implements OnInit {
 
   onModule(index: any) {
     this.selectedIndex = index;
-    localStorage.setItem("menuIndex", index);
+    localStorage.setItem('menuIndex', index);
   }
   onMobileNavClick() {
     this.sidebar = !this.sidebar;
@@ -84,7 +85,7 @@ export class SideNavComponent implements OnInit {
   navigateToSubMenu(menu: any) {
     console.log(menu);
     this.menuId = menu.subModuleId;
-    localStorage.setItem("selectedSubModuleId", this.menuId)
+    localStorage.setItem('selectedSubModuleId', this.menuId);
     this.sendReceiveService.navigateToMenu(this.menuId);
   }
 }

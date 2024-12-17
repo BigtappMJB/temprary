@@ -13,7 +13,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./fileupload.component.css'],
 })
 export class FileuploadComponent implements OnInit {
-  selectedFile: File | null = null;
+  selectedFile: any = null;
   files: any[] = [];
   isSpinner: boolean = false;
   tableUploadForm!: FormGroup;
@@ -57,10 +57,10 @@ export class FileuploadComponent implements OnInit {
 
   onFileChange(evt: any) {
     const file = evt.target.files[0];
-    this.files = evt.target.files;
     let fileExtension = file.name.split('.').pop();
     if (fileExtension == 'xlsx' || fileExtension == 'xls') {
       this.selectedFile = file;
+      this.files = evt.target.files;
       console.log(this.selectedFile);
     } else {
       this.files = [];
@@ -75,10 +75,7 @@ export class FileuploadComponent implements OnInit {
       return;
     }
     console.log('uploading');
-    if (!this.selectedFile) {
-      alert('Please select a file first!');
-      return;
-    }
+  
     const formData = new FormData();
     // formData.append('mapping_table', this.tableUploadForm.value.tableId);
     formData.append('file', this.selectedFile);

@@ -7,38 +7,41 @@ import { MatTableDataSource } from '@angular/material/table';
 @Component({
   selector: 'app-csv-file-name-dialog',
   templateUrl: './csv-file-name-dialog.component.html',
-  styleUrls: ['./csv-file-name-dialog.component.css']
+  styleUrls: ['./csv-file-name-dialog.component.css'],
 })
 export class CsvFileNameDialogComponent implements OnInit {
-  displayedColumns: string[] = ['sno', 'fileName'];
+  displayedColumns: string[] = ['sno', 'fileName', 'reason'];
   filterData: any;
   gridData = [];
   dataSource!: MatTableDataSource<any>;
-  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
-  @ViewChild(MatSort, { static: false }) sort!: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
-
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any,public dialogRef: MatDialogRef<CsvFileNameDialogComponent>) { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: MatDialogRef<CsvFileNameDialogComponent>
+  ) {}
 
   ngOnInit(): void {
     this.filterData = {
       filterColumnNames: [
-        { "Key": 'sno', "Value": "" },
-        { "Key": 'fileName', "Value": "" }
+        { Key: 'sno', Value: '' },
+        { Key: 'name', Value: '' },
+        { Key: 'reason', Value: '' },
       ],
       gridData: this.gridData,
       dataSource: this.dataSource,
       paginator: this.paginator,
-      sort: this.sort
+      sort: this.sort,
     };
     this.formatGridData();
   }
 
   formatGridData() {
     const TablesListData: any = [];
-    for (let i = 0; i < this.data.length; i++) {
-      this.data[i].sno = i + 1;
-      TablesListData.push(this.data[i]);
+    for (let i = 0; i < this.data.currentList.length; i++) {
+      this.data.currentList[i].sno = i + 1;
+      TablesListData.push(this.data.currentList[i]);
     }
     this.filterData.gridData = TablesListData;
     this.dataSource = new MatTableDataSource(TablesListData);
@@ -52,7 +55,6 @@ export class CsvFileNameDialogComponent implements OnInit {
       col.Value = '';
     }
   }
-
 
   updatePagination() {
     this.filterData.dataSource.paginator = this.paginator;

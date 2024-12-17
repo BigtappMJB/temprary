@@ -10,24 +10,28 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () =>
-      import('./features/auth/auth.module').then((m) => m.AuthModule)
+      import('./features/auth/auth.module').then((m) => m.AuthModule),
   },
   {
     path: 'administration',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./features/administration/administration.module').then((m) => m.AdministrationModule)
+      import('./features/administration/administration.module').then(
+        (m) => m.AdministrationModule
+      ),
   },
   {
     path: 'dataUpload',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./features/static-data-upload/static-data-upload.module').then((m) => m.StaticDataUploadModule)
+      import('./features/static-data-upload/static-data-upload.module').then(
+        (m) => m.StaticDataUploadModule
+      ),
   },
   {
     path: 'viewData/dataView',
     canActivate: [AuthGuard],
-    component: ViewDataComponent
+    component: ViewDataComponent,
   },
   { path: 'register', component: RegisterationComponent },
   { path: 'verifyOTP', component: EmailVerificationComponent },
@@ -40,9 +44,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes)
-  ],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

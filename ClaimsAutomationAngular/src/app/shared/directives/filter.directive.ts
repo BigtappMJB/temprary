@@ -7,23 +7,27 @@ import { MatTableDataSource } from '@angular/material/table';
   selector: '[filter]',
   inputs: ['filter'],
   host: {
-    '(keyup)': 'onInput()'
-  }
+    '(keyup)': 'onInput()',
+  },
 })
 export class FilterDirective {
   @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
   filter: any;
 
-  constructor(public el: ElementRef, public renderer: Renderer2) { }
+  constructor(public el: ElementRef, public renderer: Renderer2) {}
 
   onInput() {
     var tempGridData = [];
     tempGridData = this.filter.gridData;
     for (let colName of this.filter.filterColumnNames) {
-      tempGridData = tempGridData.filter(
-        (x: { [x: string]: any; }) => (!!colName.Value ?
-          (!!x[colName.Key] ? x[colName.Key] : "").toString().toLowerCase().indexOf(colName.Value.toString().trim().toLowerCase()) > -1 : true)
+      tempGridData = tempGridData.filter((x: { [x: string]: any }) =>
+        !!colName.Value
+          ? (!!x[colName.Key] ? x[colName.Key] : '')
+              .toString()
+              .toLowerCase()
+              .indexOf(colName.Value.toString().trim().toLowerCase()) > -1
+          : true
       );
     }
     this.filter.dataSource = new MatTableDataSource(tempGridData);
@@ -33,5 +37,4 @@ export class FilterDirective {
       this.filter.paginator.firstPage();
     }
   }
-
 }

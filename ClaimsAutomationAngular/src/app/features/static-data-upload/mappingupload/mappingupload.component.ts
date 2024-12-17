@@ -15,7 +15,7 @@ export class MappinguploadComponent implements OnInit {
   selectedFile: File | null = null;
   files: any[] = [];
   isSpinner: boolean = false;
-
+  errors: any = null;
   constructor(
     private http: HttpClient,
     public sendReceiveService: SendReceiveService,
@@ -28,35 +28,45 @@ export class MappinguploadComponent implements OnInit {
 
   onFileChange(evt: any) {
     const file = evt.target.files[0];
-    this.files = evt.target.files;
+    this.errors = null;
     let fileExtension = file.name.split('.').pop();
     if (fileExtension == 'xlsx' || fileExtension == 'xls') {
       this.selectedFile = file;
-      console.log(this.selectedFile);
+      this.files = evt.target.files;
     } else {
-      this.notifierService.showNotification(
-        'Error',
-        MyAppHttp.ToasterMessage.onlyExcel
-      );
+      this.errors =
+        'Invalid file type. Please upload files with XLS/XLSX type only.';
+      // this.notifierService.showNotification(
+      //   'Error',
+      //   MyAppHttp.ToasterMessage.onlyExcel
+      // );
     }
   }
 
   ontableUploadSubmit() {
     console.log('uploading');
+    this.errors = null;
     if (!this.selectedFile) {
-      alert('Please select a file first!');
+      this.errors = 'File is mandatory';
+      return;
+    }
+    const allowedMimeTypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+
+    if (!allowedMimeTypes.includes(this.selectedFile.type)) {
+      this.errors = 'Please upload a valid Excel file (.xls, .xlsx)';
       return;
     }
     this.isSpinner = true;
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    console.log('FormData content:', formData);
-    console.log(formData.get('file') as File);
     this.uploadToAPI(formData).subscribe(
       (response) => {
         this.notifierService.showNotification(
           'Success',
-          'File uploaded successfully!'
+          response.message || 'File uploaded successfully!'
         );
         this.files = [];
         console.log('File uploaded successfully!', response);
@@ -65,6 +75,10 @@ export class MappinguploadComponent implements OnInit {
       (error) => {
         console.error('Error uploading file', error);
         this.isSpinner = false;
+        this.notifierService.showNotification(
+          'Error',
+          error?.error?.error || 'Failed to upload the file'
+        );
       }
     );
   }

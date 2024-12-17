@@ -28,6 +28,7 @@ export class CsvSchedulerComponent {
     'endTime',
     'actions',
   ];
+  neverEnd = false;
   filterData: any;
   gridData = [];
   dataSource!: MatTableDataSource<any>;
@@ -123,24 +124,61 @@ export class CsvSchedulerComponent {
       repeatDayOfMonthyear: [null, Validators.required],
     });
 
-    this.csvSchedulerForm
-      .get('neverEnd')
-      ?.valueChanges.subscribe((neverEnd: boolean) => {
-        const endDate = this.csvSchedulerForm.get('endDate');
-        if (neverEnd) {
-          endDate?.clearValidators();
-        } else {
-          endDate?.setValidators(Validators.required);
-        }
-        endDate?.updateValueAndValidity();
-      });
-    this.getSchedulerList();
+    // Update form validators when 'neverEnd' changes
+    this.csvSchedulerForm.get('neverEnd')?.valueChanges.subscribe((value) => {
+      this.neverEnd = value;
+      this.updateEndDateValidators();
+    });
 
+    this.getSchedulerList();
+  }
+
+  // Custom Validator to prevent past dates
+  notPastDate() {
+    return (control: any) => {
+      const today = new Date();
+      if (control.value && new Date(control.value) < today) {
+        return { pastDate: true };
+      }
+      return null;
+    };
+  }
+
+  // Update the 'endDate' validator based on 'neverEnd'
+  updateEndDateValidators() {
+    if (this.neverEnd) {
+      // When 'neverEnd' is true, make endDate optional
+      this.csvSchedulerForm.get('endDate')?.clearValidators();
+    } else {
+      // When 'neverEnd' is false, ensure endDate is greater than startDate
+      this.csvSchedulerForm
+        .get('endDate')
+        ?.setValidators([
+          Validators.required,
+          this.endDateGreaterThanStartDate(),
+        ]);
+    }
+    this.csvSchedulerForm.get('endDate')?.updateValueAndValidity();
+  }
+
+  // Custom Validator to ensure endDate is greater than startDate
+  endDateGreaterThanStartDate() {
+    return (control: any) => {
+      const startDate = this.csvSchedulerForm.get('startDate')?.value;
+      if (
+        startDate &&
+        control.value &&
+        new Date(control.value) <= new Date(startDate)
+      ) {
+        return { endDateBeforeStartDate: true };
+      }
+      return null;
+    };
   }
 
   getSchedulerList() {
     this.csvSchedulerService.getAllSchedulerDetails().subscribe((response) => {
-      this.schedulerData = []
+      const totalLength: any = this.schedulerData.length + response.length;
       for (let i = 0; i < response.length; i++) {
         response[i].sno = i + 1;
         this.schedulerData.push(response[i]);
@@ -260,6 +298,9 @@ export class CsvSchedulerComponent {
   }
 
   onConfirm() {
+    if (this.csvSchedulerForm.invalid) {
+      return this.csvSchedulerForm.markAllAsTouched();
+    }
     const cronExpression = this.generateCronExpression();
     let startDateTime = new Date(this.csvSchedulerForm.get('startDate')?.value);
     startDateTime.setHours(
