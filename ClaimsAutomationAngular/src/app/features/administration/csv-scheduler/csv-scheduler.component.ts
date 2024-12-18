@@ -8,6 +8,9 @@ import { CsvSchedulerService } from './service/csv-scheduler.service';
 import { MatSelectChange } from '@angular/material/select';
 import { NotifierService } from 'src/app/notifier.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogPopupComponent } from 'src/app/shared/dialog-popup/dialog-popup.component';
+import { parseCronExpression } from 'src/app/shared/generals';
 
 @Component({
   selector: 'app-csv-scheduler',
@@ -92,7 +95,8 @@ export class CsvSchedulerComponent {
     private fb: FormBuilder,
     private csvSchedulerService: CsvSchedulerService,
     private notifierService: NotifierService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -114,8 +118,8 @@ export class CsvSchedulerComponent {
       startDate: [null, Validators.required],
       startHour: [null, Validators.required],
       startMinute: [null, Validators.required],
-      startAmPm: ['AM', Validators.required],
-      endDate: [null],
+      startAmPm: [null, Validators.required],
+      endDate: [null, Validators.required],
       neverEnd: [false],
       repeatUnit: [null, Validators.required],
       selectedWeekDay: [null, Validators.required],
@@ -125,14 +129,55 @@ export class CsvSchedulerComponent {
     });
 
     // Update form validators when 'neverEnd' changes
+    this.csvSchedulerForm.get('startDate')?.valueChanges.subscribe((value) => {
+      this.updateEndDateValidators();
+    });
+
+    // Update form validators when 'neverEnd' changes
     this.csvSchedulerForm.get('neverEnd')?.valueChanges.subscribe((value) => {
       this.neverEnd = value;
       this.updateEndDateValidators();
     });
 
     this.getSchedulerList();
+    this.handleConditionalValidators();
   }
 
+  handleConditionalValidators(): void {
+    this.csvSchedulerForm.get('repeatUnit')?.valueChanges.subscribe((value) => {
+      this.csvSchedulerForm.get('selectedWeekDay')?.clearValidators();
+      this.csvSchedulerForm.get('repeatDayOfMonth')?.clearValidators();
+      this.csvSchedulerForm.get('repeatMonthYear')?.clearValidators();
+      this.csvSchedulerForm.get('repeatDayOfMonthyear')?.clearValidators();
+
+      if (value === 'Weekly') {
+        // Make selectedWeekDay required
+        this.csvSchedulerForm
+          .get('selectedWeekDay')
+          ?.setValidators(Validators.required);
+      }
+      if (value === 'Monthly') {
+        this.csvSchedulerForm
+          .get('repeatDayOfMonth')
+          ?.setValidators(Validators.required);
+      }
+
+      if (value === '') {
+        this.csvSchedulerForm
+          .get('repeatMonthYear')
+          ?.setValidators(Validators.required);
+        this.csvSchedulerForm
+          .get('repeatDayOfMonthyear')
+          ?.setValidators(Validators.required);
+      }
+      this.csvSchedulerForm.get('selectedWeekDay')?.updateValueAndValidity();
+      this.csvSchedulerForm.get('repeatDayOfMonth')?.updateValueAndValidity();
+      this.csvSchedulerForm.get('repeatMonthYear')?.updateValueAndValidity();
+      this.csvSchedulerForm
+        .get('repeatDayOfMonthyear')
+        ?.updateValueAndValidity();
+    });
+  }
   // Custom Validator to prevent past dates
   notPastDate() {
     return (control: any) => {
@@ -178,7 +223,7 @@ export class CsvSchedulerComponent {
 
   getSchedulerList() {
     this.csvSchedulerService.getAllSchedulerDetails().subscribe((response) => {
-      const totalLength: any = this.schedulerData.length + response.length;
+      this.schedulerData = [];
       for (let i = 0; i < response.length; i++) {
         response[i].sno = i + 1;
         this.schedulerData.push(response[i]);
@@ -198,6 +243,7 @@ export class CsvSchedulerComponent {
   onAddscheduler() {
     this.isAddSchedulerForm = true;
     this.editMode = false;
+    this.editedUserSchedulerId = null
     this.csvSchedulerForm.reset();
   }
 
@@ -238,45 +284,56 @@ export class CsvSchedulerComponent {
   onEditScheduler(element: any) {
     this.editedUserSchedulerId = element.id;
     this.isAddSchedulerForm = true;
-    let startDateTime = new Date(element.startDateTime);
-    let startHours = startDateTime.getHours();
-    let ampm = startHours >= 12 ? 'PM' : 'AM';
-    startHours = startHours % 12;
-    startHours = startHours ? startHours : 12;
-    const cronParts = element.cronExpression.split(' ');
-    const [seconds, minutes, hour, dayOfMonth, month, dayOfWeek] = cronParts;
-    let repeatUnit = '';
-    if (dayOfMonth === '*' && dayOfWeek === '?') {
-      repeatUnit = 'Daily';
-    } else if (dayOfMonth === '?' && dayOfWeek.length == '3') {
-      repeatUnit = 'Weekly';
-    } else if (dayOfMonth !== '*' && month === '*') {
-      repeatUnit = 'Monthly';
-    } else if (dayOfMonth !== '*' && month !== '*') {
-      repeatUnit = 'Yearly';
-    }
-    this.isDaily = repeatUnit === 'Daily';
-    this.isWeekly = repeatUnit === 'Weekly';
-    this.isMonthly = repeatUnit === 'Monthly';
-    this.isYearly = repeatUnit === 'Yearly';
+    const {
+      startMinute,
+      startHour,
+      startAmPm,
+      type,
+      repeatDayOfMonthyear,
+      repeatMonthYear,
+      dayOfMonth,
+      dayOfWeek,
+    } = parseCronExpression(element.cronExpression);
+    this.isDaily = type === 'Daily';
+    this.isWeekly = type === 'Weekly';
+    this.isMonthly = type === 'Monthly';
+    this.isYearly = type === 'Yearly';
     this.csvSchedulerForm.patchValue({
       schedulerName: element.schedularName,
       startDate: element.startDateTime,
-      startHour: startHours,
-      startMinute: parseInt(minutes),
-      startAmPm: ampm,
+      startHour: startHour,
+      startMinute: parseInt(startMinute),
+      startAmPm: startAmPm,
       endDate: element.endDateTime,
       neverEnd: element.endDateTime == null ? true : false,
-      repeatUnit: repeatUnit,
+      repeatUnit: type,
       selectedWeekDay: dayOfWeek,
       repeatDayOfMonth: parseInt(dayOfMonth),
-      repeatMonthYear: parseInt(month),
-      repeatDayOfMonthyear: parseInt(dayOfMonth),
+      repeatMonthYear: parseInt(repeatMonthYear),
+      repeatDayOfMonthyear: parseInt(repeatDayOfMonthyear),
     });
     this.editMode = true;
   }
 
   onSchedulerDelete(element: any) {
+    const dialogRef = this.dialog.open(DialogPopupComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this data?',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.deleteData(element); // Call the deletion logic
+      } else {
+        console.log('Deletion canceled by user.');
+      }
+    });
+  }
+
+  deleteData(element: any) {
     this.csvSchedulerService
       .deleteSchedulerById(element.id)
       .subscribe((response) => {
@@ -298,7 +355,19 @@ export class CsvSchedulerComponent {
   }
 
   onConfirm() {
+    console.log(this.csvSchedulerForm.invalid);
+
     if (this.csvSchedulerForm.invalid) {
+      Object.keys(this.csvSchedulerForm.controls).forEach((key) => {
+        const control = this.csvSchedulerForm.get(key);
+
+        console.log(`Control: ${key}`);
+        console.log('Value:', control?.value);
+        console.log('Valid:', control?.valid);
+        console.log('Errors:', control?.errors);
+        console.log('Touched:', control?.touched);
+      });
+
       return this.csvSchedulerForm.markAllAsTouched();
     }
     const cronExpression = this.generateCronExpression();

@@ -34,3 +34,52 @@ export function exportToCSV(data: any[], filename: string = 'data.csv') {
   // Remove the link after triggering the download
   document.body.removeChild(link);
 }
+
+export const parseCronExpression = (cronExpression: string): any => {
+  const parts = cronExpression.split(' ');
+
+  if (parts.length < 6) {
+    console.error('Invalid cron expression:', cronExpression);
+    return null;
+  }
+  const startMinute = parseInt(parts[1], 10);
+  let adjustedHour = parseInt(parts[2], 10);
+  const dayOfMonth = parts[3];
+  const month = parts[4];
+  const dayOfWeek = parts[5];
+
+  // Determine AM/PM and convert to 12-hour format
+  const isPM = adjustedHour >= 12;
+  const startHour = isPM ? adjustedHour - 12 : adjustedHour;
+  const startAmPm = isPM ? 'PM' : 'AM';
+
+  const parsedResult: any = {
+    startMinute,
+    startHour: startHour === 0 ? 12 : startHour, // Adjust for 12 AM edge case
+    startAmPm,
+    type: '',
+    dayOfMonth,
+    dayOfWeek,
+  };
+  if (dayOfMonth === '*' && month === '*') {
+    parsedResult.type = 'Daily';
+  } else if (dayOfMonth !== '?' && month === '*') {
+    // Monthly
+    parsedResult.type = 'Monthly';
+    parsedResult.repeatDayOfMonth = parseInt(dayOfMonth, 10);
+  } else if (dayOfWeek !== '?') {
+    // Weekly
+    parsedResult.type = 'Weekly';
+    parsedResult.selectedWeekDay = dayOfWeek;
+  } else if (dayOfMonth !== '?' && month !== '*') {
+    // Yearly
+    parsedResult.type = 'Yearly';
+    parsedResult.repeatDayOfMonthyear = parseInt(dayOfMonth, 10);
+    parsedResult.repeatMonthYear = parseInt(month, 10);
+  } else {
+    // Daily
+    parsedResult.type = 'Daily';
+  }
+
+  return parsedResult;
+};

@@ -1,47 +1,40 @@
-
-
 .btn-s:hover {
-    color: #fff;
-    background-color: darkgreen !important;
+  color: #fff;
+  background-color: darkgreen !important;
 }
 .btn-d:hover {
-    color: #fff;
-    background-color: crimson !important;
+  color: #fff;
+  background-color: crimson !important;
 }
 a.close-icon {
-    cursor: pointer !important;
+  cursor: pointer !important;
 }
 
-a.close-icon .close-icon {
-    color: black;
-    padding: 7px 0;
-    margin: 0 -20px 0 0;
-}
-
+    
 .mat-card-footer {
-    margin: 0px;
-    padding: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 .mat-dialog-container {
-    padding: 0px 24px !important;
+  padding: 0px 24px !important;
 }
 
 .mat-card {
-    box-shadow: none !important;
-    margin-bottom: 0px !important;
+  box-shadow: none !important;
+  margin-bottom: 0px !important;
 }
 
 .btn-info {
-    background: #1a646c !important;
+  background: #1a646c !important;
 }
 
 .btn-danger {
-    background: #d75498 !important;
+  background: #d75498 !important;
 }
 
 .close-icon {
-    position: absolute;
-    top: -15px;
-    right: 0px;
+  position: absolute;
+  top: -15px;
+  right: 0px;
 }
