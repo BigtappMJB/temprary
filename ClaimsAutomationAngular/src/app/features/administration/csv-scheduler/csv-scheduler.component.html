@@ -56,7 +56,7 @@
                 matInput
                 formControlName="startTime"
                 [matAutocomplete]="auto"
-                (input)="filterTimes(form.get('startTime')?.value)"
+                (input)="filterTimes(csvSchedulerForm.get('startTime')?.value)"
               />
               <mat-autocomplete #auto="matAutocomplete">
                 <mat-option *ngFor="let time of filteredTimes" [value]="time">

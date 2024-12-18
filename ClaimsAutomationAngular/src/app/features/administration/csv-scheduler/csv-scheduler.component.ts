@@ -304,7 +304,6 @@ export class CsvSchedulerComponent {
   onEditScheduler(element: any) {
     this.editedUserSchedulerId = element.id;
     this.isAddSchedulerForm = true;
-    debugger;
     const {
       startMinute,
       startHour,
@@ -316,7 +315,6 @@ export class CsvSchedulerComponent {
       dayOfWeek,
       time24Hour,
     } = parseCronExpression(element.cronExpression);
-    debugger;
     this.isDaily = type === 'Daily';
     this.isWeekly = type === 'Weekly';
     this.isMonthly = type === 'Monthly';

@@ -1074,3 +1074,6 @@ java.sql.SQLException: Field 'scheduler_name' doesn't have a default value
 2024-12-18 17:08:49.888  INFO 19544 --- [http-nio-9090-exec-6] com.cmd.excel.service.SchedulerService   : updating scheduler details
 2024-12-18 17:08:50.174  INFO 19544 --- [http-nio-9090-exec-6] com.cmd.excel.service.SchedulerService   : updated scheduler details successfully
 2024-12-18 17:08:50.176  INFO 19544 --- [http-nio-9090-exec-6] com.cmd.excel.service.SchedulerService   : Schedular saved successfully
+2024-12-18 17:10:31.327  INFO 19544 --- [http-nio-9090-exec-4] com.cmd.excel.service.SchedulerService   : saving scheduler details
+2024-12-18 17:10:31.394  WARN 19544 --- [http-nio-9090-exec-4] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1364, SQLState: HY000
+2024-12-18 17:10:31.395 ERROR 19544 --- [http-nio-9090-exec-4] o.h.engine.jdbc.spi.SqlExceptionHelper   : Field 'scheduler_name' doesn't have a default value
