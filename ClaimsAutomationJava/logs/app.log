@@ -1067,3 +1067,10 @@ java.sql.SQLException: Field 'scheduler_name' doesn't have a default value
 2024-12-18 15:37:55.640  INFO 19544 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : Error stopping scheduler: Job with name Claims Settle Details does not exist.
 2024-12-18 15:37:55.640  INFO 19544 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : Error stopping scheduler: Job with name Claims Settle Details does not exist.
 2024-12-18 15:37:55.640 ERROR 19544 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : Error stopping scheduler: Job with name Claims Settle Details does not exist.
+2024-12-18 16:25:22.200  WARN 19544 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=13m53s907ms940µs900ns).
+2024-12-18 17:08:46.969  INFO 19544 --- [http-nio-9090-exec-1] com.cmd.excel.service.SchedulerService   : updating scheduler details
+2024-12-18 17:08:47.198  INFO 19544 --- [http-nio-9090-exec-1] com.cmd.excel.service.SchedulerService   : updated scheduler details successfully
+2024-12-18 17:08:47.198  INFO 19544 --- [http-nio-9090-exec-1] com.cmd.excel.service.SchedulerService   : Schedular saved successfully
+2024-12-18 17:08:49.888  INFO 19544 --- [http-nio-9090-exec-6] com.cmd.excel.service.SchedulerService   : updating scheduler details
+2024-12-18 17:08:50.174  INFO 19544 --- [http-nio-9090-exec-6] com.cmd.excel.service.SchedulerService   : updated scheduler details successfully
+2024-12-18 17:08:50.176  INFO 19544 --- [http-nio-9090-exec-6] com.cmd.excel.service.SchedulerService   : Schedular saved successfully

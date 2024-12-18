@@ -30,7 +30,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { CsvSchedulerService } from './csv-scheduler/service/csv-scheduler.service';
 import { MatRadioModule } from '@angular/material/radio';
 import { SchedulerRecordDetailsComponent } from './scheduler-record-details/scheduler-record-details.component';
-
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -41,7 +41,6 @@ import { SchedulerRecordDetailsComponent } from './scheduler-record-details/sche
     CsvGeneratorComponent,
     CsvSchedulerComponent,
     SchedulerRecordDetailsComponent,
-
   ],
   imports: [
     CommonModule,
@@ -62,8 +61,15 @@ import { SchedulerRecordDetailsComponent } from './scheduler-record-details/sche
     MatTooltipModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatRadioModule
+    MatRadioModule,
+    MatAutocompleteModule,
   ],
-  providers: [UserService, RolesService, RolePermissionsService, TableConfiguratorService,CsvSchedulerService]
+  providers: [
+    UserService,
+    RolesService,
+    RolePermissionsService,
+    TableConfiguratorService,
+    CsvSchedulerService,
+  ],
 })
-export class AdministrationModule { }
+export class AdministrationModule {}

@@ -90,7 +90,16 @@ export class CsvSchedulerComponent {
   editedUserSchedulerId: any;
 
   schedulerData: any = [];
-
+  times = Array.from({ length: 24 }, (_, hour) =>
+    Array.from(
+      { length: 60 },
+      (_, minute) =>
+        `${hour.toString().padStart(2, '0')}:${minute
+          .toString()
+          .padStart(2, '0')}`
+    )
+  ).reduce((acc, val) => acc.concat(val), []);
+  filteredTimes: string[] = this.times;
   constructor(
     private fb: FormBuilder,
     private csvSchedulerService: CsvSchedulerService,
@@ -113,12 +122,14 @@ export class CsvSchedulerComponent {
       paginator: this.paginator,
       sort: this.sort,
     };
+
     this.csvSchedulerForm = this.fb.group({
       schedulerName: [null, Validators.required],
       startDate: [null, Validators.required],
-      startHour: [null, Validators.required],
-      startMinute: [null, Validators.required],
-      startAmPm: [null, Validators.required],
+      startTime: [null, Validators.required],
+      // startHour: [null, Validators.required],
+      // startMinute: [null, Validators.required],
+      // startAmPm: [null, Validators.required],
       endDate: [null, Validators.required],
       neverEnd: [false],
       repeatUnit: [null, Validators.required],
@@ -127,7 +138,9 @@ export class CsvSchedulerComponent {
       repeatMonthYear: [null, Validators.required],
       repeatDayOfMonthyear: [null, Validators.required],
     });
-
+    this.csvSchedulerForm.get('startTime')?.valueChanges.subscribe((value) => {
+      this.filterTimes(value || '');
+    });
     // Update form validators when 'neverEnd' changes
     this.csvSchedulerForm.get('startDate')?.valueChanges.subscribe((value) => {
       this.updateEndDateValidators();
@@ -141,6 +154,13 @@ export class CsvSchedulerComponent {
 
     this.getSchedulerList();
     this.handleConditionalValidators();
+  }
+
+  filterTimes(value: string): void {
+    const filterValue = value.toLowerCase();
+    this.filteredTimes = this.times.filter((time) =>
+      time.toLowerCase().startsWith(filterValue)
+    );
   }
 
   handleConditionalValidators(): void {
@@ -243,7 +263,7 @@ export class CsvSchedulerComponent {
   onAddscheduler() {
     this.isAddSchedulerForm = true;
     this.editMode = false;
-    this.editedUserSchedulerId = null
+    this.editedUserSchedulerId = null;
     this.csvSchedulerForm.reset();
   }
 
@@ -284,6 +304,7 @@ export class CsvSchedulerComponent {
   onEditScheduler(element: any) {
     this.editedUserSchedulerId = element.id;
     this.isAddSchedulerForm = true;
+    debugger;
     const {
       startMinute,
       startHour,
@@ -293,17 +314,20 @@ export class CsvSchedulerComponent {
       repeatMonthYear,
       dayOfMonth,
       dayOfWeek,
+      time24Hour,
     } = parseCronExpression(element.cronExpression);
+    debugger;
     this.isDaily = type === 'Daily';
     this.isWeekly = type === 'Weekly';
     this.isMonthly = type === 'Monthly';
     this.isYearly = type === 'Yearly';
     this.csvSchedulerForm.patchValue({
+      startTime: time24Hour,
       schedulerName: element.schedularName,
       startDate: element.startDateTime,
-      startHour: startHour,
-      startMinute: parseInt(startMinute),
-      startAmPm: startAmPm,
+      // startHour: startHour,
+      // startMinute: parseInt(startMinute),
+      // startAmPm: startAmPm,
       endDate: element.endDateTime,
       neverEnd: element.endDateTime == null ? true : false,
       repeatUnit: type,
@@ -355,8 +379,6 @@ export class CsvSchedulerComponent {
   }
 
   onConfirm() {
-    console.log(this.csvSchedulerForm.invalid);
-
     if (this.csvSchedulerForm.invalid) {
       Object.keys(this.csvSchedulerForm.controls).forEach((key) => {
         const control = this.csvSchedulerForm.get(key);
@@ -413,14 +435,18 @@ export class CsvSchedulerComponent {
 
   generateCronExpression(): string {
     const startHour = this.csvSchedulerForm.get('startHour')?.value;
-    const startMinute = this.csvSchedulerForm.get('startMinute')?.value;
+    // const startMinute = this.csvSchedulerForm.get('startMinute')?.value;
     const startAmPm = this.csvSchedulerForm.get('startAmPm')?.value;
-    const adjustedHour =
-      startAmPm === 'PM' && startHour !== 12
-        ? startHour + 12
-        : startAmPm === 'AM' && startHour === 12
-        ? 0
-        : startHour;
+    const startTime = this.csvSchedulerForm.get('startTime')?.value;
+    // const adjustedHour =
+    //   startAmPm === 'PM' && startHour !== 12
+    //     ? startHour + 12
+    //     : startAmPm === 'AM' && startHour === 12
+    //     ? 0
+    //     : startHour;
+    // console.log({ adjustedHour });
+    const [adjustedHour, startMinute] = startTime.split(':');
+
     this.RequestBodystartMinute = startMinute;
     this.RequestBodyAdjustedHour = adjustedHour;
     let cronExpression = '';

@@ -52,7 +52,10 @@ export const parseCronExpression = (cronExpression: string): any => {
   const isPM = adjustedHour >= 12;
   const startHour = isPM ? adjustedHour - 12 : adjustedHour;
   const startAmPm = isPM ? 'PM' : 'AM';
-
+  // Ensure 24-hour format remains consistent
+  const time24Hour = `${adjustedHour.toString().padStart(2, '0')}:${startMinute
+    .toString()
+    .padStart(2, '0')}`;
   const parsedResult: any = {
     startMinute,
     startHour: startHour === 0 ? 12 : startHour, // Adjust for 12 AM edge case
@@ -60,6 +63,7 @@ export const parseCronExpression = (cronExpression: string): any => {
     type: '',
     dayOfMonth,
     dayOfWeek,
+    time24Hour,
   };
   if (dayOfMonth === '*' && month === '*') {
     parsedResult.type = 'Daily';

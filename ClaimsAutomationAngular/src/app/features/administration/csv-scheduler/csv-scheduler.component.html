@@ -24,7 +24,7 @@
           </div>
 
           <!-- Start Date -->
-          <div class="col-md-2 col-sm-12">
+          <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
               <mat-label>Start Date</mat-label>
               <input
@@ -48,10 +48,37 @@
             </mat-form-field>
           </div>
           <!-- Start Time -->
-          <div class="time-container row col-md-6 col-sm-12">
+          <div class="col-md-4 col-sm-12">
+            <mat-form-field appearance="outline">
+              <mat-label>Start Time</mat-label>
+              <input
+                type="text"
+                matInput
+                formControlName="startTime"
+                [matAutocomplete]="auto"
+                (input)="filterTimes(form.get('startTime')?.value)"
+              />
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let time of filteredTimes" [value]="time">
+                  {{ time }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error
+                *ngIf="
+                  csvSchedulerForm.get('startTime')?.touched &&
+                  csvSchedulerForm.get('startTime')?.invalid &&
+                  csvSchedulerForm.get('startTime')?.hasError('required')
+                "
+                class="error"
+                >Start Time is required</mat-error
+              >
+            </mat-form-field>
+          </div>
+
+          <!-- <div class="time-container row col-md-6 col-sm-12">
             <div class="col-md-3 col-sm-12">
               <mat-form-field appearance="outline">
-                <mat-label>Time</mat-label>
+                <mat-label>Hour</mat-label>
                 <mat-select formControlName="startHour">
                   <mat-option *ngFor="let hour of hours" [value]="hour">{{
                     hour
@@ -103,9 +130,9 @@
                 >
               </mat-form-field>
             </div>
-          </div>
+          </div> -->
           <!-- End Date -->
-          <div class="row align-items-center col-md-4 col-sm-12">
+          <div class="row align-items-center col-md-8 col-sm-12">
             <div class="col-md-6 col-sm-12">
               <mat-form-field appearance="outline">
                 <mat-label>End Date</mat-label>
@@ -152,7 +179,7 @@
           </div>
 
           <!-- Repeat -->
-          <div class="col-md-5 col-sm-12">
+          <div class="col-md-4 col-sm-12">
             <div class="">
               <mat-label
                 for="Select repeat"
