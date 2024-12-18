@@ -65,6 +65,9 @@ export class SchedulerRecordDetailsComponent implements OnInit {
     };
     this.getCSVGeneratorDetails();
   }
+  goBack() {
+    window.history.back();
+  }
 
   todayDate = new Date();
   getCSVGeneratorDetails() {

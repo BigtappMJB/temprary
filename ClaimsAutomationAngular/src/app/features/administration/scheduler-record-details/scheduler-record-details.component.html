@@ -1,6 +1,9 @@
 <div class="ConfigurationTypes_textpadding">
   <div class="d-flex flex-wrap justify-content-between align-items-center my-3">
     <h4>
+      <span class="backIcon" (click)="goBack()"
+        ><i class="fas fa-arrow-left"></i
+      ></span>
       {{ this.schedulerDetails.name }}
       {{ statusObject[this.schedulerDetails.status] }}
     </h4>

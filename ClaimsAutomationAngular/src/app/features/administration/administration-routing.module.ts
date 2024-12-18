@@ -13,13 +13,12 @@ const routes: Routes = [
   { path: 'roles', component: RolesComponent },
   { path: 'rBAPermission', component: RolePermissionsComponent },
   { path: 'tableConfigurator', component: TableConfiguratorComponent },
-  { path: 'cSVGenerator', component: CsvGeneratorComponent },
+  { path: 'generatorDetails', component: CsvGeneratorComponent },
   {
     path: 'schedulerDetails/:id/:schedularName/:status',
     component: SchedulerRecordDetailsComponent,
   },
   { path: 'schedulerDetails', component: CsvSchedulerComponent },
-
 ];
 
 @NgModule({

@@ -9,7 +9,7 @@ const routes: Routes = [
   { path: 'cAD', component: EntityRelatedComponent },
   { path: 'cMD', component: StaticReferenceComponent },
   { path: 'mappingupload', component: MappinguploadComponent },
-  { path: 'fileupload', component: FileuploadComponent },
+  { path: 'vidalFileupload', component: FileuploadComponent },
 ];
 
 @NgModule({
