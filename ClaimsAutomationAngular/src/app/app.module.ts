@@ -41,6 +41,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { LoadingComponentComponent } from './shared/components/loading-component/loading-component.component';
 
 @NgModule({
   declarations: [

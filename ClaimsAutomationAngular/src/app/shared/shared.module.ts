@@ -17,8 +17,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CsvFileNameDialogComponent } from './components/csv-file-name-dialog/csv-file-name-dialog.component';
-import {MatRadioModule} from '@angular/material/radio';
-
+import { MatRadioModule } from '@angular/material/radio';
+import { LoadingComponentComponent } from './components/loading-component/loading-component.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,8 @@ import {MatRadioModule} from '@angular/material/radio';
     FilterDirective,
     InvalidRecordsComponent,
     UploadFileComponent,
-    CsvFileNameDialogComponent
+    CsvFileNameDialogComponent,
+    LoadingComponentComponent,
   ],
   imports: [
     CommonModule,
@@ -43,9 +44,15 @@ import {MatRadioModule} from '@angular/material/radio';
     FormsModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    MatRadioModule
+    MatRadioModule,
   ],
-  exports: [DialogPopupComponent, FilterDirective, InvalidRecordsComponent, UploadFileComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  exports: [
+    DialogPopupComponent,
+    FilterDirective,
+    InvalidRecordsComponent,
+    UploadFileComponent,
+    LoadingComponentComponent,
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class SharedModule { }
+export class SharedModule {}

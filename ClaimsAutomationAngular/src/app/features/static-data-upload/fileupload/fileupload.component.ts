@@ -6,6 +6,7 @@ import { NotifierService } from 'src/app/notifier.service';
 import { HttpClient } from '@angular/common/http';
 import { FileUploadService } from './fileupload.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LoadingService } from 'src/app/shared/components/loading-service.service';
 
 @Component({
   selector: 'app-fileupload',
@@ -26,11 +27,12 @@ export class FileuploadComponent implements OnInit {
   };
   responseValue: any = null;
   constructor(
-    private formBuilder: FormBuilder,
-    public sendReceiveService: SendReceiveService,
-    public datepipe: DatePipe,
-    private apiService: FileUploadService,
-    private notifierService: NotifierService
+    private readonly formBuilder: FormBuilder,
+    public readonly sendReceiveService: SendReceiveService,
+    public readonly datepipe: DatePipe,
+    private readonly apiService: FileUploadService,
+    private readonly notifierService: NotifierService,
+    private readonly loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -75,16 +77,19 @@ export class FileuploadComponent implements OnInit {
       return;
     }
     console.log('uploading');
-  
+
     const formData = new FormData();
     // formData.append('mapping_table', this.tableUploadForm.value.tableId);
     formData.append('file', this.selectedFile);
     console.log('FormData content:', formData);
     this.isSpinner = true;
+    this.loadingService.show();
     this.uploadToAPI(formData).subscribe(
       (response) => {
         this.responseValue = response;
         this.isSpinner = false;
+        this.loadingService.hide();
+
         this.notifierService.showNotification(
           'Success',
           'File uploaded successfully!'
@@ -94,6 +99,7 @@ export class FileuploadComponent implements OnInit {
       (error) => {
         this.isSpinner = false;
         console.log(error.error);
+        this.loadingService.hide();
 
         console.error('Error uploading file', error);
         this.notifierService.showNotification(

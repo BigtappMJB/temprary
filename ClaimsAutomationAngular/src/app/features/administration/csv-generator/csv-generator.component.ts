@@ -141,22 +141,21 @@ export class CsvGeneratorComponent implements OnInit {
       col.Value = '';
     }
 
-    // this.csvGenertorService.getCSVGeneratorDetails().subscribe((response) => {
-
-    //   for (let i = 0; i < response.length; i++) {
-    //     response[i].sno = i + 1;
-    //     TablesListData.push(response[i]);
-    //   }
-    //   this.filterData.gridData = TablesListData;
-    //   this.dataSource = new MatTableDataSource(TablesListData);
-    //   this.filterData.dataSource = this.dataSource;
-    //   this.dataSource.paginator = this.paginator;
-    //   this.dataSource.sort = this.sort;
-    //   this.filterData.sort = this.sort;
-    //   for (let col of this.filterData.filterColumnNames) {
-    //     col.Value = '';
-    //   }
-    // });
+    this.csvGenertorService.getCSVGeneratorDetails().subscribe((response) => {
+      for (let i = 0; i < response.length; i++) {
+        response[i].sno = i + 1;
+        TablesListData.push(response[i]);
+      }
+      this.filterData.gridData = TablesListData;
+      this.dataSource = new MatTableDataSource(TablesListData);
+      this.filterData.dataSource = this.dataSource;
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.filterData.sort = this.sort;
+      for (let col of this.filterData.filterColumnNames) {
+        col.Value = '';
+      }
+    });
   }
   onExportCSV() {
     if (this.filterData.dataSource.filteredData.length !== 0) {

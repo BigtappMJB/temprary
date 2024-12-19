@@ -12,9 +12,9 @@ export class CsvSchedulerService extends BaseHttp {
   deleteSchedulerUrl: string = 'api/scheduler/schedulerDetails/';
   updateSchedulerByIdUrl: string = 'api/scheduler/schedulerDetails/';
 
-  processMClaimSettleDetail: string = '/processMClaimSettleDetail';
-  processMClaimHealth: string = '/processMClaimHealth';
-  processMClaims: string = '/processMClaims';
+  processMClaimSettleDetail: string = 'processMClaimSettleDetail';
+  processMClaimHealth: string = 'processMClaimHealth';
+  processMClaims: string = 'processMClaims';
 
   defaultSchedulers: string = '';
 
@@ -24,11 +24,15 @@ export class CsvSchedulerService extends BaseHttp {
 
   postPythonSchedulers(name: string) {
     const apiPath: any = {
-      Claims: this.processMClaims,
-      'Claims Health': this.processMClaimHealth,
-      'Claims Settle Details': this.processMClaimSettleDetail,
+      claims: this.processMClaims,
+      'claims health': this.processMClaimHealth,
+      'claims settle details': this.processMClaimSettleDetail,
     };
-    return this.post<any>(apiPath[name], null, 'python');
+    return this.post<any>(
+      apiPath[name.trim().toLocaleLowerCase()],
+      null,
+      'python'
+    );
   }
 
   getProcessMClaimSettleDetail() {

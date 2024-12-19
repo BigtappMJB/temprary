@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginService } from './services/login.service';
@@ -7,6 +13,7 @@ import { SendReceiveService } from 'src/app/shared/services/sendReceive.service'
 import { MyAppHttp } from 'src/app/shared/services/myAppHttp.service';
 import { HeaderService } from 'src/app/core/layout/header/service/header.service';
 import { UserIdleService } from 'angular-user-idle';
+import { LoadingService } from 'src/app/shared/components/loading-service.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +21,8 @@ import { UserIdleService } from 'angular-user-idle';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
+  @ViewChild('emailInput') emailInput!: ElementRef;
+
   LoginForm!: FormGroup;
   loginData: any;
   username: string = '';
@@ -21,20 +30,22 @@ export class LoginComponent implements OnInit {
   rememberMe: boolean = false;
   dataDumm: any;
   validation_messages = {
-    email_id: [{ type: 'required', message: 'Please enter login Id' }],
-    password: [{ type: 'required', message: 'Please enter password' }],
+    email_id: [{ type: 'required', message: 'ID is required' }],
+    password: [{ type: 'required', message: 'Password is required' }],
   };
   errorFlag: boolean = false;
   authorizationMessage: any;
-
+  show_password: boolean = false;
   constructor(
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private loginService: LoginService,
-    private dataStorageService: DataStorageService,
-    public sendReceiveService: SendReceiveService,
-    private userIdle: UserIdleService,
-    private headerService: HeaderService
+    private readonly router: Router,
+    private readonly formBuilder: FormBuilder,
+    private readonly loginService: LoginService,
+    private readonly dataStorageService: DataStorageService,
+    public readonly sendReceiveService: SendReceiveService,
+    private readonly userIdle: UserIdleService,
+    private readonly headerService: HeaderService,
+    private readonly renderer: Renderer2,
+    private readonly loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -58,14 +69,11 @@ export class LoginComponent implements OnInit {
       let scode = true;
       if (scode) {
         this.validateScode(scode);
-      } else {
-        if (!this.dataStorageService.isUserLoggedIn) {
-          this.router.navigateByUrl('');
-        }
+      }
+      if (!this.dataStorageService.isUserLoggedIn) {
+        this.router.navigateByUrl('');
       }
     }
-    console.log(document.getElementsByTagName('meta'));
-
     const firstTime = localStorage.getItem('key');
     if (!firstTime) {
       localStorage.setItem('key', 'loaded');
@@ -84,6 +92,19 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    if (this.emailInput) {
+      this.renderer.selectRootElement(this.emailInput.nativeElement).focus();
+    }
+  }
+
+  togglePasswordVisibility() {
+    this.show_password = !this.show_password;
+  }
+
+  eyeShown() {
+    return this.show_password ? 'fa fa-eye' : 'fa fa-eye-slash';
+  }
   onSignOut() {
     let data = localStorage.getItem('LoginData');
     if (data) {
@@ -103,8 +124,8 @@ export class LoginComponent implements OnInit {
   }
 
   validateScode(scode: any) {
-    console.log(scode);
     this.errorFlag = false;
+    debugger;
     this.loginService.getLoginDetails(scode).subscribe(
       (response) => {
         if (response.roleStatus == 'N') {
@@ -121,7 +142,7 @@ export class LoginComponent implements OnInit {
       },
       (error) => {
         this.errorFlag = true;
-        this.authorizationMessage = error.error.response.message;
+        this.authorizationMessage = error?.error?.response?.message;
       }
     );
   }
@@ -148,8 +169,6 @@ export class LoginComponent implements OnInit {
 
   clkSignin() {
     this.errorFlag = false;
-    console.log(this.validation_messages);
-
     this.dataDumm = {
       userName: this.LoginForm.value.email,
       passWord: 'sad',
@@ -159,6 +178,7 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('username', this.LoginForm.value.email);
       localStorage.setItem('password', this.LoginForm.value.password);
       let encryptedPassword = btoa(this.LoginForm.value.password);
+      this.loadingService.show();
       this.loginService
         .getLoginDetails({
           userName: this.LoginForm.value.email,
@@ -178,17 +198,24 @@ export class LoginComponent implements OnInit {
               return;
             }
             if (response.response.statusCode == 200) {
+              this.loadingService.hide();
               this.onSuccessfullLogin(response);
             } else {
               this.errorFlag = true;
+              this.loadingService.hide();
               this.authorizationMessage = response.message;
             }
           },
           (error) => {
             this.errorFlag = true;
-            this.authorizationMessage = error.error.response.message;
+            this.loadingService.hide();
+
+            this.authorizationMessage =
+              error?.error?.response?.message || 'Internal Server Error';
           }
         );
+    } else {
+      this.LoginForm.markAllAsTouched();
     }
   }
 
@@ -212,7 +239,6 @@ export class LoginComponent implements OnInit {
   checkRemember(event: any) {
     const checkbox = event.target as HTMLInputElement;
     this.rememberMe = checkbox.checked;
-    console.log(this.rememberMe);
   }
   onSuccessfullLogin(response: any) {
     localStorage.removeItem('LoginData');
@@ -248,7 +274,6 @@ export class LoginComponent implements OnInit {
             this.dataStorageService.isUserLoggedIn = false;
             this.router.navigateByUrl('/');
           });
-        console.log(count);
         this.stopWatching();
       }
     });

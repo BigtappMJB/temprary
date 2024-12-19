@@ -7,7 +7,6 @@ import { MatSort } from '@angular/material/sort';
 import { CsvSchedulerService } from './service/csv-scheduler.service';
 import { MatSelectChange } from '@angular/material/select';
 import { NotifierService } from 'src/app/notifier.service';
-import { ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogPopupComponent } from 'src/app/shared/dialog-popup/dialog-popup.component';
 import { parseCronExpression } from 'src/app/shared/generals';
@@ -24,11 +23,13 @@ export class CsvSchedulerComponent {
   days = Array.from({ length: 31 }, (_, i) => i + 1); // Minutes: 0-59
   displayedColumns: string[] = [
     'sno',
-    'schedulerName',
+    'schedularName',
+    'targetTable',
+    'processLogc',
     'startDate',
     'startTime',
     'endDate',
-    'endTime',
+    // 'endTime',
     'actions',
   ];
   neverEnd = false;
@@ -101,22 +102,25 @@ export class CsvSchedulerComponent {
   ).reduce((acc, val) => acc.concat(val), []);
   filteredTimes: string[] = this.times;
   constructor(
-    private fb: FormBuilder,
-    private csvSchedulerService: CsvSchedulerService,
-    private notifierService: NotifierService,
-    private changeDetectorRef: ChangeDetectorRef,
-    private dialog: MatDialog
+    private readonly fb: FormBuilder,
+    private readonly csvSchedulerService: CsvSchedulerService,
+    private readonly notifierService: NotifierService,
+    private readonly dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
+    console.log(
+      this.displayedColumns.map((ele: any) => ({
+        Key: ele,
+        Value: '',
+      }))
+    );
+
     this.filterData = {
-      filterColumnNames: [
-        { Key: 'sno', Value: '' },
-        { Key: 'schedulerName', Value: '' },
-        { Key: 'startDate', Value: '' },
-        { Key: 'startTime', Value: '' },
-        { Key: 'endDate', Value: '' },
-      ],
+      filterColumnNames: this.displayedColumns.map((ele: any) => ({
+        Key: ele,
+        Value: '',
+      })),
       gridData: this.gridData,
       dataSource: this.dataSource,
       paginator: this.paginator,
@@ -125,11 +129,11 @@ export class CsvSchedulerComponent {
 
     this.csvSchedulerForm = this.fb.group({
       schedulerName: [null, Validators.required],
+      targetTable: [null, Validators.required],
+      processLogic: [null, Validators.required],
+
       startDate: [null, Validators.required],
       startTime: [null, Validators.required],
-      // startHour: [null, Validators.required],
-      // startMinute: [null, Validators.required],
-      // startAmPm: [null, Validators.required],
       endDate: [null, Validators.required],
       neverEnd: [false],
       repeatUnit: [null, Validators.required],
@@ -281,10 +285,10 @@ export class CsvSchedulerComponent {
         .getSetScheduler(requestBody)
         .subscribe((response) => {
           if (response) {
-            this.notifierService.showNotification(
-              'Success',
-              response.statusDescription
-            );
+            // this.notifierService.showNotification(
+            //   'Success',
+            //   response.statusDescription
+            // );
             this.getSchedulerList();
           }
         });
@@ -305,9 +309,6 @@ export class CsvSchedulerComponent {
     this.editedUserSchedulerId = element.id;
     this.isAddSchedulerForm = true;
     const {
-      startMinute,
-      startHour,
-      startAmPm,
       type,
       repeatDayOfMonthyear,
       repeatMonthYear,
@@ -323,11 +324,10 @@ export class CsvSchedulerComponent {
       startTime: time24Hour,
       schedulerName: element.schedularName,
       startDate: element.startDateTime,
-      // startHour: startHour,
-      // startMinute: parseInt(startMinute),
-      // startAmPm: startAmPm,
+      targetTable: element.targetTable,
+      processLogic: element.processLogc,
       endDate: element.endDateTime,
-      neverEnd: element.endDateTime == null ? true : false,
+      neverEnd: element.endDateTime == null,
       repeatUnit: type,
       selectedWeekDay: dayOfWeek,
       repeatDayOfMonth: parseInt(dayOfMonth),
@@ -398,16 +398,15 @@ export class CsvSchedulerComponent {
     );
     let endDateTime = new Date(this.csvSchedulerForm.get('endDate')?.value);
     endDateTime.setHours(12, 0);
+
     const cronData = {
-      schedularName: this.csvSchedulerForm.get('schedulerName')?.value,
+      schedularName: this.csvSchedulerForm.get('schedulerName')?.value.trim(),
       startDateTime: startDateTime,
-      endDateTime: this.csvSchedulerForm.get('neverEnd')?.value
-        ? null
-        : endDateTime
-        ? endDateTime
-        : null,
+      endDateTime: this.csvSchedulerForm.get('endDate')?.value,
       cronExpression: cronExpression,
       status: '0',
+      targetTable: this.csvSchedulerForm.get('targetTable')?.value.trim(),
+      processLogc: this.csvSchedulerForm.get('processLogic')?.value.trim(),
     };
     if (this.editMode) {
       this.csvSchedulerService
@@ -418,13 +417,17 @@ export class CsvSchedulerComponent {
           this.editMode = false;
           this.csvSchedulerForm.reset();
           this.notifierService.showNotification(
-            'Success',
+            response.status === 'success' ? 'Success' : 'Error',
             response?.statusDescription
           );
         });
     } else {
       this.csvSchedulerService.scheduleTask(cronData).subscribe((response) => {
         this.isAddSchedulerForm = false;
+        this.notifierService.showNotification(
+          response.status === 'success' ? 'Success' : 'Error',
+          response?.statusDescription
+        );
         this.getSchedulerList();
         this.csvSchedulerForm.reset();
       });
@@ -432,19 +435,8 @@ export class CsvSchedulerComponent {
   }
 
   generateCronExpression(): string {
-    const startHour = this.csvSchedulerForm.get('startHour')?.value;
-    // const startMinute = this.csvSchedulerForm.get('startMinute')?.value;
-    const startAmPm = this.csvSchedulerForm.get('startAmPm')?.value;
     const startTime = this.csvSchedulerForm.get('startTime')?.value;
-    // const adjustedHour =
-    //   startAmPm === 'PM' && startHour !== 12
-    //     ? startHour + 12
-    //     : startAmPm === 'AM' && startHour === 12
-    //     ? 0
-    //     : startHour;
-    // console.log({ adjustedHour });
     const [adjustedHour, startMinute] = startTime.split(':');
-
     this.RequestBodystartMinute = startMinute;
     this.RequestBodyAdjustedHour = adjustedHour;
     let cronExpression = '';

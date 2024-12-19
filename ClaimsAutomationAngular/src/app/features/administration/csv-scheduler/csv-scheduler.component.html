@@ -15,7 +15,8 @@
               <mat-error
                 *ngIf="
                   csvSchedulerForm.get('schedulerName')?.touched &&
-                  csvSchedulerForm.get('schedulerName')?.invalid
+                  csvSchedulerForm.get('schedulerName')?.invalid &&
+                  csvSchedulerForm.get('schedularName')?.hasError('required')
                 "
                 class="error"
                 >Scheduler Name is required</mat-error
@@ -23,6 +24,39 @@
             </mat-form-field>
           </div>
 
+          <!-- targetTable -->
+          <div class="col-md-4 col-sm-12">
+            <mat-form-field appearance="outline">
+              <mat-label>Target Table</mat-label>
+              <input matInput formControlName="targetTable" />
+              <mat-error
+                *ngIf="
+                  csvSchedulerForm.get('targetTable')?.touched &&
+                  csvSchedulerForm.get('targetTable')?.invalid &&
+                  csvSchedulerForm.get('targetTable')?.hasError('required')
+                "
+                class="error"
+                >Target Table is required</mat-error
+              >
+            </mat-form-field>
+          </div>
+
+          <!-- targetTable -->
+          <div class="col-md-4 col-sm-12">
+            <mat-form-field appearance="outline">
+              <mat-label>Process Logic</mat-label>
+              <input matInput formControlName="processLogic" />
+              <mat-error
+                *ngIf="
+                  csvSchedulerForm.get('processLogic')?.touched &&
+                  csvSchedulerForm.get('processLogic')?.invalid &&
+                  csvSchedulerForm.get('processLogic')?.hasError('required')
+                "
+                class="error"
+                >Process Logic is required</mat-error
+              >
+            </mat-form-field>
+          </div>
           <!-- Start Date -->
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
@@ -40,7 +74,8 @@
               <mat-error
                 *ngIf="
                   csvSchedulerForm.get('startDate')?.touched &&
-                  csvSchedulerForm.get('startDate')?.invalid
+                  csvSchedulerForm.get('startDate')?.invalid &&
+                  csvSchedulerForm.get('startDate')?.hasError('required')
                 "
                 class="error"
                 >Start Date is required</mat-error
@@ -75,64 +110,8 @@
             </mat-form-field>
           </div>
 
-          <!-- <div class="time-container row col-md-6 col-sm-12">
-            <div class="col-md-3 col-sm-12">
-              <mat-form-field appearance="outline">
-                <mat-label>Hour</mat-label>
-                <mat-select formControlName="startHour">
-                  <mat-option *ngFor="let hour of hours" [value]="hour">{{
-                    hour
-                  }}</mat-option>
-                </mat-select>
-                <mat-error
-                  *ngIf="
-                    csvSchedulerForm.get('startHour')?.touched &&
-                    csvSchedulerForm.get('startHour')?.invalid
-                  "
-                  class="error"
-                  >Hour is required</mat-error
-                >
-              </mat-form-field>
-            </div>
-            <div class="col-md-3 col-sm-12">
-              <mat-form-field appearance="outline">
-                <mat-label>Minutes</mat-label>
-                <mat-select formControlName="startMinute">
-                  <mat-option *ngFor="let minute of minutes" [value]="minute">{{
-                    minute
-                  }}</mat-option>
-                </mat-select>
-                <mat-error
-                  *ngIf="
-                    csvSchedulerForm.get('startMinute')?.touched &&
-                    csvSchedulerForm.get('startMinute')?.invalid
-                  "
-                  class="error"
-                  >Minute is required</mat-error
-                >
-              </mat-form-field>
-            </div>
-            <div class="col-md-3 col-sm-12">
-              <mat-form-field appearance="outline">
-                <mat-label>AM/PM</mat-label>
-                <mat-select formControlName="startAmPm">
-                  <mat-option value="AM">AM</mat-option>
-                  <mat-option value="PM">PM</mat-option>
-                </mat-select>
-                <mat-error
-                  *ngIf="
-                    csvSchedulerForm.get('startAmPm')?.touched &&
-                    csvSchedulerForm.get('startAmPm')?.invalid &&
-                    csvSchedulerForm.get('startAmPm')?.hasError('required')
-                  "
-                  class="error"
-                  >AM/PM is required</mat-error
-                >
-              </mat-form-field>
-            </div>
-          </div> -->
           <!-- End Date -->
-          <div class="row align-items-center col-md-8 col-sm-12">
+          <div class="row align-items-center col-md-4 col-sm-12">
             <div class="col-md-6 col-sm-12">
               <mat-form-field appearance="outline">
                 <mat-label>End Date</mat-label>
@@ -217,9 +196,6 @@
             <!-- Weekly -->
             <div *ngIf="isWeekly" class="form-section">
               <div>
-                <!-- <mat-label style="font-size: 17px; font-weight: bold"
-                  >Select Day</mat-label
-                > -->
                 <mat-radio-group formControlName="selectedWeekDay">
                   <div class="checkbox-container">
                     <div *ngFor="let day of daysOfWeek">
@@ -365,164 +341,205 @@
   </h4>
   <div class="clearfix"></div>
 
-  <table
-    mat-table
-    [dataSource]="this.filterData.dataSource"
-    matSort
-    class="mat-elevation-z8 mat-datagrid w-100"
-    aria-label="users"
-  >
-    <ng-container matColumnDef="sno">
-      <th mat-header-cell *matHeaderCellDef style="width: 30px" scope="col">
-        <label mat-sort-header for="sno-input"> S.No </label>
-        <input
-          type="text"
-          id="sno-input"
-          (keyup)="updatePagination()"
-          [(ngModel)]="filterData.filterColumnNames[0].Value"
-          [filter]="filterData"
-        />
-      </th>
-      <td mat-cell *matCellDef="let element">{{ element.sno }}</td>
-    </ng-container>
+  <div class="table-responsive-container">
+    <div class="table-scroll-container">
+      <table
+        mat-table
+        [dataSource]="this.filterData.dataSource"
+        matSort
+        class="mat-elevation-z8 mat-datagrid w-100"
+        aria-label="users"
+      >
+        <ng-container matColumnDef="sno">
+          <th mat-header-cell *matHeaderCellDef style="width: 30px" scope="col">
+            <label mat-sort-header for="sno-input"> S.No </label>
+            <input
+              type="text"
+              id="sno-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[0].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">{{ element.sno }}</td>
+        </ng-container>
 
-    <ng-container matColumnDef="schedulerName">
-      <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="scheduler-name-input">
-          Scheduler name
-        </label>
-        <input
-          type="text"
-          id="scheduler-name-input"
-          (keyup)="updatePagination()"
-          [(ngModel)]="filterData.filterColumnNames[1].Value"
-          [filter]="filterData"
-        />
-      </th>
-      <td mat-cell *matCellDef="let element2">{{ element2.schedularName }}</td>
-    </ng-container>
+        <ng-container matColumnDef="schedularName">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="scheduler-name-input">
+              Scheduler name
+            </label>
+            <input
+              type="text"
+              id="scheduler-name-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[1].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element2">
+            {{ element2.schedularName }}
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="startDate">
-      <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="start-date-input"> Start date </label>
-        <input
-          type="text"
-          id="start-date-input"
-          (keyup)="updatePagination()"
-          [(ngModel)]="filterData.filterColumnNames[2].Value"
-          [filter]="filterData"
-        />
-      </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.startDateTime | date : "longDate" }}
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="targetTable">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input"> Target Table </label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[2].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.targetTable }}
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="startTime">
-      <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="start-time-input"> Start time </label>
-        <input
-          type="text"
-          id="start-time-input"
-          (keyup)="updatePagination()"
-          [(ngModel)]="filterData.filterColumnNames[2].Value"
-          [filter]="filterData"
-        />
-      </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.startDateTime | date : "mediumTime" }}
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="processLogc">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input">Process Logic</label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[3].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.processLogc }}
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="endDate">
-      <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="end-date-input"> End date </label>
-        <input
-          type="text"
-          id="end-date-input"
-          (keyup)="updatePagination()"
-          [(ngModel)]="filterData.filterColumnNames[2].Value"
-          [filter]="filterData"
-        />
-      </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.endDateTime | date : "longDate" }}
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input"> Start date </label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[4].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.startDateTime | date : "longDate" }}
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="endTime">
-      <th mat-header-cell *matHeaderCellDef scope="col">
-        <label mat-sort-header for="end-time-input"> End time </label>
-        <input
-          type="text"
-          id="end-time-input"
-          (keyup)="updatePagination()"
-          [(ngModel)]="filterData.filterColumnNames[2].Value"
-          [filter]="filterData"
-        />
-      </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.endDateTime | date : "mediumTime" }}
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="startTime">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-time-input"> Start time </label>
+            <input
+              type="text"
+              id="start-time-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[5].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.startDateTime | date : "mediumTime" }}
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef scope="col">
-        <span> Actions </span>
-      </th>
-      <td mat-cell *matCellDef="let element">
-        <mat-slide-toggle
-          [checked]="element.status == '0' ? false : true"
-          (change)="onActivatescheduler(element, $event)"
-        ></mat-slide-toggle>
-        <span
-          matTooltip="Edit"
-          (click)="onEditScheduler(element)"
-          (keydown)="onEditScheduler(element)"
-        >
-          <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-        </span>
-        <span
-          matTooltip="Delete"
-          style="cursor: pointer"
-          (click)="onSchedulerDelete(element)"
-          (keydown)="onSchedulerDelete(element)"
-        >
-          <i class="far fa-trash-alt" aria-hidden="true"></i>
-        </span>
-        <span
-          *ngIf="!element.isSchedulerRunning"
-          matTooltip="Start"
-          style="cursor: pointer"
-          (click)="onStartScheduler(element)"
-          (keydown)="onStartScheduler(element)"
-        >
-          <i class="fas fa-play" aria-hidden="true"></i>
-        </span>
-        <span
-          style="cursor: none; pointer-events: none"
-          *ngIf="element.isSchedulerRunning"
-          matTooltip="Running"
-          style="cursor: pointer"
-        >
-          <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
-        </span>
-        <span
-          style="cursor: none; pointer-events: none"
-          *ngIf="element.isSchedulerRunning"
-          matTooltip="Stop"
-          style="cursor: pointer"
-          (click)="onStopScheduler(element)"
-          (keydown)="onStartScheduler(element)"
-        >
-          <i class="fas fa-times-circle" aria-hidden="true"></i>
-        </span>
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="end-date-input"> End date </label>
+            <input
+              type="text"
+              id="end-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[6].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.endDateTime | date : "longDate" }}
+          </td>
+        </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
-  <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Select page">
-  </mat-paginator>
+        <!-- <ng-container matColumnDef="endTime">
+        <th mat-header-cell *matHeaderCellDef scope="col">
+          <label mat-sort-header for="end-time-input"> End time </label>
+          <input
+            type="text"
+            id="end-time-input"
+            (keyup)="updatePagination()"
+            [(ngModel)]="filterData.filterColumnNames[7].Value"
+            [filter]="filterData"
+          />
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.endDateTime | date : "mediumTime" }}
+        </td>
+      </ng-container> -->
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <span> Actions </span>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-slide-toggle
+              [checked]="element.status == '0' ? false : true"
+              (change)="onActivatescheduler(element, $event)"
+            ></mat-slide-toggle>
+            <span
+              matTooltip="Edit"
+              (click)="onEditScheduler(element)"
+              (keydown)="onEditScheduler(element)"
+            >
+              <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+            </span>
+            <span
+              matTooltip="Delete"
+              style="cursor: pointer"
+              (click)="onSchedulerDelete(element)"
+              (keydown)="onSchedulerDelete(element)"
+            >
+              <i class="far fa-trash-alt" aria-hidden="true"></i>
+            </span>
+            <span
+              *ngIf="!element.isSchedulerRunning"
+              matTooltip="Start"
+              style="cursor: pointer"
+              (click)="onStartScheduler(element)"
+              (keydown)="onStartScheduler(element)"
+            >
+              <i class="fas fa-play" aria-hidden="true"></i>
+            </span>
+            <span
+              style="cursor: none; pointer-events: none"
+              *ngIf="element.isSchedulerRunning"
+              matTooltip="Running"
+              style="cursor: pointer"
+            >
+              <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+            </span>
+            <span
+              style="cursor: none; pointer-events: none"
+              *ngIf="element.isSchedulerRunning"
+              matTooltip="Stop"
+              style="cursor: pointer"
+              (click)="onStopScheduler(element)"
+              (keydown)="onStartScheduler(element)"
+            >
+              <i class="fas fa-times-circle" aria-hidden="true"></i>
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      <mat-paginator
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        aria-label="Select page"
+      >
+      </mat-paginator>
+    </div>
+  </div>
 </div>

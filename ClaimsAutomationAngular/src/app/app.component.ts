@@ -6,25 +6,22 @@ export let browserRefresh = false;
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  
 })
 export class AppComponent {
   title = 'CMDApplication';
-  constructor(
-    public dataStorage: DataStorageService,
-    private router: Router
-  ) {
+  constructor(public dataStorage: DataStorageService, private router: Router) {
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
         browserRefresh = !router.navigated;
       }
       if (event instanceof NavigationEnd) {
         window.scrollTo(0, 0);
-        if (localStorage.getItem("LoginData")) {
+        if (localStorage.getItem('LoginData')) {
           this.dataStorage.isUserLoggedIn = true;
         }
       }
     });
   }
-
 }
