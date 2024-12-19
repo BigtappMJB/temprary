@@ -25,7 +25,7 @@ export class CsvSchedulerComponent {
     'sno',
     'schedularName',
     'targetTable',
-    'processLogc',
+    // 'processLogc',
     'startDate',
     'startTime',
     'endDate',
@@ -130,7 +130,7 @@ export class CsvSchedulerComponent {
     this.csvSchedulerForm = this.fb.group({
       schedulerName: [null, Validators.required],
       targetTable: [null, Validators.required],
-      processLogic: [null, Validators.required],
+      processLogic: [null],
 
       startDate: [null, Validators.required],
       startTime: [null, Validators.required],
