@@ -28,6 +28,12 @@ public class SchedulerDetails {
     
     @Column(name = "status", nullable = false)
     private String status="0";
+    
+    @Column(name = "target_table")
+    private String targetTable;
+    
+	@Column(name = "process_logic")
+    private String ProcessLogic;
 
     public String getStatus() {
 		return status;
@@ -77,5 +83,21 @@ public class SchedulerDetails {
     public void setCronExpression(String cronExpression) {
         this.cronExpression = cronExpression;
     }
+    
+    public String getTargetTable() {
+		return targetTable;
+	}
+
+	public void setTargetTable(String targetTable) {
+		this.targetTable = targetTable;
+	}
+
+	public String getProcessLogic() {
+		return ProcessLogic;
+	}
+
+	public void setProcessLogic(String processLogic) {
+		ProcessLogic = processLogic;
+	}
 }
 
