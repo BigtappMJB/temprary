@@ -7,6 +7,7 @@ import { TableConfiguratorComponent } from './table-configurator/table-configura
 import { UserComponent } from './user/user.component';
 import { CsvSchedulerComponent } from './csv-scheduler/csv-scheduler.component';
 import { SchedulerRecordDetailsComponent } from './scheduler-record-details/scheduler-record-details.component';
+import { FileMappingComponent } from './file-mapping/file-mapping.component';
 
 const routes: Routes = [
   { path: 'users', component: UserComponent },
@@ -19,6 +20,7 @@ const routes: Routes = [
     component: SchedulerRecordDetailsComponent,
   },
   { path: 'schedulerDetails', component: CsvSchedulerComponent },
+  { path: 'fileMapping', component: FileMappingComponent },
 ];
 
 @NgModule({

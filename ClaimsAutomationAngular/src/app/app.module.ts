@@ -42,6 +42,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { LoadingComponentComponent } from './shared/components/loading-component/loading-component.component';
+import { FileUploadModule } from './features/file-upload/file-upload.module';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { LoadingComponentComponent } from './shared/components/loading-component
     MatSelectModule,
     AdministrationModule,
     SharedModule,
+    FileUploadModule,
     CoreModule,
     HttpClientModule,
     StaticDataUploadModule,

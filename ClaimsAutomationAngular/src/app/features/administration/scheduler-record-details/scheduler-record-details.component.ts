@@ -43,8 +43,8 @@ export class SchedulerRecordDetailsComponent implements OnInit {
     },
   ];
   constructor(
-    private route: ActivatedRoute,
-    private csvGenertorService: CsvGeneratorService
+    private readonly route: ActivatedRoute,
+    private readonly csvGenertorService: CsvGeneratorService
   ) {}
 
   ngOnInit(): void {

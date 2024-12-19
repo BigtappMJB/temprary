@@ -31,6 +31,7 @@ import { CsvSchedulerService } from './csv-scheduler/service/csv-scheduler.servi
 import { MatRadioModule } from '@angular/material/radio';
 import { SchedulerRecordDetailsComponent } from './scheduler-record-details/scheduler-record-details.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { FileMappingComponent } from './file-mapping/file-mapping.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     CsvGeneratorComponent,
     CsvSchedulerComponent,
     SchedulerRecordDetailsComponent,
+    FileMappingComponent,
   ],
   imports: [
     CommonModule,

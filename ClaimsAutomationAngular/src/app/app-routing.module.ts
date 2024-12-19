@@ -21,11 +21,19 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'dataUpload',
+    path: 'mappingData',
     canActivate: [AuthGuard],
     loadChildren: () =>
       import('./features/static-data-upload/static-data-upload.module').then(
         (m) => m.StaticDataUploadModule
+      ),
+  },
+  {
+    path: 'fileData',
+    canActivate: [AuthGuard],
+    loadChildren: () =>
+      import('./features/file-upload/file-upload-routing.module').then(
+        (m) => m.FileUploadRoutingModule
       ),
   },
   {
