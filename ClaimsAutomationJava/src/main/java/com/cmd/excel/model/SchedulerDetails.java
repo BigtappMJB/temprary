@@ -33,7 +33,7 @@ public class SchedulerDetails {
     private String targetTable;
     
 	@Column(name = "process_logic")
-    private String ProcessLogic;
+    private String processLogc;
 
     public String getStatus() {
 		return status;
@@ -92,12 +92,14 @@ public class SchedulerDetails {
 		this.targetTable = targetTable;
 	}
 
-	public String getProcessLogic() {
-		return ProcessLogic;
+	public String getProcessLogc() {
+		return processLogc;
 	}
 
-	public void setProcessLogic(String processLogic) {
-		ProcessLogic = processLogic;
+	public void setProcessLogc(String processLogc) {
+		this.processLogc = processLogc;
 	}
+
+
 }
 
