@@ -1,63 +1,121 @@
-
-<div class="signup-container">
+<div class="signup-container w-sm-100">
   <div class="login-btlogo">
-    <img src="../../../../assets/images/bt-logo.png" class="" alt="BTLogo"/>
+    <img src="../../../../assets/images/bt-logo.png" class="" alt="BTLogo" />
   </div>
   <form class="login-form" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-    <div *ngIf="errorFlag">
-      <mat-error>{{authorizationMessage}}</mat-error>
-    </div><br>
-    <div class="form-group inrne-addon ">
-      <mat-form-field >
-        <input matInput type="text" autocomplete="off" name="firstName" id="firstName" placeholder="First name"
-          [formControl]="signupForm.controls['firstName']" required>
-
-        <mat-error *ngFor="let validation of validation_messages.firstName">
-          <span *ngIf="signupForm.get('firstName').hasError(validation.type)">
-            {{ validation.message}}
-          </span>
-        </mat-error>
-      </mat-form-field>
+    <div
+      *ngIf="errorFlag"
+      class="text-center text-break fw-bold text-wrap my-2"
+    >
+      <mat-error>{{ authorizationMessage }}</mat-error>
     </div>
-    <div class="form-group inrne-addon ">
-      <mat-form-field>
-        <input matInput type="text" autocomplete="off" name="lastName" id="lastName" placeholder="Last Name"
-          [formControl]="signupForm.controls['lastName']" required>
+    <br />
+    <div class="conatiner">
+      <div class="row">
+        <!-- First Name -->
+        <div class="col-md-6 col-sm-12">
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              name="firstName"
+              id="firstName"
+              placeholder="First name"
+              #firstName
+              [formControl]="signupForm.controls['firstName']"
+              required
+            />
 
-        <mat-error *ngFor="let validation of validation_messages.lastName">
-          <span *ngIf="signupForm.get('lastName').hasError(validation.type)">
-            {{ validation.message}}
-          </span>
-        </mat-error>
-      </mat-form-field>
-    </div>
-    <div class="form-group inrne-addon ">
-      <mat-form-field>
-        <input matInput type="text" autocomplete="off" name="email" id="email" placeholder="email"
-          [formControl]="signupForm.controls['email']" required>
+            <mat-error *ngFor="let validation of validation_messages.firstName">
+              <span
+                *ngIf="signupForm.get('firstName').hasError(validation.type)"
+              >
+                {{ validation.message }}
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <!-- Last Name -->
+        <div class="col-md-6 col-sm-12">
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              name="lastName"
+              id="lastName"
+              placeholder="Last Name"
+              [formControl]="signupForm.controls['lastName']"
+              required
+            />
 
-        <mat-error *ngFor="let validation of validation_messages.email">
-          <span *ngIf="signupForm.get('email').hasError(validation.type)">
-            {{ validation.message}}
-          </span>
-        </mat-error>
-      </mat-form-field>
-    </div>
-    <div class="form-group inrne-addon ">
-      <mat-form-field>
-        <input matInput onDrag="return false" onDrop="return false" onPaste="return false" autocomplete=off
-          (keypress)="onKeyPress($event)" cmsRestrictInput="onlyNumbers" type="text" required minlength="10"
-          maxlength="10" placeholder="Mobile No" [formControl]="signupForm.controls['mobileNo']">
+            <mat-error *ngFor="let validation of validation_messages.lastName">
+              <span
+                *ngIf="signupForm.get('lastName').hasError(validation.type)"
+              >
+                {{ validation.message }}
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <!-- Email -->
+        <div class="col-md-6 col-sm-12">
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              name="email"
+              id="email"
+              placeholder="Email"
+              [formControl]="signupForm.controls['email']"
+              required
+            />
 
-        <mat-error *ngFor="let validation of validation_messages.mobileNo">
-          <span *ngIf="signupForm.get('mobileNo').hasError(validation.type)">
-            {{ validation.message}}
-          </span>
-        </mat-error>
-      </mat-form-field>
+            <mat-error *ngFor="let validation of validation_messages.email">
+              <span *ngIf="signupForm.get('email').hasError(validation.type)">
+                {{ validation.message }}
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <!-- Mobile Number -->
+        <div class="col-md-6 col-sm-12">
+          <mat-form-field>
+            <input
+              matInput
+              onDrag="return false"
+              onDrop="return false"
+              onPaste="return false"
+              autocomplete="off"
+              (keypress)="onKeyPress($event)"
+              cmsRestrictInput="onlyNumbers"
+              type="text"
+              required
+              minlength="10"
+              maxlength="10"
+              placeholder="Mobile No"
+              [formControl]="signupForm.controls['mobileNo']"
+            />
+
+            <mat-error *ngFor="let validation of validation_messages.mobileNo">
+              <span
+                *ngIf="signupForm.get('mobileNo').hasError(validation.type)"
+              >
+                {{ validation.message }}
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
     </div>
-    <button type="submit">Sign Up</button>
+    <br />
+    <button type="submit" class="btn login-button btn-rounded">Sign Up</button>
   </form>
-  <br>
-  <p>Already have an Account? <a href="#" style="margin-top: 11px;color: #006eff ;">Sign in</a></p>
+  <br />
+  <p>
+    Already have an Account?
+    <a href="#" style="margin-top: 11px; color: #006eff">Sign in</a>
+  </p>
 </div>

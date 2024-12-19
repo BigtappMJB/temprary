@@ -11,10 +11,23 @@ import { TableConfiguratorService } from './service/table-configurator.service';
 
 @Component({
   selector: 'app-table-configurator',
-  templateUrl: './table-configurator.component.html'
+  templateUrl: './table-configurator.component.html',
 })
 export class TableConfiguratorComponent implements OnInit {
-  displayedColumns: string[] = ['tableFieldName', 'templateAttribute', 'dataType', 'fieldLength', 'mandatoryOptional', 'defaultValue', 'isPrimaryKey', 'isForeignKey', 'FKTableName', 'FKTableFieldName', 'errorDesc', 'actions'];
+  displayedColumns: string[] = [
+    'tableFieldName',
+    'templateAttribute',
+    'dataType',
+    'fieldLength',
+    'mandatoryOptional',
+    'defaultValue',
+    'isPrimaryKey',
+    'isForeignKey',
+    'FKTableName',
+    'FKTableFieldName',
+    'errorDesc',
+    'actions',
+  ];
   dataSource: any;
   @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
@@ -31,24 +44,27 @@ export class TableConfiguratorComponent implements OnInit {
   columns: any;
   FKTableFieldNamesList = [];
   dataTypes = [
-    { "dataTypeName": "Integer" },
-    { "dataTypeName": "Varchar" },
-    { "dataTypeName": "Date" },
-    { "dataTypeName": "Datetime" },
-    { "dataTypeName": "Char" },
-    { "dataTypeName": "Decimal" },
-    { "dataTypeName": "Timestamp" },
-    { "dataTypeName": "Boolean" },
-  ]
+    { dataTypeName: 'Integer' },
+    { dataTypeName: 'Varchar' },
+    { dataTypeName: 'Date' },
+    { dataTypeName: 'Datetime' },
+    { dataTypeName: 'Char' },
+    { dataTypeName: 'Decimal' },
+    { dataTypeName: 'Timestamp' },
+    { dataTypeName: 'Boolean' },
+  ];
   fkTableColName: any;
   errorMessage: any;
   Message: any;
   errorType: any;
   AlltablesList: any = [];
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(
+    private formBuilder: FormBuilder,
     private tableConfiguratorService: TableConfiguratorService,
-    private sendReceiveService: SendReceiveService, private notifierService: NotifierService) {
+    private sendReceiveService: SendReceiveService,
+    private notifierService: NotifierService
+  ) {
     this.tableFieldForm = this.formBuilder.group({
       tableFieldName: ['', Validators.required],
       templateAttribute: ['', Validators.required],
@@ -60,7 +76,7 @@ export class TableConfiguratorComponent implements OnInit {
       isForeignKey: ['', Validators.required],
       fKTableName: ['', Validators.required],
       fKTableFieldName: ['', Validators.required],
-      errorDesc: ['']
+      errorDesc: [''],
     });
   }
 
@@ -68,24 +84,35 @@ export class TableConfiguratorComponent implements OnInit {
     this.tableConfigForm = this.formBuilder.group({
       subModuleName: ['', Validators.required],
       tableId: ['', Validators.required],
-      templateId: ['', Validators.required]
+      templateId: ['', Validators.required],
     });
     this.getSubModulesList();
   }
 
   getSubModulesList() {
-    let data = localStorage.getItem("LoginData");
+    let data = localStorage.getItem('LoginData');
     if (data) {
       this.loginData = JSON.parse(data);
       for (let menu of this.loginData.permissions) {
         for (let submenu of menu.submodules) {
-          if(submenu.subModuleName == "Entity Related"){
-            submenu.subModuleName = "CAD"
+          if (submenu.subModuleName == 'Entity Related') {
+            submenu.subModuleName = 'CAD';
           }
-          if(submenu.subModuleName == "Static Reference"){
-            submenu.subModuleName = "CMD"
+          if (submenu.subModuleName == 'Static Reference') {
+            submenu.subModuleName = 'CMD';
           }
-          if (submenu.subModuleId !== 8&& submenu.subModuleId !== 16&&submenu.subModuleId !== 13 && submenu.subModuleId !== 1 && submenu.subModuleId !== 2 && submenu.subModuleId !== 3 && submenu.subModuleId !== 14 && submenu.subModuleId !== 15  && submenu.subModuleId !== 17  && submenu.subModuleId !== 18) {
+          if (
+            submenu.subModuleId !== 8 &&
+            submenu.subModuleId !== 16 &&
+            submenu.subModuleId !== 13 &&
+            submenu.subModuleId !== 1 &&
+            submenu.subModuleId !== 2 &&
+            submenu.subModuleId !== 3 &&
+            submenu.subModuleId !== 14 &&
+            submenu.subModuleId !== 15 &&
+            submenu.subModuleId !== 17 &&
+            submenu.subModuleId !== 18
+          ) {
             this.submodulesList.push(submenu);
           }
         }
@@ -95,18 +122,20 @@ export class TableConfiguratorComponent implements OnInit {
 
   onSelectModule(id: any) {
     this.dataSource = false;
-    this.templateList = []
+    this.templateList = [];
     let subModuleId = id.value;
     let currentTableList: any = [];
     this.tablesList = [];
-    this.tableConfiguratorService.getTableNamesBySubModuleIdAndRoleId(this.loginData.roleId, subModuleId).subscribe((response) => {
-      for (let element of response) {
-        if (element.permissionId !== 6) {
-          currentTableList.push(element);
+    this.tableConfiguratorService
+      .getTableNamesBySubModuleIdAndRoleId(this.loginData.roleId, subModuleId)
+      .subscribe((response) => {
+        for (let element of response) {
+          if (element.permissionId !== 6) {
+            currentTableList.push(element);
+          }
         }
-      }
-      this.tablesList = currentTableList;
-    });
+        this.tablesList = currentTableList ?? [];
+      });
   }
 
   onSelectTable(id: any, name: string) {
@@ -115,11 +144,14 @@ export class TableConfiguratorComponent implements OnInit {
     this.tableName = name;
     this.templateList = [];
     this.removeSelectedTable(id);
-    this.tableConfiguratorService.getTableTemplateByTableId(tableId).subscribe((response) => {
-      let data = [];
-      data.push(response);
-      this.templateList = data;
-    });
+    this.tableConfiguratorService
+      .getTableTemplateByTableId(tableId)
+      .subscribe((response) => {
+        let data = [];
+        data.push(response ?? []);
+        debugger;
+        this.templateList = data ?? [];
+      });
   }
 
   removeSelectedTable(id: any) {
@@ -130,7 +162,7 @@ export class TableConfiguratorComponent implements OnInit {
         }
       }
       this.AlltablesList = tables;
-    })
+    });
   }
 
   onKeyPress(event: any) {
@@ -154,46 +186,60 @@ export class TableConfiguratorComponent implements OnInit {
   onTableConfigFormSubmit() {
     let tableId = this.tableConfigForm.value.tableId;
     let templateId = this.templateId;
-    this.tableConfiguratorService.getTemplateDetails(tableId, templateId).pipe(take(1)).subscribe((response) => {
-
-      let tableDetails = {
-        "tableId": tableId,
-        "tableName": this.tableName
-      }
-      if (response.message) {
-        this.tableConfiguratorService.getTableColumns(tableDetails).subscribe((cols: any) => {
-          this.columns = cols;
-          this.dataSource = [{ editMode: true }]
-        });
-      } else {
-        this.getColums(response, tableDetails)
-      }
-    });
+    this.tableConfiguratorService
+      .getTemplateDetails(tableId, templateId)
+      .pipe(take(1))
+      .subscribe((response) => {
+        let tableDetails = {
+          tableId: tableId,
+          tableName: this.tableName,
+        };
+        if (response.message) {
+          this.tableConfiguratorService
+            .getTableColumns(tableDetails)
+            .subscribe((cols: any) => {
+              this.columns = cols;
+              this.dataSource = [{ editMode: true }];
+            });
+        } else {
+          this.getColums(response, tableDetails);
+        }
+      });
   }
 
   getColums(response: any, tableDetails: any) {
-    this.tableConfiguratorService.getTableColumns(tableDetails).pipe(take(1)).subscribe((colData: any) => {
-      this.columns = [];
-      for (let i = 0; i < colData.length; i++) {
-        for (let j = 0; j < response.length; j++) {
-          if (!(response.some((x: { tableFieldName: any; }) => x.tableFieldName === colData[i].columnName))) {
-            this.columns.push(colData[i]);
+    this.tableConfiguratorService
+      .getTableColumns(tableDetails)
+      .pipe(take(1))
+      .subscribe((colData: any) => {
+        this.columns = [];
+        for (let i = 0; i < colData.length; i++) {
+          for (let j = 0; j < response.length; j++) {
+            if (
+              !response.some(
+                (x: { tableFieldName: any }) =>
+                  x.tableFieldName === colData[i].columnName
+              )
+            ) {
+              this.columns.push(colData[i]);
+            }
           }
         }
-      }
-      this.checkNewtable(response);
-      this.dataSource = new MatTableDataSource(response);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+        this.checkNewtable(response);
+        this.dataSource = new MatTableDataSource(response);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
   }
 
   checkNewtable(response: any) {
-    let unique = (this.columns).filter((item: any, i: any, ar: string | any[]) => ar.indexOf(item) === i);
+    let unique = this.columns.filter(
+      (item: any, i: any, ar: string | any[]) => ar.indexOf(item) === i
+    );
     this.columns = unique;
     for (let i = 0; i < response.length; i++) {
       response[i].editMode = false;
-      if ((i + 1) == response.length) {
+      if (i + 1 == response.length) {
         response[i].isLastRow = true;
         if (this.columns.length == 0) {
           response[i].isLastRow = false;
@@ -211,21 +257,22 @@ export class TableConfiguratorComponent implements OnInit {
     }
   }
 
-
   editTableField(row: any) {
     let tableDetails = {
-      "tableId": this.tableConfigForm.value.tableId,
-      "tableName": this.tableName
-    }
-    this.tableConfiguratorService.getTableColumns(tableDetails).subscribe((response) => {
-      this.columns = response;
-    });
-    (this.dataSource.filteredData).forEach((element: any) => {
+      tableId: this.tableConfigForm.value.tableId,
+      tableName: this.tableName,
+    };
+    this.tableConfiguratorService
+      .getTableColumns(tableDetails)
+      .subscribe((response) => {
+        this.columns = response;
+      });
+    this.dataSource.filteredData.forEach((element: any) => {
       if (element.tableFieldId == row.tableFieldId) {
         element.editMode = true;
         this.tableFieldId = row.tableFieldId;
         this.tableFieldName = row.tableFieldName;
-        if (row.isFk == "Y") {
+        if (row.isFk == 'Y') {
           this.tableFieldForm.controls['fKTableName'].enable();
           this.tableFieldForm.controls['fKTableFieldName'].enable();
         } else {
@@ -236,8 +283,8 @@ export class TableConfiguratorComponent implements OnInit {
           if (row.fkTableId == table.tableId) {
             let tableDetail = {
               tableId: table.tableId,
-              tableName: table.tableName
-            }
+              tableName: table.tableName,
+            };
             this.onFKTableField(tableDetail);
           }
         }
@@ -252,7 +299,7 @@ export class TableConfiguratorComponent implements OnInit {
           isForeignKey: row.isFk,
           fKTableName: row.fkTableId,
           fKTableFieldName: row.fkTableFieldName,
-          errorDesc: row.errorDesc
+          errorDesc: row.errorDesc,
         });
         this.fkTableColName = row.fkTableFieldName;
         this.tableFieldForm.controls['tableFieldName'].disable();
@@ -265,31 +312,38 @@ export class TableConfiguratorComponent implements OnInit {
   ontableFieldFormSubmit(row: any) {
     if (this.tableFieldForm.valid) {
       this.tableFieldForm.controls['tableFieldName'].enable();
-      let tableFieldData =
-      {
-        "tableFieldId": row.tableFieldId ? row.tableFieldId : this.tableFieldId,
-        "lastUpdateDatetime": new Date(),
-        "latUpdateUser": this.loginData.userId,
-        "templateId": this.templateId,
-        "tableId": this.tableConfigForm.value.tableId,
-        "tableFieldName": this.tableFieldForm.value.tableFieldName,
-        "templateAttribute": this.tableFieldForm.value.templateAttribute,
-        "dataType": this.tableFieldForm.value.dataType,
-        "fieldLength": this.tableFieldForm.value.fieldLength,
-        "mandatoryOptional": this.tableFieldForm.value.mandatoryOptional,
-        "defaultValue": this.tableFieldForm.value.defaultValue,
-        "isPrimaryKey": this.tableFieldForm.value.isPrimaryKey,
-        "isFk": this.tableFieldForm.value.isForeignKey,
-        "fkTableId": this.tableFieldForm.value.fKTableName,
-        "fkTableFieldName": this.fkTableColName,
-        "errorDesc": this.tableFieldForm.value.errorDesc
-      }
-      this.tableConfiguratorService.getSaveTemplateDetails(tableFieldData).subscribe((response) => {
-        this.onTableConfigFormSubmit();
-        this.notifierService.showNotification('Success', MyAppHttp.ToasterMessage.templateSuccess);
-      }, error => {
-        this.notifierService.showNotification('Error', error);
-      });
+      let tableFieldData = {
+        tableFieldId: row.tableFieldId ? row.tableFieldId : this.tableFieldId,
+        lastUpdateDatetime: new Date(),
+        latUpdateUser: this.loginData.userId,
+        templateId: this.templateId,
+        tableId: this.tableConfigForm.value.tableId,
+        tableFieldName: this.tableFieldForm.value.tableFieldName,
+        templateAttribute: this.tableFieldForm.value.templateAttribute,
+        dataType: this.tableFieldForm.value.dataType,
+        fieldLength: this.tableFieldForm.value.fieldLength,
+        mandatoryOptional: this.tableFieldForm.value.mandatoryOptional,
+        defaultValue: this.tableFieldForm.value.defaultValue,
+        isPrimaryKey: this.tableFieldForm.value.isPrimaryKey,
+        isFk: this.tableFieldForm.value.isForeignKey,
+        fkTableId: this.tableFieldForm.value.fKTableName,
+        fkTableFieldName: this.fkTableColName,
+        errorDesc: this.tableFieldForm.value.errorDesc,
+      };
+      this.tableConfiguratorService
+        .getSaveTemplateDetails(tableFieldData)
+        .subscribe(
+          (response) => {
+            this.onTableConfigFormSubmit();
+            this.notifierService.showNotification(
+              'Success',
+              MyAppHttp.ToasterMessage.templateSuccess
+            );
+          },
+          (error) => {
+            this.notifierService.showNotification('Error', error);
+          }
+        );
     } else {
       this.tableFieldForm.markAllAsTouched();
     }
@@ -297,7 +351,7 @@ export class TableConfiguratorComponent implements OnInit {
 
   onAddTableField() {
     this.tableFieldForm.reset();
-    (this.dataSource.filteredData).forEach((element: any) => {
+    this.dataSource.filteredData.forEach((element: any) => {
       element.isLastRow = false;
     });
     let data = [];
@@ -307,11 +361,11 @@ export class TableConfiguratorComponent implements OnInit {
   }
 
   onSelectIsForeignKey(event: any) {
-    if (event.value == "Y") {
+    if (event.value == 'Y') {
       this.tableFieldForm.controls['fKTableName'].enable();
       this.tableFieldForm.controls['fKTableFieldName'].enable();
     } else {
-      this.fkTableColName="";
+      this.fkTableColName = '';
       this.tableFieldForm.controls['fKTableName'].disable();
       this.tableFieldForm.controls['fKTableFieldName'].disable();
     }
@@ -319,11 +373,13 @@ export class TableConfiguratorComponent implements OnInit {
   async onFKTableField(table: any) {
     let tableDetails = {
       tableId: table.tableId,
-      tableName: table.tableName
-    }
-     await this.tableConfiguratorService.getTableColumns(tableDetails).subscribe((response) => {
-      this.FKTableFieldNamesList = response;
-    });
+      tableName: table.tableName,
+    };
+    await this.tableConfiguratorService
+      .getTableColumns(tableDetails)
+      .subscribe((response) => {
+        this.FKTableFieldNamesList = response;
+      });
   }
 
   onSelectFKTableFieldName(evt: any) {

@@ -101,7 +101,7 @@
             </div>
 
             <div
-              class="d-flex flex-row flex-wrap justify-content-between align-items-center"
+              class="d-flex flex-row flex-wrap justify-content-sm-center justify-content-md-between align-items-center"
             >
               <!-- Remember Me -->
               <div class="d-flex">
@@ -141,11 +141,12 @@
               </button>
               <!-- Create account -->
               <div>
-                Don't have account ,<a
-                  [routerLink]="['/register']"
-                  style="color: #006eff"
-                  >Create one
-                </a>
+                <p>
+                  Don't have account ,
+                  <a [routerLink]="['/register']" style="color: #006eff"
+                    >Create one
+                  </a>
+                </p>
               </div>
             </div>
           </form>

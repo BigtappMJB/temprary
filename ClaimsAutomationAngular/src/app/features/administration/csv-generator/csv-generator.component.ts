@@ -39,59 +39,7 @@ export class CsvGeneratorComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   pageSize = 10;
-  staticData: any = [
-    {
-      id: 163,
-      schedularName: 'Claims',
-      startDateTime: '2024-12-09T08:44:00.000+00:00',
-      endDateTime: '2024-12-09T08:44:02.000+00:00',
-      csvFileCount: 4,
-      numberOfCsvFiles: 4,
-      numberOfCsvFailed: 0,
-      jobStatus: 'success',
-      errorMessage: '',
-      duration: 3,
-    },
-    {
-      id: 162,
-      schedularName: 'Claims Health',
-      startDateTime: '2024-12-06T10:51:27.000+00:00',
-      endDateTime: '2024-12-06T10:51:28.000+00:00',
-      csvFileCount: 4,
-      numberOfCsvFiles: 0,
-      numberOfCsvFailed: 4,
-      jobStatus: 'success',
-      errorMessage: '',
-      duration: 1,
-    },
 
-    {
-      id: 70,
-      schedularName: 'Claims',
-      startDateTime: '2024-09-30T12:27:30.000+00:00',
-      endDateTime: '2024-09-30T12:27:30.000+00:00',
-      csvFileCount: 24,
-      numberOfCsvFiles: 24,
-      numberOfCsvFailed: 0,
-      jobStatus: 'Failure',
-      errorMessage:
-        'not-null property references a null or transient value : com.cmd.excel.model.Schedulerlog.errorMessage; nested exception is org.hibernate.PropertyValueException: not-null property references a null or transient value : com.cmd.excel.model.Schedulerlog.err',
-      duration: 0,
-    },
-    {
-      id: 69,
-      schedularName: 'Claims Health',
-      startDateTime: '2024-09-30T12:27:20.000+00:00',
-      endDateTime: '2024-09-30T12:27:21.000+00:00',
-      csvFileCount: 21,
-      numberOfCsvFiles: 21,
-      numberOfCsvFailed: 0,
-      jobStatus: 'Failure',
-      errorMessage:
-        'not-null property references a null or transient value : com.cmd.excel.model.Schedulerlog.errorMessage; nested exception is org.hibernate.PropertyValueException: not-null property references a null or transient value : com.cmd.excel.model.Schedulerlog.err',
-      duration: 0,
-    },
-  ];
   constructor(
     private csvGenertorService: CsvGeneratorService,
     private formBuilder: FormBuilder,
@@ -127,20 +75,6 @@ export class CsvGeneratorComponent implements OnInit {
   getCSVGeneratorDetails() {
     const TablesListData: any = [];
 
-    for (let i = 0; i < this.staticData.length; i++) {
-      this.staticData[i].sno = i + 1;
-      TablesListData.push(this.staticData[i]);
-    }
-    this.filterData.gridData = TablesListData;
-    this.dataSource = new MatTableDataSource(TablesListData);
-    this.filterData.dataSource = this.dataSource;
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.filterData.sort = this.sort;
-    for (let col of this.filterData.filterColumnNames) {
-      col.Value = '';
-    }
-
     this.csvGenertorService.getCSVGeneratorDetails().subscribe((response) => {
       for (let i = 0; i < response.length; i++) {
         response[i].sno = i + 1;
@@ -170,7 +104,7 @@ export class CsvGeneratorComponent implements OnInit {
   }
 
   getTablesList() {
-    this.csvGenertorService.getAllTables().subscribe((response) => {
+    this.csvGenertorService.getSchedulerLog().subscribe((response) => {
       const TablesListData: any = [];
       for (let i = 0; i < response.length; i++) {
         response[i].sno = i + 1;

@@ -1,6 +1,6 @@
 /* signup.component.css */
 .signup-container {
-  max-width: 400px;
+  max-width: 50%;
   margin: auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -8,6 +8,15 @@
   text-align: center;
 }
 
+@media (max-width: 767px) {
+  /* Styles for small devices */
+  .signup-container {
+    max-width: 100%;
+    border: none;
+  }
+}
+
+/* 
 .signup-container h1 {
   margin-bottom: 10px;
 }
@@ -42,4 +51,4 @@
 .signup-container button:hover {
   background-color: #0056b3;
 }
-
+ */

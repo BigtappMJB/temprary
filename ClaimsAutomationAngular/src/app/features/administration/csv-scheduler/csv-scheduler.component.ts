@@ -459,6 +459,24 @@ export class CsvSchedulerComponent {
     return cronExpression;
   }
 
+  onStartScheduler1(element: any) {
+    element.isSchedulerRunning = true;
+    this.csvSchedulerService
+      .postPythonSchedulers(element.schedularName)
+      .subscribe(
+        (response) => {
+          this.notifierService.showNotification('Success', response.message);
+
+          element.isSchedulerRunning = false;
+        },
+        (error) => {
+          console.error(error);
+          this.notifierService.showNotification('Error', error.message);
+          element.isSchedulerRunning = false;
+        }
+      );
+  }
+
   onStartScheduler(element: any) {
     element.isSchedulerRunning = true;
     this.csvSchedulerService

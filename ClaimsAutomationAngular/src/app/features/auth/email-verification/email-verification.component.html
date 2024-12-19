@@ -1,20 +1,36 @@
 <div class="verification-container">
   <div class="verification-card">
     <div class="login-btlogo">
-      <img src="../../../../assets/images/bt-logo.png" class=""  alt="BTLogo"/>
+      <img src="../../../../assets/images/bt-logo.png" class="" alt="BTLogo" />
     </div>
-    <br>
+    <br />
     <h4>Verify your Email</h4>
     <p>A 5-digit code has been sent to your email</p>
     <form [formGroup]="verifyOTPForm" (ngSubmit)="onSubmit()">
       <div class="form-group inrne-addon">
         <mat-form-field>
-          <input matInput type="text" autocomplete="off" name="verificationCode" id="verificationCode"
-            placeholder="Verification Code" (keypress)="onKeyPress($event)" cmsRestrictInput="onlyNumbers"
-            [formControl]="verifyOTPForm.controls['verificationCode']" required>
-          <mat-error *ngFor="let validation of validation_messages.verificationCode">
-            <span *ngIf="verifyOTPForm.get('verificationCode').hasError(validation.type)">
-              {{ validation.message}}
+          <input
+            matInput
+            type="text"
+            autocomplete="off"
+            name="verificationCode"
+            id="verificationCode"
+            #verificationCode
+            placeholder="Verification Code"
+            (keypress)="onKeyPress($event)"
+            cmsRestrictInput="onlyNumbers"
+            [formControl]="verifyOTPForm.controls['verificationCode']"
+            required
+          />
+          <mat-error
+            *ngFor="let validation of validation_messages.verificationCode"
+          >
+            <span
+              *ngIf="
+                verifyOTPForm.get('verificationCode').hasError(validation.type)
+              "
+            >
+              {{ validation.message }}
             </span>
           </mat-error>
         </mat-form-field>
@@ -22,7 +38,9 @@
 
       <div class="button-group">
         <button type="submit" class="btn btn-primary">Verify</button>
-        <button type="button" class="btn btn-secondary" (click)="onClear()">Clear</button>
+        <button type="button" class="btn btn-secondary" (click)="onClear()">
+          Clear
+        </button>
       </div>
     </form>
   </div>

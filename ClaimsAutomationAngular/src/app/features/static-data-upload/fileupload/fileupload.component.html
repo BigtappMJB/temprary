@@ -192,7 +192,7 @@
               <strong>Status :</strong> {{ responseValue?.status }}
             </div>
             <div class="">
-              <strong>Total Column :</strong>
+              <strong>Total Records :</strong>
               {{ responseValue?.total_rows }}
             </div>
           </div>
@@ -201,11 +201,11 @@
             class="d-flex flex-row flex-wrap align-items-center justify-content-between"
           >
             <div class="">
-              <strong>Mapped Column :</strong>
+              <strong>Inserted Records :</strong>
               {{ responseValue?.inserted_rows }}
             </div>
             <div class="">
-              <strong>UnMapped Column :</strong>
+              <strong>Failed Records :</strong>
               {{ responseValue?.total_rows - responseValue?.inserted_rows }}
             </div>
           </div>

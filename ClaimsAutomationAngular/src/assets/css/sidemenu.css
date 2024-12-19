@@ -59,7 +59,8 @@ span {
 .wrapper {
   display: flex;
   align-items: stretch;
-  padding-top: 85px;
+  padding-top: 115px;
+
   overflow-x: hidden;
 }
 
@@ -232,7 +233,7 @@ a.article:hover {
     margin-left: 0;
   }
   .wrapper {
-    padding-top: 115px;
+    padding-top: 5px;
   }
   .dropdown-toggle::after {
     top: auto;

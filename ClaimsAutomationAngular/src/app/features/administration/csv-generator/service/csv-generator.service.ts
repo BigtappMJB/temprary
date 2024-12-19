@@ -13,6 +13,11 @@ export class CsvGeneratorService extends BaseHttp {
   fileNamesBySchedulerIdUrl: string = 'api/scheduler/scheduler-file-details/';
   getSchedulerRecordsUrl: string = 'api/scheduler/scheduler-file-details/';
 
+  getSchedulerLogUrl = 'schedulerLog';
+
+  getSchedulerLog() {
+    return this.get<any>(this.getSchedulerLogUrl, 'python');
+  }
   getAllTables() {
     return this.get<any>(this.getAllTablesListdUrl);
   }

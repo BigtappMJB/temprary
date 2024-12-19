@@ -483,10 +483,10 @@
             <span> Actions </span>
           </th>
           <td mat-cell *matCellDef="let element">
-            <mat-slide-toggle
+            <!-- <mat-slide-toggle
               [checked]="element.status == '0' ? false : true"
               (change)="onActivatescheduler(element, $event)"
-            ></mat-slide-toggle>
+            ></mat-slide-toggle> -->
             <span
               matTooltip="Edit"
               (click)="onEditScheduler(element)"

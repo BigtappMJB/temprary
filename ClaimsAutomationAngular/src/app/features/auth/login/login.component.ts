@@ -125,7 +125,7 @@ export class LoginComponent implements OnInit {
 
   validateScode(scode: any) {
     this.errorFlag = false;
-    debugger;
+
     this.loginService.getLoginDetails(scode).subscribe(
       (response) => {
         if (response.roleStatus == 'N') {
