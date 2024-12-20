@@ -351,7 +351,7 @@
         aria-label="users"
       >
         <ng-container matColumnDef="sno">
-          <th mat-header-cell *matHeaderCellDef style="width: 30px" scope="col">
+          <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="sno-input"> S.No </label>
             <input
               type="text"
@@ -365,7 +365,12 @@
         </ng-container>
 
         <ng-container matColumnDef="schedularName">
-          <th mat-header-cell *matHeaderCellDef scope="col">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            scope="col"
+           
+          >
             <label mat-sort-header for="scheduler-name-input">
               Scheduler name
             </label>

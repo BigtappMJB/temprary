@@ -7,47 +7,128 @@
     <form [formGroup]="mappingForm" (ngSubmit)="onFomSubmit()">
       <div class="container p-2">
         <div class="row align-items-center">
-          <!-- Table Name -->
+          <!-- Source Database -->
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
-              <mat-label>Table</mat-label>
-              <input
-                type="text"
-                matInput
-                formControlName="tableName"
-                [matAutocomplete]="auto"
-                (input)="filterTables(mappingForm.get('tableName')?.value)"
-              />
-              <mat-autocomplete #auto="matAutocomplete">
-                <mat-option *ngFor="let time of filterTable" [value]="time">
-                  {{ time }}
-                </mat-option>
-              </mat-autocomplete>
+              <mat-label>Source Database</mat-label>
+              <input type="text" matInput formControlName="source_database" />
+
               <mat-error
                 *ngIf="
-                  mappingForm.get('tableName')?.touched &&
-                  mappingForm.get('tableName')?.invalid &&
-                  mappingForm.get('tableName')?.hasError('required')
+                  mappingForm.get('source_database')?.touched &&
+                  mappingForm.get('source_database')?.invalid &&
+                  mappingForm.get('source_database')?.hasError('required')
                 "
                 class="error"
-                >Table is required</mat-error
+                >Source Database is required</mat-error
+              >
+            </mat-form-field>
+          </div>
+          <!-- Source Table -->
+          <div class="col-md-4 col-sm-12">
+            <mat-form-field appearance="outline">
+              <mat-label>Source Table</mat-label>
+              <input type="text" matInput formControlName="source_table" />
+
+              <mat-error
+                *ngIf="
+                  mappingForm.get('source_table')?.touched &&
+                  mappingForm.get('source_table')?.invalid &&
+                  mappingForm.get('source_table')?.hasError('required')
+                "
+                class="error"
+                >Source Table is required</mat-error
+              >
+            </mat-form-field>
+          </div>
+          <!-- Source Column -->
+          <div class="col-md-4 col-sm-12">
+            <mat-form-field appearance="outline">
+              <mat-label>Source Column</mat-label>
+              <input type="text" matInput formControlName="source_column" />
+
+              <mat-error
+                *ngIf="
+                  mappingForm.get('source_column')?.touched &&
+                  mappingForm.get('source_column')?.invalid &&
+                  mappingForm.get('source_column')?.hasError('required')
+                "
+                class="error"
+                >Source Column is required</mat-error
+              >
+            </mat-form-field>
+          </div>
+          <!-- Target Database -->
+          <div class="col-md-4 col-sm-12">
+            <mat-form-field appearance="outline">
+              <mat-label>Target Database</mat-label>
+              <input type="text" matInput formControlName="target_database" />
+
+              <mat-error
+                *ngIf="
+                  mappingForm.get('target_database')?.touched &&
+                  mappingForm.get('target_database')?.invalid &&
+                  mappingForm.get('target_database')?.hasError('required')
+                "
+                class="error"
+                >Target Database is required</mat-error
               >
             </mat-form-field>
           </div>
 
-          <!--  File Name -->
+          <!-- Target Table -->
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
-              <mat-label>File</mat-label>
-              <input matInput formControlName="fileName" />
+              <mat-label>Target Table</mat-label>
+              <input type="text" matInput formControlName="target_table" />
+
               <mat-error
                 *ngIf="
-                  mappingForm.get('fileName')?.touched &&
-                  mappingForm.get('fileName')?.invalid &&
-                  mappingForm.get('fileName')?.hasError('required')
+                  mappingForm.get('target_table')?.touched &&
+                  mappingForm.get('target_table')?.invalid &&
+                  mappingForm.get('target_table')?.hasError('required')
                 "
                 class="error"
-                >File Name is required</mat-error
+                >Target Table is required</mat-error
+              >
+            </mat-form-field>
+          </div>
+
+          <!-- Target Column -->
+          <div class="col-md-4 col-sm-12">
+            <mat-form-field appearance="outline">
+              <mat-label>Target Column</mat-label>
+              <input type="text" matInput formControlName="target_column" />
+
+              <mat-error
+                *ngIf="
+                  mappingForm.get('target_column')?.touched &&
+                  mappingForm.get('target_column')?.invalid &&
+                  mappingForm.get('target_column')?.hasError('required')
+                "
+                class="error"
+                >Target Column is required</mat-error
+              >
+            </mat-form-field>
+          </div>
+          <!-- Target Column -->
+          <div class="col-md-4 col-sm-12">
+            <mat-form-field appearance="outline">
+              <mat-label>Transformation Logic</mat-label>
+              <input
+                type="text"
+                matInput
+                formControlName="transformation_logic"
+              />
+
+              <mat-error
+                *ngIf="
+                  mappingForm.get('transformation_logic')?.touched &&
+                  mappingForm.get('transformation_logic')?.invalid &&
+                  mappingForm.get('transformation_logic')?.hasError('required')
+                "
+                class="error"
+                >Transformation Logic is required</mat-error
               >
             </mat-form-field>
           </div>
@@ -102,36 +183,138 @@
           </th>
           <td mat-cell *matCellDef="let element">{{ element.sno }}</td>
         </ng-container>
-
-        <ng-container matColumnDef="tableName">
+        <ng-container matColumnDef="tpa_id">
           <th mat-header-cell *matHeaderCellDef scope="col">
-            <label mat-sort-header for="scheduler-name-input"> Table </label>
+            <label mat-sort-header for="start-date-input"> TPA ID </label>
             <input
               type="text"
-              id="scheduler-name-input"
+              id="start-date-input"
               (keyup)="updatePagination()"
               [(ngModel)]="filterData.filterColumnNames[1].Value"
               [filter]="filterData"
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.tableName }}
+            {{ element.tpa_id }}
           </td>
         </ng-container>
-
-        <ng-container matColumnDef="fileName">
+        <ng-container matColumnDef="source_database">
           <th mat-header-cell *matHeaderCellDef scope="col">
-            <label mat-sort-header for="start-date-input"> File </label>
+            <label mat-sort-header for="scheduler-name-input">
+              Source Database
+            </label>
             <input
               type="text"
-              id="start-date-input"
+              id="scheduler-name-input"
               (keyup)="updatePagination()"
               [(ngModel)]="filterData.filterColumnNames[2].Value"
               [filter]="filterData"
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.fileName }}
+            {{ element.source_database }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="source_table">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input"> Source Table </label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[3].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.source_table }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="source_column">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input">
+              Source Column
+            </label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[4].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.source_column }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="target_database">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input">
+              Target Database
+            </label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[5].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.target_database }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="target_table">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input"> Target Table </label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[6].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.target_table }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="target_column">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input">
+              Target Column
+            </label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[7].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.target_column }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="transformation_logic">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <label mat-sort-header for="start-date-input">
+              Transform Logic
+            </label>
+            <input
+              type="text"
+              id="start-date-input"
+              (keyup)="updatePagination()"
+              [(ngModel)]="filterData.filterColumnNames[8].Value"
+              [filter]="filterData"
+            />
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.transformation_logic }}
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
@@ -139,51 +322,20 @@
             <span> Actions </span>
           </th>
           <td mat-cell *matCellDef="let element">
-            <mat-slide-toggle
-              [checked]="element.status == '0' ? false : true"
-              (change)="onActivatescheduler(element, $event)"
-            ></mat-slide-toggle>
             <span
               matTooltip="Edit"
-              (click)="onEditScheduler(element)"
-              (keydown)="onEditScheduler(element)"
+              (click)="onEditOpen(element)"
+              (keydown)="onEditOpen(element)"
             >
               <i class="fas fa-pencil-alt" aria-hidden="true"></i>
             </span>
             <span
               matTooltip="Delete"
               style="cursor: pointer"
-              (click)="onSchedulerDelete(element)"
-              (keydown)="onSchedulerDelete(element)"
+              (click)="onDeleteOpen(element)"
+              (keydown)="onDeleteOpen(element)"
             >
               <i class="far fa-trash-alt" aria-hidden="true"></i>
-            </span>
-            <span
-              *ngIf="!element.isSchedulerRunning"
-              matTooltip="Start"
-              style="cursor: pointer"
-              (click)="onStartScheduler(element)"
-              (keydown)="onStartScheduler(element)"
-            >
-              <i class="fas fa-play" aria-hidden="true"></i>
-            </span>
-            <span
-              style="cursor: none; pointer-events: none"
-              *ngIf="element.isSchedulerRunning"
-              matTooltip="Running"
-              style="cursor: pointer"
-            >
-              <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
-            </span>
-            <span
-              style="cursor: none; pointer-events: none"
-              *ngIf="element.isSchedulerRunning"
-              matTooltip="Stop"
-              style="cursor: pointer"
-              (click)="onStopScheduler(element)"
-              (keydown)="onStartScheduler(element)"
-            >
-              <i class="fas fa-times-circle" aria-hidden="true"></i>
             </span>
           </td>
         </ng-container>

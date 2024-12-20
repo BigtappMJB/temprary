@@ -15,7 +15,18 @@ import { FileMappingService } from '../../administration/file-mapping/file-mappi
   styleUrls: ['./mapping-view-data.component.css'],
 })
 export class MappingViewDataComponent implements OnInit {
-  displayedColumns: string[] = ['sno', 'tableName', 'fileName', 'actions'];
+  displayedColumns: string[] = [
+    'sno',
+    'tpa_id',
+    'source_database',
+    'source_table',
+    'source_column',
+    'target_database',
+    'target_table',
+    'target_column',
+    'transformation_logic',
+    'actions',
+  ];
   mappingForm!: FormGroup;
   editMode: boolean = false;
   editDataId: any;
@@ -48,13 +59,14 @@ export class MappingViewDataComponent implements OnInit {
       sort: this.sort,
     };
     this.mappingForm = this.formBuilder.group({
-      tableName: [null, Validators.required],
-      fileName: [null, Validators.required],
+      source_column: [null, Validators.required],
+      source_database: [null, Validators.required],
+      source_table: [null, Validators.required],
+      target_column: [null, Validators.required],
+      target_database: [null, Validators.required],
+      target_table: [null, Validators.required],
+      transformation_logic: [null, Validators.required],
     });
-    this.mappingForm.get('tableName')?.valueChanges.subscribe((value) => {
-      this.filterTables(value || '');
-    });
-    this.getTableNames();
   }
 
   filterTables(value: string): void {
@@ -106,14 +118,6 @@ export class MappingViewDataComponent implements OnInit {
     );
   }
 
-  onCheckStatus(event: any) {
-    if (event.checked) {
-      this.mappingForm.controls['status'].setValue('Y');
-    } else {
-      this.mappingForm.controls['status'].setValue('N');
-    }
-  }
-
   onAddForm() {
     this.openForm = true;
   }
@@ -129,9 +133,27 @@ export class MappingViewDataComponent implements OnInit {
     if (this.mappingForm.invalid) {
       return this.mappingForm.markAllAsTouched();
     }
-    const { tableName, fileName } = this.mappingForm.value;
+    const {
+      source_column,
+      source_database,
+      source_table,
+      target_column,
+      target_database,
+      target_table,
+      tpa_id,
+      transformation_logic,
+    } = this.mappingForm.value;
 
-    const body = { tableName, fileName };
+    const body = {
+      source_column,
+      source_database,
+      source_table,
+      target_column,
+      target_database,
+      target_table,
+      tpa_id,
+      transformation_logic,
+    };
     this.loadingService.show();
 
     if (this.editMode && this.editDataId) {
@@ -170,17 +192,32 @@ export class MappingViewDataComponent implements OnInit {
   }
 
   onEditOpen(element: any) {
-    const {} = element;
-    this.editDataId = element.id;
+    const {
+      source_column,
+      source_database,
+      source_table,
+      target_column,
+      target_database,
+      target_table,
+      tpa_id,
+      transformation_logic,
+    } = element;
+    this.editDataId = element.mapping_id;
     this.editMode = true;
     this.openForm = true;
     this.mappingForm.patchValue({
-      tableName: null,
-      fileName: null,
+      source_column,
+      source_database,
+      source_table,
+      target_column,
+      target_database,
+      target_table,
+      tpa_id,
+      transformation_logic,
     });
   }
 
-  onSchedulerDelete(element: any) {
+  onDeleteOpen(element: any) {
     const dialogRef = this.dialog.open(DialogPopupComponent, {
       width: '400px',
       data: {
@@ -200,7 +237,7 @@ export class MappingViewDataComponent implements OnInit {
 
   deleteData(element: any) {
     this.loadingService.show();
-    this.fileMappingService.deleteMappingData(element.id).subscribe(
+    this.fileMappingService.deleteMappingData(element.mapping_id).subscribe(
       (response) => {
         if (response) {
           this.notifierService.showNotification(

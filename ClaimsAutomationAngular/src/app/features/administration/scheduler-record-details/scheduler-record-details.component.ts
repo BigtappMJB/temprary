@@ -21,8 +21,8 @@ export class SchedulerRecordDetailsComponent implements OnInit {
   pageSize = 10;
   dataSource!: any;
   statusObject: any = {
-    0: 'Failed Records',
-    1: 'Inserted Records',
+    0: '# Failed',
+    1: '# Processed',
     2: 'Total Records',
   };
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;

@@ -8,8 +8,8 @@ import { MappingViewDataComponent } from './mapping-view-data/mapping-view-data.
 const routes: Routes = [
   { path: 'cAD', component: EntityRelatedComponent },
   { path: 'cMD', component: StaticReferenceComponent },
-  { path: 'loadData', component: MappinguploadComponent },
-  { path: 'viewData', component: MappingViewDataComponent },
+  { path: 'loadMappingDetails', component: MappinguploadComponent },
+  { path: 'viewMappings', component: MappingViewDataComponent },
 ];
 
 @NgModule({

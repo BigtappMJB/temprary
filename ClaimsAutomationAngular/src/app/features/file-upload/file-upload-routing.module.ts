@@ -4,8 +4,8 @@ import { FileuploadComponent } from '../file-upload/fileupload/fileupload.compon
 import { ViewFileDataComponent } from './view-file-data/view-file-data.component';
 
 const routes: Routes = [
-  { path: 'loadData', component: FileuploadComponent },
-  { path: 'viewData', component: ViewFileDataComponent },
+  { path: 'loadFileDetails', component: FileuploadComponent },
+  { path: 'viewFileDetails', component: ViewFileDataComponent },
 ];
 
 @NgModule({

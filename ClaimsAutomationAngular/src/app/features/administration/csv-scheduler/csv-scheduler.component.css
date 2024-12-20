@@ -85,12 +85,18 @@ mat-paginator {
   width: 100% !important;
   margin-top: 8px !important;
 }
-
+th {
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden; /* Prevent overflowing content */
+  word-wrap: normal; /* Default behavior for word wrapping */
+  word-break: normal; /* Prevent breaking words */
+}
 /* Responsive Table Styling */
 th,
 td {
   padding: 8px !important;
   text-align: center !important;
+
   white-space: nowrap !important; /* Prevent text wrapping */
   font-size: 14px !important;
 }
