@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'roles', component: RolesComponent },
   { path: 'rBAPermission', component: RolePermissionsComponent },
   { path: 'tableConfigurator', component: TableConfiguratorComponent },
-  { path: 'generatorDetails', component: CsvGeneratorComponent },
+  { path: 'scheduleMonitors', component: CsvGeneratorComponent },
   {
     path: 'schedulerDetails/:id/:schedularName/:status',
     component: SchedulerRecordDetailsComponent,
