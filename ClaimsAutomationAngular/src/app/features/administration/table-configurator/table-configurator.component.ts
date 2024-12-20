@@ -111,7 +111,10 @@ export class TableConfiguratorComponent implements OnInit {
             submenu.subModuleId !== 14 &&
             submenu.subModuleId !== 15 &&
             submenu.subModuleId !== 17 &&
-            submenu.subModuleId !== 18
+            submenu.subModuleId !== 18 &&
+            submenu.subModuleId !== 23 &&
+            submenu.subModuleId !== 21 &&
+            submenu.subModuleId !== 24
           ) {
             this.submodulesList.push(submenu);
           }
