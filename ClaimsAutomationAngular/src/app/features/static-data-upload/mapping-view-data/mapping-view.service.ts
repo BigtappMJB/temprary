@@ -4,9 +4,9 @@ import { BaseHttp } from 'src/app/core/services/baseHttp.service';
 @Injectable({
   providedIn: 'root',
 })
-export class FileMappingService extends BaseHttp {
+export class MappingViewService extends BaseHttp {
   getTableNameUrl: string = 'um/subModulePermissions?roleId=6&subModuleId=22';
-  getTableDataUrl: string = 'api/getAllTemplates';
+  getTableDataUrl: string = 'api/GetMappingData';
   postMappingDataUrl: string = '';
   updateMappingDataUrl: string = '';
   deleteMappingDataUrl: string = '';

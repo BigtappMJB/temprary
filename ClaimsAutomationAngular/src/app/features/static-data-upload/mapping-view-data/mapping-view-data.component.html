@@ -11,13 +11,13 @@
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
               <mat-label>Source Database</mat-label>
-              <input type="text" matInput formControlName="source_database" />
+              <input type="text" matInput formControlName="sourceDatabase" />
 
               <mat-error
                 *ngIf="
-                  mappingForm.get('source_database')?.touched &&
-                  mappingForm.get('source_database')?.invalid &&
-                  mappingForm.get('source_database')?.hasError('required')
+                  mappingForm.get('sourceDatabase')?.touched &&
+                  mappingForm.get('sourceDatabase')?.invalid &&
+                  mappingForm.get('sourceDatabase')?.hasError('required')
                 "
                 class="error"
                 >Source Database is required</mat-error
@@ -28,13 +28,13 @@
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
               <mat-label>Source Table</mat-label>
-              <input type="text" matInput formControlName="source_table" />
+              <input type="text" matInput formControlName="sourceTable" />
 
               <mat-error
                 *ngIf="
-                  mappingForm.get('source_table')?.touched &&
-                  mappingForm.get('source_table')?.invalid &&
-                  mappingForm.get('source_table')?.hasError('required')
+                  mappingForm.get('sourceTable')?.touched &&
+                  mappingForm.get('sourceTable')?.invalid &&
+                  mappingForm.get('sourceTable')?.hasError('required')
                 "
                 class="error"
                 >Source Table is required</mat-error
@@ -45,13 +45,13 @@
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
               <mat-label>Source Column</mat-label>
-              <input type="text" matInput formControlName="source_column" />
+              <input type="text" matInput formControlName="sourceColumn" />
 
               <mat-error
                 *ngIf="
-                  mappingForm.get('source_column')?.touched &&
-                  mappingForm.get('source_column')?.invalid &&
-                  mappingForm.get('source_column')?.hasError('required')
+                  mappingForm.get('sourceColumn')?.touched &&
+                  mappingForm.get('sourceColumn')?.invalid &&
+                  mappingForm.get('sourceColumn')?.hasError('required')
                 "
                 class="error"
                 >Source Column is required</mat-error
@@ -62,13 +62,13 @@
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
               <mat-label>Target Database</mat-label>
-              <input type="text" matInput formControlName="target_database" />
+              <input type="text" matInput formControlName="targetDatabase" />
 
               <mat-error
                 *ngIf="
-                  mappingForm.get('target_database')?.touched &&
-                  mappingForm.get('target_database')?.invalid &&
-                  mappingForm.get('target_database')?.hasError('required')
+                  mappingForm.get('targetDatabase')?.touched &&
+                  mappingForm.get('targetDatabase')?.invalid &&
+                  mappingForm.get('targetDatabase')?.hasError('required')
                 "
                 class="error"
                 >Target Database is required</mat-error
@@ -80,13 +80,13 @@
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
               <mat-label>Target Table</mat-label>
-              <input type="text" matInput formControlName="target_table" />
+              <input type="text" matInput formControlName="targetTable" />
 
               <mat-error
                 *ngIf="
-                  mappingForm.get('target_table')?.touched &&
-                  mappingForm.get('target_table')?.invalid &&
-                  mappingForm.get('target_table')?.hasError('required')
+                  mappingForm.get('targetTable')?.touched &&
+                  mappingForm.get('targetTable')?.invalid &&
+                  mappingForm.get('targetTable')?.hasError('required')
                 "
                 class="error"
                 >Target Table is required</mat-error
@@ -98,13 +98,13 @@
           <div class="col-md-4 col-sm-12">
             <mat-form-field appearance="outline">
               <mat-label>Target Column</mat-label>
-              <input type="text" matInput formControlName="target_column" />
+              <input type="text" matInput formControlName="targetColumn" />
 
               <mat-error
                 *ngIf="
-                  mappingForm.get('target_column')?.touched &&
-                  mappingForm.get('target_column')?.invalid &&
-                  mappingForm.get('target_column')?.hasError('required')
+                  mappingForm.get('targetColumn')?.touched &&
+                  mappingForm.get('targetColumn')?.invalid &&
+                  mappingForm.get('targetColumn')?.hasError('required')
                 "
                 class="error"
                 >Target Column is required</mat-error
@@ -118,14 +118,14 @@
               <input
                 type="text"
                 matInput
-                formControlName="transformation_logic"
+                formControlName="transformationLogic"
               />
 
               <mat-error
                 *ngIf="
-                  mappingForm.get('transformation_logic')?.touched &&
-                  mappingForm.get('transformation_logic')?.invalid &&
-                  mappingForm.get('transformation_logic')?.hasError('required')
+                  mappingForm.get('transformationLogic')?.touched &&
+                  mappingForm.get('transformationLogic')?.invalid &&
+                  mappingForm.get('transformationLogic')?.hasError('required')
                 "
                 class="error"
                 >Transformation Logic is required</mat-error
@@ -183,7 +183,7 @@
           </th>
           <td mat-cell *matCellDef="let element">{{ element.sno }}</td>
         </ng-container>
-        <ng-container matColumnDef="tpa_id">
+        <ng-container matColumnDef="tpaId">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="start-date-input"> TPA ID </label>
             <input
@@ -195,10 +195,10 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.tpa_id }}
+            {{ element.tpaId }}
           </td>
         </ng-container>
-        <ng-container matColumnDef="source_database">
+        <ng-container matColumnDef="sourceDatabase">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="scheduler-name-input">
               Source Database
@@ -212,11 +212,11 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.source_database }}
+            {{ element.sourceDatabase }}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="source_table">
+        <ng-container matColumnDef="sourceTable">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="start-date-input"> Source Table </label>
             <input
@@ -228,11 +228,11 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.source_table }}
+            {{ element.sourceTable }}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="source_column">
+        <ng-container matColumnDef="sourceColumn">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="start-date-input">
               Source Column
@@ -246,10 +246,10 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.source_column }}
+            {{ element.sourceColumn }}
           </td>
         </ng-container>
-        <ng-container matColumnDef="target_database">
+        <ng-container matColumnDef="targetDatabase">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="start-date-input">
               Target Database
@@ -263,11 +263,11 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.target_database }}
+            {{ element.targetDatabase }}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="target_table">
+        <ng-container matColumnDef="targetTable">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="start-date-input"> Target Table </label>
             <input
@@ -279,11 +279,11 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.target_table }}
+            {{ element.targetTable }}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="target_column">
+        <ng-container matColumnDef="targetColumn">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="start-date-input">
               Target Column
@@ -297,10 +297,10 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.target_column }}
+            {{ element.targetColumn }}
           </td>
         </ng-container>
-        <ng-container matColumnDef="transformation_logic">
+        <ng-container matColumnDef="transformationLogic">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="start-date-input">
               Transform Logic
@@ -314,7 +314,7 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.transformation_logic }}
+            {{ element.transformationLogic }}
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">

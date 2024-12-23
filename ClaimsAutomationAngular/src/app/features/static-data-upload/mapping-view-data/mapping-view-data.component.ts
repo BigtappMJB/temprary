@@ -8,6 +8,7 @@ import { NotifierService } from 'src/app/notifier.service';
 import { LoadingService } from 'src/app/shared/components/loading-service.service';
 import { DialogPopupComponent } from 'src/app/shared/dialog-popup/dialog-popup.component';
 import { FileMappingService } from '../../administration/file-mapping/file-mapping.service';
+import { MappingViewService } from './mapping-view.service';
 
 @Component({
   selector: 'app-mapping-view-data',
@@ -17,14 +18,14 @@ import { FileMappingService } from '../../administration/file-mapping/file-mappi
 export class MappingViewDataComponent implements OnInit {
   displayedColumns: string[] = [
     'sno',
-    'tpa_id',
-    'source_database',
-    'source_table',
-    'source_column',
-    'target_database',
-    'target_table',
-    'target_column',
-    'transformation_logic',
+    'tpaId',
+    'sourceDatabase',
+    'sourceTable',
+    'sourceColumn',
+    'targetDatabase',
+    'targetTable',
+    'targetColumn',
+    'transformationLogic',
     'actions',
   ];
   mappingForm!: FormGroup;
@@ -39,7 +40,7 @@ export class MappingViewDataComponent implements OnInit {
   openForm: boolean = false;
   filterTable: any;
   constructor(
-    private readonly fileMappingService: FileMappingService,
+    private readonly fileMappingService: MappingViewService,
     private readonly formBuilder: FormBuilder,
     private readonly notifierService: NotifierService,
     private readonly loadingService: LoadingService,
@@ -59,14 +60,15 @@ export class MappingViewDataComponent implements OnInit {
       sort: this.sort,
     };
     this.mappingForm = this.formBuilder.group({
-      source_column: [null, Validators.required],
-      source_database: [null, Validators.required],
-      source_table: [null, Validators.required],
-      target_column: [null, Validators.required],
-      target_database: [null, Validators.required],
-      target_table: [null, Validators.required],
-      transformation_logic: [null, Validators.required],
+      sourceColumn: [null, Validators.required],
+      sourceDatabase: [null, Validators.required],
+      sourceTable: [null, Validators.required],
+      targetColumn: [null, Validators.required],
+      targetDatabase: [null, Validators.required],
+      targetTable: [null, Validators.required],
+      transformationLogic: [null, Validators.required],
     });
+    this.getTableNames();
   }
 
   filterTables(value: string): void {
@@ -134,25 +136,25 @@ export class MappingViewDataComponent implements OnInit {
       return this.mappingForm.markAllAsTouched();
     }
     const {
-      source_column,
-      source_database,
-      source_table,
-      target_column,
-      target_database,
-      target_table,
+      sourceColumn,
+      sourceDatabase,
+      sourceTable,
+      targetColumn,
+      targetDatabase,
+      targetTable,
       tpa_id,
-      transformation_logic,
+      transformationLogic,
     } = this.mappingForm.value;
 
     const body = {
-      source_column,
-      source_database,
-      source_table,
-      target_column,
-      target_database,
-      target_table,
+      sourceColumn,
+      sourceDatabase,
+      sourceTable,
+      targetColumn,
+      targetDatabase,
+      targetTable,
       tpa_id,
-      transformation_logic,
+      transformationLogic,
     };
     this.loadingService.show();
 
@@ -193,27 +195,27 @@ export class MappingViewDataComponent implements OnInit {
 
   onEditOpen(element: any) {
     const {
-      source_column,
-      source_database,
-      source_table,
-      target_column,
-      target_database,
-      target_table,
+      sourceColumn,
+      sourceDatabase,
+      sourceTable,
+      targetColumn,
+      targetDatabase,
+      targetTable,
       tpa_id,
-      transformation_logic,
+      transformationLogic,
     } = element;
-    this.editDataId = element.mapping_id;
+    this.editDataId = element.mappingId;
     this.editMode = true;
     this.openForm = true;
     this.mappingForm.patchValue({
-      source_column,
-      source_database,
-      source_table,
-      target_column,
-      target_database,
-      target_table,
+      sourceColumn,
+      sourceDatabase,
+      sourceTable,
+      targetColumn,
+      targetDatabase,
+      targetTable,
       tpa_id,
-      transformation_logic,
+      transformationLogic,
     });
   }
 
@@ -237,7 +239,7 @@ export class MappingViewDataComponent implements OnInit {
 
   deleteData(element: any) {
     this.loadingService.show();
-    this.fileMappingService.deleteMappingData(element.mapping_id).subscribe(
+    this.fileMappingService.deleteMappingData(element.mappingId).subscribe(
       (response) => {
         if (response) {
           this.notifierService.showNotification(
