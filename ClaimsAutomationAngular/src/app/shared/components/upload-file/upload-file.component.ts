@@ -2,22 +2,27 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { TableData } from 'src/app/shared/models/excel-data.model';
 import { MyAppHttp } from 'src/app/shared/services/myAppHttp.service';
-import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormGroupDirective,
+  Validators,
+} from '@angular/forms';
 import { SendReceiveService } from 'src/app/shared/services/sendReceive.service';
 import { TableDataService } from '../../services/table-data.service';
 import { take } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { ViewDataService } from 'src/app/features/view-data/service/view-data.service';
 
-
 import { NotifierService } from 'src/app/notifier.service';
+import { LoadingService } from '../loading-service.service';
 
 type AOA = any[][];
 
 @Component({
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
-  styleUrls: ['./upload-file.component.css']
+  styleUrls: ['./upload-file.component.css'],
 })
 export class UploadFileComponent implements OnInit {
   @Input() inputSubModuleId: number = 0;
@@ -40,7 +45,8 @@ export class UploadFileComponent implements OnInit {
   validationFlag4: boolean = false;
   finalFlagValidation: boolean = false;
   templateDetailsNotFound: boolean = false;
-  @ViewChild(FormGroupDirective, { static: false }) formDirective!: FormGroupDirective;
+  @ViewChild(FormGroupDirective, { static: false })
+  formDirective!: FormGroupDirective;
   FKTableInfo: any = [];
   currentTableData: any;
   primaryKeyFlag: boolean = false;
@@ -50,14 +56,19 @@ export class UploadFileComponent implements OnInit {
   errorType: any;
   submodelPermissionid: any;
   templatePermission: any;
-  strActions = "";
+  strActions = '';
   dateErrorMsg!: string;
   AlltablesList: any = [];
 
-  constructor(private tableDataService: TableDataService,
-    private formBuilder: FormBuilder,
-    public sendReceiveService: SendReceiveService, public datepipe: DatePipe
-    , private viewDataService: ViewDataService, private notifierService: NotifierService) { }
+  constructor(
+    private readonly tableDataService: TableDataService,
+    private readonly formBuilder: FormBuilder,
+    public readonly sendReceiveService: SendReceiveService,
+    public readonly datepipe: DatePipe,
+    private readonly viewDataService: ViewDataService,
+    private readonly notifierService: NotifierService,
+    private loadingService: LoadingService
+  ) {}
 
   ngOnInit(): void {
     this.tableUploadForm = this.formBuilder.group({
@@ -68,19 +79,25 @@ export class UploadFileComponent implements OnInit {
   }
 
   getTableNamesList() {
-    let data = localStorage.getItem("LoginData");
+    let data = localStorage.getItem('LoginData');
     if (data) {
       this.getSubmoduleID(data);
-      this.tableDataService.getTableNamesBySubModuleIdAndRoleId(this.loginData.roleId, this.subModuleId).pipe(take(1)).subscribe((response) => {
-        for (let element of response) {
-          if (element.permissionId !== 6) {
-            console.log(element)
-            element.readabletableName= element.tableName.replace(/_/g, " ");
-            console.log(element)
-            this.tablesListWithPermissionId.push(element);
+      this.tableDataService
+        .getTableNamesBySubModuleIdAndRoleId(
+          this.loginData.roleId,
+          this.subModuleId
+        )
+        .pipe(take(1))
+        .subscribe((response) => {
+          for (let element of response) {
+            if (element.permissionId !== 6) {
+              console.log(element);
+              element.readabletableName = element.tableName.replace(/_/g, ' ');
+              console.log(element);
+              this.tablesListWithPermissionId.push(element);
+            }
           }
-        }
-      });
+        });
     }
   }
 
@@ -92,7 +109,7 @@ export class UploadFileComponent implements OnInit {
 
   getSubmoduleID(data: any) {
     this.loginData = JSON.parse(data);
-    for (let Module of (this.loginData.permissions)) {
+    for (let Module of this.loginData.permissions) {
       for (let subModule of Module.submodules) {
         if (subModule.subModuleId == this.inputSubModuleId) {
           this.subModuleId = subModule.subModuleId;
@@ -106,28 +123,33 @@ export class UploadFileComponent implements OnInit {
     this.columnList = [];
     const file = evt.target.files[0];
     let fileExtension = file.name.split('.').pop();
-    this.fileName = file.name.substr(0, file.name.lastIndexOf("."));
-    if (fileExtension == "xlsx" || fileExtension == "xls") {
+    this.fileName = file.name.substr(0, file.name.lastIndexOf('.'));
+    if (fileExtension == 'xlsx' || fileExtension == 'xls') {
       this.files = evt.target.files;
       /* wire up file reader */
-      const target: DataTransfer = <DataTransfer>(evt.target);
+      const target: DataTransfer = <DataTransfer>evt.target;
       const reader: FileReader = new FileReader();
       reader.onload = (e: any) => {
         /* read workbook */
         const bstr: string = e.target.result;
-        const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary', cellDates: true });
+        const wb: XLSX.WorkBook = XLSX.read(bstr, {
+          type: 'binary',
+          cellDates: true,
+        });
 
         /* grab first sheet */
         const wsname: string = wb.SheetNames[0];
         const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
         /* save data */
-        this.data = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1 }));
+        this.data = <AOA>XLSX.utils.sheet_to_json(ws, { header: 1 });
       };
       reader.readAsBinaryString(target.files[0]);
-    }
-    else {
-      this.notifierService.showNotification("Error", MyAppHttp.ToasterMessage.onlyExcel);
+    } else {
+      this.notifierService.showNotification(
+        'Error',
+        MyAppHttp.ToasterMessage.onlyExcel
+      );
     }
   }
 
@@ -139,31 +161,49 @@ export class UploadFileComponent implements OnInit {
 
   ontableUploadSubmit() {
     if (this.tableUploadForm.valid && this.isTemplateEmpty()) {
-      this.tableDataService.getTableTemplateByTableId(this.tableUploadForm.value.tableId).pipe(take(1)).subscribe((response) => {
-
-        this.templatePermission = this.sendReceiveService.getTemplatePermissions(response.actionId);
-        this.strActions = this.templatePermission.join(' or ');
-        this.tableDataService.getTemplateDetails(this.tableUploadForm.value.tableId, response.templateId).pipe(take(1)).subscribe((templateDetails) => {
-          this.templateDetailsNotFound = false;
-          if (templateDetails.message) {
-            this.templateDetailsNotFound = true;
-          } else {
-            this.getTableData(templateDetails);
-          }
-        }, (error) => { console.log(error) });
-      });
+      this.tableDataService
+        .getTableTemplateByTableId(this.tableUploadForm.value.tableId)
+        .pipe(take(1))
+        .subscribe((response) => {
+          this.templatePermission =
+            this.sendReceiveService.getTemplatePermissions(response.actionId);
+          this.strActions = this.templatePermission.join(' or ');
+          this.tableDataService
+            .getTemplateDetails(
+              this.tableUploadForm.value.tableId,
+              response.templateId
+            )
+            .pipe(take(1))
+            .subscribe(
+              (templateDetails) => {
+                this.templateDetailsNotFound = false;
+                if (templateDetails.message) {
+                  this.templateDetailsNotFound = true;
+                } else {
+                  this.getTableData(templateDetails);
+                }
+              },
+              (error) => {
+                console.log(error);
+              }
+            );
+        });
     }
   }
 
-  getTableData(response: any,) {
+  getTableData(response: any) {
     let fkTableDetails: any = [];
     let pkTableDetails;
     this.templateDetails = response;
     this.primaryKeyFlag = true;
     for (let template of this.templateDetails) {
-      ({ fkTableDetails, pkTableDetails } = this.getPKFKDetails(template, fkTableDetails, pkTableDetails));
+      ({ fkTableDetails, pkTableDetails } = this.getPKFKDetails(
+        template,
+        fkTableDetails,
+        pkTableDetails
+      ));
     }
-    debugger
+    debugger;
     fkTableDetails = this.removeDuplicates(fkTableDetails);
     if (fkTableDetails.length > 0) {
       this.getForeignKeyTableData(pkTableDetails, fkTableDetails);
@@ -188,7 +228,11 @@ export class UploadFileComponent implements OnInit {
     return newArray;
   }
 
-  private getPKFKDetails(template: any, fkTableDetails: any, pkTableDetails: any) {
+  private getPKFKDetails(
+    template: any,
+    fkTableDetails: any,
+    pkTableDetails: any
+  ) {
     if (template.isFk == 'Y') {
       let tableId = template.fkTableId;
       let tableName;
@@ -197,53 +241,67 @@ export class UploadFileComponent implements OnInit {
           tableName = tableWithPermissionId.tableName;
         }
       }
-      fkTableDetails.push({ "tableId": tableId, "tableName": tableName });
+      fkTableDetails.push({ tableId: tableId, tableName: tableName });
     }
     if (template.isPrimaryKey == 'Y' && this.primaryKeyFlag) {
-      pkTableDetails = { "tableId": this.tableUploadForm.value.tableId, "tableName": this.tableName };
+      pkTableDetails = {
+        tableId: this.tableUploadForm.value.tableId,
+        tableName: this.tableName,
+      };
     }
     return { fkTableDetails, pkTableDetails };
   }
 
   getForeignKeyTableData(pkTableDetails: any, fkTableDetails: any) {
-    this.viewDataService.getViewData(pkTableDetails).pipe(take(1)).subscribe(async (pkTableData) => {
-      this.currentTableData = pkTableData;
-      this.FKTableInfo = [];
-      for (let [i, table] of fkTableDetails.entries()) {
-        let fkTableData = await this.viewDataService.getViewDataFK(table);
-        let tempObj: any = {};
-        tempObj['tableId'] = table.tableId;
-        tempObj['tableName'] = table.tableName;
-        tempObj["data"] = fkTableData;
-        this.FKTableInfo.push(tempObj);
-        if (i == (fkTableDetails.length - 1)) {
-          this.validateExcelFile();
+    this.viewDataService
+      .getViewData(pkTableDetails)
+      .pipe(take(1))
+      .subscribe(async (pkTableData) => {
+        this.currentTableData = pkTableData;
+        this.FKTableInfo = [];
+        for (let [i, table] of fkTableDetails.entries()) {
+          let fkTableData = await this.viewDataService.getViewDataFK(table);
+          let tempObj: any = {};
+          tempObj['tableId'] = table.tableId;
+          tempObj['tableName'] = table.tableName;
+          tempObj['data'] = fkTableData;
+          this.FKTableInfo.push(tempObj);
+          if (i == fkTableDetails.length - 1) {
+            this.validateExcelFile();
+          }
         }
-      }
-    });
+      });
   }
 
   getPrimaryKeyTableData(pkTableDetails: any) {
-    this.viewDataService.getViewData(pkTableDetails).pipe(take(1)).subscribe((pkTableData) => {
-      this.currentTableData = pkTableData;
-      this.validateExcelFile();
-    });
+    this.viewDataService
+      .getViewData(pkTableDetails)
+      .pipe(take(1))
+      .subscribe((pkTableData) => {
+        this.currentTableData = pkTableData;
+        this.validateExcelFile();
+      });
   }
 
   getNoPrimaryKeyTableData() {
     let TableDetails = {
-      "tableId": this.tableUploadForm.value.tableId,
-      "tableName": this.tableName
-    }
-    this.sendReceiveService.confirmationDialog(MyAppHttp.ToasterMessage.PrimaryKeyNotSetup).subscribe((result) => {
-      console.log(result)
-      if (result) {
-        this.viewDataService.getViewData(TableDetails).pipe(take(1)).subscribe((TabData: any) => {
-          this.currentTableData = TabData;
-          this.validateExcelFile();
-        });
-      }
-    });
+      tableId: this.tableUploadForm.value.tableId,
+      tableName: this.tableName,
+    };
+    this.sendReceiveService
+      .confirmationDialog(MyAppHttp.ToasterMessage.PrimaryKeyNotSetup)
+      .subscribe((result) => {
+        console.log(result);
+        if (result) {
+          this.viewDataService
+            .getViewData(TableDetails)
+            .pipe(take(1))
+            .subscribe((TabData: any) => {
+              this.currentTableData = TabData;
+              this.validateExcelFile();
+            });
+        }
+      });
   }
 
   validateExcelFile() {
@@ -257,11 +315,8 @@ export class UploadFileComponent implements OnInit {
         if (colNmae == item) {
           columnIndex.push(index);
         }
-      })
-
-
+      });
     });
-
 
     this.tableData = {
       columnList: colList,
@@ -270,19 +325,25 @@ export class UploadFileComponent implements OnInit {
       tableValues: [],
       tableName: this.data[0][1],
       invalidRecords: [],
-    }
-    for (let i = 5; i < (this.data.length); i++) {
-      for (let j = 0; j < (this.data[i].length); j++) {
+    };
+    for (let i = 5; i < this.data.length; i++) {
+      for (let j = 0; j < this.data[i].length; j++) {
         if (this.data[i][j] instanceof Date) {
           this.data[i][j].setDate(this.data[i][j].getDate() + 1);
-          this.data[i][j] = this.datepipe.transform(this.data[i][j], 'yyyy-MM-dd');
+          this.data[i][j] = this.datepipe.transform(
+            this.data[i][j],
+            'yyyy-MM-dd'
+          );
         }
       }
     }
     this.checkExcelValidations();
     if (this.finalFlagValidation) {
       if (this.templateDetailsNotFound) {
-        this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.templateValidation);
+        this.notifierService.showNotification(
+          'Error',
+          MyAppHttp.ToasterMessage.templateValidation
+        );
         return;
       }
       let columnsLength = this.data[3].length;
@@ -297,6 +358,7 @@ export class UploadFileComponent implements OnInit {
       //   }
       // }
       this.isSpinner = true;
+      this.loadingService.show();
       let validRecords = [];
       let row;
       let isValid = true;
@@ -309,17 +371,37 @@ export class UploadFileComponent implements OnInit {
           let rowErrors: any = [];
           for (let i = 0; i < this.tableData.columnList.length; i++) {
             for (let j = 0; j < this.templateDetails.length; j++) {
-              if (this.tableData.columnList[i] == this.templateDetails[j].templateAttribute) {
-                if (row[0] == "NEW" || row[0] == "UPD") {
-                  isValid = this.DataTypeValidation(k, i,j, columnIndex[j], isValid, rowErrors);
-                }
-                else {
+              if (
+                this.tableData.columnList[i] ==
+                this.templateDetails[j].templateAttribute
+              ) {
+                if (row[0] == 'NEW' || row[0] == 'UPD') {
+                  isValid = this.DataTypeValidation(
+                    k,
+                    i,
+                    j,
+                    columnIndex[j],
+                    isValid,
+                    rowErrors
+                  );
+                } else {
                   if (this.templatePermission.includes(row[0])) {
-                    if (row[0] == "DEL") {
+                    if (row[0] == 'DEL') {
                       isValid = !!isValid;
-                      this.data[k][i] = this.RemoveTrailingSpaces(this.data[k][i]);
-                      if (this.data[k][i] == undefined || this.data[k][i] == null || this.data[k][i] == "") {
-                        isValid = this.checkPrimaryKeyMandatory(j, k, isValid, rowErrors);
+                      this.data[k][i] = this.RemoveTrailingSpaces(
+                        this.data[k][i]
+                      );
+                      if (
+                        this.data[k][i] == undefined ||
+                        this.data[k][i] == null ||
+                        this.data[k][i] == ''
+                      ) {
+                        isValid = this.checkPrimaryKeyMandatory(
+                          j,
+                          k,
+                          isValid,
+                          rowErrors
+                        );
                       }
                     }
                   }
@@ -333,12 +415,20 @@ export class UploadFileComponent implements OnInit {
           if (!pushError) {
             validRecords.push(row);
           } else {
-            this.tableData.invalidRecords.push(this.getAsObject(this.data[k].join('||'), rowErrors.join(";")));
+            this.tableData.invalidRecords.push(
+              this.getAsObject(this.data[k].join('||'), rowErrors.join(';'))
+            );
           }
         } else {
-          this.tableData.invalidRecords.push(this.getAsObject(this.data[k].join("||"), MyAppHttp.ToasterMessage.invalidActionPermission1 + this.strActions + MyAppHttp.ToasterMessage.invalidActionPermission2));
+          this.tableData.invalidRecords.push(
+            this.getAsObject(
+              this.data[k].join('||'),
+              MyAppHttp.ToasterMessage.invalidActionPermission1 +
+                this.strActions +
+                MyAppHttp.ToasterMessage.invalidActionPermission2
+            )
+          );
         }
-
       }
       this.tableData.tableValues.push(...validRecords);
       this.CompareDates();
@@ -346,19 +436,29 @@ export class UploadFileComponent implements OnInit {
       let pkArrayIndex = [];
       this.pkArray = [];
       for (let template of this.templateDetails) {
-        if (template.isPrimaryKey == 'Y') { this.pkArray.push(template.tableFieldName); }
+        if (template.isPrimaryKey == 'Y') {
+          this.pkArray.push(template.tableFieldName);
+        }
       }
-      for (let pkElm of this.pkArray) { pkArrayIndex.push(this.tableData.columnList.indexOf(pkElm)); }
+      for (let pkElm of this.pkArray) {
+        pkArrayIndex.push(this.tableData.columnList.indexOf(pkElm));
+      }
       let recordsBeforePKvalidation = [];
       recordsBeforePKvalidation.push(...this.tableData.tableValues);
       for (let validatePKRecord of this.tableData.tableValues) {
-        if (this.checkPrimaryKey(validatePKRecord, this.pkArray, pkArrayIndex, validatePKRecord[0])) {
+        if (
+          this.checkPrimaryKey(
+            validatePKRecord,
+            this.pkArray,
+            pkArrayIndex,
+            validatePKRecord[0]
+          )
+        ) {
           // valid primary key
         } else {
           if (this.currentTableData.length > 0) {
             this.currentDataExist(validatePKRecord, recordsBeforePKvalidation);
-          }
-          else {
+          } else {
             this.noCurrentData(validatePKRecord, recordsBeforePKvalidation);
           }
         }
@@ -368,33 +468,50 @@ export class UploadFileComponent implements OnInit {
       this.RolepermissionValidate(this.tableData.tableValues);
       this.setEmptyCols(this.tableData.tableValues);
       this.transformInvalidRecordswithCount();
-      this.tableDataService.uploadTableData(this.tableData).pipe(take(1)).subscribe(response => {
-        if (response.invalidCount > 0) {
-          this.invalidRecordsExists(response);
-        } else {
-          this.notifierService.showNotification('Success',
-            MyAppHttp.ToasterMessage.uploadSuccess +
-            " \nTotal number of records processed: " + response.totalCount +
-            ", \nInserted records: " + response.insertedCount +
-            ", \nUpdated records: " + response.updatedCount +
-            ", \nDeleted records: " + response.deletedCount +
-            ", \nInvalid records: " + response.invalidCount);
-        }
-        this.isSpinner = false;
-      }, (error) => {
-        this.isSpinner = false;
-        console.log(error);
-      });
+      this.tableDataService
+        .uploadTableData(this.tableData)
+        .pipe(take(1))
+        .subscribe(
+          (response) => {
+            if (response.invalidCount > 0) {
+              this.invalidRecordsExists(response);
+            } else {
+              this.notifierService.showNotification(
+                'Success',
+                MyAppHttp.ToasterMessage.uploadSuccess +
+                  ' \nTotal number of records processed: ' +
+                  response.totalCount +
+                  ', \nInserted records: ' +
+                  response.insertedCount +
+                  ', \nUpdated records: ' +
+                  response.updatedCount +
+                  ', \nDeleted records: ' +
+                  response.deletedCount +
+                  ', \nInvalid records: ' +
+                  response.invalidCount
+              );
+            }
+            this.isSpinner = false;
+            this.loadingService.hide();
+          },
+          (error) => {
+            this.isSpinner = false;
+            this.loadingService.hide();
 
+            console.log(error);
+          }
+        );
     }
   }
 
   transformInvalidRecordswithCount() {
     this.tableData.invalidRecords.forEach((record: any) => {
       Object.entries(record).forEach(([key, value]) => {
-        let currentKeyValue = "";
-        let reasonArray: string[] = record[key].split(";");
-        reasonArray.forEach((message: string, i: number) => { currentKeyValue += '(' + (i + 1) + ')' + message + "; "; });
+        let currentKeyValue = '';
+        let reasonArray: string[] = record[key].split(';');
+        reasonArray.forEach((message: string, i: number) => {
+          currentKeyValue += '(' + (i + 1) + ')' + message + '; ';
+        });
         record[key] = currentKeyValue;
       });
     });
@@ -411,7 +528,9 @@ export class UploadFileComponent implements OnInit {
           if (this.CompareTwoDates(firstIndex, secondIndex, row)) {
             //if it is true
           } else {
-            this.tableData.invalidRecords.push(this.getAsObject(row.join("||"), this.dateErrorMsg));
+            this.tableData.invalidRecords.push(
+              this.getAsObject(row.join('||'), this.dateErrorMsg)
+            );
             let index = recordsBeforeDatesCompare.indexOf(row);
             recordsBeforeDatesCompare.splice(index, 1);
           }
@@ -442,54 +561,89 @@ export class UploadFileComponent implements OnInit {
     return row[firstIndex] > row[secondIndex];
   }
 
-  private noCurrentData(validatePKRecord: any, recordsBeforePKvalidation: any[]) {
-    if (validatePKRecord[0] == "NEW") {
-      this.tableData.invalidRecords.push(this.getAsObject(validatePKRecord.join("||"), MyAppHttp.ToasterMessage.RecorddoesexistsPK));
+  private noCurrentData(
+    validatePKRecord: any,
+    recordsBeforePKvalidation: any[]
+  ) {
+    if (validatePKRecord[0] == 'NEW') {
+      this.tableData.invalidRecords.push(
+        this.getAsObject(
+          validatePKRecord.join('||'),
+          MyAppHttp.ToasterMessage.RecorddoesexistsPK
+        )
+      );
       let index = recordsBeforePKvalidation.indexOf(validatePKRecord);
       recordsBeforePKvalidation.splice(index, 1);
-    } else if (validatePKRecord[0] == "DEL") {
+    } else if (validatePKRecord[0] == 'DEL') {
       this.recordDoesExistPK(validatePKRecord, recordsBeforePKvalidation);
-    }
-    else if (validatePKRecord[0] == "UPD") {
+    } else if (validatePKRecord[0] == 'UPD') {
       this.recordDoesExistPK(validatePKRecord, recordsBeforePKvalidation);
     } else {
-      this.tableData.invalidRecords.push(this.getAsObject(validatePKRecord.join("||"), validatePKRecord[0] + MyAppHttp.ToasterMessage.invalidActionCol));
+      this.tableData.invalidRecords.push(
+        this.getAsObject(
+          validatePKRecord.join('||'),
+          validatePKRecord[0] + MyAppHttp.ToasterMessage.invalidActionCol
+        )
+      );
       let index = recordsBeforePKvalidation.indexOf(validatePKRecord);
       recordsBeforePKvalidation.splice(index, 1);
     }
   }
 
-  private currentDataExist(validatePKRecord: any, recordsBeforePKvalidation: any[]) {
-    if (validatePKRecord[0] == "NEW") {
-      this.tableData.invalidRecords.push(this.getAsObject(validatePKRecord.join("||"), MyAppHttp.ToasterMessage.duplicateEntry));
+  private currentDataExist(
+    validatePKRecord: any,
+    recordsBeforePKvalidation: any[]
+  ) {
+    if (validatePKRecord[0] == 'NEW') {
+      this.tableData.invalidRecords.push(
+        this.getAsObject(
+          validatePKRecord.join('||'),
+          MyAppHttp.ToasterMessage.duplicateEntry
+        )
+      );
       let index = recordsBeforePKvalidation.indexOf(validatePKRecord);
       recordsBeforePKvalidation.splice(index, 1);
-    } else if (validatePKRecord[0] == "DEL") {
-      this.tableData.invalidRecords.push(this.getAsObject(validatePKRecord.join("||"), MyAppHttp.ToasterMessage.deleteAction));
+    } else if (validatePKRecord[0] == 'DEL') {
+      this.tableData.invalidRecords.push(
+        this.getAsObject(
+          validatePKRecord.join('||'),
+          MyAppHttp.ToasterMessage.deleteAction
+        )
+      );
       let index = recordsBeforePKvalidation.indexOf(validatePKRecord);
       recordsBeforePKvalidation.splice(index, 1);
-    }
-    else if (validatePKRecord[0] == "UPD") {
-      this.tableData.invalidRecords.push(this.getAsObject(validatePKRecord.join("||"), MyAppHttp.ToasterMessage.UpdateAction));
+    } else if (validatePKRecord[0] == 'UPD') {
+      this.tableData.invalidRecords.push(
+        this.getAsObject(
+          validatePKRecord.join('||'),
+          MyAppHttp.ToasterMessage.UpdateAction
+        )
+      );
       let index = recordsBeforePKvalidation.indexOf(validatePKRecord);
       recordsBeforePKvalidation.splice(index, 1);
-    }
-    else {
-      this.tableData.invalidRecords.push(this.getAsObject(validatePKRecord.join("||"), validatePKRecord[0] + MyAppHttp.ToasterMessage.invalidActionCol));
+    } else {
+      this.tableData.invalidRecords.push(
+        this.getAsObject(
+          validatePKRecord.join('||'),
+          validatePKRecord[0] + MyAppHttp.ToasterMessage.invalidActionCol
+        )
+      );
       let index = recordsBeforePKvalidation.indexOf(validatePKRecord);
       recordsBeforePKvalidation.splice(index, 1);
     }
   }
 
   private invalidRecordsExists(response: any) {
-    let obj: { [key: string]: string; } = {};
+    let obj: { [key: string]: string } = {};
     let invalidRecords = new Array();
-    this.columnList = ["ACTION", ...this.tableData.columnList, "REASON"];
+    this.columnList = ['ACTION', ...this.tableData.columnList, 'REASON'];
     response.invalidRecords.forEach((record: any) => {
       Object.entries(record).forEach(([key, value]) => {
-        let keys: string[] = key.split("||");
+        let keys: string[] = key.split('||');
         for (let i = 0; i < this.tableData.columnList.length; i++) {
-          if (keys[i] === "NULL") { keys[i] = ""; }
+          if (keys[i] === 'NULL') {
+            keys[i] = '';
+          }
           // obj[this.tableData.columnList[i]] = keys[i];
 
           obj[this.columnList[0]] = keys[0];
@@ -516,56 +670,78 @@ export class UploadFileComponent implements OnInit {
           obj[this.columnList[18]] = keys[4];
           obj[this.columnList[19]] = keys[20];
           obj[this.columnList[20]] = keys[29];
-
         }
-        obj["REASON"] = value as string;
+        obj['REASON'] = value as string;
         invalidRecords.push({ ...obj });
       });
-    })
+    });
 
     this.invalidrecords = invalidRecords;
-    this.notifierService.showNotification('Success',
+    this.notifierService.showNotification(
+      'Success',
       MyAppHttp.ToasterMessage.uploadSuccess +
-      " \nTotal number of records processed: " + response.totalCount +
-      ", \nInserted records: " + response.insertedCount +
-      ", \nUpdated records: " + response.updatedCount +
-      ", \nDeleted records: " + response.deletedCount +
-      ", \nInvalid records: " + response.invalidCount);
+        ' \nTotal number of records processed: ' +
+        response.totalCount +
+        ', \nInserted records: ' +
+        response.insertedCount +
+        ', \nUpdated records: ' +
+        response.updatedCount +
+        ', \nDeleted records: ' +
+        response.deletedCount +
+        ', \nInvalid records: ' +
+        response.invalidCount
+    );
   }
 
-  private recordDoesExistPK(validatePKRecord: any, recordsBeforePKvalidation: any[]) {
-    this.tableData.invalidRecords.push(this.getAsObject(validatePKRecord.join("||"), MyAppHttp.ToasterMessage.RecorddoesexistsPK));
+  private recordDoesExistPK(
+    validatePKRecord: any,
+    recordsBeforePKvalidation: any[]
+  ) {
+    this.tableData.invalidRecords.push(
+      this.getAsObject(
+        validatePKRecord.join('||'),
+        MyAppHttp.ToasterMessage.RecorddoesexistsPK
+      )
+    );
     let index = recordsBeforePKvalidation.indexOf(validatePKRecord);
     recordsBeforePKvalidation.splice(index, 1);
   }
 
-  private DataTypeValidation(k: number, i: number, j: number,cellColIndex: any, isValid: boolean, rowErrors: any) {
-    this.data[k][cellColIndex] = this.RemoveTrailingSpaces(this.data[k][cellColIndex]);
-    if (this.data[k][i] == undefined || this.data[k][i] == null || this.data[k][i] == "") {
+  private DataTypeValidation(
+    k: number,
+    i: number,
+    j: number,
+    cellColIndex: any,
+    isValid: boolean,
+    rowErrors: any
+  ) {
+    this.data[k][cellColIndex] = this.RemoveTrailingSpaces(
+      this.data[k][cellColIndex]
+    );
+    if (
+      this.data[k][i] == undefined ||
+      this.data[k][i] == null ||
+      this.data[k][i] == ''
+    ) {
       isValid = this.validateMandatory(j, k, isValid, rowErrors);
-    }
-    else if (this.templateDetails[j].dataType.toLowerCase() == "varchar") {
-      isValid = this.validateVarchar(j, k, i,cellColIndex, isValid, rowErrors);
-    }
-    else if (this.templateDetails[j].dataType.toLowerCase() == "number" || this.templateDetails[j].dataType.toLowerCase() == "integer") {
+    } else if (this.templateDetails[j].dataType.toLowerCase() == 'varchar') {
+      isValid = this.validateVarchar(j, k, i, cellColIndex, isValid, rowErrors);
+    } else if (
+      this.templateDetails[j].dataType.toLowerCase() == 'number' ||
+      this.templateDetails[j].dataType.toLowerCase() == 'integer'
+    ) {
       isValid = this.validateInteger(k, i, j, isValid, rowErrors);
-    }
-    else if (this.templateDetails[j].dataType.toLowerCase() == "char") {
+    } else if (this.templateDetails[j].dataType.toLowerCase() == 'char') {
       isValid = this.validateChar(k, i, j, isValid, rowErrors);
-    }
-    else if (this.templateDetails[j].dataType.toLowerCase() == "decimal") {
+    } else if (this.templateDetails[j].dataType.toLowerCase() == 'decimal') {
       isValid = this.validateDecimal(k, i, j, isValid, rowErrors);
-    }
-    else if (this.templateDetails[j].dataType.toLowerCase() == "date") {
+    } else if (this.templateDetails[j].dataType.toLowerCase() == 'date') {
       isValid = this.validateDate(k, i, j, isValid, rowErrors);
-    }
-    else if (this.templateDetails[j].dataType.toLowerCase() == "datetime") {
+    } else if (this.templateDetails[j].dataType.toLowerCase() == 'datetime') {
       isValid = this.validateDateTime(k, i, j, isValid, rowErrors);
-    }
-    else if (this.templateDetails[j].dataType.toLowerCase() == "boolean") {
+    } else if (this.templateDetails[j].dataType.toLowerCase() == 'boolean') {
       isValid = this.validateBoolean(k, i, j, isValid, rowErrors);
-    }
-    else if (this.templateDetails[j].dataType.toLowerCase() == "timestamp") {
+    } else if (this.templateDetails[j].dataType.toLowerCase() == 'timestamp') {
       isValid = this.validateTimestamp(k, i, j, isValid, rowErrors);
     }
     //foreign key
@@ -575,23 +751,45 @@ export class UploadFileComponent implements OnInit {
     return isValid;
   }
 
-  private validateMandatory(j: number, k: number, isValid: boolean, rowErrors: any) {
-    if (this.templateDetails[j].mandatoryOptional == "Mandatory") {
+  private validateMandatory(
+    j: number,
+    k: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
+    if (this.templateDetails[j].mandatoryOptional == 'Mandatory') {
       isValid = false;
-      rowErrors.push(this.templateDetails[j].tableFieldName + MyAppHttp.ToasterMessage.nullMessage);
+      rowErrors.push(
+        this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.nullMessage
+      );
     }
     return isValid;
   }
 
-  checkPrimaryKeyMandatory(j: number, k: number, isValid: boolean, rowErrors: any) {
-    if (this.templateDetails[j].isPrimaryKey == "Y") {
+  checkPrimaryKeyMandatory(
+    j: number,
+    k: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
+    if (this.templateDetails[j].isPrimaryKey == 'Y') {
       isValid = false;
-      rowErrors.push(this.templateDetails[j].tableFieldName + MyAppHttp.ToasterMessage.nullMessage);
+      rowErrors.push(
+        this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.nullMessage
+      );
     }
     return isValid;
   }
 
-  private checkForeignKey(j: number, k: number, i: number, isValid: boolean, rowErrors: any) {
+  private checkForeignKey(
+    j: number,
+    k: number,
+    i: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
     let fkColName = this.templateDetails[j].fkTableFieldName;
     for (let table of this.FKTableInfo) {
       if (table.tableId == this.templateDetails[j].fkTableId) {
@@ -599,8 +797,10 @@ export class UploadFileComponent implements OnInit {
         for (let fktable of table.data) {
           fkArray.push(fktable[fkColName]);
         }
-        if (!(fkArray.includes(this.data[k][i]))) {
-          rowErrors.push(this.templateDetails[j].errorDesc + " " + this.data[k][i])
+        if (!fkArray.includes(this.data[k][i])) {
+          rowErrors.push(
+            this.templateDetails[j].errorDesc + ' ' + this.data[k][i]
+          );
           return false;
         }
       }
@@ -608,102 +808,220 @@ export class UploadFileComponent implements OnInit {
     return true;
   }
 
-  private validateTimestamp(k: number, i: number, j: number, isValid: boolean, rowErrors: any) {
-    let timestampPattern = (new Date(this.data[k][i])).getTime() > 0;
+  private validateTimestamp(
+    k: number,
+    i: number,
+    j: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
+    let timestampPattern = new Date(this.data[k][i]).getTime() > 0;
     if (!timestampPattern) {
       isValid = false;
-      rowErrors.push(MyAppHttp.ToasterMessage.dataType1 + this.templateDetails[j].tableFieldName
-        + MyAppHttp.ToasterMessage.dataType2 + this.templateDetails[j].dataType.toLowerCase() + MyAppHttp.ToasterMessage.dataType3)
+      rowErrors.push(
+        MyAppHttp.ToasterMessage.dataType1 +
+          this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.dataType2 +
+          this.templateDetails[j].dataType.toLowerCase() +
+          MyAppHttp.ToasterMessage.dataType3
+      );
     }
     return isValid;
   }
 
-  private validateBoolean(k: number, i: number, j: number, isValid: boolean, rowErrors: any) {
+  private validateBoolean(
+    k: number,
+    i: number,
+    j: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
     var booleanPattern = this.data[k][i];
-    if (booleanPattern != "TRUE" || booleanPattern != "FALSE") {
+    if (booleanPattern != 'TRUE' || booleanPattern != 'FALSE') {
       isValid = false;
-      rowErrors.push(MyAppHttp.ToasterMessage.dataType1 + this.templateDetails[j].tableFieldName
-        + MyAppHttp.ToasterMessage.dataType2 + this.templateDetails[j].dataType.toLowerCase() + MyAppHttp.ToasterMessage.dataType3)
+      rowErrors.push(
+        MyAppHttp.ToasterMessage.dataType1 +
+          this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.dataType2 +
+          this.templateDetails[j].dataType.toLowerCase() +
+          MyAppHttp.ToasterMessage.dataType3
+      );
     }
     return isValid;
   }
 
-  private validateDateTime(k: number, i: number, j: number, isValid: boolean, rowErrors: any) {
+  private validateDateTime(
+    k: number,
+    i: number,
+    j: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
     var dateTimePattern = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
-    if (!(dateTimePattern.test(this.data[k][i]))) {
+    if (!dateTimePattern.test(this.data[k][i])) {
       isValid = false;
-      rowErrors.push(MyAppHttp.ToasterMessage.dataType1 + this.templateDetails[j].tableFieldName
-        + MyAppHttp.ToasterMessage.dataType2 + this.templateDetails[j].dataType.toLowerCase() + MyAppHttp.ToasterMessage.dataType3)
+      rowErrors.push(
+        MyAppHttp.ToasterMessage.dataType1 +
+          this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.dataType2 +
+          this.templateDetails[j].dataType.toLowerCase() +
+          MyAppHttp.ToasterMessage.dataType3
+      );
     }
     return isValid;
   }
 
-  private validateDate(k: number, i: number, j: number, isValid: boolean, rowErrors: any) {
+  private validateDate(
+    k: number,
+    i: number,
+    j: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
     var datePattern = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][\d]|3[01])$/;
-    if (!(datePattern.test(this.data[k][i]))) {
+    if (!datePattern.test(this.data[k][i])) {
       isValid = false;
-      rowErrors.push(MyAppHttp.ToasterMessage.dataType1 + this.templateDetails[j].tableFieldName
-        + MyAppHttp.ToasterMessage.dataType2 + this.templateDetails[j].dataType.toLowerCase() + MyAppHttp.ToasterMessage.dataType3)
+      rowErrors.push(
+        MyAppHttp.ToasterMessage.dataType1 +
+          this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.dataType2 +
+          this.templateDetails[j].dataType.toLowerCase() +
+          MyAppHttp.ToasterMessage.dataType3
+      );
     }
 
     return isValid;
   }
 
-  private validateDecimal(k: number, i: number, j: number, isValid: boolean, rowErrors: any) {
+  private validateDecimal(
+    k: number,
+    i: number,
+    j: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
     var decimalPattern = /^\d+(\.\d+)?$/;
-    if (!(decimalPattern.test(this.data[k][i]))) {
+    if (!decimalPattern.test(this.data[k][i])) {
       isValid = false;
-      rowErrors.push(MyAppHttp.ToasterMessage.dataType1 + this.templateDetails[j].tableFieldName
-        + MyAppHttp.ToasterMessage.dataType2 + this.templateDetails[j].dataType.toLowerCase() + MyAppHttp.ToasterMessage.dataType3)
+      rowErrors.push(
+        MyAppHttp.ToasterMessage.dataType1 +
+          this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.dataType2 +
+          this.templateDetails[j].dataType.toLowerCase() +
+          MyAppHttp.ToasterMessage.dataType3
+      );
     }
-    if ((this.templateDetails[j].fieldLength < (this.data[k][i].toString()).length + 1)) {
+    if (
+      this.templateDetails[j].fieldLength <
+      this.data[k][i].toString().length + 1
+    ) {
       isValid = false;
-      rowErrors.push(this.templateDetails[j].tableFieldName + MyAppHttp.ToasterMessage.fieldLength1 + this.templateDetails[j].fieldLength + MyAppHttp.ToasterMessage.fieldLength2)
+      rowErrors.push(
+        this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.fieldLength1 +
+          this.templateDetails[j].fieldLength +
+          MyAppHttp.ToasterMessage.fieldLength2
+      );
     }
     return isValid;
   }
 
-  private validateChar(k: number, i: number, j: number, isValid: boolean, rowErrors: any) {
+  private validateChar(
+    k: number,
+    i: number,
+    j: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
     var charPattern = /^[a-zA-Z]+$/;
-    if (!(charPattern.test(this.data[k][i]))) {
+    if (!charPattern.test(this.data[k][i])) {
       isValid = false;
-      rowErrors.push(MyAppHttp.ToasterMessage.dataType1 + this.templateDetails[j].tableFieldName
-        + MyAppHttp.ToasterMessage.dataType2 + this.templateDetails[j].dataType.toLowerCase() + MyAppHttp.ToasterMessage.dataType3)
+      rowErrors.push(
+        MyAppHttp.ToasterMessage.dataType1 +
+          this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.dataType2 +
+          this.templateDetails[j].dataType.toLowerCase() +
+          MyAppHttp.ToasterMessage.dataType3
+      );
     }
-    if ((this.templateDetails[j].fieldLength < (this.data[k][i].toString()).length)) {
+    if (
+      this.templateDetails[j].fieldLength < this.data[k][i].toString().length
+    ) {
       isValid = false;
-      rowErrors.push(this.templateDetails[j].tableFieldName + MyAppHttp.ToasterMessage.fieldLength1 + this.templateDetails[j].fieldLength + MyAppHttp.ToasterMessage.fieldLength2)
+      rowErrors.push(
+        this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.fieldLength1 +
+          this.templateDetails[j].fieldLength +
+          MyAppHttp.ToasterMessage.fieldLength2
+      );
     }
     return isValid;
   }
 
-  private validateInteger(k: number, i: number, j: number, isValid: boolean, rowErrors: any) {
+  private validateInteger(
+    k: number,
+    i: number,
+    j: number,
+    isValid: boolean,
+    rowErrors: any
+  ) {
     var onlyDigitsPattern = /^[-+]?\d+$/;
-    if (!(onlyDigitsPattern.test(this.data[k][i]))) {
+    if (!onlyDigitsPattern.test(this.data[k][i])) {
       isValid = false;
-      rowErrors.push(MyAppHttp.ToasterMessage.dataType1 + this.templateDetails[j].tableFieldName
-        + MyAppHttp.ToasterMessage.dataType2 + this.templateDetails[j].dataType.toLowerCase() + MyAppHttp.ToasterMessage.dataType3)
-
+      rowErrors.push(
+        MyAppHttp.ToasterMessage.dataType1 +
+          this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.dataType2 +
+          this.templateDetails[j].dataType.toLowerCase() +
+          MyAppHttp.ToasterMessage.dataType3
+      );
     }
-    if ((this.templateDetails[j].fieldLength < (this.data[k][i].toString()).length)) {
+    if (
+      this.templateDetails[j].fieldLength < this.data[k][i].toString().length
+    ) {
       isValid = false;
-      rowErrors.push(this.templateDetails[j].tableFieldName + MyAppHttp.ToasterMessage.fieldLength1 + this.templateDetails[j].fieldLength + MyAppHttp.ToasterMessage.fieldLength2)
+      rowErrors.push(
+        this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.fieldLength1 +
+          this.templateDetails[j].fieldLength +
+          MyAppHttp.ToasterMessage.fieldLength2
+      );
     }
     return isValid;
   }
 
-  private validateVarchar(j: number, k: number, i: number,cellColIndex: any, isValid: boolean, rowErrors: any) {
-    this.data[k][cellColIndex] = this.RemoveNewlines(this.data[k][cellColIndex]);
-    if ((this.templateDetails[j].fieldLength < (this.data[k][cellColIndex].toString()).length)) {
+  private validateVarchar(
+    j: number,
+    k: number,
+    i: number,
+    cellColIndex: any,
+    isValid: boolean,
+    rowErrors: any
+  ) {
+    this.data[k][cellColIndex] = this.RemoveNewlines(
+      this.data[k][cellColIndex]
+    );
+    if (
+      this.templateDetails[j].fieldLength <
+      this.data[k][cellColIndex].toString().length
+    ) {
       isValid = false;
-      rowErrors.push(this.templateDetails[j].tableFieldName + MyAppHttp.ToasterMessage.fieldLength1 + this.templateDetails[j].fieldLength + MyAppHttp.ToasterMessage.fieldLength2);
+      rowErrors.push(
+        this.templateDetails[j].tableFieldName +
+          MyAppHttp.ToasterMessage.fieldLength1 +
+          this.templateDetails[j].fieldLength +
+          MyAppHttp.ToasterMessage.fieldLength2
+      );
     }
     return isValid;
   }
 
   isTemplateEmpty() {
     if (this.data.length == 0) {
-      this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.EmptyTemplate);
+      this.notifierService.showNotification(
+        'Error',
+        MyAppHttp.ToasterMessage.EmptyTemplate
+      );
       return false;
     } else {
       return true;
@@ -715,7 +1033,10 @@ export class UploadFileComponent implements OnInit {
     if (this.validationFlag1) {
       this.isTableNameValid();
       if (this.validationFlag2) {
-        if (this.validateTemplateBeforeHeaders() && this.isColumnHeaderExists()) {
+        if (
+          this.validateTemplateBeforeHeaders() &&
+          this.isColumnHeaderExists()
+        ) {
           if (this.validateTemplateData()) {
             // this.setEmptyCols()
             this.setEmptyColsFirst();
@@ -737,7 +1058,10 @@ export class UploadFileComponent implements OnInit {
 
   validateTemplateBeforeHeaders() {
     if (this.data.length <= 3) {
-      this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.EmptyTemplate);
+      this.notifierService.showNotification(
+        'Error',
+        MyAppHttp.ToasterMessage.EmptyTemplate
+      );
       return false;
     } else {
       return true;
@@ -746,7 +1070,13 @@ export class UploadFileComponent implements OnInit {
 
   isTableNameExists() {
     if (this.data[0][1] == undefined) {
-      this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.tableName1 + MyAppHttp.ToasterMessage.tableName2 + this.tableName + MyAppHttp.ToasterMessage.tableName3);
+      this.notifierService.showNotification(
+        'Error',
+        MyAppHttp.ToasterMessage.tableName1 +
+          MyAppHttp.ToasterMessage.tableName2 +
+          this.tableName +
+          MyAppHttp.ToasterMessage.tableName3
+      );
       this.validationFlag1 = false;
     } else {
       this.validationFlag1 = true;
@@ -755,8 +1085,14 @@ export class UploadFileComponent implements OnInit {
 
   isTableNameValid() {
     let name = this.data[0][1];
-    if ((name !== this.tableName.trim())) {
-      this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.tableName1 + MyAppHttp.ToasterMessage.tableName2 + this.tableName + MyAppHttp.ToasterMessage.tableName3);
+    if (name !== this.tableName.trim()) {
+      this.notifierService.showNotification(
+        'Error',
+        MyAppHttp.ToasterMessage.tableName1 +
+          MyAppHttp.ToasterMessage.tableName2 +
+          this.tableName +
+          MyAppHttp.ToasterMessage.tableName3
+      );
       this.validationFlag2 = false;
     } else {
       this.validationFlag2 = true;
@@ -766,13 +1102,19 @@ export class UploadFileComponent implements OnInit {
   isColumnHeaderExists() {
     this.validationFlag3 = true;
     if (this.data[3].length == 0) {
-      this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.excelColumns);
+      this.notifierService.showNotification(
+        'Error',
+        MyAppHttp.ToasterMessage.excelColumns
+      );
       this.validationFlag3 = false;
       return this.validationFlag3;
     } else {
       for (let col of this.data[3]) {
         if (col == undefined) {
-          this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.excelColumns);
+          this.notifierService.showNotification(
+            'Error',
+            MyAppHttp.ToasterMessage.excelColumns
+          );
           this.validationFlag3 = false;
           return this.validationFlag3;
         }
@@ -784,14 +1126,24 @@ export class UploadFileComponent implements OnInit {
   isValidAction() {
     let recordsBeforeActionValidation = [];
     recordsBeforeActionValidation.push(...this.data);
-    for (let i = 5; i < (this.data.length); i++) {
+    for (let i = 5; i < this.data.length; i++) {
       this.data[i][0] = this.RemoveTrailingSpaces(this.data[i][0]);
-      if (this.data[i][0] == "NEW" || this.data[i][0] == "UPD" || this.data[i][0] == "DEL") {
+      if (
+        this.data[i][0] == 'NEW' ||
+        this.data[i][0] == 'UPD' ||
+        this.data[i][0] == 'DEL'
+      ) {
         this.validationFlag4 = true;
-      }
-      else {
+      } else {
         this.validationFlag4 = false;
-        this.tableData.invalidRecords.push(this.getAsObject(this.data[i].join("||"), MyAppHttp.ToasterMessage.invalidActionPermission1 + this.strActions + MyAppHttp.ToasterMessage.invalidActionPermission2));
+        this.tableData.invalidRecords.push(
+          this.getAsObject(
+            this.data[i].join('||'),
+            MyAppHttp.ToasterMessage.invalidActionPermission1 +
+              this.strActions +
+              MyAppHttp.ToasterMessage.invalidActionPermission2
+          )
+        );
         let index = recordsBeforeActionValidation.indexOf(this.data[i]);
         recordsBeforeActionValidation.splice(index, 1);
       }
@@ -803,26 +1155,40 @@ export class UploadFileComponent implements OnInit {
     if (this.data.length >= 6) {
       return true;
     } else {
-      this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.NoRecords);
+      this.notifierService.showNotification(
+        'Error',
+        MyAppHttp.ToasterMessage.NoRecords
+      );
       return false;
     }
   }
 
   setEmptyCols(validRecords: any) {
-    for (let j = 0; (validRecords.length) > j; j++) {
+    for (let j = 0; validRecords.length > j; j++) {
       for (let k = 0; k < this.data[3].length; k++) {
-        if (validRecords[j][k] == undefined || validRecords[j][k] == null || validRecords[j][k] == 'empty' || validRecords[j][k] == '') {
-          validRecords[j][k] = "";
+        if (
+          validRecords[j][k] == undefined ||
+          validRecords[j][k] == null ||
+          validRecords[j][k] == 'empty' ||
+          validRecords[j][k] == ''
+        ) {
+          validRecords[j][k] = '';
         }
       }
     }
   }
 
   setEmptyColsFirst() {
-    for (let j = 5; j < (this.data.length); j++) {
+    for (let j = 5; j < this.data.length; j++) {
       for (let k = 0; k < this.data[3].length; k++) {
-        if (this.data[j][k] == undefined || this.data[j][k] == null || this.data[j][k] == 'empty' || this.data[j][k] === '' || this.data[j][k] === "NULL") {
-          this.data[j][k] = "";
+        if (
+          this.data[j][k] == undefined ||
+          this.data[j][k] == null ||
+          this.data[j][k] == 'empty' ||
+          this.data[j][k] === '' ||
+          this.data[j][k] === 'NULL'
+        ) {
+          this.data[j][k] = '';
         }
       }
     }
@@ -844,70 +1210,107 @@ export class UploadFileComponent implements OnInit {
     this.tableData.tableValues = validDataBeforeValidation;
   }
 
-  private checkRolePermission(j: number, data: any, validDataBeforeValidation: any[]) {
+  private checkRolePermission(
+    j: number,
+    data: any,
+    validDataBeforeValidation: any[]
+  ) {
     this.submodelPermissionid = this.tablesListWithPermissionId[j].permissionId;
     for (let i = 0; i < data.length; i++) {
       var action = data[i][0];
       if (this.submodelPermissionid == 1) {
         this.validateRoleOne(action, data, i, validDataBeforeValidation);
-      }
-      else if (this.submodelPermissionid == 2) {
+      } else if (this.submodelPermissionid == 2) {
         this.validateRoletwo(action, data, i, validDataBeforeValidation);
-      }
-      else if (this.submodelPermissionid == 3) {
+      } else if (this.submodelPermissionid == 3) {
         this.validateRoleThree(action, data, i, validDataBeforeValidation);
-      }
-      else if (this.submodelPermissionid == 4) {
+      } else if (this.submodelPermissionid == 4) {
         this.validateRoleFour(action, data, i, validDataBeforeValidation);
       }
     }
   }
 
-  private validateRoleFour(action: any, data: any, i: number, validDataBeforeValidation: any[]) {
-    if (action == "UPD") {
+  private validateRoleFour(
+    action: any,
+    data: any,
+    i: number,
+    validDataBeforeValidation: any[]
+  ) {
+    if (action == 'UPD') {
       //when only UPD
     } else {
-      this.tableData.invalidRecords.push(this.getAsObject(data[i].join("||"), "Unauthorized Action"));
+      this.tableData.invalidRecords.push(
+        this.getAsObject(data[i].join('||'), 'Unauthorized Action')
+      );
       let index = validDataBeforeValidation.indexOf(data[i]);
       validDataBeforeValidation.splice(index, 1);
     }
   }
 
-  private validateRoleThree(action: any, data: any, i: number, validDataBeforeValidation: any[]) {
-    if (action == "NEW") {
+  private validateRoleThree(
+    action: any,
+    data: any,
+    i: number,
+    validDataBeforeValidation: any[]
+  ) {
+    if (action == 'NEW') {
       //when only NEW
     } else {
-      this.tableData.invalidRecords.push(this.getAsObject(data[i].join("||"), "Unauthorized Action"));
+      this.tableData.invalidRecords.push(
+        this.getAsObject(data[i].join('||'), 'Unauthorized Action')
+      );
       let index = validDataBeforeValidation.indexOf(data[i]);
       validDataBeforeValidation.splice(index, 1);
     }
   }
 
-  private validateRoletwo(action: any, data: any, i: number, validDataBeforeValidation: any[]) {
-    if (action == "NEW" || action == "UPD") {
+  private validateRoletwo(
+    action: any,
+    data: any,
+    i: number,
+    validDataBeforeValidation: any[]
+  ) {
+    if (action == 'NEW' || action == 'UPD') {
       //when only NEW, UPD
     } else {
-      this.tableData.invalidRecords.push(this.getAsObject(data[i].join("||"), MyAppHttp.ToasterMessage.Unauthorizedaction));
+      this.tableData.invalidRecords.push(
+        this.getAsObject(
+          data[i].join('||'),
+          MyAppHttp.ToasterMessage.Unauthorizedaction
+        )
+      );
       let index = validDataBeforeValidation.indexOf(data[i]);
       validDataBeforeValidation.splice(index, 1);
     }
   }
 
-  private validateRoleOne(action: any, data: any, i: number, validDataBeforeValidation: any[]) {
-    if (action == "NEW" || action != "UPD" || action != "DEL") {
+  private validateRoleOne(
+    action: any,
+    data: any,
+    i: number,
+    validDataBeforeValidation: any[]
+  ) {
+    if (action == 'NEW' || action != 'UPD' || action != 'DEL') {
       //when only NEW
     } else {
-      this.tableData.invalidRecords.push(this.getAsObject(data[i].join("||"), "Unauthorized Action"));
+      this.tableData.invalidRecords.push(
+        this.getAsObject(data[i].join('||'), 'Unauthorized Action')
+      );
       let index = validDataBeforeValidation.indexOf(data[i]);
       validDataBeforeValidation.splice(index, 1);
     }
   }
 
-  checkPrimaryKey(excelRowData: any, pkArray: any, pkArrayIndex: any, operation: string) {
+  checkPrimaryKey(
+    excelRowData: any,
+    pkArray: any,
+    pkArrayIndex: any,
+    operation: string
+  ) {
     let trueCount = 0;
     if (operation == 'NEW') {
       let rowCount;
-      for (let j = 0; j < (this.currentTableData.length); j++) {
+      for (let j = 0; j < this.currentTableData.length; j++) {
         rowCount = 0;
         for (let n = 0; n < pkArray.length; n++) {
           if (this.currentTableData[j][pkArray[n]] == excelRowData[29]) {
@@ -915,21 +1318,23 @@ export class UploadFileComponent implements OnInit {
             if (rowCount == pkArray.length) {
               return false;
             }
-          }
-          else {
+          } else {
             // if pkExist is true;
           }
         }
       }
       return true;
     } else {
-      for (let j = 0; j < (this.currentTableData.length); j++) {
+      for (let j = 0; j < this.currentTableData.length; j++) {
         trueCount = 0;
         for (let n = 0; n < pkArray.length; n++) {
-          if (this.currentTableData[j][pkArray[n]] == excelRowData[pkArrayIndex[n]]) {
+          if (
+            this.currentTableData[j][pkArray[n]] ==
+            excelRowData[pkArrayIndex[n]]
+          ) {
             trueCount++;
             if (trueCount == pkArray.length) {
-              return true
+              return true;
             }
           } else {
             // if pkExist is false;
@@ -977,11 +1382,10 @@ export class UploadFileComponent implements OnInit {
     return obj;
   }
   RemoveNewlines(cellValue: string) {
-    if(cellValue ==  undefined){
-      return "";
-    }else{
-
-      return cellValue.replace(/[\r\n]+/g, " ");
+    if (cellValue == undefined) {
+      return '';
+    } else {
+      return cellValue.replace(/[\r\n]+/g, ' ');
     }
   }
 }

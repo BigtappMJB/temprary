@@ -3,14 +3,14 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Filterdatacolumns } from '../../models/excel-data.model';
+import { exportToCSV } from '../../generals';
 
 @Component({
   selector: 'app-invalid-records',
   templateUrl: './invalid-records.component.html',
-  styleUrls: ['./invalid-records.component.css']
+  styleUrls: ['./invalid-records.component.css'],
 })
 export class InvalidRecordsComponent implements OnInit {
-
   @Input() columnList: string[] = [];
   @Input() invalidrecords: { [key: string]: string }[] = [];
   invalidData: any;
@@ -29,13 +29,13 @@ export class InvalidRecordsComponent implements OnInit {
       gridData: this.gridData,
       dataSource: this.dataSource,
       paginator: this.paginator,
-      sort: this.sort
+      sort: this.sort,
     };
     this.tableCols = [];
     this.tableCols = Object.keys(this.invalidrecords[0]);
     this.filterData.filterColumnNames = [];
     for (let tableCol of this.tableCols) {
-      let temptable: Filterdatacolumns = { Key: tableCol, Value: " " }
+      let temptable: Filterdatacolumns = { Key: tableCol, Value: ' ' };
       this.filterData.filterColumnNames.push(temptable);
     }
     this.invalidData = this.invalidrecords;
@@ -50,8 +50,16 @@ export class InvalidRecordsComponent implements OnInit {
       col.Value = '';
     }
   }
+
+  onExportCSV() {
+    if (this.filterData.dataSource.filteredData.length !== 0) {
+      exportToCSV(
+        this.filterData.dataSource.filteredData,
+        `file_details_invalid_records_${new Date().toISOString()}.csv`
+      );
+    }
+  }
   updatePagination() {
     this.filterData.dataSource.paginator = this.paginator;
   }
-
 }
