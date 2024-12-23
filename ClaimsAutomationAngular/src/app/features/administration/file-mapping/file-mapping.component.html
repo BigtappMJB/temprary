@@ -127,7 +127,7 @@
           <td mat-cell *matCellDef="let element">{{ element.sno }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="tableName">
+        <ng-container matColumnDef="tebleName">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="scheduler-name-input">
               Table Name
@@ -141,7 +141,7 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.tableName }}
+            {{ element.tebleName }}
           </td>
         </ng-container>
 
@@ -165,10 +165,10 @@
             <span> Actions </span>
           </th>
           <td mat-cell *matCellDef="let element">
-            <mat-slide-toggle
+            <!-- <mat-slide-toggle
               [checked]="element.status == '0' ? false : true"
               (change)="onActivatescheduler(element, $event)"
-            ></mat-slide-toggle>
+            ></mat-slide-toggle> -->
             <span
               matTooltip="Edit"
               (click)="onEditOpen(element)"

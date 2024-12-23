@@ -6,7 +6,7 @@ import { BaseHttp } from 'src/app/core/services/baseHttp.service';
 })
 export class FileMappingService extends BaseHttp {
   getTableNameUrl: string = 'um/subModulePermissions?roleId=6&subModuleId=22';
-  getTableDataUrl: string = 'api/getAllTemplates';
+  getTableDataUrl: string = 'api/getAllTemplatesDetails';
   postMappingDataUrl: string = '';
   updateMappingDataUrl: string = '';
   deleteMappingDataUrl: string = '';

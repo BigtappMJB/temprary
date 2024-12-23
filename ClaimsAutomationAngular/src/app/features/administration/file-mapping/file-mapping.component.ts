@@ -22,7 +22,7 @@ import { DialogPopupComponent } from 'src/app/shared/dialog-popup/dialog-popup.c
   styleUrls: ['./file-mapping.component.css'],
 })
 export class FileMappingComponent implements OnInit {
-  displayedColumns: string[] = ['sno', 'tableName', 'templateName', 'actions'];
+  displayedColumns: string[] = ['sno', 'tebleName', 'templateName', 'actions'];
   mappingForm!: FormGroup;
   editMode: boolean = false;
   editDataId: any;
