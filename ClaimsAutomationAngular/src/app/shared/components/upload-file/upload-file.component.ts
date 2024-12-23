@@ -74,6 +74,9 @@ export class UploadFileComponent implements OnInit {
       this.tableDataService.getTableNamesBySubModuleIdAndRoleId(this.loginData.roleId, this.subModuleId).pipe(take(1)).subscribe((response) => {
         for (let element of response) {
           if (element.permissionId !== 6) {
+            console.log(element)
+            element.readabletableName= element.tableName.replace(/_/g, " ");
+            console.log(element)
             this.tablesListWithPermissionId.push(element);
           }
         }

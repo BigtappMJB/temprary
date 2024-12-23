@@ -9,7 +9,7 @@
                 <mat-select formControlName="tableId" disableOptionCentering>
                     <mat-option *ngFor="let tableDetails of tablesListWithPermissionId" [value]="tableDetails.tableId"
                         (click)="getTableName(tableDetails)" (keydown)="getTableName(tableDetails)" >
-                        {{tableDetails.tableName}}</mat-option>
+                        {{tableDetails.readabletableName | titlecase}}</mat-option>
                 </mat-select>
                 <mat-error
                     *ngIf="tableUploadForm.controls['tableId'].hasError('required') && tableUploadForm.controls['tableId'].touched">
