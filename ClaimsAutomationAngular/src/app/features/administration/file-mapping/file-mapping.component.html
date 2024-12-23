@@ -18,9 +18,12 @@
                 [matAutocomplete]="auto"
                 (input)="filterTables(mappingForm.get('tableName')?.value)"
               />
-              <mat-autocomplete #auto="matAutocomplete">
-                <mat-option *ngFor="let time of filterTable" [value]="time">
-                  {{ time }}
+              <mat-autocomplete
+                #auto="matAutocomplete"
+                [displayWith]="displayTableName"
+              >
+                <mat-option *ngFor="let table of filterTable" [value]="table">
+                  {{ table.tableName }}
                 </mat-option>
               </mat-autocomplete>
               <mat-error
@@ -31,6 +34,15 @@
                 "
                 class="error"
                 >Table Name is required</mat-error
+              >
+              <mat-error
+                *ngIf="
+                  mappingForm.get('tableName')?.touched &&
+                  mappingForm.get('tableName')?.invalid &&
+                  mappingForm.get('tableName')?.hasError('invalidTableName')
+                "
+                class="error"
+                >Invalid Table Name</mat-error
               >
             </mat-form-field>
           </div>
@@ -133,7 +145,7 @@
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="fileName">
+        <ng-container matColumnDef="templateName">
           <th mat-header-cell *matHeaderCellDef scope="col">
             <label mat-sort-header for="start-date-input"> File Name </label>
             <input
@@ -145,7 +157,7 @@
             />
           </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.fileName }}
+            {{ element.templateName }}
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
@@ -159,8 +171,8 @@
             ></mat-slide-toggle>
             <span
               matTooltip="Edit"
-              (click)="onEditScheduler(element)"
-              (keydown)="onEditScheduler(element)"
+              (click)="onEditOpen(element)"
+              (keydown)="onEditOpen(element)"
             >
               <i class="fas fa-pencil-alt" aria-hidden="true"></i>
             </span>
@@ -171,33 +183,6 @@
               (keydown)="onSchedulerDelete(element)"
             >
               <i class="far fa-trash-alt" aria-hidden="true"></i>
-            </span>
-            <span
-              *ngIf="!element.isSchedulerRunning"
-              matTooltip="Start"
-              style="cursor: pointer"
-              (click)="onStartScheduler(element)"
-              (keydown)="onStartScheduler(element)"
-            >
-              <i class="fas fa-play" aria-hidden="true"></i>
-            </span>
-            <span
-              style="cursor: none; pointer-events: none"
-              *ngIf="element.isSchedulerRunning"
-              matTooltip="Running"
-              style="cursor: pointer"
-            >
-              <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
-            </span>
-            <span
-              style="cursor: none; pointer-events: none"
-              *ngIf="element.isSchedulerRunning"
-              matTooltip="Stop"
-              style="cursor: pointer"
-              (click)="onStopScheduler(element)"
-              (keydown)="onStartScheduler(element)"
-            >
-              <i class="fas fa-times-circle" aria-hidden="true"></i>
             </span>
           </td>
         </ng-container>

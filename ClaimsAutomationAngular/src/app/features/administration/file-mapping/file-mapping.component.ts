@@ -1,5 +1,12 @@
 import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,7 +22,7 @@ import { DialogPopupComponent } from 'src/app/shared/dialog-popup/dialog-popup.c
   styleUrls: ['./file-mapping.component.css'],
 })
 export class FileMappingComponent implements OnInit {
-  displayedColumns: string[] = ['sno', 'tableName', 'fileName', 'actions'];
+  displayedColumns: string[] = ['sno', 'tableName', 'templateName', 'actions'];
   mappingForm!: FormGroup;
   editMode: boolean = false;
   editDataId: any;
@@ -36,6 +43,20 @@ export class FileMappingComponent implements OnInit {
     private readonly dialog: MatDialog
   ) {}
 
+  validTableNameValidator(validOptions: any[]): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      console.log(control.value);
+      if (!control.value) {
+        return null; // If the control is empty, let the "required" validator handle it.
+      }
+      const isValid = this.tableList?.some(
+        (option: any) => option.tableName === control.value?.tableName
+      );
+      console.log({ isValid });
+
+      return isValid ? null : { invalidTableName: true };
+    };
+  }
   ngOnInit() {
     this.filterData = {
       filterColumnNames: this.displayedColumns.map((ele: any) => ({
@@ -48,11 +69,18 @@ export class FileMappingComponent implements OnInit {
       sort: this.sort,
     };
     this.mappingForm = this.formBuilder.group({
-      tableName: [null, Validators.required],
+      tableName: [
+        '',
+        Validators.compose([
+          Validators.required,
+          this.validTableNameValidator(this.tableList),
+        ]),
+      ],
       fileName: [null, Validators.required],
     });
+
     this.mappingForm.get('tableName')?.valueChanges.subscribe((value) => {
-      this.filterTables(value || '');
+      if (typeof value === 'string') this.filterTables(value || '');
     });
     this.getTableNames();
   }
@@ -60,10 +88,13 @@ export class FileMappingComponent implements OnInit {
   filterTables(value: string): void {
     const filterValue = value.toLowerCase();
     this.filterTable = this.tableList?.filter((value: any) =>
-      value.toLowerCase().startsWith(filterValue)
+      value.tableName.toLowerCase().startsWith(filterValue)
     );
   }
-
+  // Function to display the table name in the input field
+  displayTableName(table: any): string {
+    return table ? table.tableName : '';
+  }
   updatePagination() {
     this.filterData.dataSource.paginator = this.paginator;
   }
@@ -168,15 +199,18 @@ export class FileMappingComponent implements OnInit {
       }
     );
   }
+  assignTableNameToForm(tableId: number) {
+    return this.tableList.find((ele: any) => ele.tableId === tableId);
+  }
 
   onEditOpen(element: any) {
     const {} = element;
-    this.editDataId = element.id;
+    this.editDataId = element.templateId;
     this.editMode = true;
     this.openForm = true;
     this.mappingForm.patchValue({
-      tableName: null,
-      fileName: null,
+      tableName: this.assignTableNameToForm(element.tableId),
+      fileName: element.templateName,
     });
   }
 
@@ -200,7 +234,7 @@ export class FileMappingComponent implements OnInit {
 
   deleteData(element: any) {
     this.loadingService.show();
-    this.fileMappingService.deleteMappingData(element.id).subscribe(
+    this.fileMappingService.deleteMappingData(element.templateId).subscribe(
       (response) => {
         if (response) {
           this.notifierService.showNotification(
