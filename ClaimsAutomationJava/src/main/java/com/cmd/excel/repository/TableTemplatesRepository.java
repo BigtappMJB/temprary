@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.cmd.excel.model.TableTemplateTableName;
 import com.cmd.excel.model.TableTemplates;
 
 /**
@@ -17,6 +18,9 @@ public interface TableTemplatesRepository extends JpaRepository<TableTemplates, 
 	@Query(value = "select * from table_templates tt where tt.delete_flag = 0", nativeQuery = true)
 	List<TableTemplates> getallTemplates();
 
+	@Query(value = "SELECT tt.template_id,tt.template_name,tt.TABLE_ID,dt.table_name FROM claims_automation.table_templates tt left join claims_automation.dma_tables dt on dt.table_id=tt.table_id where tt.DELETE_FLAG=0;", nativeQuery = true)
+	List<Object[]> getallTemplateDetails();
+	
 	@Query(value = "select * from table_templates tt where tt.table_id = :tableId and tt.delete_flag = 0", nativeQuery = true)
 	TableTemplates getTemplateByTableId(@Param("tableId") int tableId);
 

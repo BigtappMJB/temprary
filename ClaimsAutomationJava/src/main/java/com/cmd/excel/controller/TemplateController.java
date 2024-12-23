@@ -33,6 +33,7 @@ import com.cmd.domain.TableInfo;
 import com.cmd.domain.TableTemplateDetailsDto;
 import com.cmd.domain.response.Response;
 import com.cmd.excel.model.TableTemplateDetails;
+import com.cmd.excel.model.TableTemplateTableName;
 import com.cmd.excel.model.TableTemplates;
 import com.cmd.excel.service.TemplateService;
 import com.cmd.excel.service.UserManagementService;
@@ -118,6 +119,26 @@ public class TemplateController {
 		List<TableTemplates> allTableTemplates = new ArrayList<>();
 		try {
 			allTableTemplates = templateService.getAllTableTemplates();
+			message = "All templates fetcned successfully";
+			cmdUtils.logInfoDebugMessage(logger, message);
+			httpStatus = HttpStatus.OK;
+		} catch (Exception e) {
+			message = "Error while fetching All templates";
+			cmdUtils.logInfoErrorMessage(logger, message);
+			httpStatus = HttpStatus.EXPECTATION_FAILED;
+		}
+		return new ResponseEntity<>(allTableTemplates, httpStatus);
+	}
+	
+	@GetMapping("/getAllTemplatesDetails")
+	public Object getAlltemplaeDetails(@RequestHeader("token") String token) {
+		authenticate(token);
+		if (authResponse.getStatusCode() != 200) {
+			return authResponse;
+		}
+		List<TableTemplateTableName> allTableTemplates = new ArrayList<>();
+		try {
+			allTableTemplates = templateService.getAllTableTemplateDetails();
 			message = "All templates fetcned successfully";
 			cmdUtils.logInfoDebugMessage(logger, message);
 			httpStatus = HttpStatus.OK;

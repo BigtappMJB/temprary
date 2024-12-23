@@ -10,6 +10,7 @@
 
 package com.cmd.excel.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.cmd.domain.TableTemplateDetailsDto;
 import com.cmd.domain.response.Response;
 import com.cmd.excel.model.TableTemplateDetails;
+import com.cmd.excel.model.TableTemplateTableName;
 import com.cmd.excel.model.TableTemplates;
 import com.cmd.excel.repository.TableTemplateDetailsRepository;
 import com.cmd.excel.repository.TableTemplatesRepository;
@@ -52,6 +54,24 @@ public class TemplateService {
 	 */
 	public List<TableTemplates> getAllTableTemplates() {
 		return tableTeplatesRepository.getallTemplates();
+	}
+	
+	public List<TableTemplateTableName> getAllTableTemplateDetails() {
+
+		List<Object[]> results = tableTeplatesRepository.getallTemplateDetails();
+        List<TableTemplateTableName> templates = new ArrayList<>();
+
+        for (Object[] row : results) {
+            TableTemplateTableName template = new TableTemplateTableName();
+            template.setTemplateId((int) row[0]);
+            template.setTemplateName((String) row[1]);
+            template.setTableId((int) row[2]);
+            template.setTebleName((String) row[3]);
+            templates.add(template);
+        }
+
+        return templates;
+
 	}
 
 	/**
