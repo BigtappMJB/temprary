@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -237,7 +238,60 @@ public class TemplateController {
 		response.setErrorMessage(errorMessage);
 		return new ResponseEntity<>(response, httpStatus);
 	}
-
+	
+	
+//	@GetMapping("/{id}")
+//    public Object getTemplateById(@RequestHeader("token") String token,@PathVariable Integer id) {
+//        return templateService.getTemplateByTable(id)
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
+//    }
+//
+    @PostMapping("/saveTemplateName")
+    public Object createTemplate(@RequestHeader("token") String token,@RequestBody TableTemplates template) {
+    	authenticate(token);
+		if (authResponse.getStatusCode() != 200) {
+			return authResponse;
+		}
+		this.httpStatus = HttpStatus.OK;
+		String errorMessage = "";
+    	try {
+    		message = CmdConstants.TEMPLATE_DETAILS + " " + CmdConstants.ADDED_SUCCESSFULLY;
+			cmdUtils.logInfoDebugMessage(logger, message);
+        
+        return new ResponseEntity<>(templateService.createTemplate(template), httpStatus);
+    	}
+    	catch(Exception e) {
+    		message = CmdConstants.MSG_ERROR_SAVING + CmdConstants.TEMPLATE_DETAILS;
+			cmdUtils.logInfoErrorMessage(logger, message);
+			httpStatus = HttpStatus.EXPECTATION_FAILED;
+			errorMessage = e.getLocalizedMessage();
+		}
+		response.setMessage(message);
+		response.setStatusCode(httpStatus.value());
+		response.setErrorMessage(errorMessage);
+		return new ResponseEntity<>(response, httpStatus);
+    }
+//
+//    @PutMapping("/{id}")
+//    public ResponseEntity<TableTemplate> updateTemplate(@PathVariable Integer id, @RequestBody TableTemplate templateDetails) {
+//        try {
+//            TableTemplate updatedTemplate = service.updateTemplate(id, templateDetails);
+//            return ResponseEntity.ok(updatedTemplate);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteTemplate(@PathVariable Integer id) {
+//        service.deleteTemplate(id);
+//        return ResponseEntity.noContent().build();
+//    }
+//	
+//	
+//	
+//
 	private void authenticate(String token) {
 		authResponse = (Response) jwtTokenUtil.validateUserToken(token);
 	}

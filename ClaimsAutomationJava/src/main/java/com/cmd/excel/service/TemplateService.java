@@ -138,4 +138,9 @@ public class TemplateService {
 	public List<String> getTablePrimaryKeyColumns(int tableId) {
 		return tableTemplateDetailsRepository.getPrimaryKeyColumns(tableId);
 	}
+
+	public Object createTemplate(TableTemplates template) {
+        return tableTeplatesRepository.save(template);
+    }
+
 }

@@ -33,11 +33,13 @@ import com.cmd.excel.model.templates.CountryRegion;
 import com.cmd.excel.model.templates.Currency;
 import com.cmd.excel.model.templates.EntityTable;
 import com.cmd.excel.model.templates.EntityXreference;
+import com.cmd.excel.model.templates.TempVidalClaims;
 import com.cmd.excel.repository.CmdTableRepository;
 import com.cmd.excel.repository.templates.CountryRegionRepository;
 import com.cmd.excel.repository.templates.CurrencyRepository;
 import com.cmd.excel.repository.templates.EntityTableRepository;
 import com.cmd.excel.repository.templates.EntityXreferenceRepository;
+import com.cmd.excel.repository.templates.TempVidalClaimsRepository;
 
 
 @Service
@@ -57,7 +59,8 @@ public class UploadTemplatesService {
 	@Autowired
 	EntityTableRepository entityTableRepository;
 
-	
+	@Autowired
+	TempVidalClaimsRepository tempVidalClaimsRepository; 
 
 	@Autowired
 	CmdTableRepository dmaTableRepository;
@@ -86,7 +89,10 @@ public class UploadTemplatesService {
 		case "entity_xreference":
 			entityXreferenceDto(eachRecordValues, list, defaultValueList);
 			break;
-		
+			
+		case "temp_vidal_claims":
+			tempVidalClaims(eachRecordValues, list, defaultValueList);
+			break;
 		default:
 			unknownTemplate(tableName);
 			break;
@@ -115,6 +121,10 @@ public class UploadTemplatesService {
 		
 		case "entity_xreference":
 			dbVMapList = entityXreferenceRepository.getEntityXreferenceRepositoryRequest();
+			return dbVMapList;
+			
+		case "temp_vidal_claims":
+			dbVMapList = tempVidalClaimsRepository.getTempVidalClaims();
 			return dbVMapList;
 		
 		case "security_master_view":
@@ -197,7 +207,37 @@ public class UploadTemplatesService {
 		entityXreferenceRepository.save(template);
 	}
 
-	
+	public void tempVidalClaims(String[] eachRecordValues, List<String> list, String[] defaultValueList) {
+		TempVidalClaims template = new TempVidalClaims();
+
+
+		template.setClaimInsId(eachRecordValues[28]);
+        template.setClaimDt(eachRecordValues[31]);
+        template.setClaimAmount(eachRecordValues[64]);
+        template.setClaimDescription(eachRecordValues[55]);
+        template.setClaimStatus(eachRecordValues[103]);
+        
+        template.setEmpTpaid(eachRecordValues[14]);
+        template.setClmHospital(eachRecordValues[34]);
+        template.setClmDoa(eachRecordValues[32]);
+        template.setClmDod(eachRecordValues[33]);
+        template.setClmType(eachRecordValues[58]);
+        template.setClmPreAuthId(eachRecordValues[29]);
+        template.setClmSettNo(eachRecordValues[101]);
+        template.setClmSettAmt(eachRecordValues[99]);
+        template.setClmSettDate(eachRecordValues[100]);
+        
+        template.setClmDisAmt(eachRecordValues[87]);
+        template.setClmSettChqBnk(eachRecordValues[16]);
+        template.setClmSettChqDt(eachRecordValues[102]);
+
+        template.setClmBillDetails(eachRecordValues[4]);
+        template.setClmAllowedAmt(eachRecordValues[20]);
+        template.setClmAllowedId(eachRecordValues[29]);
+        
+        
+        tempVidalClaimsRepository.save(template);
+	}
 
 	public void entityTableDto(String[] eachRecordValues, List<String> list, String[] defaultValueList) {
 		EntityTable template = new EntityTable();

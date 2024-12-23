@@ -375,7 +375,7 @@ public class UploadService {
 		}
 		List<Integer> pkColumnIndex = new ArrayList<>();
 		for (String indexLoop : pkColumn) {
-			int index = list.indexOf(indexLoop);
+			int index = list.indexOf("TPA Claim Number");
 			pkColumnIndex.add(index);
 		}
 		for (int i = 0; i < pkColumnIndex.size(); i++) {
