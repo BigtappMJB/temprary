@@ -25,7 +25,7 @@ export class MappingViewDataComponent implements OnInit {
     'targetDatabase',
     'targetTable',
     'targetColumn',
-    'transformationLogic',
+    // 'transformationLogic',
     'actions',
   ];
   mappingForm!: FormGroup;
@@ -66,7 +66,7 @@ export class MappingViewDataComponent implements OnInit {
       targetColumn: [null, Validators.required],
       targetDatabase: [null, Validators.required],
       targetTable: [null, Validators.required],
-      transformationLogic: [null, Validators.required],
+      transformationLogic: [null],
     });
     this.getTableNames();
   }
