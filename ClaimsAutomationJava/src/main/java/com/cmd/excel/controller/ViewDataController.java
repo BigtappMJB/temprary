@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cmd.constants.CmdConstants;
 import com.cmd.domain.TableInfo;
 import com.cmd.domain.response.Response;
+import com.cmd.excel.model.MappingTable;
 import com.cmd.excel.repository.CmdTableRepository;
+import com.cmd.excel.service.MappingTableService;
 import com.cmd.excel.service.UploadService;
 import com.cmd.excel.service.UploadTemplatesService;
 import com.cmd.excel.service.UserManagementService;
@@ -47,6 +50,9 @@ public class ViewDataController {
 
 	@Autowired
 	UserManagementService userManagementService;
+	
+	@Autowired
+    private MappingTableService mappingTableService;
 
 	@Autowired
 	CmdUtils cmdUtils;
@@ -130,6 +136,12 @@ public class ViewDataController {
 		message = CmdConstants.TABLE_DATA + CmdConstants.FETCHED + CmdConstants.SUCCSSESSFULLY;
 		cmdUtils.logInfoDebugMessage(logger, message);
 	}
+	
+	@GetMapping("/GetMappingData")
+    public List<MappingTable> getAllMappings() {
+        return mappingTableService.getAllMappings();
+    }
+	
 
 	private void authenticate(String token) {
 		authResponse = (Response) jwtTokenUtil.validateUserToken(token);
