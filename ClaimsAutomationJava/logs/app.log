@@ -319,3 +319,276 @@
 2024-12-23 11:40:06.441  INFO 16992 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
 2024-12-23 11:40:06.565  INFO 16992 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : All templates fetcned successfully
 2024-12-23 11:40:14.391  INFO 16992 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:43:02.175  INFO 16992 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:43:05.957  INFO 16992 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:44:39.743  INFO 16992 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:44:39.874  INFO 16992 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:44:47.963  INFO 16992 --- [SpringApplicationShutdownHook] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+2024-12-23 11:44:47.986  INFO 16992 --- [SpringApplicationShutdownHook] o.s.s.quartz.SchedulerFactoryBean        : Shutting down Quartz Scheduler
+2024-12-23 11:44:47.987  INFO 16992 --- [SpringApplicationShutdownHook] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED shutting down.
+2024-12-23 11:44:47.987  INFO 16992 --- [SpringApplicationShutdownHook] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+2024-12-23 11:44:47.988  INFO 16992 --- [SpringApplicationShutdownHook] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED shutdown complete.
+2024-12-23 11:44:47.989  INFO 16992 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-12-23 11:44:47.992  INFO 16992 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-12-23 11:44:47.993  INFO 16992 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-12-23 11:47:58.914  INFO 21824 --- [main] c.c.c.ConfigServicePropertySourceLocator : Fetching config from server at : http://localhost:8888
+2024-12-23 11:47:58.980  INFO 21824 --- [main] c.c.c.ConfigServicePropertySourceLocator : Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2024-12-23 11:47:58.981  WARN 21824 --- [main] c.c.c.ConfigServicePropertySourceLocator : Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/dmapp/local": Connection refused: no further information; nested exception is java.net.ConnectException: Connection refused: no further information
+2024-12-23 11:47:58.983  INFO 21824 --- [main] com.cmd.excel.CmdAppApplication          : The following 1 profile is active: "local"
+2024-12-23 11:47:59.471  INFO 21824 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-12-23 11:47:59.551  INFO 21824 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 73 ms. Found 25 JPA repository interfaces.
+2024-12-23 11:47:59.676  INFO 21824 --- [main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=87931757-28b5-3dcd-ba0a-b4e7d2c1b468
+2024-12-23 11:48:00.004  INFO 21824 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 9090 (http)
+2024-12-23 11:48:00.011  INFO 21824 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-12-23 11:48:00.012  INFO 21824 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.60]
+2024-12-23 11:48:00.104  INFO 21824 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-12-23 11:48:00.104  INFO 21824 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1104 ms
+2024-12-23 11:48:00.303  INFO 21824 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-12-23 11:48:00.335  INFO 21824 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.7.Final
+2024-12-23 11:48:00.440  INFO 21824 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-12-23 11:48:00.514  WARN 21824 --- [main] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout has been set but has no effect because the pool is operating as a fixed size pool.
+2024-12-23 11:48:00.516  INFO 21824 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-12-23 11:48:00.781  INFO 21824 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-12-23 11:48:00.794  INFO 21824 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+2024-12-23 11:48:00.974  WARN 21824 --- [main] org.hibernate.mapping.RootClass          : HHH000038: Composite-id class does not override equals(): com.cmd.excel.model.embed.EntityXreferenceRequestEmbed
+2024-12-23 11:48:00.974  WARN 21824 --- [main] org.hibernate.mapping.RootClass          : HHH000039: Composite-id class does not override hashCode(): com.cmd.excel.model.embed.EntityXreferenceRequestEmbed
+2024-12-23 11:48:01.396  INFO 21824 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-12-23 11:48:01.404  INFO 21824 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-12-23 11:48:01.837  INFO 21824 --- [main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: private static java.lang.String com.cmd.excel.repository.RegisterRepository.emailUsername
+2024-12-23 11:48:01.837  INFO 21824 --- [main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: private static java.lang.String com.cmd.excel.repository.RegisterRepository.emailPassword
+2024-12-23 11:48:01.871  INFO 21824 --- [main] org.quartz.impl.StdSchedulerFactory      : Using default implementation for ThreadExecutor
+2024-12-23 11:48:01.878  INFO 21824 --- [main] org.quartz.core.SchedulerSignalerImpl    : Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2024-12-23 11:48:01.879  INFO 21824 --- [main] org.quartz.core.QuartzScheduler          : Quartz Scheduler v.2.3.2 created.
+2024-12-23 11:48:01.879  INFO 21824 --- [main] org.quartz.simpl.RAMJobStore             : RAMJobStore initialized.
+2024-12-23 11:48:01.881  INFO 21824 --- [main] org.quartz.core.QuartzScheduler          : Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2024-12-23 11:48:01.881  INFO 21824 --- [main] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
+2024-12-23 11:48:01.881  INFO 21824 --- [main] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler version: 2.3.2
+2024-12-23 11:48:01.881  INFO 21824 --- [main] org.quartz.core.QuartzScheduler          : JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@7bf997e0
+2024-12-23 11:48:02.294  WARN 21824 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-12-23 11:48:03.717  INFO 21824 --- [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2024-12-23 11:48:03.739  INFO 21824 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 17 endpoint(s) beneath base path '/actuator'
+2024-12-23 11:48:03.784  INFO 21824 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 9090 (http) with context path ''
+2024-12-23 11:48:04.840  INFO 21824 --- [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2024-12-23 11:48:04.841  INFO 21824 --- [main] o.s.s.quartz.SchedulerFactoryBean        : Starting Quartz Scheduler now
+2024-12-23 11:48:04.841  INFO 21824 --- [main] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED started.
+2024-12-23 11:48:04.862  INFO 21824 --- [main] com.cmd.excel.CmdAppApplication          : Started CmdAppApplication in 8.64 seconds (JVM running for 8.961)
+2024-12-23 11:48:07.856  INFO 21824 --- [http-nio-9090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-12-23 11:48:07.857  INFO 21824 --- [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-12-23 11:48:07.860  INFO 21824 --- [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2024-12-23 11:48:08.237  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:48:08.388  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:48:19.027  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:48:19.167  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:48:26.947  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:48:27.096  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:49:02.052  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:49:02.198  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:49:04.234  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:49:04.374  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:49:22.327  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:49:22.465  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:49:23.895  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:49:24.023  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:49:46.699  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:49:46.839  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:49:56.769  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:49:56.892  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:50:20.234  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:50:20.389  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:52:27.413  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:52:27.541  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:52:29.083  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:52:29.225  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-23 11:55:17.946  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:55:21.869  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 11:55:22.448  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:01:49.598  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:02:01.366  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:02:06.741  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:02:45.073  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:02:53.824  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:06:43.479  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:06:54.793  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:23:49.579  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:25:21.041  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:25:29.265  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:26:11.983  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:26:39.947  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:26:48.245  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:26:50.866  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:27:44.126  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:27:46.693  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:34:41.742  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:34:41.772  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:34:41.849  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:34:46.819  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:48:47.574  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:48:51.893  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:48:51.918  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:48:51.965  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:48:52.122  INFO 21824 --- [task-1] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:48:52.123 ERROR 21824 --- [task-1] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:48:52.144  INFO 21824 --- [http-nio-9090-exec-3] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:48:55.249  INFO 21824 --- [task-1] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:48:55.250 ERROR 21824 --- [task-1] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:49:22.472  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:49:46.149  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:05.818  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:07.911  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:10.578  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:12.741  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:19.607  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:28.389  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:41.811  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:52.156  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:50:54.819  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:51:04.117  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:51:25.819  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:51:32.568  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:51:41.730  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:51:41.776  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:51:41.825  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:51:41.896  INFO 21824 --- [task-2] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:51:41.897 ERROR 21824 --- [task-2] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:51:41.958  INFO 21824 --- [http-nio-9090-exec-6] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:51:44.790  INFO 21824 --- [task-2] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:51:44.791 ERROR 21824 --- [task-2] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:52:57.577  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:52:59.241  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:53:07.884  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:53:07.911  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:53:07.959  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:53:08.052  INFO 21824 --- [task-3] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:53:08.052 ERROR 21824 --- [task-3] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:53:08.091  INFO 21824 --- [http-nio-9090-exec-6] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:53:10.372  INFO 21824 --- [task-3] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:53:10.373 ERROR 21824 --- [task-3] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:53:21.087  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:53:27.192  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:53:34.709  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:53:34.756  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:53:34.806  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:53:34.881  INFO 21824 --- [task-4] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:53:34.881 ERROR 21824 --- [task-4] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:53:34.940  INFO 21824 --- [http-nio-9090-exec-3] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:53:37.197  INFO 21824 --- [task-4] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:53:37.197 ERROR 21824 --- [task-4] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:53:56.041  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:54:15.302  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:54:19.457  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:54:28.227  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:54:39.654  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:54:45.251  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:54:51.318  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:54:54.056  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:55:02.232  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:55:06.806  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:55:11.409  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:55:28.473  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:55:28.518  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:55:28.567  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:55:28.640  INFO 21824 --- [task-5] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:55:28.640 ERROR 21824 --- [task-5] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:55:28.699  INFO 21824 --- [http-nio-9090-exec-9] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:55:31.040  INFO 21824 --- [task-5] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:55:31.040 ERROR 21824 --- [task-5] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:55:44.279  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:55:53.743  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:55:53.789  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:55:56.304  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:55:56.434  INFO 21824 --- [task-6] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:55:56.434 ERROR 21824 --- [task-6] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:55:56.461  INFO 21824 --- [http-nio-9090-exec-8] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:55:58.800  INFO 21824 --- [task-6] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:55:58.801 ERROR 21824 --- [task-6] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:56:05.938  INFO 21824 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:56:09.558  INFO 21824 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:56:16.616  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:56:34.842  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:56:43.311  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:56:43.337  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:56:43.386  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:56:43.475  INFO 21824 --- [task-7] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:56:43.475 ERROR 21824 --- [task-7] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:56:43.536  INFO 21824 --- [http-nio-9090-exec-10] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:56:45.784  INFO 21824 --- [task-7] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:56:45.785 ERROR 21824 --- [task-7] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:57:14.169  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:57:15.937  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:57:22.929  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:57:22.953  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:57:23.001  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:57:23.088  INFO 21824 --- [task-8] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:57:23.089 ERROR 21824 --- [task-8] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:57:23.130  INFO 21824 --- [http-nio-9090-exec-8] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:57:25.411  INFO 21824 --- [task-8] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:57:25.412 ERROR 21824 --- [task-8] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:57:51.911  INFO 21824 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:57:54.004  INFO 21824 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:57:59.303  INFO 21824 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 12:58:07.033  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-23 12:58:07.059  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-23 12:58:07.105  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.controller.ViewDataController  : Table data Fetched Successfully
+2024-12-23 12:58:07.190  INFO 21824 --- [task-9] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:58:07.190 ERROR 21824 --- [task-9] com.cmd.excel.helper.DmaEmailHelper      : D:\nbf\invalid_records\UPL_VIDAL_MAPPING_20241223.csv (The system cannot find the path specified)
+2024-12-23 12:58:07.232  INFO 21824 --- [http-nio-9090-exec-10] c.cmd.excel.controller.UploadController  : File Uploaded Successfully
+2024-12-23 12:58:09.558  INFO 21824 --- [task-9] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 12:58:09.559 ERROR 21824 --- [task-9] com.cmd.excel.service.CmdEmailService    : IOException while sending message
+2024-12-23 14:49:14.188  WARN 21824 --- [http-nio-9090-exec-1] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@363d7545 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.189  WARN 21824 --- [http-nio-9090-exec-6] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@4de7c3a6 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.192  WARN 21824 --- [http-nio-9090-exec-6] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@27abf726 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.192  WARN 21824 --- [http-nio-9090-exec-1] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@63ca460a (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.194  WARN 21824 --- [http-nio-9090-exec-6] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@31549408 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.194  WARN 21824 --- [http-nio-9090-exec-1] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@5dd3ff94 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.195  WARN 21824 --- [http-nio-9090-exec-6] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@66317015 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.195  WARN 21824 --- [http-nio-9090-exec-1] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@121bb172 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.196  WARN 21824 --- [http-nio-9090-exec-6] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@15b86586 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:14.196  WARN 21824 --- [http-nio-9090-exec-1] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@5690bea7 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
+2024-12-23 14:49:15.418  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-23 14:49:19.827  WARN 21824 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h33m47s924ms529µs).
+2024-12-23 16:13:11.662  WARN 21824 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=22m51s91ms137µs300ns).
+2024-12-23 16:41:01.820  WARN 21824 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m50s107ms256µs800ns).
+2024-12-23 16:57:51.633  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : Checking bad request
+2024-12-23 16:57:51.633  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : Getting User from db after checking user exists
+2024-12-23 16:57:51.637  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : SSO is : false 
+2024-12-23 16:57:51.637  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : Decrypting pwd
+2024-12-23 16:57:51.638  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : Check delete flag
+2024-12-23 16:57:51.638  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : Checking user exists
+2024-12-23 16:57:51.686  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : Getting user details
+2024-12-23 16:57:51.988  WARN 21824 --- [http-nio-9090-exec-9] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1062, SQLState: 23000
+2024-12-23 16:57:51.988 ERROR 21824 --- [http-nio-9090-exec-9] o.h.engine.jdbc.spi.SqlExceptionHelper   : Duplicate entry '0' for key 'user_token.PRIMARY'
+2024-12-23 16:57:51.991  INFO 21824 --- [http-nio-9090-exec-9] o.h.e.j.b.internal.AbstractBatchImpl     : HHH000010: On release of batch it still contained JDBC statements
+2024-12-23 16:57:52.045  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : Exception while login
+2024-12-23 16:57:52.046  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : could not execute statement; SQL [n/a]; constraint [user_token.PRIMARY]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement
+2024-12-23 16:57:52.047  INFO 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : could not execute statement; SQL [n/a]; constraint [user_token.PRIMARY]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement
+2024-12-23 16:57:52.047 ERROR 21824 --- [http-nio-9090-exec-9] com.cmd.excel.service.LoginService       : could not execute statement; SQL [n/a]; constraint [user_token.PRIMARY]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement
+2024-12-23 16:58:19.746  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : Checking bad request
+2024-12-23 16:58:19.747  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : Getting User from db after checking user exists
+2024-12-23 16:58:19.748  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : SSO is : false 
+2024-12-23 16:58:19.748  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : Decrypting pwd
+2024-12-23 16:58:19.748  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : Check delete flag
+2024-12-23 16:58:19.748  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : Checking user exists
+2024-12-23 16:58:19.768  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : Getting user details
+2024-12-23 16:58:20.901  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : Checking user details contains user id
+2024-12-23 16:58:20.997  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : Login successfull
+2024-12-23 16:58:20.999  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : test User logged in successfully
+2024-12-23 16:58:20.999  INFO 21824 --- [http-nio-9090-exec-5] com.cmd.excel.service.LoginService       : test User logged in successfully
+2024-12-23 16:58:21.051  INFO 21824 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-23 16:58:38.505  INFO 21824 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-23 16:58:43.070  INFO 21824 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-23 16:59:57.640  INFO 21824 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-23 16:59:59.841  INFO 21824 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : ALL Role s Fetched Successfully
+2024-12-23 17:00:06.831  INFO 21824 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-23 17:00:06.989  INFO 21824 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-23 17:01:21.308  INFO 21824 --- [http-nio-9090-exec-8] com.cmd.excel.service.SchedulerService   : saving scheduler details
+2024-12-23 17:01:21.421  INFO 21824 --- [http-nio-9090-exec-8] com.cmd.excel.service.SchedulerService   : scheduler details saved successfully
+2024-12-23 17:01:21.421  INFO 21824 --- [http-nio-9090-exec-8] com.cmd.excel.service.SchedulerService   : Schedular added successfully
+2024-12-23 17:01:25.873  INFO 21824 --- [http-nio-9090-exec-2] com.cmd.excel.service.SchedulerService   : deleting scheduler details
+2024-12-23 17:01:26.006  INFO 21824 --- [http-nio-9090-exec-2] com.cmd.excel.service.SchedulerService   : Schedular deleted successfully

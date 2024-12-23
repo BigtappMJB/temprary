@@ -400,13 +400,13 @@ export class CsvSchedulerComponent {
     endDateTime.setHours(12, 0);
 
     const cronData = {
-      schedularName: this.csvSchedulerForm.get('schedulerName')?.value.trim(),
+      schedularName: this.csvSchedulerForm.get('schedulerName')?.value?.trim(),
       startDateTime: startDateTime,
       endDateTime: this.csvSchedulerForm.get('endDate')?.value,
       cronExpression: cronExpression,
       status: '0',
-      targetTable: this.csvSchedulerForm.get('targetTable')?.value.trim(),
-      processLogc: this.csvSchedulerForm.get('processLogic')?.value.trim(),
+      targetTable: this.csvSchedulerForm.get('targetTable')?.value?.trim(),
+      processLogc: this.csvSchedulerForm.get('processLogic')?.value?.trim(),
     };
     if (this.editMode) {
       this.csvSchedulerService

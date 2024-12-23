@@ -36,6 +36,9 @@ export class LoginComponent implements OnInit {
   errorFlag: boolean = false;
   authorizationMessage: any;
   show_password: boolean = false;
+  isTokenExpired =
+    sessionStorage.getItem('token_expired') &&
+    sessionStorage.getItem('token_expired') === 'true';
   constructor(
     private readonly router: Router,
     private readonly formBuilder: FormBuilder,
@@ -49,10 +52,11 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.router.url == '/logout' || this.router.url == '/inv/dm/logout') {
-      this.dataStorageService.isUserLoggedIn = false;
-      this.onSignOut();
-    }
+    if (sessionStorage.getItem(''))
+      if (this.router.url == '/logout' || this.router.url == '/inv/dm/logout') {
+        this.dataStorageService.isUserLoggedIn = false;
+        this.onSignOut();
+      }
     if (this.dataStorageService.isUserLoggedIn) {
       this.getModules();
     }
@@ -68,7 +72,7 @@ export class LoginComponent implements OnInit {
     if (!this.router.url.includes('/logout')) {
       let scode = true;
       if (scode) {
-        this.validateScode(scode);
+        // this.validateScode(scode);
       }
       if (!this.dataStorageService.isUserLoggedIn) {
         this.router.navigateByUrl('');
@@ -93,6 +97,11 @@ export class LoginComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    if (this.isTokenExpired) {
+      this.errorFlag = true;
+      this.authorizationMessage = 'Session Expired!';
+      return;
+    }
     if (this.emailInput) {
       this.renderer.selectRootElement(this.emailInput.nativeElement).focus();
     }

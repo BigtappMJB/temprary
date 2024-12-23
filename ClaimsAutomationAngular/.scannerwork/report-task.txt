@@ -1,6 +1,6 @@
-projectKey=CMD-CMDD
+projectKey=claimsAutomationSQ
 serverUrl=http://localhost:9000
-serverVersion=10.6.0.92116
-dashboardUrl=http://localhost:9000/dashboard?id=CMD-CAD
-ceTaskId=42899003-a99a-4acc-9305-db4e95f4cb32
-ceTaskUrl=http://localhost:9000/api/ce/task?id=42899003-a99a-4acc-9305-db4e95f4cb32
+serverVersion=24.12.0.100206
+dashboardUrl=http://localhost:9000/dashboard?id=claimsAutomationSQ
+ceTaskId=16a068f7-5a12-4269-be19-fb65dbd980a4
+ceTaskUrl=http://localhost:9000/api/ce/task?id=16a068f7-5a12-4269-be19-fb65dbd980a4

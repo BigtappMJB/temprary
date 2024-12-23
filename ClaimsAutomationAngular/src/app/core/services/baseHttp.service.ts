@@ -31,8 +31,16 @@ export abstract class BaseHttp {
       'Content-Type': 'application/json',
       token: bearer,
     });
-    return this.http.get<T>(apiUrls[tech] + url, { headers: header }).pipe(
-      map((response) => response),
+    return this.http.get<any>(apiUrls[tech] + url, { headers: header }).pipe(
+      map((response) => {
+        if (response.statusCode === 401) {
+          sessionStorage.clear();
+          localStorage.clear();
+          sessionStorage.setItem('token_expired', 'true');
+          this.router.navigateByUrl('');
+        }
+        return response;
+      }),
       catchError(this.handleError)
     );
   }
@@ -44,9 +52,17 @@ export abstract class BaseHttp {
       token: bearer,
     });
     return this.http
-      .post<T>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
+      .post<any>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
       .pipe(
-        map((response) => response),
+        map((response) => {
+          if (response.statusCode === 401) {
+            sessionStorage.clear();
+            localStorage.clear();
+            sessionStorage.setItem('token_expired', 'true');
+            this.router.navigateByUrl('');
+          }
+          return response;
+        }),
         catchError(this.handleError)
       );
   }
@@ -58,9 +74,17 @@ export abstract class BaseHttp {
       token: bearer,
     });
     return this.http
-      .post<T>(apiUrls[tech] + url, body, { headers: header })
+      .post<any>(apiUrls[tech] + url, body, { headers: header })
       .pipe(
-        map((response) => response),
+        map((response) => {
+          if (response.statusCode === 401) {
+            sessionStorage.clear();
+            localStorage.clear();
+            sessionStorage.setItem('token_expired', 'true');
+            this.router.navigateByUrl('');
+          }
+          return response;
+        }),
         catchError(this.handleError)
       );
   }
@@ -71,9 +95,17 @@ export abstract class BaseHttp {
       // token: bearer,
     });
     return this.http
-      .post<T>(environment.pythonUrl + url, body, { headers: header })
+      .post<any>(environment.pythonUrl + url, body, { headers: header })
       .pipe(
-        map((response) => response),
+        map((response) => {
+          if (response.statusCode === 401) {
+            sessionStorage.clear();
+            localStorage.clear();
+            sessionStorage.setItem('token_expired', 'true');
+            this.router.navigateByUrl('');
+          }
+          return response;
+        }),
         catchError(this.handleError)
       );
   }
@@ -85,9 +117,17 @@ export abstract class BaseHttp {
       token: bearer,
     });
     return this.http
-      .put<T>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
+      .put<any>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
       .pipe(
-        map((response) => response),
+        map((response) => {
+          if (response.statusCode === 401) {
+            sessionStorage.clear();
+            localStorage.clear();
+            sessionStorage.setItem('token_expired', 'true');
+            this.router.navigateByUrl('');
+          }
+          return response;
+        }),
         catchError(this.handleError)
       );
   }
@@ -98,8 +138,16 @@ export abstract class BaseHttp {
       'Content-Type': 'application/json',
       token: bearer,
     });
-    return this.http.delete<T>(apiUrls[tech] + url, { headers: header }).pipe(
-      map((response) => response),
+    return this.http.delete<any>(apiUrls[tech] + url, { headers: header }).pipe(
+      map((response) => {
+        if (response.statusCode === 401) {
+          sessionStorage.clear();
+          localStorage.clear();
+          sessionStorage.setItem('token_expired', 'true');
+          this.router.navigateByUrl('');
+        }
+        return response;
+      }),
       catchError(this.handleError)
     );
   }
@@ -109,9 +157,17 @@ export abstract class BaseHttp {
       'Content-Type': 'application/json',
     });
     return this.http
-      .post<T>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
+      .post<any>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
       .pipe(
-        map((response) => response),
+        map((response) => {
+          if (response.statusCode === 401) {
+            sessionStorage.clear();
+            localStorage.clear();
+            sessionStorage.setItem('token_expired', 'true');
+            this.router.navigateByUrl('');
+          }
+          return response;
+        }),
         catchError(this.handleError)
       );
   }
@@ -151,7 +207,7 @@ export abstract class BaseHttp {
     throw new Error('Method not implemented.');
   }
 
-  getchangepassword<T>(url: string,tech:any="springBoot"): Observable<T> {
+  getchangepassword<T>(url: string, tech: any = 'springBoot'): Observable<T> {
     let bearer: any = localStorage.getItem('LoginData');
     if (bearer) {
       bearer = JSON.parse(bearer);
@@ -159,8 +215,16 @@ export abstract class BaseHttp {
         'Content-Type': 'application/json',
         token: bearer.userToken,
       });
-      return this.http.get<T>(apiUrls[tech] + url, { headers: header }).pipe(
-        map((response) => response),
+      return this.http.get<any>(apiUrls[tech] + url, { headers: header }).pipe(
+        map((response) => {
+          if (response.statusCode === 401) {
+            sessionStorage.clear();
+            localStorage.clear();
+            sessionStorage.setItem('token_expired', 'true');
+            this.router.navigateByUrl('');
+          }
+          return response;
+        }),
         catchError(this.handleError)
       );
     } else {
