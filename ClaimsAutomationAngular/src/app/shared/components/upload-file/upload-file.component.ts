@@ -137,7 +137,7 @@ export class UploadFileComponent implements OnInit {
   ontableUploadSubmit() {
     if (this.tableUploadForm.valid && this.isTemplateEmpty()) {
       this.tableDataService.getTableTemplateByTableId(this.tableUploadForm.value.tableId).pipe(take(1)).subscribe((response) => {
-        
+
         this.templatePermission = this.sendReceiveService.getTemplatePermissions(response.actionId);
         this.strActions = this.templatePermission.join(' or ');
         this.tableDataService.getTemplateDetails(this.tableUploadForm.value.tableId, response.templateId).pipe(take(1)).subscribe((templateDetails) => {
@@ -160,6 +160,7 @@ export class UploadFileComponent implements OnInit {
     for (let template of this.templateDetails) {
       ({ fkTableDetails, pkTableDetails } = this.getPKFKDetails(template, fkTableDetails, pkTableDetails));
     }
+    debugger
     fkTableDetails = this.removeDuplicates(fkTableDetails);
     if (fkTableDetails.length > 0) {
       this.getForeignKeyTableData(pkTableDetails, fkTableDetails);
@@ -243,8 +244,24 @@ export class UploadFileComponent implements OnInit {
   }
 
   validateExcelFile() {
+    let colList = [];
+    let columnIndex: number[] = [];
+    for (let tempDetails of this.templateDetails) {
+      colList.push(tempDetails.templateAttribute);
+    }
+    colList.forEach((colNmae, columnNameIndex) => {
+      this.data[3].forEach((item, index) => {
+        if (colNmae == item) {
+          columnIndex.push(index);
+        }
+      })
+
+
+    });
+
+
     this.tableData = {
-      columnList: this.data[3],
+      columnList: colList,
       tableId: this.tableUploadForm.value.tableId,
       templateName: this.fileName,
       tableValues: [],
@@ -266,16 +283,16 @@ export class UploadFileComponent implements OnInit {
         return;
       }
       let columnsLength = this.data[3].length;
-      if ((columnsLength - 1) !== this.templateDetails.length) {
-        this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.columnsCount);
-        return;
-      }
-      for (let templateDetails of this.templateDetails) {
-        if (!(this.data[3].includes(templateDetails.tableFieldName))) {
-          this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.excelColumns);
-          return;
-        }
-      }
+      // if ((columnsLength - 1) !== this.templateDetails.length) {
+      //   this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.columnsCount);
+      //   return;
+      // }
+      // for (let templateDetails of this.templateDetails) {
+      //   if (!(this.data[3].includes(templateDetails.tableFieldName))) {
+      //     this.notifierService.showNotification('Error', MyAppHttp.ToasterMessage.excelColumns);
+      //     return;
+      //   }
+      // }
       this.isSpinner = true;
       let validRecords = [];
       let row;
@@ -289,9 +306,9 @@ export class UploadFileComponent implements OnInit {
           let rowErrors: any = [];
           for (let i = 0; i < this.tableData.columnList.length; i++) {
             for (let j = 0; j < this.templateDetails.length; j++) {
-              if (this.tableData.columnList[i] == this.templateDetails[j].tableFieldName) {
+              if (this.tableData.columnList[i] == this.templateDetails[j].templateAttribute) {
                 if (row[0] == "NEW" || row[0] == "UPD") {
-                  isValid = this.DataTypeValidation(k, i, j, isValid, rowErrors);
+                  isValid = this.DataTypeValidation(k, i,j, columnIndex[j], isValid, rowErrors);
                 }
                 else {
                   if (this.templatePermission.includes(row[0])) {
@@ -464,13 +481,39 @@ export class UploadFileComponent implements OnInit {
   private invalidRecordsExists(response: any) {
     let obj: { [key: string]: string; } = {};
     let invalidRecords = new Array();
-    this.columnList = [...this.tableData.columnList, "REASON"];
+    this.columnList = ["ACTION", ...this.tableData.columnList, "REASON"];
     response.invalidRecords.forEach((record: any) => {
       Object.entries(record).forEach(([key, value]) => {
         let keys: string[] = key.split("||");
         for (let i = 0; i < this.tableData.columnList.length; i++) {
           if (keys[i] === "NULL") { keys[i] = ""; }
-          obj[this.tableData.columnList[i]] = keys[i];
+          // obj[this.tableData.columnList[i]] = keys[i];
+
+          obj[this.columnList[0]] = keys[0];
+          obj[this.columnList[1]] = keys[28];
+          obj[this.columnList[2]] = keys[31];
+          obj[this.columnList[3]] = keys[64];
+          obj[this.columnList[4]] = keys[55];
+          obj[this.columnList[5]] = keys[103];
+
+          obj[this.columnList[6]] = keys[14];
+          obj[this.columnList[7]] = keys[34];
+          obj[this.columnList[8]] = keys[32];
+          obj[this.columnList[9]] = keys[33];
+          obj[this.columnList[10]] = keys[58];
+          obj[this.columnList[11]] = keys[29];
+          obj[this.columnList[12]] = keys[101];
+          obj[this.columnList[13]] = keys[99];
+          obj[this.columnList[14]] = keys[100];
+
+          obj[this.columnList[15]] = keys[87];
+          obj[this.columnList[16]] = keys[16];
+          obj[this.columnList[17]] = keys[102];
+
+          obj[this.columnList[18]] = keys[4];
+          obj[this.columnList[19]] = keys[20];
+          obj[this.columnList[20]] = keys[29];
+
         }
         obj["REASON"] = value as string;
         invalidRecords.push({ ...obj });
@@ -493,13 +536,13 @@ export class UploadFileComponent implements OnInit {
     recordsBeforePKvalidation.splice(index, 1);
   }
 
-  private DataTypeValidation(k: number, i: number, j: number, isValid: boolean, rowErrors: any) {
-    this.data[k][i] = this.RemoveTrailingSpaces(this.data[k][i]);
+  private DataTypeValidation(k: number, i: number, j: number,cellColIndex: any, isValid: boolean, rowErrors: any) {
+    this.data[k][cellColIndex] = this.RemoveTrailingSpaces(this.data[k][cellColIndex]);
     if (this.data[k][i] == undefined || this.data[k][i] == null || this.data[k][i] == "") {
       isValid = this.validateMandatory(j, k, isValid, rowErrors);
     }
     else if (this.templateDetails[j].dataType.toLowerCase() == "varchar") {
-      isValid = this.validateVarchar(j, k, i, isValid, rowErrors);
+      isValid = this.validateVarchar(j, k, i,cellColIndex, isValid, rowErrors);
     }
     else if (this.templateDetails[j].dataType.toLowerCase() == "number" || this.templateDetails[j].dataType.toLowerCase() == "integer") {
       isValid = this.validateInteger(k, i, j, isValid, rowErrors);
@@ -646,9 +689,9 @@ export class UploadFileComponent implements OnInit {
     return isValid;
   }
 
-  private validateVarchar(j: number, k: number, i: number, isValid: boolean, rowErrors: any) {
-    this.data[k][i] = this.RemoveNewlines(this.data[k][i]);
-    if ((this.templateDetails[j].fieldLength < (this.data[k][i].toString()).length)) {
+  private validateVarchar(j: number, k: number, i: number,cellColIndex: any, isValid: boolean, rowErrors: any) {
+    this.data[k][cellColIndex] = this.RemoveNewlines(this.data[k][cellColIndex]);
+    if ((this.templateDetails[j].fieldLength < (this.data[k][cellColIndex].toString()).length)) {
       isValid = false;
       rowErrors.push(this.templateDetails[j].tableFieldName + MyAppHttp.ToasterMessage.fieldLength1 + this.templateDetails[j].fieldLength + MyAppHttp.ToasterMessage.fieldLength2);
     }
@@ -864,7 +907,7 @@ export class UploadFileComponent implements OnInit {
       for (let j = 0; j < (this.currentTableData.length); j++) {
         rowCount = 0;
         for (let n = 0; n < pkArray.length; n++) {
-          if (this.currentTableData[j][pkArray[n]] == excelRowData[pkArrayIndex[n]]) {
+          if (this.currentTableData[j][pkArray[n]] == excelRowData[29]) {
             rowCount++;
             if (rowCount == pkArray.length) {
               return false;
@@ -931,6 +974,11 @@ export class UploadFileComponent implements OnInit {
     return obj;
   }
   RemoveNewlines(cellValue: string) {
-    return cellValue.replace(/[\r\n]+/g, " ");
+    if(cellValue ==  undefined){
+      return "";
+    }else{
+
+      return cellValue.replace(/[\r\n]+/g, " ");
+    }
   }
 }

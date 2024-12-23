@@ -10,13 +10,13 @@
     "
   ></mat-spinner>
 </div> -->
-<div class="ConfigurationTypes_downloadCsv w-100">
+<!-- <div class="ConfigurationTypes_downloadCsv w-100">
   <div class="container">
     <div class="row">
       <div
         [ngClass]="{ 'col-md-6': responseValue, 'col-md-12': !responseValue }"
       >
-        <form [formGroup]="tableUploadForm" (ngSubmit)="ontableUploadSubmit()">
+        <form [formGroup]="tableUploadForm" (ngSubmit)="ontableUploadSubmit()"> -->
           <!-- <div class="form-group inrne-addon">
             <mat-form-field>
               <input
@@ -61,7 +61,7 @@
                     table name is required
                   </mat-error>
                 </mat-form-field> -->
-          <div id="upload">
+          <!-- <div id="upload">
             <h4 class="text-center dropZoneTitle">
               Select data template excel file to upload
             </h4>
@@ -144,11 +144,11 @@
                 <div class="info">
                   <h3 class="name">
                     <strong>Selected File: {{ selectedFile?.name }}</strong>
-                  </h3>
+                  </h3> -->
                   <!-- <p class="size">
                     {{ formatBytes(file?.size) }}
                   </p> -->
-                </div>
+                <!-- </div>
               </div>
             </div>
             <mat-error
@@ -209,7 +209,7 @@
               {{ responseValue?.total_rows - responseValue?.inserted_rows }}
             </div>
           </div>
-          <br />
+          <br /> -->
 
           <!-- <div class="">
             <strong>Processed Columns : </strong><br />
@@ -221,8 +221,17 @@
             <strong>Missing Columns :</strong><br />
             {{ responseValue?.missing_columns?.join(", ") }}
           </div> -->
-        </div>
+        <!-- </div>
       </div>
     </div>
   </div>
+</div> -->
+
+<div class="ConfigurationTypes_textpadding">
+  <div class="ConfigurationTypes_brandHeader">
+    <h4>
+File upload
+    </h4>
+  </div>
+  <app-upload-file [inputSubModuleId]="22"></app-upload-file>
 </div>
