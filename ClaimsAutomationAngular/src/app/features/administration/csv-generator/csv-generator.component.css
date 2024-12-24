@@ -1,17 +1,15 @@
 .scheduler-container {
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .message {
-    margin-top: 15px;
-    font-weight: bold;
-  }
-  
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
+.message {
+  margin-top: 15px;
+  font-weight: bold;
+}
 
-  .mat-paginator {
-    width: calc(100% - 0px) !important;
+.mat-paginator {
+  width: calc(100% - 0px) !important;
 }

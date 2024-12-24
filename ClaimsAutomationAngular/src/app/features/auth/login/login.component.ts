@@ -100,6 +100,7 @@ export class LoginComponent implements OnInit {
     if (this.isTokenExpired) {
       this.errorFlag = true;
       this.authorizationMessage = 'Session Expired!';
+      sessionStorage.removeItem('token_expired');
       return;
     }
     if (this.emailInput) {

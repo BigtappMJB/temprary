@@ -41,12 +41,12 @@ export class CsvGeneratorComponent implements OnInit {
   pageSize = 10;
 
   constructor(
-    private csvGenertorService: CsvGeneratorService,
-    private formBuilder: FormBuilder,
+    private readonly csvGenertorService: CsvGeneratorService,
+    private readonly formBuilder: FormBuilder,
     public sendReceiveService: SendReceiveService,
-    private notifierService: NotifierService,
-    private router: Router,
-    public dialog: MatDialog
+    private readonly notifierService: NotifierService,
+    private readonly router: Router,
+    public readonly dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
