@@ -1,7 +1,18 @@
+@media screen and (max-width: 768px) {
+  #sidebar {
+    border: solid red;
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    max-height: 100vh;
+    overflow-y: auto;
+    width: 50vw;
+    background-color: #f8f9fa;
+  }
 
-
-.mobile-icon {
-    text-align: center;
-    padding: 2px s10px;
-    border-radius: 5px;
- }
+  #sidebar.sideBaractive {
+    transform: translateX(0);
+  }
+}

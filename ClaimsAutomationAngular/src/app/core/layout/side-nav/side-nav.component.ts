@@ -4,6 +4,8 @@ import { LengthPipe } from '@nglrx/pipes';
 import { browserRefresh } from 'src/app/app.component';
 import { DataStorageService } from 'src/app/shared/services/data-storage.service';
 import { SendReceiveService } from 'src/app/shared/services/sendReceive.service';
+import { SideBarService } from './side-bar.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-side-nav',
@@ -20,17 +22,19 @@ export class SideNavComponent implements OnInit {
   selectedSubModuleId: any;
   className: any;
 
-  status: boolean = false;
+  status!: any;
   clickEvent() {
     this.status = !this.status;
   }
   sidebar: boolean = false;
 
   constructor(
-    private dataStorageService: DataStorageService,
+    private readonly dataStorageService: DataStorageService,
     public router: Router,
     public sendReceiveService: SendReceiveService,
-    private lengthPipe: LengthPipe
+    private readonly lengthPipe: LengthPipe,
+    private readonly sidebarService: SideBarService,
+    private cdr: ChangeDetectorRef
   ) {
     this.lengthPipe.transform('Yet-another-string');
   }
@@ -54,6 +58,11 @@ export class SideNavComponent implements OnInit {
       this.refresh();
     }
   }
+  ngAfterViewInit() {
+    this.sidebarService.sidebarState$.subscribe((state) => {
+      this.sidebar = state;
+    });
+  }
 
   refresh() {
     if (!this.isRefresh) {
@@ -76,6 +85,9 @@ export class SideNavComponent implements OnInit {
 
   onModule(index: any) {
     this.selectedIndex = index;
+    console.log(this.selectedIndex);
+    this.cdr.detectChanges(); // Manually trigger change detection
+
     localStorage.setItem('menuIndex', index);
   }
   onMobileNavClick() {

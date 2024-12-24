@@ -7,11 +7,13 @@ export let browserRefresh = false;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  
 })
 export class AppComponent {
   title = 'CMDApplication';
-  constructor(public dataStorage: DataStorageService, private router: Router) {
+  constructor(
+    public dataStorage: DataStorageService,
+    private readonly router: Router
+  ) {
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
         browserRefresh = !router.navigated;

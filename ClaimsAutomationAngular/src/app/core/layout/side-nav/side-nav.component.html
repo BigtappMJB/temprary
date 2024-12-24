@@ -1,4 +1,4 @@
-<nav id="sidebar" [ngClass]="sidebar ? 'active' : ''">
+<nav id="sidebar" *ngIf="sidebar" [ngClass]="{ sideBaractive: sidebar }">
   <ul class="list-unstyled components">
     <li class="" *ngFor="let menu of menuList; let i = index">
       <a
@@ -9,16 +9,9 @@
         class="dropdown-toggle"
         (click)="onModule(i)"
       >
-        <span class="ml-1" *ngIf="sidebar">
-          <img
-            src="assets/images/sidebar/{{ menu.moduleName }}.png"
-            width="20"
-            alt="right arrow"
-          />
-        </span>
-        <span class="ml-1" *ngIf="!sidebar"> {{ menu.moduleName }}</span>
+        <span class="ml-1"> {{ menu.moduleName }}</span>
       </a>
-      <ng-container *ngIf="selectedIndex === i" [ngbCollapse]="isCollapsed">
+      <ng-container *ngIf="selectedIndex === i">
         <ul
           class="collapse list-unstyled"
           [ngClass]="{ collapse: this.className === true }"
