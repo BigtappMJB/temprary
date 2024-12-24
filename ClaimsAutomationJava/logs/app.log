@@ -1374,3 +1374,233 @@
 2024-12-24 16:38:10.065  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Template retrived successlully
 2024-12-24 16:38:15.906  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
 2024-12-24 16:38:16.001  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:40:19.934  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:44:08.930  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:44:19.952  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:44:26.544  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:44:28.361  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:44:31.629  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:44:31.662  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:44:49.064  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:44:50.388  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:44:51.385  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:44:52.382  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:44:52.412  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:45:12.177  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:45:30.364  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:45:31.498  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:45:34.678  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:45:34.710  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:45:37.810  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:46:19.452  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:46:22.212  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:46:23.348  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:46:26.201  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:46:26.304  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:46:39.810  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:46:41.587  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:46:42.617  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:46:45.084  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:46:45.121  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:47:33.192  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:47:34.259  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:47:36.810  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:47:36.844  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:48:00.872  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:48:01.612  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:48:04.142  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:48:04.180  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:48:14.602  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:48:15.669  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:48:16.663  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:48:19.205  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:48:19.244  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:48:31.885  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:48:33.874  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:48:34.918  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:48:35.813  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:48:35.846  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:48:42.333  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:49:59.077  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:50:00.113  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:50:00.921  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:50:00.953  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:50:20.599  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:50:21.812  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:50:22.700  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:50:23.529  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:50:23.563  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:50:46.708  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:50:48.848  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:50:49.888  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:50:50.861  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:50:50.956  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:51:01.797  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:51:02.660  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:51:03.644  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:51:04.536  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:51:04.573  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:53:01.989  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:53:03.126  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:53:05.751  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:53:05.787  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:53:11.133  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:53:37.757  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:53:39.903  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:53:40.917  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:53:41.984  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:53:42.017  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:54:36.574  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:54:38.701  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:54:40.166  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:54:41.171  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:54:41.318  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:55:07.459  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:55:08.392  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:55:09.614  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:55:09.667  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:55:52.674  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:55:53.770  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:55:54.733  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:55:54.767  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:58:39.197  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:58:40.083  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:58:41.010  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:58:41.042  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 16:59:08.481  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:59:10.794  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 16:59:11.768  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 16:59:12.879  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 16:59:12.912  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 17:00:33.115  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:00:35.112  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:00:36.083  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 17:00:37.187  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 17:00:37.219  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 17:00:50.761  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:00:52.283  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:00:53.252  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 17:00:54.109  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 17:00:54.143  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 17:01:08.661  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:01:09.761  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 17:01:10.476  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 17:01:10.510  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 17:03:09.962  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:03:11.738  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 17:03:13.130  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 17:03:13.162  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 17:03:52.884  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:03:53.894  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 17:03:54.688  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 17:03:54.720  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 17:04:10.957  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:04:11.184  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:04:23.631  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:04:23.787  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:05:16.892  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:05:17.043  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:05:22.555  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:05:22.714  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:05:29.530  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:05:29.697  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:05:31.135  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:05:31.319  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:05:34.706  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:05:34.882  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:05:38.338  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:05:38.528  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:06:31.303  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:06:31.528  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:06:47.339  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:06:47.567  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:07:06.822  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:07:07.003  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:07:33.139  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:07:33.331  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:12:06.176  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:12:06.339  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:12:32.869  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:12:33.041  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:12:37.156  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:12:37.373  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:13:01.221  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:13:01.396  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:13:09.229  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:13:09.407  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:13:14.077  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:13:14.248  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:13:38.502  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:13:38.656  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:13:55.941  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:13:56.105  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:14:11.224  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:14:11.411  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:14:18.079  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:14:18.283  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:14:33.769  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:14:33.961  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:15:34.317  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:15:34.480  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:15:36.316  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:15:36.495  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:15:47.827  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:15:48.039  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:15:54.354  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:15:54.523  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:16:49.594  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:16:49.771  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:16:55.451  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:16:55.651  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:16:59.828  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:17:00.062  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:17:10.574  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:17:10.782  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:17:14.757  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:17:14.939  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:17:24.148  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:17:24.320  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:17:27.814  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:17:28.018  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:17:35.629  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:17:36.602  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:17:37.825  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : Template retrived successlully
+2024-12-24 17:17:38.870  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : template Details  Fetched Successfully
+2024-12-24 17:17:38.936  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 17:17:43.280  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : Table Columns has been fetched successfully
+2024-12-24 17:17:53.181  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:17:53.369  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:18:54.655  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:18:54.809  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:03.569  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:03.737  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:06.494  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:06.661  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:08.382  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:08.568  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:10.246  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:10.429  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:20.424  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:20.586  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:25.964  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:26.168  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:27.730  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:27.926  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:33.875  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:34.041  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:19:50.230  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:19:50.425  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:20:36.510  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:20:36.679  INFO 13572 --- [http-nio-9090-exec-4] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:20:39.245  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:20:39.404  INFO 13572 --- [http-nio-9090-exec-5] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:20:42.519  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:20:42.691  INFO 13572 --- [http-nio-9090-exec-6] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:20:47.990  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:20:48.161  INFO 13572 --- [http-nio-9090-exec-7] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:21:02.429  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:21:02.656  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:21:09.887  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:21:10.079  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:21:17.034  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:21:17.266  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetched all scheduler logs details

@@ -8,10 +8,12 @@ import { NotifierService } from 'src/app/notifier.service';
 import { MyAppHttp } from 'src/app/shared/services/myAppHttp.service';
 import { SendReceiveService } from 'src/app/shared/services/sendReceive.service';
 import { TableConfiguratorService } from './service/table-configurator.service';
+import { LoadingService } from 'src/app/shared/components/loading-service.service';
 
 @Component({
   selector: 'app-table-configurator',
   templateUrl: './table-configurator.component.html',
+  styleUrls: ['./table-configurator.component.css'],
 })
 export class TableConfiguratorComponent implements OnInit {
   displayedColumns: string[] = [
@@ -60,10 +62,11 @@ export class TableConfiguratorComponent implements OnInit {
   AlltablesList: any = [];
 
   constructor(
-    private formBuilder: FormBuilder,
-    private tableConfiguratorService: TableConfiguratorService,
-    private sendReceiveService: SendReceiveService,
-    private notifierService: NotifierService
+    private readonly formBuilder: FormBuilder,
+    private readonly tableConfiguratorService: TableConfiguratorService,
+    private readonly sendReceiveService: SendReceiveService,
+    private readonly notifierService: NotifierService,
+    private readonly loadingService: LoadingService
   ) {
     this.tableFieldForm = this.formBuilder.group({
       tableFieldName: ['', Validators.required],
@@ -85,6 +88,10 @@ export class TableConfiguratorComponent implements OnInit {
       subModuleName: ['', Validators.required],
       tableId: ['', Validators.required],
       templateId: ['', Validators.required],
+    });
+    this.tableConfigForm.get('templateId')?.valueChanges.subscribe((value) => {
+      // this.onSelectRoleSubmit(value);
+      this.onTableConfigFormSubmit(value);
     });
     this.getSubModulesList();
   }
@@ -186,9 +193,9 @@ export class TableConfiguratorComponent implements OnInit {
     this.templateId = id;
   }
 
-  onTableConfigFormSubmit() {
+  onTableConfigFormSubmit(templateId: any) {
     let tableId = this.tableConfigForm.value.tableId;
-    let templateId = this.templateId;
+    // let templateId = this.templateId;
     this.tableConfiguratorService
       .getTemplateDetails(tableId, templateId)
       .pipe(take(1))
@@ -337,7 +344,7 @@ export class TableConfiguratorComponent implements OnInit {
         .getSaveTemplateDetails(tableFieldData)
         .subscribe(
           (response) => {
-            this.onTableConfigFormSubmit();
+            this.onTableConfigFormSubmit(this.templateId);
             this.notifierService.showNotification(
               'Success',
               MyAppHttp.ToasterMessage.templateSuccess

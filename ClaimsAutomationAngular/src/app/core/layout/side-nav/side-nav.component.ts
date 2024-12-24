@@ -21,6 +21,8 @@ export class SideNavComponent implements OnInit {
   isRefresh!: boolean;
   selectedSubModuleId: any;
   className: any;
+  isSideBarMinimized: boolean = false;
+  isMobileSidebarActive: boolean = false;
 
   status!: any;
   clickEvent() {
@@ -33,10 +35,17 @@ export class SideNavComponent implements OnInit {
     public router: Router,
     public sendReceiveService: SendReceiveService,
     private readonly lengthPipe: LengthPipe,
-    private readonly sidebarService: SideBarService,
-    private cdr: ChangeDetectorRef
+    private readonly sidebarService: SideBarService
   ) {
     this.lengthPipe.transform('Yet-another-string');
+  }
+
+  toggleMobileSidebar(): void {
+    this.isMobileSidebarActive = !this.isMobileSidebarActive;
+  }
+
+  closeMobileSidebar(): void {
+    this.isMobileSidebarActive = false; // Close the sidebar on menu item click
   }
 
   ngOnInit(): void {
@@ -85,8 +94,6 @@ export class SideNavComponent implements OnInit {
 
   onModule(index: any) {
     this.selectedIndex = index;
-    console.log(this.selectedIndex);
-    this.cdr.detectChanges(); // Manually trigger change detection
 
     localStorage.setItem('menuIndex', index);
   }
