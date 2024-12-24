@@ -7,13 +7,22 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { SendReceiveService } from 'src/app/shared/services/sendReceive.service';
+import { LoadingService } from 'src/app/shared/components/loading-service.service';
 
 @Component({
   selector: 'app-role-permissions',
-  templateUrl: './role-permissions.component.html'
+  templateUrl: './role-permissions.component.html',
+  styleUrls: ['./role-permissions.component.css'],
 })
 export class RolePermissionsComponent implements OnInit {
-  displayedColumns: string[] = ['sno', 'moduleName', 'subModuleName', 'tableName', 'permissionName', 'actions'];
+  displayedColumns: string[] = [
+    'sno',
+    'moduleName',
+    'subModuleName',
+    'tableName',
+    'permissionName',
+    'actions',
+  ];
   RolesList: any;
   ModulesList: any;
   SubModulesList: any;
@@ -31,32 +40,40 @@ export class RolePermissionsComponent implements OnInit {
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
   pageSize = 50;
 
-  constructor(private rolePermissionsService: RolePermissionsService,
-    private formBuilder: FormBuilder,
-    private loginService: LoginService,public sendReceiveService: SendReceiveService) { }
+  constructor(
+    private readonly rolePermissionsService: RolePermissionsService,
+    private readonly formBuilder: FormBuilder,
+    public readonly sendReceiveService: SendReceiveService,
+    private readonly loadingService: LoadingService
+  ) {}
 
   ngOnInit(): void {
     this.filterData = {
       filterColumnNames: [
-        { "Key": 'sno', "Value": "" },
-        { "Key": 'moduleName', "Value": "" },
-        { "Key": 'subModuleName', "Value": "" },
-        { "Key": 'tableName', "Value": "" },
-        { "Key": 'permissionName', "Value": "" },
-
+        { Key: 'sno', Value: '' },
+        { Key: 'moduleName', Value: '' },
+        { Key: 'subModuleName', Value: '' },
+        { Key: 'tableName', Value: '' },
+        { Key: 'permissionName', Value: '' },
       ],
       gridData: this.gridData,
       dataSource: this.dataSource,
       paginator: this.paginator,
-      sort: this.sort
+      sort: this.sort,
     };
     this.AddRolePermissionForm = this.formBuilder.group({
       roleName: ['', Validators.required],
     });
     this.RolePermissionForm = this.formBuilder.group({
-      'permission': ['', Validators.required]
+      permission: ['', Validators.required],
     });
     this.getRoles();
+
+    this.AddRolePermissionForm.get('roleName')?.valueChanges.subscribe(
+      (value) => {
+        this.onSelectRoleSubmit(value);
+      }
+    );
   }
 
   updatePagination() {
@@ -64,60 +81,95 @@ export class RolePermissionsComponent implements OnInit {
   }
 
   getRoles() {
-    this.rolePermissionsService.getRoles().subscribe((response) => {
-      this.RolesList = [];
-      for (let resp of response) {
-        if (resp.isActive == 'Y') {
-          this.RolesList.push(resp);
+    this.loadingService.show();
+    this.rolePermissionsService.getRoles().subscribe(
+      (response) => {
+        this.RolesList = [];
+        for (let resp of response) {
+          if (resp.isActive == 'Y') {
+            this.RolesList.push(resp);
+          }
         }
+        this.getModules();
+      },
+      (error: any) => {
+        this.loadingService.hide();
       }
-      this.getModules();
-    });
+    );
   }
 
   getModules() {
-    this.rolePermissionsService.getAllModules().subscribe((response) => {
-      this.ModulesList = response;
-      this.getSubModules();
-    });
+    this.rolePermissionsService.getAllModules().subscribe(
+      (response) => {
+        this.ModulesList = response;
+        this.getSubModules();
+      },
+      (error: any) => {
+        this.loadingService.hide();
+      }
+    );
   }
 
   getSubModules() {
-    this.rolePermissionsService.getAllSubModules().subscribe((response) => {
-      this.SubModulesList = response;
-      this.getAllTableNames();
-    });
+    this.rolePermissionsService.getAllSubModules().subscribe(
+      (response) => {
+        this.SubModulesList = response;
+        this.getAllTableNames();
+      },
+      (error: any) => {
+        this.loadingService.hide();
+      }
+    );
   }
 
   getAllTableNames() {
-    this.rolePermissionsService.getAllTableNames().subscribe((response) => {
-      this.AllTableNamesList = response;
-      this.getAccessPermissions();
-    });
+    this.rolePermissionsService.getAllTableNames().subscribe(
+      (response) => {
+        this.AllTableNamesList = response;
+        this.getAccessPermissions();
+      },
+      (error: any) => {
+        this.loadingService.hide();
+      }
+    );
   }
 
   getAccessPermissions() {
-    this.rolePermissionsService.getAccessPermissions().subscribe((response) => {
-      this.AccessPermissionsList = response;
-      this.AddRolePermissionForm.controls['roleName'].setValue(this.RolesList[0].roleId);
-      this.getSelectedRole(this.RolesList[0].roleId);
-    });
+    this.rolePermissionsService.getAccessPermissions().subscribe(
+      (response) => {
+        this.AccessPermissionsList = response;
+        this.AddRolePermissionForm.controls['roleName'].setValue(
+          this.RolesList[0].roleId
+        );
+        this.getSelectedRole(this.RolesList[0].roleId);
+      },
+      (error: any) => {
+        this.loadingService.hide();
+      }
+    );
   }
 
-  onSelectRoleSubmit() {
-    this.rolePermissionsService.getRolePermissionsByRoleId(this.AddRolePermissionForm.value.roleName).subscribe((response) => {
-      if (response) {
-        this.getRolePermissionsListWithName(response);
-      }
-    });
+  onSelectRoleSubmit(value: number) {
+    this.rolePermissionsService
+      .getRolePermissionsByRoleId(value)
+      .subscribe((response) => {
+        if (response) {
+          this.getRolePermissionsListWithName(response);
+        }
+      });
   }
 
   getSelectedRole(roleId: any) {
-    this.rolePermissionsService.getRolePermissionsByRoleId(roleId).subscribe((RolePermissions: any) => {
-      if (RolePermissions) {
-        this.getRolePermissionsListWithName(RolePermissions);
+    this.rolePermissionsService.getRolePermissionsByRoleId(roleId).subscribe(
+      (RolePermissions: any) => {
+        if (RolePermissions) {
+          this.getRolePermissionsListWithName(RolePermissions);
+        }
+      },
+      (error: any) => {
+        this.loadingService.hide();
       }
-    });
+    );
   }
 
   getRolePermissionsListWithName(response: any) {
@@ -140,8 +192,8 @@ export class RolePermissionsComponent implements OnInit {
     for (let col of this.filterData.filterColumnNames) {
       col.Value = '';
     }
+    this.loadingService.hide();
   }
-
 
   assignDetailsUsingID(rolePermission: any) {
     for (let role of this.RolesList) {
@@ -180,13 +232,18 @@ export class RolePermissionsComponent implements OnInit {
   editPermission(row: any) {
     this.selectedRoleId = row.id;
     this.RolePermissionsList.forEach((element: any) => {
-      if (element.sno == row.sno)
-        element.editMode = true;
-      else
-        element.editMode = false;
+      if (element.sno == row.sno) element.editMode = true;
+      else element.editMode = false;
     });
-    let tempPermissionValue = $.grep(this.AccessPermissionsList, function (e: any) { return e.PermissionId == row.PermissionId });
-    this.RolePermissionForm.controls['permission'].setValue(tempPermissionValue.length > 0 ? tempPermissionValue[0].permissionId : {});
+    let tempPermissionValue = $.grep(
+      this.AccessPermissionsList,
+      function (e: any) {
+        return e.PermissionId == row.PermissionId;
+      }
+    );
+    this.RolePermissionForm.controls['permission'].setValue(
+      tempPermissionValue.length > 0 ? tempPermissionValue[0].permissionId : {}
+    );
   }
 
   saveRolePermission(row: any) {
@@ -194,19 +251,22 @@ export class RolePermissionsComponent implements OnInit {
       return false;
     }
     let requestData = {
-      "id": row.id,
-      "roleId": row.roleId,
-      "moduleId": row.moduleId,
-      "subModuleId": row.subModuleId,
-      "permissionId": this.RolePermissionForm.value.permission,
-      "tableId": row.tableId
+      id: row.id,
+      roleId: row.roleId,
+      moduleId: row.moduleId,
+      subModuleId: row.subModuleId,
+      permissionId: this.RolePermissionForm.value.permission,
+      tableId: row.tableId,
     };
-    this.rolePermissionsService.SaveRolepermission(requestData).subscribe((response) => {
-      this.AddRolePermissionForm.controls['roleName'].setValue(row.roleId);
-      this.getSelectedRole(row.roleId);
-    }, error => {
-      console.log(error);
-    });
+    this.rolePermissionsService.SaveRolepermission(requestData).subscribe(
+      (response) => {
+        this.AddRolePermissionForm.controls['roleName'].setValue(row.roleId);
+        this.getSelectedRole(row.roleId);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
     return true;
   }
 }

@@ -1,6 +1,5 @@
 @media screen and (max-width: 768px) {
   #sidebar {
-    border: solid red;
     position: absolute;
     z-index: 9999;
     left: 0;
