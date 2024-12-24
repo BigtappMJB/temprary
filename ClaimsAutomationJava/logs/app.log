@@ -1604,3 +1604,35 @@
 2024-12-24 17:21:10.079  INFO 13572 --- [http-nio-9090-exec-9] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
 2024-12-24 17:21:17.034  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
 2024-12-24 17:21:17.266  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:21:43.549  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:21:43.721  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:23:37.954  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:23:38.127  INFO 13572 --- [http-nio-9090-exec-3] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:23:41.358  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:23:41.592  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:23:43.118  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:23:43.298  INFO 13572 --- [http-nio-9090-exec-8] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:25:42.528  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:25:42.955  INFO 13572 --- [http-nio-9090-exec-10] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:25:55.070  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:25:55.226  INFO 13572 --- [http-nio-9090-exec-1] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:25:57.307  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetching all scheduler logs details
+2024-12-24 17:25:57.533  INFO 13572 --- [http-nio-9090-exec-2] c.c.e.controller.SchedulerController     : fetched all scheduler logs details
+2024-12-24 17:25:58.883  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:25:59.029  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:26:14.349  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:26:14.489  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:26:18.497  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:26:18.674  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:26:29.603  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:26:29.762  INFO 13572 --- [http-nio-9090-exec-10] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:26:32.318  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:26:32.473  INFO 13572 --- [http-nio-9090-exec-2] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:26:45.234  INFO 13572 --- [http-nio-9090-exec-3] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:26:45.385  INFO 13572 --- [http-nio-9090-exec-4] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:26:50.035  INFO 13572 --- [http-nio-9090-exec-5] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:26:50.284  INFO 13572 --- [http-nio-9090-exec-6] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:27:12.072  INFO 13572 --- [http-nio-9090-exec-7] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:27:12.237  INFO 13572 --- [http-nio-9090-exec-8] c.c.excel.controller.TemplateController  : All templates fetcned successfully
+2024-12-24 17:27:17.341  INFO 13572 --- [http-nio-9090-exec-9] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully
+2024-12-24 17:27:19.940  INFO 13572 --- [http-nio-9090-exec-1] c.c.excel.service.UserManagementService  : Role Permissions fetched successfully

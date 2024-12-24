@@ -9,11 +9,21 @@
     </h4>
     <button
       type="button"
-      class="btn btn-outline-secondary btn-rounded d-inline-block m-2"
+      class="btn btn-outline-secondary btn-rounded d-inline-block m-2 d-none d-md-block"
       (click)="onExportCSV()"
     >
       Export
     </button>
+
+    <span
+      matTooltip="Add"
+      style="cursor: pointer"
+      class="d-sm-block d-md-none"
+      (click)="onExportCSV()"
+      (keydown)="onExportCSV()"
+    >
+      <i class="fas fa-download" aria-hidden="true"></i>
+    </span>
   </div>
   <div class="container">
     <div class="row g-3">

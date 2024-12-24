@@ -94,12 +94,23 @@
     <span class="float-end mb-2">
       <button
         type="button"
-        class="btn btn-outline-secondary btn-rounded"
+        class="btn btn-outline-secondary btn-rounded d-none d-md-block"
         *ngIf="!openForm"
         (click)="onAddForm()"
       >
         Add Mapping
       </button>
+
+      <span
+        matTooltip="Add"
+        style="cursor: pointer"
+        class="d-sm-block d-md-none"
+        (click)="onAddForm()"
+        *ngIf="!openForm"
+        (keydown)="onAddForm()"
+      >
+        <i class="fas fa-plus" aria-hidden="true"></i>
+      </span>
     </span>
   </h4>
   <div class="clearfix"></div>
