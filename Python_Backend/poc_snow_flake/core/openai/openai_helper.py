@@ -1,4 +1,5 @@
 import re
+from share.general_utils import mysql_config as conf
 
 def get_snowflake_connection():
     from mysql.connector import Error
@@ -171,7 +172,28 @@ def store_details(data,folder_path,file_name):
     finally:
         cursor.close()
         conn.close()
-        
+
+def get_table_desc(table_name):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+      print(table_name)
+      cursor.execute(
+            """SELECT COLUMN_NAME,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,COLUMN_KEY,IS_NULLABLE,COLUMN_DEFAULT,EXTRA FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_NAME = %s;
+""", (table_name,)
+        )
+      table_details = cursor.fetchall()
+      if table_details:
+        column_names = [desc[0] for desc in cursor.description]
+        estimate_list = [dict(zip(column_names, estimate)) for estimate in table_details]
+        return True, estimate_list
+
+    except Exception as e:
+        return False ,{"error": str(e)}
+    finally:
+        cursor.close()
+        conn.close()        
         
 def get_generated_page_details():
     conn = get_snowflake_connection()
@@ -216,6 +238,17 @@ def generate_react_code(value):
         return react_code
     except Exception as e:
         raise e
+
+def generate_express_code(prompt):
+    try:
+        from core.openai.openi_core import express_geneartor
+        response =  express_geneartor(prompt=prompt)
+        express_code = extract_jsx_between_markers(response=response)
+        
+        return True, express_code
+    except Exception as e:
+        raise e
+
 
 
 
@@ -506,5 +539,103 @@ const TableComponent = ({{ handleUpdateLogic, handleDelete, columns, permissionL
 export default {value.get("pageDetails", {}).get("pageName", '')};
 \'''
 '''
+def format_table_schema(api_data):
+    output = ""
+    for index, column_details in enumerate(api_data):
+      output += (
+          f"""
+      - Field {index + 1}
+            - Column Name : {column_details.get('COLUMN_NAME','N/A')}
+            - Input Type : {column_details.get('DATA_TYPE', 'N/A')}
+            - Maximum Length : {column_details.get('CHARACTER_MAXIMUM_LENGTH', 'N/A')}
+            - Is Primary Key : {"Yes" if column_details.get('COLUMN_KEY', 'N/A') == 'PRI' else "No"}
+            - Is Unique : {"Yes" if column_details.get('COLUMN_KEY', 'N/A') == 'UNI' else "No"}
+            - Default Value : {column_details.get('COLUMN_DEFAULT', 'N/A')}
+            - Required : {'Yes' if column_details.get('IS_NULLABLE') == 'NO' else 'No'}
+          """
+      )
+    return output
 
+def express_generation_prompt(table_name , schema_value,primary_key_column,database_engine="MySQL",database_name=conf.get('database')):
+    return f'''
+  Generate a modular Express.js API implementation based on the following database and table details: 
 
+Database Information: 
+
+Database Engine: {database_engine} 
+
+Database Name: {database_name} 
+
+Table Information: 
+
+Table Name: {table_name} 
+
+Table Schema:  
+
+{schema_value} 
+
+General Guidelines: 
+  1. Consolidated Code: Provide all code (model, controller logic, routes) in a single, modular structure in one file.
+
+  2. Avoid Express application initialization (e.g., const app = express() or app.listen()). 
+
+  3. Focus only on API routes, HTTP logic, controller functions, input validation, exception handling, and database integration. 
+
+  4. Use express.Router() for route definitions and organize code into a modular structure. 
+
+API Requirements: 
+
+Create RESTful endpoints for the {table_name} resource:
+
+  1. Create:
+    - Endpoint: POST /api/{table_name}
+    - Description: Add a new record.
+    - Note: Exclude the primary key column from the request body since it will be auto-incremented.
+  
+  2. Read (List):
+    - Endpoint: GET /api/{table_name}
+    - Description: Fetch all records.
+  
+  3.Read (Single):
+    - Endpoint: GET /api/{table_name}/:{primary_key_column}
+    - Description: Fetch a record by {primary_key_column}.
+    - Validation: Ensure the given ID exists in the table. Return a 404 Not Found if it does not exist.
+
+  4.Update:
+    - Endpoint: PUT /api/{table_name}/:{primary_key_column}
+    - Description: Update a record by {primary_key_column}.
+    - Validation: Ensure the given ID exists in the table. Return a 404 Not Found if it does not exist.
+  
+  5. Delete:
+  - Endpoint: DELETE /api/{table_name}/:{primary_key_column}
+  - Description: Remove a record by {primary_key_column}.
+  - Validation: Ensure the given ID exists in the table. Return a 404 Not Found if it does not exist.
+
+Database Integration: 
+
+ 1. For SQL Engines (e.g., MySQL, Snowflake): 
+    - Use an ORM like Sequelize  for database operations. 
+    - Define a model for the {table_name} table, reflecting the schema. 
+    - Use transactions for complex operations and error recovery. 
+
+ 2.For NoSQL Engines (e.g., MongoDB): 
+ - Use Mongoose or the native MongoDB driver for database operations. 
+ - Define a schema for {table_name}, ensuring proper validation rules (e.g., unique constraints, required fields). 
+ - Use indexes for frequently queried fields (e.g., employee_mail and employees_phone). 
+
+Validation: 
+ - Implement input validation using express-validator, ensuring all fields adhere to the rules defined in the table schema (e.g., data types, lengths, and constraints).
+ - Apply input sanitization techniques to protect against SQL Injection and Cross-Site Scripting (XSS) attacks.
+
+Exception Handling: 
+  - Wrap all route handlers with try-catch blocks. 
+  - Return appropriate HTTP status codes: 
+  - 400 Bad Request: Validation errors or bad input. 
+  - 404 Not Found: Resource not found. 
+  - 500 Internal Server Error: Unexpected server errors. 
+
+Security: 
+  - If any password or sensitive field is present (e.g., employee_password), ensure it is hashed using a library like bcrypt before storing it in the database. 
+  - Use middleware for token-based authentication (e.g., JWT) if security is required. 
+  - Use secure HTTP headers with helmet 
+  '''

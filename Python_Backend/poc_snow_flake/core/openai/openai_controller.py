@@ -39,8 +39,55 @@ def generateCode():
              return jsonify({"message":"React Code generation failed"}),500
     except Exception as e:
         return jsonify({"error":str(e)}),500
+
+
+def create_directory_structure():
+    """Create directory structure for the Express.js project."""
+    dirs = ["models", "controllers", "routes"]
+    for directory in dirs:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+def extract_and_save(content, filename):
+    """Extract specific content and save it to a file."""
+    with open(filename, "w") as file:
+        file.write(content)
     
-    
+@openai_bp.route('/generateExpressCode', methods=['POST'])
+def generate_express_code():
+    try:
+        from core.openai.openai_helper import get_table_desc,express_generation_prompt,handle_file_operations,store_details,format_table_schema,generate_express_code
+        import os
+        data = request.json
+        table_name = data.get("tableName")
+        
+        # isExists,message = check_if_value_exists(data.get("pageDetails", {}))
+        # if isExists:
+        #     return jsonify({"message":message}),409
+        status,table_schema = get_table_desc(table_name)
+        primary_key_column = [col for col in table_schema if col.get('COLUMN_KEY') == 'PRI'][0].get("COLUMN_NAME")
+        if status:
+            formatted_table_schema = format_table_schema(table_schema)
+            prompt = express_generation_prompt(table_name,formatted_table_schema,primary_key_column)
+            status,express_code = generate_express_code(prompt=prompt)
+        if express_code:
+            folder_path =  os.getcwd()
+            print(folder_path)
+            file_name =f'{table_name}.js'.replace(' ', '_')
+            file_created =  handle_file_operations(code_content=express_code,file_name=file_name,folder_path=folder_path)
+            if file_created:
+                status,error = store_details(data,folder_path,file_name)
+                if status:
+                    return jsonify({"message":"Express API generated successfully"}),200
+                else:
+                    return jsonify(error),500
+                    
+            else:
+                return jsonify({"message":"Express API  generation failed"}),500
+        else:
+             return jsonify({"message":"Express API  generation failed"}),500
+    except Exception as e:
+        return jsonify({"error":str(e)}),500
     
 @openai_bp.route('/getGeneratedPageDetails', methods=['GET'])
 def get_generated_filepath():
