@@ -62,6 +62,7 @@ export class SideNavComponent implements OnInit {
         }
         localStorage.setItem('MenuList', JSON.stringify(this.menuList));
       }
+
       this.className = false;
       this.isRefresh = browserRefresh;
       this.selectedIndex = 0;
@@ -107,7 +108,7 @@ export class SideNavComponent implements OnInit {
     console.log('Menu item clicked:', menu);
     this.menuId = menu.subModuleId;
     localStorage.setItem('selectedSubModuleId', this.menuId);
-    
+
     // Special cases for direct navigation
     if (menu.subModuleName === 'CAD') {
       // Use the navigation service for CAD (subModuleId 19)
@@ -117,19 +118,26 @@ export class SideNavComponent implements OnInit {
       // Use the navigation service for CMD (subModuleId 18)
       console.log('Navigating to CMD File Upload');
       this.fileUploadNavigationService.navigateToFileUpload(18);
+    } else if (menu.subModuleName === 'Data View') {
+      // Use the navigation service for CMD (subModuleId 18)
+      console.log('Navigating to view data ');
+      this.router.navigateByUrl('viewData/dataView');
     } else if (menu.subModuleName === 'CSV Scheduler') {
       // Navigate to CSV Scheduler page
-      console.log('Navigating to CSV Scheduler with subModuleId:', menu.subModuleId);
-      
+      console.log(
+        'Navigating to CSV Scheduler with subModuleId:',
+        menu.subModuleId
+      );
+
       // Store a special flag to indicate we're going to CSV Scheduler
       localStorage.setItem('navigatingToScheduler', 'true');
-      
+
       // Store the subModuleId in a different key to avoid conflict with file upload
       localStorage.setItem('schedulerSubModuleId', menu.subModuleId.toString());
-      
+
       // Remove the selectedSubModuleId to prevent file upload navigation
       localStorage.removeItem('selectedSubModuleId');
-      
+
       // Force navigation by first going to a dummy route and then to the scheduler details
       this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
         console.log('Now navigating to administration/schedulerDetails');

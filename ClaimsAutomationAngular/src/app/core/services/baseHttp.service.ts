@@ -49,19 +49,19 @@ export abstract class BaseHttp {
     let bearer: any = localStorage.getItem('userToken');
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': 'application/json, text/plain, */*',
+      Accept: 'application/json, text/plain, */*',
       token: bearer,
     });
-    
+
     // Log the request for debugging
     console.log(`Making POST request to ${apiUrls[tech] + url}`);
     console.log('Request body:', body);
     console.log('Request headers:', header);
-    
+
     return this.http
       .post<any>(apiUrls[tech] + url, JSON.stringify(body), { headers: header })
       .pipe(
-        tap(response => console.log('Response received:', response)),
+        tap((response) => console.log('Response received:', response)),
         map((response) => {
           if (response && response.statusCode === 401) {
             sessionStorage.clear();
@@ -186,7 +186,7 @@ export abstract class BaseHttp {
   handleError(error: HttpErrorResponse) {
     let errorMessage = '';
     console.log(error, 'handleError');
-    
+
     if (error.error instanceof Error) {
       // Get client-side error
       console.log(error.error, 'client-side error');
@@ -196,21 +196,23 @@ export abstract class BaseHttp {
       // Get server-side error
       errorMessage = `Error Code: ${error.status} \n statusText: ${error.statusText} \n Message: ${error.message}`;
       console.log(errorMessage);
-      
+
       // Log additional details for specific error codes
       if (error.status === 406) {
-        console.log('406 Not Acceptable Error - The server cannot produce a response matching the list of acceptable values.');
+        console.log(
+          '406 Not Acceptable Error - The server cannot produce a response matching the list of acceptable values.'
+        );
         console.log('Request headers:', error.headers);
         console.log('Response body:', error.error);
       }
     }
-    
+
     // Add a custom property to the error object for better error handling in components
-    error.friendlyMessage = this.getFriendlyErrorMessage(error);
-    
+
+    (error as any).friendlyMessage = this.getFriendlyErrorMessage(error);
     return throwError(error);
   }
-  
+
   private getFriendlyErrorMessage(error: HttpErrorResponse): string {
     switch (error.status) {
       case 400:
