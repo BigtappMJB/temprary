@@ -320,35 +320,39 @@
         <span> Actions </span>
       </th>
       <td mat-cell *matCellDef="let element">
+        <!-- Approve/Reject buttons for pending users (roleId == 0) -->
         <div class="button-container" *ngIf="element.roleId == 0">
           <button class="approve-button" (click)="onApprove(element)">
             Approve</button
           >&nbsp;
-          <button class="reject-button" (click)="onUserDelete(element)">
+          <button class="reject-button" (click)="onReject(element)">
             Reject
           </button>
         </div>
-        <mat-slide-toggle
-          *ngIf="element.roleId !== 0"
-          [checked]="element.status == 'Y' ? true : false"
-          (change)="onActivateUser(element, $event)"
-        ></mat-slide-toggle>
-        <span
-          matTooltip="Edit"
-          style="cursor: pointer"
-          *ngIf="!!pagePermissions.Edit && element.roleId !== 0"
-          (click)="onUserEdit(element)"
-          (keydown)="onUserEdit(element)"
-          ><i class="fas fa-pencil-alt" aria-hidden="true"></i
-        ></span>
-        <span
-          matTooltip="Delete"
-          style="cursor: pointer"
-          *ngIf="!!pagePermissions.Delete && element.roleId !== 0"
-          (click)="onUserDelete(element)"
-          (keydown)="onUserDelete(element)"
-          ><i class="far fa-trash-alt" aria-hidden="true"></i
-        ></span>
+        
+        <!-- Controls for approved users (roleId !== 0) -->
+        <div *ngIf="element.roleId !== 0">
+          <mat-slide-toggle
+            [checked]="element.status == 'Y' ? true : false"
+            (change)="onActivateUser(element, $event)"
+          ></mat-slide-toggle>
+          <span
+            matTooltip="Edit"
+            style="cursor: pointer; margin-left: 10px;"
+            *ngIf="!!pagePermissions.Edit"
+            (click)="onUserEdit(element)"
+            (keydown)="onUserEdit(element)"
+            ><i class="fas fa-pencil-alt" aria-hidden="true"></i
+          ></span>
+          <span
+            matTooltip="Delete"
+            style="cursor: pointer; margin-left: 10px;"
+            *ngIf="!!pagePermissions.Delete"
+            (click)="onUserDelete(element)"
+            (keydown)="onUserDelete(element)"
+            ><i class="far fa-trash-alt" aria-hidden="true"></i
+          ></span>
+        </div>
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

@@ -4,7 +4,11 @@ import { FileuploadComponent } from '../file-upload/fileupload/fileupload.compon
 import { ViewFileDataComponent } from './view-file-data/view-file-data.component';
 
 const routes: Routes = [
-  { path: 'loadFileDetails', component: FileuploadComponent },
+  { 
+    path: 'loadFileDetails', 
+    component: FileuploadComponent,
+    runGuardsAndResolvers: 'always' 
+  },
   { path: 'viewFileDetails', component: ViewFileDataComponent },
 ];
 

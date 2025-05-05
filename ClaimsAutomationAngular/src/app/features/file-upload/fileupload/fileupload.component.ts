@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MyAppHttp } from 'src/app/shared/services/myAppHttp.service';
 import { SendReceiveService } from 'src/app/shared/services/sendReceive.service';
 import { DatePipe } from '@angular/common';
@@ -7,17 +7,22 @@ import { HttpClient } from '@angular/common/http';
 import { FileUploadService } from './fileupload.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingService } from 'src/app/shared/components/loading-service.service';
+import { Router } from '@angular/router';
+import { FileUploadNavigationService } from 'src/app/shared/services/file-upload-navigation.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-fileupload',
   templateUrl: './fileupload.component.html',
   styleUrls: ['./fileupload.component.css'],
 })
-export class FileuploadComponent implements OnInit {
+export class FileuploadComponent implements OnInit, OnDestroy {
   selectedFile: any = null;
   files: any[] = [];
   isSpinner: boolean = false;
   tableUploadForm!: FormGroup;
+  inputSubModuleId: number = 19; // Default to CAD subModuleId
+  private subscription: Subscription = new Subscription();
   validation_messages = {
     tableId: [{ type: 'required', message: 'Table is required' }],
     file: [
@@ -32,10 +37,39 @@ export class FileuploadComponent implements OnInit {
     public readonly datepipe: DatePipe,
     private readonly apiService: FileUploadService,
     private readonly notifierService: NotifierService,
-    private readonly loadingService: LoadingService
+    private readonly loadingService: LoadingService,
+    private readonly router: Router,
+    private readonly fileUploadNavigationService: FileUploadNavigationService
   ) {}
 
   ngOnInit(): void {
+    // Subscribe to the navigation service to get the current subModuleId
+    this.subscription.add(
+      this.fileUploadNavigationService.currentSubModuleId$.subscribe(id => {
+        console.log('Received subModuleId from service:', id);
+        this.inputSubModuleId = id;
+      })
+    );
+    
+    // Check if we're navigating to scheduler
+    const navigatingToScheduler = localStorage.getItem('navigatingToScheduler');
+    if (navigatingToScheduler === 'true') {
+      console.log('Detected navigation to scheduler, redirecting...');
+      localStorage.removeItem('navigatingToScheduler');
+      this.router.navigateByUrl('administration/schedulerDetails');
+      return; // Exit early to prevent further initialization
+    }
+    
+    // Also check localStorage as a fallback
+    const fromMenu = localStorage.getItem('selectedSubModuleId');
+    console.log('Retrieved selectedSubModuleId from localStorage:', fromMenu);
+    
+    if (fromMenu) {
+      const menuId = parseInt(fromMenu, 10);
+      this.inputSubModuleId = menuId;
+      console.log('FileuploadComponent initialized with subModuleId:', this.inputSubModuleId);
+    }
+    
     this.tableUploadForm = this.formBuilder.group({
       // tableId: [null, Validators.compose([Validators.required])],
       file: [
@@ -114,5 +148,10 @@ export class FileuploadComponent implements OnInit {
   }
   onCancel() {
     this.files = [];
+  }
+  
+  ngOnDestroy(): void {
+    // Clean up subscriptions
+    this.subscription.unsubscribe();
   }
 }

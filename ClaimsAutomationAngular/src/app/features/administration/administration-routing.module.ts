@@ -20,6 +20,8 @@ const routes: Routes = [
     component: SchedulerRecordDetailsComponent,
   },
   { path: 'schedulerDetails', component: CsvSchedulerComponent },
+  { path: 'csvscheduler', component: CsvSchedulerComponent }, // Additional route for CMD
+  { path: 'csvgenerator', component: CsvGeneratorComponent }, // Additional route for CSV Generator
   { path: 'fileMapping', component: FileMappingComponent },
 ];
 

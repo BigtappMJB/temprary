@@ -7,11 +7,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./dialog-popup.component.css']
 })
 export class DialogPopupComponent {
-  public title!: string;
-  public message!: string;
-
   constructor(
     public dialogRef: MatDialogRef<DialogPopupComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public data: { message: string, title?: string }
+  ) { 
+    // Set default data if not provided
+    if (!this.data) {
+      this.data = { message: 'Are you sure?' };
+    }
+  }
 }

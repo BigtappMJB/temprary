@@ -229,7 +229,7 @@
 
 <div class="p-2">
   <div class="ConfigurationTypes_brandHeader">
-    <h4>File upload</h4>
+    <h4>{{ inputSubModuleId === 18 ? 'CMD File Upload' : 'CAD File Upload' }}</h4>
   </div>
-  <app-upload-file [inputSubModuleId]="22"></app-upload-file>
+  <app-upload-file [inputSubModuleId]="inputSubModuleId"></app-upload-file>
 </div>

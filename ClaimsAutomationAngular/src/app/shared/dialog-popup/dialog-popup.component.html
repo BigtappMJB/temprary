@@ -2,7 +2,7 @@
   <mat-card-title class="">
     <div class="d-flex flex-wrap justify-content-between align-items-center">
       <div class="">
-        <h3>{{ data.title }}</h3>
+        <h3>Confirmation</h3>
       </div>
       <span (click)="dialogRef.close(false)"
         ><i class="fas fa-times text-danger" aria-hidden="true"></i
@@ -11,7 +11,7 @@
   </mat-card-title>
   <mat-card-content style="width: 85%">
     <div class="pb-1">
-      {{ data.message }}
+      {{ data?.message }}
     </div>
   </mat-card-content>
   <mat-card-footer class="d-flex justify-content-end">

@@ -6,6 +6,7 @@ import { DialogPopupComponent } from '../dialog-popup/dialog-popup.component';
 import { map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { FileUploadNavigationService } from './file-upload-navigation.service';
 
 @Injectable()
 export class SendReceiveService {
@@ -15,13 +16,14 @@ export class SendReceiveService {
     private _http: HttpClient,
     public dialog: MatDialog,
     public toastr: ToastrService,
-    public router: Router
+    public router: Router,
+    private fileUploadNavigationService: FileUploadNavigationService
   ) { }
 
   confirmationDialog(messsage: any) {
-    this.dialogRef = this.dialog.open(DialogPopupComponent);
-
-    this.dialogRef.componentInstance.message = messsage;
+    this.dialogRef = this.dialog.open(DialogPopupComponent, {
+      data: { message: messsage }
+    });
 
     return this.dialogRef.afterClosed().pipe(
       map((result) => {
@@ -79,7 +81,7 @@ export class SendReceiveService {
       this.router.navigateByUrl("administration/users");
     }
     else if (subMenuId == 3) {
-      this.router.navigateByUrl("administration/rolePermissions");
+      this.router.navigateByUrl("administration/rBAPermission");
     }
     else if (subMenuId == 15) {
       this.router.navigateByUrl("administration/tableConfigurator");
@@ -114,8 +116,19 @@ export class SendReceiveService {
       this.router.navigateByUrl("staticDataUpload/assetMixReport");
     }
     else if (subMenuId == 17) {
-      this.router.navigateByUrl("administration/csvGenerator");
-    }else if (subMenuId == 18) {
+      this.router.navigateByUrl("administration/csvgenerator");
+    } 
+    else if (subMenuId == 18) {
+      // CMD should go to file upload with CMD subModuleId
+      this.fileUploadNavigationService.navigateToFileUpload(18);
+    }
+    // Add a fallback for CAD if the ID is different
+    else if (subMenuId == 19) {
+      // CAD should go to file upload with CAD subModuleId
+      this.fileUploadNavigationService.navigateToFileUpload(19);
+    }
+    else if (subMenuId == 20) {
+      // CSV Scheduler
       this.router.navigateByUrl("administration/schedulerDetails");
     }
   }

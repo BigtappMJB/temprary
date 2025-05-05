@@ -24,11 +24,7 @@
             [ngClass]="{ active: m.subModuleId == menuId }"
           >
             <a
-              [routerLink]="
-                [menu.moduleName | casetile] +
-                '/' +
-                [m.subModuleName | casetile]
-              "
+              (click)="navigateToSubMenu(m)"
             >
               {{ m.subModuleName }}</a
             >

@@ -12,6 +12,7 @@ export class TableDataService extends BaseHttp {
   getAlltablesUrl: string = "um/getAllTables";
 
   getTableNamesBySubModuleIdAndRoleId(roleId: any, subModuleId: any) {
+    console.log('Calling API:', this.getTableNamesBySubModuleIdAndRoleIdUrl + `?roleId=${roleId}&subModuleId=${subModuleId}`);
     return this.get<any>(this.getTableNamesBySubModuleIdAndRoleIdUrl + `?roleId=${roleId}&subModuleId=${subModuleId}`);
   }
 

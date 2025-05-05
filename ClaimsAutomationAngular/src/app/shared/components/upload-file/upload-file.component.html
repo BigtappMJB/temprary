@@ -12,6 +12,7 @@
 </div> -->
 <div class="ConfigurationTypes_downloadCsv ">
   <div>
+    <h5 class="mb-3">{{ inputSubModuleId === 18 ? 'CMD Tables' : 'CAD Tables' }}</h5>
     <form [formGroup]="tableUploadForm" (ngSubmit)="ontableUploadSubmit()">
       <mat-form-field appearance="fill">
         <mat-label>Select Table</mat-label>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { TableData } from 'src/app/shared/models/excel-data.model';
 import { MyAppHttp } from 'src/app/shared/services/myAppHttp.service';
@@ -24,7 +24,7 @@ type AOA = any[][];
   templateUrl: './upload-file.component.html',
   styleUrls: ['./upload-file.component.css'],
 })
-export class UploadFileComponent implements OnInit {
+export class UploadFileComponent implements OnInit, OnChanges {
   @Input() inputSubModuleId: number = 0;
   tablesListWithPermissionId: any = [];
   loginData: any;
@@ -77,45 +77,89 @@ export class UploadFileComponent implements OnInit {
     this.getTableNamesList();
     this.getAllTables();
   }
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('UploadFileComponent: Input changes detected', changes);
+    if (changes['inputSubModuleId'] && !changes['inputSubModuleId'].firstChange) {
+      console.log('SubModuleId changed to:', this.inputSubModuleId);
+      // Clear existing tables and reload with new subModuleId
+      this.tablesListWithPermissionId = [];
+      this.getTableNamesList();
+    }
+  }
 
   getTableNamesList() {
     let data = localStorage.getItem('LoginData');
     if (data) {
       this.getSubmoduleID(data);
+      console.log('Getting tables for subModuleId:', this.subModuleId, 'roleId:', this.loginData.roleId);
       this.tableDataService
         .getTableNamesBySubModuleIdAndRoleId(
           this.loginData.roleId,
           this.subModuleId
         )
         .pipe(take(1))
-        .subscribe((response) => {
-          for (let element of response) {
-            if (element.permissionId !== 6) {
-              console.log(element);
-              element.readabletableName = element.tableName.replace(/_/g, ' ');
-              console.log(element);
-              this.tablesListWithPermissionId.push(element);
+        .subscribe(
+          (response) => {
+            console.log('API Response for tables:', response);
+            this.tablesListWithPermissionId = []; // Clear existing data
+            
+            if (response && response.length > 0) {
+              // If we got tables from the API, use them
+              for (let element of response) {
+                if (element.permissionId !== 6) {
+                  element.readabletableName = element.tableName.replace(/_/g, ' ');
+                  this.tablesListWithPermissionId.push(element);
+                }
+              }
+              console.log('Processed tables from API:', this.tablesListWithPermissionId);
+            } else {
+              // If no tables were returned, use getAllTables instead
+              console.log('No tables found for subModuleId, using getAllTables instead');
+              this.tableDataService.getAllTables().subscribe((tables: any) => {
+                console.log('All tables:', tables);
+                for (let table of tables) {
+                  table.readabletableName = table.tableName.replace(/_/g, ' ');
+                  this.tablesListWithPermissionId.push(table);
+                }
+                console.log('Processed all tables:', this.tablesListWithPermissionId);
+              });
             }
+          },
+          (error) => {
+            console.error('Error fetching tables:', error);
+            // On error, fall back to getAllTables
+            this.tableDataService.getAllTables().subscribe((tables: any) => {
+              console.log('All tables (fallback):', tables);
+              for (let table of tables) {
+                table.readabletableName = table.tableName.replace(/_/g, ' ');
+                this.tablesListWithPermissionId.push(table);
+              }
+              console.log('Processed all tables (fallback):', this.tablesListWithPermissionId);
+            });
           }
-        });
+        );
     }
   }
 
   getAllTables() {
     this.tableDataService.getAllTables().subscribe((tables: any) => {
+      console.log('Fetched all tables for reference:', tables.length);
       this.AlltablesList = tables;
     });
   }
 
   getSubmoduleID(data: any) {
     this.loginData = JSON.parse(data);
-    for (let Module of this.loginData.permissions) {
-      for (let subModule of Module.submodules) {
-        if (subModule.subModuleId == this.inputSubModuleId) {
-          this.subModuleId = subModule.subModuleId;
-        }
-      }
-    }
+    console.log('Input SubModuleId:', this.inputSubModuleId);
+    console.log('Login permissions:', this.loginData.permissions);
+    
+    // Always use the input subModuleId directly
+    this.subModuleId = this.inputSubModuleId;
+    console.log('Using subModuleId:', this.subModuleId);
+    
+    // Force reload tables for this subModuleId
+    this.tablesListWithPermissionId = [];
   }
 
   onFileChange(evt: any) {
