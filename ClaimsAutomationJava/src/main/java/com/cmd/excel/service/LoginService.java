@@ -250,13 +250,13 @@ public class LoginService {
 			userDetails.setResponse(response);
 			return false;
 		}
-		if (("N").equals(dbUser.getStatus())) {
-			httpStatus = HttpStatus.NOT_ACCEPTABLE;
-			response = new Response(CmdConstants.INACTIVE_USER, HttpStatus.NOT_ACCEPTABLE.value(),
-					HttpStatus.NOT_ACCEPTABLE.getReasonPhrase());
-			userDetails.setResponse(response);
-			return false;
-		}
+//		if (("N").equals(dbUser.getStatus())) {
+//			httpStatus = HttpStatus.NOT_ACCEPTABLE;
+//			response = new Response(CmdConstants.INACTIVE_USER, HttpStatus.NOT_ACCEPTABLE.value(),
+//					HttpStatus.NOT_ACCEPTABLE.getReasonPhrase());
+//			userDetails.setResponse(response);
+//			return false;
+//		}
 		return true;
 	}
 

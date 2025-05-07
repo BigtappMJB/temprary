@@ -89,48 +89,87 @@ public class RegisterController {
 	}
 
 	// Route for Changing Password
+//	@PostMapping("/change_password")
+//	public ResponseEntity<Object> changePassword(@RequestBody Map<String, String> data) throws SQLException {
+//		String email = data.get("email");
+//		String oldPassword = data.get("old_password");
+//		String newPassword = data.get("new_password");
+//
+//		Objects.requireNonNull(email, "Email must not be null");
+//		Objects.requireNonNull(oldPassword, "Old password must not be null");
+//		Objects.requireNonNull(newPassword, "New password must not be null");
+//		LOG.info("Request received to change password for email: " + email);
+//
+//		Map<String, Object> user = registerRepository.getUserByEmail(email);
+//		if (user == null) {
+//			LOG.info("\"User not found for email: " + email);
+//
+//			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//					.body(Collections.singletonMap("error", "User not found"));
+//		}
+//		LOG.info("\"User Found: " + email);
+//
+//		// Strip leading/trailing whitespace from passwords
+//		String providedOldPassword = oldPassword.trim();
+//		String storedPassword = ((String) user.get("password")).trim();
+//		LOG.info("\"Provided old password (stripped): : " + providedOldPassword);
+//		LOG.info("\"Stored password (stripped):" + storedPassword);
+//
+//		if (!providedOldPassword.equals(storedPassword)) { // Direct comparison after stripping whitespace
+//			LOG.info("\"Invalid email or password for email:" + email);
+//
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//					.body(Collections.singletonMap("error", "Invalid default/Current password"));
+//		}
+//		LOG.info("\"Old password verified for email:" + email);
+//
+//		registerRepository.updateUserPassword(email, newPassword);
+//		LOG.info("\"Password updated successfully for email" + email);
+//
+//		// Send password update notification email
+//		 sendPasswordUpdateEmail(email);
+//
+//		return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
+//	}
+	
+	
 	@PostMapping("/change_password")
 	public ResponseEntity<Object> changePassword(@RequestBody Map<String, String> data) throws SQLException {
-		String email = data.get("email");
-		String oldPassword = data.get("old_password");
-		String newPassword = data.get("new_password");
+	    String email = data.get("email");
+	    String oldPassword = data.get("old_password");
+	    String newPassword = data.get("new_password");
 
-		Objects.requireNonNull(email, "Email must not be null");
-		Objects.requireNonNull(oldPassword, "Old password must not be null");
-		Objects.requireNonNull(newPassword, "New password must not be null");
-		LOG.info("Request received to change password for email: " + email);
+	    Objects.requireNonNull(email, "Email must not be null");
+	    Objects.requireNonNull(oldPassword, "Old password must not be null");
+	    Objects.requireNonNull(newPassword, "New password must not be null");
 
-		Map<String, Object> user = registerRepository.getUserByEmail(email);
-		if (user == null) {
-			LOG.info("\"User not found for email: " + email);
+	    LOG.info("Request received to change password for email: {}", email);
 
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(Collections.singletonMap("error", "User not found"));
-		}
-		LOG.info("\"User Found: " + email);
+	    Map<String, Object> user = registerRepository.getUserByEmail(email);
+	    if (user == null) {
+	        LOG.info("User not found for email: {}", email);
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                .body(Collections.singletonMap("error", "User not found"));
+	    }
 
-		// Strip leading/trailing whitespace from passwords
-		String providedOldPassword = oldPassword.strip();
-		String storedPassword = ((String) user.get("password")).strip();
-		LOG.info("\"Provided old password (stripped): : " + providedOldPassword);
-		LOG.info("\"Stored password (stripped):" + storedPassword);
+	    String providedOldPassword = oldPassword.trim();
+	    String storedPassword = ((String) user.get("password")).trim();
 
-		if (!providedOldPassword.equals(storedPassword)) { // Direct comparison after stripping whitespace
-			LOG.info("\"Invalid email or password for email:" + email);
+	    if (!providedOldPassword.equals(storedPassword)) {
+	        LOG.info("Password mismatch for email: {}", email);
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                .body(Collections.singletonMap("error", "Invalid current password"));
+	    }
 
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(Collections.singletonMap("error", "Invalid default/Current password"));
-		}
-		LOG.info("\"Old password verified for email:" + email);
+	    // Encrypt before saving, if needed
+	    registerRepository.updateUserPassword(email, newPassword.trim());
+	    LOG.info("Password updated successfully for email: {}", email);
 
-		registerRepository.updateUserPassword(email, newPassword);
-		LOG.info("\"Password updated successfully for email" + email);
+	    sendPasswordUpdateEmail(email);
 
-		// Send password update notification email
-		 sendPasswordUpdateEmail(email);
-
-		return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
+	    return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
 	}
+
 
 	// Route for Changing Password
 		@PostMapping("/reset_password")
