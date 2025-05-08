@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from flask import current_app
-import snowflake.connector
+# import snowflake.connector - removed as we're using MySQL
 import os
 from dotenv import load_dotenv
 

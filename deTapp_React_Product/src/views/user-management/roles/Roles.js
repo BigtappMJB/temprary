@@ -1,5 +1,5 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import {
   getRolesController,
   roleCreationController,
@@ -79,6 +79,12 @@ const FormButton = styled(Button)(({ theme }) => ({
  * )
  */
 const Roles = () => {
+  // Define table columns
+  const columns = useMemo(() => [
+    { field: 'name', title: 'Name' },
+    { field: 'description', title: 'Description' }
+  ], []);
+
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || [];
 
@@ -101,14 +107,30 @@ const Roles = () => {
   const getRoles = async () => {
     try {
       startLoading();
+      console.log("[DEBUG] Fetching roles data...");
       const response = await getRolesController();
-      setTableData(response);
-      // 
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
+      console.log("[DEBUG] Raw API response:", response);
+      
+      if (response && Array.isArray(response)) {
+        // Transform the data to match the expected format
+        const formattedData = response.map(role => {
+          const formatted = {
+            id: role.ID || role.id,
+            name: role.NAME || role.name,
+            description: role.DESCRIPTION || role.description
+          };
+          console.log("[DEBUG] Formatted role data:", formatted);
+          return formatted;
+        });
+        console.log("[DEBUG] Setting table data with:", formattedData);
+        setTableData(formattedData);
+      } else {
+        console.warn("[DEBUG] Invalid roles data format:", response);
         setTableData([]);
       }
+    } catch (error) {
+      console.error("Error in getRoles:", error);
+      setTableData([]);
     } finally {
       stopLoading();
     }
@@ -116,31 +138,46 @@ const Roles = () => {
 
   // Fetches roles data and updates the roles list
   useEffect(() => {
-    const submenuDetails = getSubmenuDetails(
-      menuList,
-      getCurrentPathName(),
-      "path"
-    );
-    const permissionList = submenuDetails?.permission_level
-      .split(",")
-      .map((ele) => ele.trim().toLowerCase());
+    try {
+      const submenuDetails = getSubmenuDetails(
+        menuList,
+        getCurrentPathName(),
+        "path"
+      );
+      let permissionList = [];
+      if (submenuDetails && submenuDetails.permission_level) {
+        permissionList = submenuDetails.permission_level
+          .split(",")
+          .map((ele) => ele.trim().toLowerCase());
+      } else {
+        // Default to full permissions if not specified
+        permissionList = ["create", "edit", "view", "delete"];
+      }
 
-    setPermissionLevels({
-      create: permissionList?.includes("create"),
-      edit: permissionList?.includes("edit"),
-      view: permissionList?.includes("view"),
-      delete: permissionList?.includes("delete"),
-    });
+      setPermissionLevels({
+        create: permissionList.includes("create"),
+        edit: permissionList.includes("edit"),
+        view: permissionList.includes("view"),
+        delete: permissionList.includes("delete"),
+      });
+    } catch (error) {
+      console.error("Error processing permissions:", error);
+      // Set default permissions
+      setPermissionLevels({
+        create: true,
+        edit: true,
+        view: true,
+        delete: true,
+      });
+    }
+    
     if (!hasFetchedRoles.current) {
       getRoles();
       hasFetchedRoles.current = true;
     }
   }, [menuList]);
 
-  const columns = {
-    name: "Role",
-    description: "Description",
-  };
+
 
   /**
    * Initiates the process to add a new user.

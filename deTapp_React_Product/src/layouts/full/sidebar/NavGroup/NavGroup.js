@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { ListSubheader, styled } from "@mui/material";
 import { useLocation } from "react-router";
 
-const NavGroup = ({ item, onClick }) => {
+const NavGroup = ({ item, onClick, isCollapsed }) => {
   const pathName = useLocation().pathname;
   const isOneSubMenu = item.children.length === 1;
   const ListSubheaderStyle = styled((props) => (
@@ -31,13 +31,32 @@ const NavGroup = ({ item, onClick }) => {
     },
   }));
   return (
-    <ListSubheaderStyle onClick={onClick}>{item.subheader}</ListSubheaderStyle>
+    <ListSubheaderStyle 
+      onClick={onClick}
+      sx={{
+        px: isCollapsed ? 1 : 2,
+        minHeight: 40,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: isCollapsed ? 'center' : 'flex-start',
+        '& .MuiListItemIcon-root': {
+          minWidth: 36
+        }
+      }}
+    >
+      {isCollapsed && item.children[0] ? (
+        React.createElement(item.children[0].icon, { size: 20 })
+      ) : (
+        item.subheader
+      )}
+    </ListSubheaderStyle>
   );
 };
 
 NavGroup.propTypes = {
   item: PropTypes.object,
   onClick: PropTypes.func,
+  isCollapsed: PropTypes.bool
 };
 
 export default NavGroup;

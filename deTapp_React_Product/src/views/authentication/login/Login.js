@@ -108,6 +108,8 @@ const LoginPage = () => {
   // Helper function to handle the response from loginController
   const handleLoginResponse = (response, formData) => {
     if (response) {
+      console.log("Login response received:", response);
+      
       storeLoginCookies(response, formData);
       if (!response?.is_verified) {
         navigate("/auth/emailVerification");
@@ -129,10 +131,28 @@ const LoginPage = () => {
         value: encodeData(1),
       });
 
-      const firstSubMenuPath =
-        response?.permissions[0]?.submenus[0]?.submenu_path;
+      // Store the entire login response in localStorage for later use
+      try {
+        localStorage.setItem("loginResponse", JSON.stringify(response));
+      } catch (e) {
+        console.warn("Error storing login response:", e);
+      }
+      
+      // Store token for authentication
       localStorage.setItem("token", response.token);
-      navigate(firstSubMenuPath || "/dashboard");
+      
+      // Navigate to the first available submenu or dashboard
+      let firstSubMenuPath = "/dashboard";
+      if (response?.permissions && 
+          Array.isArray(response.permissions) && 
+          response.permissions.length > 0 && 
+          response.permissions[0]?.submenus && 
+          response.permissions[0].submenus.length > 0) {
+        firstSubMenuPath = response.permissions[0].submenus[0].submenu_path;
+      }
+      
+      console.log("Navigating to:", firstSubMenuPath);
+      navigate(firstSubMenuPath);
     }
   };
 
@@ -161,8 +181,20 @@ const LoginPage = () => {
       userDetails: response,
     };
 
+    console.log("Login response:", response);
+    console.log("Storing login details:", loginDetails);
+    
     dispatch(storeLoginDetails(loginDetails));
-    dispatch(storeMenuDetails(response?.permissions));
+    
+    // Ensure permissions exist and are properly formatted
+    if (response?.permissions && Array.isArray(response.permissions)) {
+      console.log("Storing menu details from login:", response.permissions);
+      dispatch(storeMenuDetails(response.permissions));
+    } else {
+      console.warn("No valid permissions in login response");
+      // If no permissions, we could set default ones here
+      // or handle this case differently
+    }
   };
 
   // Helper function to handle login error

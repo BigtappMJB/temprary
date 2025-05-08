@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
+import { useTheme } from "@mui/material/styles";
 import {
   Table,
   TableBody,
@@ -20,18 +21,61 @@ import PropTypes from "prop-types";
 
 // Styled components for the table
 const StyledTableHead = styled(TableHead)(({ theme }) => ({
-  backgroundColor: "#f2f2f2",
+  backgroundColor: "#1e88e5",
+  '& th': {
+    color: "#fff",
+    fontWeight: 600
+  }
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   background: "white",
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: theme.palette.divider,
+    },
+    '&:hover fieldset': {
+      borderColor: theme.palette.primary.main,
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: theme.palette.primary.main,
+    }
+  },
+  '& .MuiInputBase-input': {
+    padding: '8px 12px',
+    fontSize: '0.875rem'
+  }
 }));
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   wordWrap: "break-word",
   whiteSpace: "normal",
-  lineHeight: 2,
-  textAlign: "justify",
+  lineHeight: 1.5,
+  textAlign: "left",
+  padding: theme.spacing(1.5),
+  '&:first-of-type': {
+    paddingLeft: theme.spacing(3)
+  },
+  '&:last-of-type': {
+    paddingRight: theme.spacing(3)
+  },
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1),
+    fontSize: '0.875rem',
+  }
+}));
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[1],
+  '& .MuiTable-root': {
+    borderCollapse: 'separate',
+    borderSpacing: '0 4px'
+  },
+  [theme.breakpoints.down('sm')]: {
+    maxWidth: '100vw',
+    overflowX: 'auto'
+  }
 }));
 
 const DataTable = ({
@@ -42,6 +86,7 @@ const DataTable = ({
   permissionLevels,
   sendUpdatedPaginatedData,
 }) => {
+  const theme = useTheme();
   const [order, setOrder] = useState("original");
   const [orderBy, setOrderBy] = useState("");
   const [page, setPage] = useState(0);
@@ -49,7 +94,13 @@ const DataTable = ({
   const [filter, setFilter] = useState({});
 
   // Add S.NO column to the columns definition
-  const extendedColumns = { sno: "S.No", ...columns };
+  const extendedColumns = useMemo(() => {
+    if (!Array.isArray(columns)) {
+      console.warn('Columns prop is not an array:', columns);
+      return [{ field: 'sno', title: 'S.No' }];
+    }
+    return [{ field: 'sno', title: 'S.No' }, ...columns];
+  }, [columns]);
 
   // Add S.NO column to tableData
   const dataWithSno = useMemo(() => {
@@ -130,7 +181,18 @@ const DataTable = ({
   const handleFilterChange = useCallback(
     debounce((event) => {
       const { name, value } = event.target;
-      setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+      if (value === '') {
+        setFilter((prev) => {
+          const newFilter = { ...prev };
+          delete newFilter[name];
+          return newFilter;
+        });
+      } else {
+        setFilter((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
       setPage(0);
     }, 300),
     []
@@ -138,33 +200,36 @@ const DataTable = ({
 
   return (
     <>
-      <TableContainer>
-        <Table>
+      <StyledTableContainer>
+        <Table size="small" sx={{
+          minWidth: 650,
+          [theme.breakpoints.down('sm')]: {
+            minWidth: 300,
+          }
+        }}>
           <StyledTableHead>
             <TableRow className="tablename-head">
-              {Object.keys(extendedColumns).map((key) => (
-                <StyledTableCell key={key}>
+              {extendedColumns.map((column) => (
+                <StyledTableCell key={column.field}>
                   <TableSortLabel
-                    active={orderBy === key}
-                    direction={orderBy === key ? order : "asc"}
-                    onClick={() => handleRequestSort(key)}
-                    style={{
-                      display: "flex",
-                      justifyContent: "left",
+                    active={orderBy === column.field}
+                    direction={orderBy === column.field ? order : "asc"}
+                    onClick={() => handleRequestSort(column.field)}
+                    sx={{
                       fontWeight: "bold",
                       padding: "3px",
                     }}
                   >
-                    {extendedColumns[key]}
+                    {column.title}
                   </TableSortLabel>
 
                   <StyledTextField
                     className="tablename-search"
-                    key={key}
-                    name={key}
+                    key={column.field}
+                    name={column.field}
                     onChange={handleFilterChange}
                     variant="outlined"
-                    placeholder={`Search ${extendedColumns[key]}`}
+                    placeholder={`Search ${column.title}`}
                     fullWidth
                   />
                 </StyledTableCell>
@@ -203,21 +268,25 @@ const DataTable = ({
           <TableBody className="tablename-body">
             {paginatedData.map((row, index) => (
               <TableRow
-                key={row.id}
-                style={{
-                  backgroundColor: index % 2 !== 0 ? "#f2f2f2" : "inherit",
+                key={row.ID || row.id || `row-${index}`}
+                sx={{
+                  backgroundColor: index % 2 !== 0 ? 'rgba(0, 0, 0, 0.02)' : 'inherit',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                  },
+                  transition: 'background-color 0.2s'
                 }}
               >
-                {Object.keys(extendedColumns).map((key) => (
+                {extendedColumns.map((column) => (
                   <StyledTableCell
-                    key={key}
+                    key={column.field}
                     style={{
-                      textAlign: validationRegex.isNumbers.test(row[key])
+                      textAlign: validationRegex.isNumbers.test(row[column.field])
                         ? "center"
                         : "left",
                     }}
                   >
-                    {row[key]}
+                    {row[column.field]}
                   </StyledTableCell>
                 ))}
                 <StyledTableCell
@@ -261,7 +330,7 @@ const DataTable = ({
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </StyledTableContainer>
       <TablePagination
         sx={{
           display: paginatedData?.length === 0 ? "none" : "block",

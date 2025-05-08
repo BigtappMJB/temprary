@@ -1,5 +1,5 @@
-import { Box, Button, Paper, styled, Tooltip, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { Box, Tooltip, Typography } from "@mui/material";
+import { useEffect, useCallback, useState, useRef } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import RoleFormComponent from "./components/MenuFormComponent";
 import DataTable from "../users/components/DataTable";
@@ -15,59 +15,9 @@ import {
   getSubmenuDetails,
   ScrollToTopButton,
 } from "../../utilities/generals";
-import { useSelector } from "react-redux";
 import TableErrorDisplay from "../../../components/tableErrorDisplay/TableErrorDisplay";
 import { useOutletContext } from "react-router";
-
-// Styled Components
-const Container = styled(Paper)(({ theme }) => ({
-  paddingBottom: theme.spacing(3),
-  marginBottom: theme.spacing(5),
-  borderRadius: theme.spacing(1),
-  boxShadow: theme.shadows[3],
-  [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(2),
-  },
-}));
-
-const SecondContainer = styled(Paper)(({ theme }) => ({
-  paddingBottom: theme.spacing(3),
-  marginBottom: theme.spacing(5),
-  borderRadius: theme.spacing(1),
-  boxShadow: theme.shadows[3],
-  [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(2),
-  },
-}));
-
-const Header = styled(Box)(({ theme }) => ({
-  backgroundColor: "#1e88e5",
-  color: "#fff",
-  padding: theme.spacing(2),
-  borderTopLeftRadius: theme.spacing(1),
-  borderTopRightRadius: theme.spacing(1),
-  marginBottom: theme.spacing(2),
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-}));
-
-const SubHeader = styled(Box)(({ theme }) => ({
-  color: "#1e88e5",
-  padding: theme.spacing(2),
-  borderTopLeftRadius: theme.spacing(1),
-  borderTopRightRadius: theme.spacing(1),
-  marginBottom: theme.spacing(2),
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-}));
-
-const FormButton = styled(Button)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-  },
-}));
+import { Container, SecondContainer, Header, SubHeader, FormButton } from './styles';
 
 /**
  * Menus component displays a user management interface with a form and a data table.
@@ -97,7 +47,7 @@ const Menus = () => {
   const { startLoading, stopLoading } = useLoading();
   const hasFetchedRoles = useRef(false);
 
-  const getRoles = async () => {
+  const getRoles = useCallback(async () => {
     try {
       startLoading();
       const response = await getMenusController();
@@ -110,7 +60,7 @@ const Menus = () => {
     } finally {
       stopLoading();
     }
-  };
+  }, [startLoading, stopLoading, setTableData]);
 
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || []; // Fetches roles data and updates the roles list
@@ -134,16 +84,24 @@ const Menus = () => {
       getRoles();
       hasFetchedRoles.current = true;
     }
-  }, [menuList]);
-  const columns = {
-    NAME: "Menu",
-    DESCRIPTION: "Description",
-  };
+  }, [startLoading, stopLoading]);
+  const columns = [
+    { 
+      field: 'NAME', 
+      title: 'Menu Name',
+      sortable: true
+    },
+    { 
+      field: 'DESCRIPTION', 
+      title: 'Description',
+      sortable: true
+    }
+  ];
 
   /**
    * Initiates the process to add a new user.
    */
-  const addRoles = () => {
+  const addRoles = useCallback(() => {
     if (permissionLevels?.create)
       setFormAction({
         display: true,
@@ -168,13 +126,13 @@ const Menus = () => {
         (confirmed) => {}
       );
     }
-  };
+  }, [permissionLevels, setFormAction, openDialog]);
 
   /**
    * Handles form submission for adding or updating a user.
    * @param {Object} formData - The data from the form.
    */
-  const onformSubmit = async (formData) => {
+  const onformSubmit = useCallback(async (formData) => {
     try {
       startLoading();
       let response = null;
@@ -188,14 +146,15 @@ const Menus = () => {
       if (response) {
         getRoles();
         if (!isAdd) {
-          onFormReset();
+          setFormAction({
+            display: false,
+            action: null,
+          });
         }
         openDialog(
           "success",
-          `Menu ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message ||
-            `Menu has been ${isAdd ? "addded" : "updated"} successfully`,
-
+          `Menu ${isAdd ? "Creation" : "Update"} Success`,
+          response.message || `Menu has been ${isAdd ? "created" : "updated"} successfully  `,
           {
             confirm: {
               name: "Ok",
@@ -206,15 +165,20 @@ const Menus = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {}
+          (confirmed) => {
+            // getRoles();
+          },
+          () => {
+            getRoles();
+          }
         );
       }
     } catch (error) {
-      const isAdd = formAction.action === "add";
+      console.error(error);
       openDialog(
         "warning",
         "Warning",
-        `Menu ${isAdd ? "Addition" : "Updation"} failed`,
+        error.errorMessage || `Menu ${formAction.action === "add" ? "Creation" : "Update"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -234,23 +198,23 @@ const Menus = () => {
     } finally {
       stopLoading();
     }
-  };
+  }, [startLoading, stopLoading, formAction, selectedValue, getRoles, setFormAction, openDialog]);
 
   /**
    * Resets the form and hides it.
    */
-  const onFormReset = () => {
+  const onFormReset = useCallback(() => {
     setFormAction({
       display: false,
       action: null,
     });
-  };
+  }, [setFormAction]);
 
   /**
    * Initiates the process to update a user's information.
    * @param {Object} selectedRow - The selected user's data.
    */
-  const handleUpdateLogic = (selectedRow) => {
+  const handleUpdateLogic = useCallback((selectedRow) => {
     if (permissionLevels?.edit) {
       setSelectedValue(selectedRow);
       ScrollToTopButton();
@@ -277,18 +241,18 @@ const Menus = () => {
         (confirmed) => {}
       );
     }
-  };
+  }, [permissionLevels, setSelectedValue, setFormAction, openDialog]);
 
   /**
    * Initiates the process to delete a user.
    * @param {Object} selectedRow - The selected user's data.
    */
-  const handleDelete = (selectedRow) => {
+  const handleDelete = useCallback((selectedRow) => {
     if (permissionLevels?.delete) {
       openDialog(
         "warning",
-        `Delete confirmation`,
-        `Are you sure you want to delete this menu "${selectedRow.NAME}"?`,
+        "Warning",
+        "Are you sure you want to delete this Menu?",
         {
           confirm: {
             name: "Yes",
@@ -324,13 +288,13 @@ const Menus = () => {
         (confirmed) => {}
       );
     }
-  };
+  }, [permissionLevels, openDialog, removeDataFromTable]);
 
   /**
    * Removes a user from the table after confirming deletion.
    * @param {Object} selectedRow - The selected user's data.
    */
-  const removeDataFromTable = async (selectedRow) => {
+  const removeDataFromTable = useCallback(async (selectedRow) => {
     try {
       startLoading();
       setFormAction({
@@ -389,7 +353,7 @@ const Menus = () => {
     } finally {
       stopLoading();
     }
-  };
+  }, [startLoading, stopLoading, setFormAction, getRoles, openDialog]);
 
   return (
     <>

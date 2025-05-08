@@ -1,67 +1,181 @@
+"""Database helper functions for user management and related operations.
+
+This module provides functions for managing users, roles, permissions, menus,
+and other database operations in the application.
+"""
+
 import json
+import logging
 import random
 import string
 from datetime import datetime
-import re
-from flask import jsonify, current_app
-import snowflake.connector
-from share.general_utils import snow_conf as conf
+from typing import Dict, List, Tuple, Any, Optional
 
-from share.snow_flake_conf import set_connections_get, set_connections_post, data_type
-from core.registration_controller import send_default_password
+import mysql.connector
+from mysql.connector import Error
+from flask import jsonify
 
-def create_table(params):
-    query_part = [f"CREATE TABLE IF NOT EXISTS {params['table_name']} ("]
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def create_table(params: Dict[str, Any]) -> Tuple[Dict[str, str], int]:
+    """Create a new table in the database.
+
+    Args:
+        params (Dict[str, Any]): Dictionary containing table creation parameters.
+            Must include 'table_name' and 'columns' keys.
+
+    Returns:
+        Tuple[Dict[str, str], int]: A tuple containing the response message and status code.
+
+    Raises:
+        ValueError: If required parameters are missing or invalid.
+    """
+    if not params.get('table_name'):
+        raise ValueError("Table name is required")
+    if not params.get('columns'):
+        raise ValueError("At least one column is required")
+
+    query_parts = [f"CREATE TABLE IF NOT EXISTS {params['table_name']} ("]
     try:
         for column in params['columns']:
-            if column['column_name']:
-                query_part.append(f"{column['column_name']}")
-            if column['data_type']:
-                # if column['length']:
-                #     query_part.append(f"{column['data_type']}({column['length']})")
-                # else:
-                query_part.append(f"{column['data_type']}")
-            if bool(column['auto_increment']):
-                query_part.append(f"AUTOINCREMENT")
-            if column['primary_key']:
-                query_part.append(f"PRIMARY KEY")
-            if column['default']:
-                query_part.append(f"DEFAULT '{column['default']}'")
-            if column['nullable']:
-                query_part.append(f" NOT NULL")
-            query_part.append(",")
-            if column['foreign_key']:
-                 query_part.append(
+            column_def = []
+            
+            # Column name is required
+            if not column.get('column_name'):
+                raise ValueError(f"Column name is required for all columns")
+            column_def.append(column['column_name'])
+            
+            # Data type is required
+            if not column.get('data_type'):
+                raise ValueError(f"Data type is required for column {column['column_name']}")
+            
+            # Add data type with optional length
+            if column.get('length'):
+                column_def.append(f"{column['data_type']}({column['length']})")
+            else:
+                column_def.append(column['data_type'])
+            
+            # Add column constraints
+            if column.get('auto_increment'):
+                column_def.append("AUTO_INCREMENT")
+            if column.get('primary_key'):
+                column_def.append("PRIMARY KEY")
+            if column.get('default') is not None:
+                column_def.append(f"DEFAULT '{column['default']}'")
+            if column.get('nullable') is False:
+                column_def.append("NOT NULL")
+            
+            query_parts.append(" ".join(column_def))
+            query_parts.append(",")
+            
+            # Add foreign key if specified
+            if column.get('foreign_key'):
+                if not column.get('fk_table_name') or not column.get('fk_column_name'):
+                    raise ValueError(f"Foreign key reference table and column are required for {column['column_name']}")
+                query_parts.append(
                     f"FOREIGN KEY ({column['column_name']}) REFERENCES {column['fk_table_name']}({column['fk_column_name']})")
-        query_part.append(");")
+                query_parts.append(",")
+        
+        # Remove trailing comma and close parenthesis
+        if query_parts[-1] == ",":
+            query_parts.pop()
+        query_parts.append(");")
 
-        create_table_query = " ".join(query_part)
-        print(create_table_query)
+        create_table_query = " ".join(query_parts)
+        logger.info(f"Creating table with query: {create_table_query}")
 
-        # Calling the connections
-        return set_connections_post(create_table_query)
-    except snowflake.connector.Error as error:
-        print("here is the error")
-        return json.dumps({"error": str(error)}), 501
-    except Exception as error:
-        print("here is the error 2")
-        return json.dumps({"error": str(error)}), 501
-
-
-def get_data_type():
-    conn = get_snowflake_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("""Select * from mysql_data_types""")
-        users = cursor.fetchall()
-        column_names = [description[0] for description in cursor.description]
-        data = [dict(zip(column_names, row)) for row in users]
-        return data
+        conn = None
+        cursor = None
+        try:
+            conn = get_database_connection()
+            cursor = conn.cursor()
+            cursor.execute(create_table_query)
+            conn.commit()
+            return {"message": f"Table {params['table_name']} created successfully"}, 201
+        except Error as err:
+            logger.error(f"Error creating table: {err}")
+            return {"error": str(err)}, 500
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+    except ValueError as ve:
+        logger.error(f"Validation error: {ve}")
+        return {"error": str(ve)}, 400
     except Exception as e:
-        raise e
+        logger.error(f"Unexpected error: {e}")
+        return {"error": "An unexpected error occurred"}, 500
+
+
+def get_data_types() -> List[Dict[str, Any]]:
+    """Get a list of supported MySQL data types.
+
+    Returns:
+        List[Dict[str, Any]]: List of dictionaries containing data type information.
+    """
+    return [
+        {"id": 1, "name": "INT", "description": "Integer data type"},
+        {"id": 2, "name": "VARCHAR", "description": "Variable-length string"},
+        {"id": 3, "name": "TEXT", "description": "Long text string"},
+        {"id": 4, "name": "DATE", "description": "Date without time"},
+        {"id": 5, "name": "DATETIME", "description": "Date and time"},
+        {"id": 6, "name": "DECIMAL", "description": "Decimal numbers"},
+        {"id": 7, "name": "BOOLEAN", "description": "True/False values"},
+        {"id": 8, "name": "FLOAT", "description": "Floating point numbers"},
+        {"id": 9, "name": "DOUBLE", "description": "Double precision numbers"},
+        {"id": 10, "name": "TIMESTAMP", "description": "Timestamp with timezone"},
+        {"id": 11, "name": "CHAR", "description": "Fixed-length string"},
+        {"id": 12, "name": "BIGINT", "description": "Large integer"}
+    ]
+
+def fetch_all_tables() -> List[Dict[str, Any]]:
+    """Fetch all tables from the database with their metadata.
+
+    Returns:
+        List[Dict[str, Any]]: List of dictionaries containing table information.
+
+    Raises:
+        Exception: If database query fails.
+    """
+    conn = None
+    cursor = None
+    try:
+        conn = get_database_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT 
+                table_name as name,
+                table_rows as row_count,
+                create_time,
+                update_time
+            FROM information_schema.tables 
+            WHERE table_schema = 'automationUtil'
+            ORDER BY table_name
+        """)
+        tables = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
+        data = [dict(zip(column_names, row)) for row in tables]
+        
+        # Convert datetime objects to strings for JSON serialization
+        for table in data:
+            if table.get('create_time'):
+                table['create_time'] = table['create_time'].isoformat()
+            if table.get('update_time'):
+                table['update_time'] = table['update_time'].isoformat()
+        
+        return data
+    except Error as err:
+        logger.error(f"Error fetching tables: {err}")
+        raise
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 # Function to validate the incoming JSON and ensure all required keys are present
@@ -172,18 +286,52 @@ def generate_create_query(data):
     return query
 
 
-def get_snowflake_connection():
-    from mysql.connector import Error
-    import mysql.connector
-    from share.general_utils import mysql_config as conf
-        # Establish a connection
-    conn = mysql.connector.connect(
-            host=conf.get('host'),
-            user=conf.get('user'),
-            password=conf.get('password'),
-            database=conf.get('database')
+def get_database_connection() -> mysql.connector.MySQLConnection:
+    """Create a connection to the MySQL database.
+
+    Returns:
+        MySQLConnection: A connection to the MySQL database.
+
+    Raises:
+        Exception: If connection fails or database does not exist.
+    """
+    try:
+        conn = mysql.connector.connect(
+            host='13.201.216.64',
+            port=3306,
+            user='automation',
+            password='Welcome@2024*',
+            database='automationUtil'
         )
-    return conn
+        return conn
+    except Error as err:
+        logger.error(f"Database connection error: {err}")
+        if err.errno == 2003:
+            raise Exception("Could not connect to MySQL server. Please check if the server is accessible.")
+        elif err.errno == 1049:
+            raise Exception("Database does not exist. Please check the database name.")
+        else:
+            raise Exception(f"MySQL Error: {str(err)}")
+
+def fetch_all_users():
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT u.*, r.name as role_name 
+            FROM users u 
+            LEFT JOIN roles r ON r.id = u.role_id 
+            ORDER BY u.id DESC
+        """)
+        users = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
+        data = [dict(zip(column_names, row)) for row in users]
+        return data
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
 
 
@@ -203,9 +351,9 @@ def create_user(data):
         # Send default password to user's email using existing email method
         send_default_password(data['email'], default_password)
 
-        # Insert the new user into the USERS table
+        # Insert the new user into the users table
         cursor.execute(
-            "INSERT INTO NBF_CIA.PUBLIC.USERS (FIRST_NAME, MIDDLE_NAME, LAST_NAME, EMAIL, MOBILE, ROLE_ID, PASSWORD, IS_VERIFIED, IS_DEFAULT_PASSWORD_CHANGED, CREATED_DATE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)",
+            "INSERT INTO users (first_name, middle_name, last_name, email, mobile, role_id, password, is_verified, is_default_password_changed, created_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)",
             (data['first_name'], data['middle_name'], data['last_name'], data['email'], data['mobile'], data['role_id'], default_password, True, False)
         )
         conn.commit()
@@ -222,7 +370,7 @@ def get_user(user_id):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "SELECT u.*, r.name as role_name FROM NBF_CIA.PUBLIC.USERS u LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID WHERE u.ID = %s ORDER BY u.ID DESC",
+            "SELECT u.*, r.name as role_name FROM users u LEFT JOIN roles r ON r.id = u.role_id WHERE u.id = %s ORDER BY u.id DESC",
             (user_id,))
         user = cursor.fetchone()
         if user:
@@ -246,7 +394,7 @@ def get_all_users():
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "SELECT u.*, r.name as role_name FROM NBF_CIA.PUBLIC.USERS u LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID ORDER BY u.ID DESC")
+            "SELECT u.*, r.name as role_name FROM users u LEFT JOIN roles r ON r.id = u.role_id ORDER BY u.id DESC")
         users = cursor.fetchall()
         column_names = [description[0] for description in cursor.description]
         data = [dict(zip(column_names, row)) for row in users]
@@ -263,14 +411,13 @@ def get_all_input_field():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("Select * from INPUT_FIELD")
-        users = cursor.fetchall()
+        cursor.execute("SELECT * FROM input_field")
+        input_fields = cursor.fetchall()
         column_names = [description[0] for description in cursor.description]
-        data = [dict(zip(column_names, row)) for row in users]
-    
+        data = [dict(zip(column_names, row)) for row in input_fields]
         return data
     except Exception as e:
-        return {"error": str(e)}, 500
+        raise e
     finally:
         cursor.close()
         conn.close()
@@ -281,7 +428,7 @@ def update_user(user_id, data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE NBF_CIA.PUBLIC.USERS SET FIRST_NAME = %s, MIDDLE_NAME = %s, LAST_NAME = %s, MOBILE = %s, EMAIL = %s, ROLE_ID = %s WHERE ID = %s",
+            "UPDATE users SET first_name = %s, middle_name = %s, last_name = %s, mobile = %s, email = %s, role_id = %s WHERE id = %s",
             (data['first_name'], data['middle_name'], data['last_name'], data['mobile'], data['email'], data['role_id'], user_id)
         )
         conn.commit()
@@ -296,36 +443,11 @@ def delete_user(user_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.USERS WHERE ID = %s", (user_id,))
+        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
         conn.commit()
         return {"message": "User deleted successfully"}, 200
     except Exception as e:
         return {"error": str(e)}, 500
-    finally:
-        cursor.close()
-        conn.close()
-
-def fetch_all_users():
-    conn = get_snowflake_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute(
-            "SELECT u.*, r.name as role_name FROM NBF_CIA.PUBLIC.USERS u LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.ID = u.ROLE_ID ORDER BY u.ID DESC")
-        users = cursor.fetchall()
-        column_names = [description[0] for description in cursor.description]
-        data = [dict(zip(column_names, row)) for row in users]
-        return data
-    except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
-        
-        
-def fetch_all_tables():
-    conn = get_snowflake_connection()
-    cursor = conn.cursor()
-    try:
         cursor.execute("""SELECT TABLE_NAME
 FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_SCHEMA = DATABASE();
@@ -372,16 +494,14 @@ def dynamic_page_creation(data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.USERS WHERE ID = %s", (user_id,))
-     
-        query ="INSERT INTO dynamic_page_creation (tableName,tableUniqueKey,pageDetails,columnDetails) VALUES (%s,%s,%s,%s)"
-        cursor.execute(query,(data.tableName,False,data.pageDetails,False))
-        users = cursor.fetchall()
-        column_names = [description[0] for description in cursor.description]
-        data = [dict(zip(column_names, row)) for row in users]
-        return data
+        cursor.execute(
+            "INSERT INTO dynamic_page_creation (table_name, description) VALUES (%s, %s)",
+            (data['table_name'], data['description'])
+        )
+        conn.commit()
+        return {"message": "Dynamic page created successfully"}, 201
     except Exception as e:
-        raise e
+        return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
@@ -391,25 +511,17 @@ def dynamic_page_creation(data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.USERS WHERE ID = %s", (user_id,))
-     
-        query ="INSERT INTO dynamic_page_creation (tableName,tableUniqueKey,pageDetails,columnDetails) VALUES (%s,%s,%s,%s)"
-        cursor.execute(query,(data.tableName,False,data.pageDetails,False))
-        users = cursor.fetchall()
-        column_names = [description[0] for description in cursor.description]
-        data = [dict(zip(column_names, row)) for row in users]
-        return data
+        cursor.execute(
+            "INSERT INTO dynamic_page_creation (table_name, description) VALUES (%s, %s)",
+            (data['table_name'], data['description'])
+        )
+        conn.commit()
+        return {"message": "Dynamic page created successfully"}, 201
     except Exception as e:
-        raise e
+        return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
-
-
-
-
-
-
 
 
 def create_menu(data):
@@ -417,7 +529,7 @@ def create_menu(data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO NBF_CIA.PUBLIC.MENUS (NAME, DESCRIPTION) VALUES (%s, %s)",
+            "INSERT INTO menus (name, description) VALUES (%s, %s)",
             (data['name'], data['description'])
         )
         conn.commit()
@@ -432,7 +544,7 @@ def get_menu(menu_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM NBF_CIA.PUBLIC.MENUS WHERE ID = %s", (menu_id,))
+        cursor.execute("SELECT * FROM menus WHERE id = %s", (menu_id,))
         menu = cursor.fetchone()
         if menu:
             column_names = [desc[0] for desc in cursor.description]
@@ -450,7 +562,7 @@ def get_all_menus():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM NBF_CIA.PUBLIC.MENUS")
+        cursor.execute("SELECT * FROM menus")
         menus = cursor.fetchall()
         if menus:
             column_names = [desc[0] for desc in cursor.description]
@@ -469,7 +581,7 @@ def update_menu(menu_id, data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE NBF_CIA.PUBLIC.MENUS SET NAME = %s, DESCRIPTION = %s WHERE ID = %s",
+            "UPDATE menus SET name = %s, description = %s WHERE id = %s",
             (data['name'], data['description'], menu_id)
         )
         conn.commit()
@@ -486,14 +598,14 @@ def delete_menu(menu_id):
     cursor = conn.cursor()
     try:
         # Check if there are any submenus associated with this menu
-        cursor.execute("SELECT COUNT(*) FROM NBF_CIA.PUBLIC.SUB_MENUS WHERE MENU_ID = %s", (menu_id,))
+        cursor.execute("SELECT COUNT(*) FROM sub_menus WHERE menu_id = %s", (menu_id,))
         sub_menu_count = cursor.fetchone()[0]
 
         if sub_menu_count > 0:
             return {"error": "Cannot delete menu with associated submenus"}, 400
 
         # If no submenus are associated, proceed to delete the menu
-        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.MENUS WHERE ID = %s", (menu_id,))
+        cursor.execute("DELETE FROM menus WHERE id = %s", (menu_id,))
         conn.commit()
         return {"message": "Menu deleted successfully"}, 200
     except Exception as e:
@@ -507,9 +619,9 @@ def create_sub_menu(data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        # Insert a new submenu into the SUB_MENUS table
+        # Insert a new submenu into the sub_menus table
         cursor.execute(
-            "INSERT INTO NBF_CIA.PUBLIC.SUB_MENUS (MENU_ID, NAME, DESCRIPTION, ROUTE) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO sub_menus (menu_id, name, description, route) VALUES (%s, %s, %s, %s)",
             (data['menu_id'], data['name'], data['description'], data['route'])
         )
         conn.commit()
@@ -525,22 +637,21 @@ def get_sub_menu(sub_menu_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        # Select a submenu along with its associated menu name by ID
         cursor.execute(
-            "SELECT sm.*, m.NAME as menu_name FROM NBF_CIA.PUBLIC.SUB_MENUS sm LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.ID = sm.MENU_ID WHERE sm.ID = %s",
+            """SELECT sm.*, m.name as menu_name 
+            FROM sub_menus sm 
+            LEFT JOIN menus m ON m.id = sm.menu_id 
+            WHERE sm.id = %s""", 
             (sub_menu_id,)
         )
         sub_menu = cursor.fetchone()
         if sub_menu:
-            # Create a dictionary with the submenu data if found
             column_names = [desc[0] for desc in cursor.description]
             sub_menu_dict = dict(zip(column_names, sub_menu))
             return sub_menu_dict, 200
         else:
-            # Return message and status code 404 if submenu is not found
             return {"message": "SubMenu not found"}, 404
     except Exception as e:
-        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
@@ -550,19 +661,20 @@ def get_all_sub_menus():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        # Select all submenus along with their associated menu names
-        cursor.execute("SELECT sm.*, m.NAME as menu_name FROM NBF_CIA.PUBLIC.SUB_MENUS sm LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.ID = sm.MENU_ID")
+        cursor.execute(
+            """SELECT sm.*, m.name as menu_name 
+            FROM sub_menus sm 
+            LEFT JOIN menus m ON m.id = sm.menu_id 
+            ORDER BY sm.id DESC"""
+        )
         sub_menus = cursor.fetchall()
         if sub_menus:
-            # Create a list of dictionaries with all submenus data if found
             column_names = [desc[0] for desc in cursor.description]
             sub_menus_list = [dict(zip(column_names, sub_menu)) for sub_menu in sub_menus]
             return sub_menus_list, 200
         else:
-            # Return message and status code 404 if no submenus are found
-            return {"message": "No sub_menus found"}, 404
+            return {"message": "No submenus found"}, 404
     except Exception as e:
-        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
@@ -572,15 +684,13 @@ def update_sub_menu(sub_menu_id, data):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        # Update the submenu details based on the given ID
         cursor.execute(
-            "UPDATE NBF_CIA.PUBLIC.SUB_MENUS SET MENU_ID = %s, NAME = %s, DESCRIPTION = %s, ROUTE = %s WHERE ID = %s",
+            "UPDATE sub_menus SET menu_id = %s, name = %s, description = %s, route = %s WHERE id = %s",
             (data['menu_id'], data['name'], data['description'], data['route'], sub_menu_id)
         )
         conn.commit()
         return {"message": "SubMenu updated successfully"}, 200
     except Exception as e:
-        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
@@ -590,25 +700,14 @@ def delete_sub_menu(sub_menu_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        # Check if the submenu is mapped to any role permission
-        cursor.execute("SELECT COUNT(*) FROM NBF_CIA.PUBLIC.ROLE_PERMISSION WHERE SUB_MENU_ID = %s", (sub_menu_id,))
-        count = cursor.fetchone()[0]
-
-        if count > 0:
-            return {"message": "SubMenu is mapped to role permission and cannot be deleted"}, 400
-
-        # Delete the submenu based on the given ID
-        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.SUB_MENUS WHERE ID = %s", (sub_menu_id,))
+        cursor.execute("DELETE FROM sub_menus WHERE id = %s", (sub_menu_id,))
         conn.commit()
         return {"message": "SubMenu deleted successfully"}, 200
     except Exception as e:
-        # Return error message and status code 500 if any exception occurs
         return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
-
-
 
 
 def create_permission(data):
@@ -657,7 +756,7 @@ def get_all_permissions():
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM NBF_CIA.PUBLIC.PERMISSION_LEVEL")
+        cursor.execute("SELECT * FROM permission_level")
         permissions = cursor.fetchall()
         if permissions:
             column_names = [desc[0] for desc in cursor.description]
@@ -678,7 +777,7 @@ def update_permission(permission_id, data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE NBF_CIA.PUBLIC.PERMISSION_LEVEL SET level = %s WHERE id = %s",
+            "UPDATE permission_level SET level = %s WHERE id = %s",
             (data['level'], permission_id)
         )
         conn.commit()
@@ -694,7 +793,7 @@ def delete_permission(permission_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.PERMISSION_LEVEL WHERE id = %s", (permission_id,))
+        cursor.execute("DELETE FROM permission_level WHERE id = %s", (permission_id,))
         conn.commit()
         return {"message": "Permission deleted successfully"}, 200
     except Exception as e:
@@ -709,7 +808,7 @@ def create_role_permission(data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO NBF_CIA.PUBLIC.ROLE_PERMISSION (ROLE_ID, MENU_ID, SUB_MENU_ID, PERMISSION_LEVEL) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO role_permission (role_id, menu_id, sub_menu_id, permission_level) VALUES (%s, %s, %s, %s)",
             (data['role_id'], data['menu_id'], data['submenu_id'], data['permission_level'])
         )
         conn.commit()
@@ -727,11 +826,11 @@ def get_role_permission(role_permission_id):
     try:
         cursor.execute("""
         SELECT rp.*, r.name as role_name, m.name as menu_name, sm.name AS sub_menu_name, p.level AS permission 
-        FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp 
-        LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.id = rp.role_id
-        LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.id = rp.menu_id 
-        LEFT JOIN NBF_CIA.PUBLIC.SUB_MENUS sm ON sm.id = rp.sub_menu_id 
-        LEFT JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL p ON p.id = rp.permission_level
+        FROM role_permission rp 
+        LEFT JOIN roles r ON r.id = rp.role_id
+        LEFT JOIN menus m ON m.id = rp.menu_id 
+        LEFT JOIN sub_menus sm ON sm.id = rp.sub_menu_id 
+        LEFT JOIN permission_level p ON p.id = rp.permission_level
         WHERE rp.id = %s""", (role_permission_id,))
 
         role_permission = cursor.fetchone()
@@ -752,11 +851,11 @@ def get_all_role_permissions():
     try:
         cursor.execute("""
         SELECT rp.*, r.name as role_name, m.name as menu_name, sm.name AS sub_menu_name, p.level AS permission 
-        FROM NBF_CIA.PUBLIC.ROLE_PERMISSION rp 
-        LEFT JOIN NBF_CIA.PUBLIC.ROLES r ON r.id = rp.role_id
-        LEFT JOIN NBF_CIA.PUBLIC.MENUS m ON m.id = rp.menu_id 
-        LEFT JOIN NBF_CIA.PUBLIC.SUB_MENUS sm ON sm.id = rp.sub_menu_id 
-        LEFT JOIN NBF_CIA.PUBLIC.PERMISSION_LEVEL p ON p.id = rp.permission_level
+        FROM role_permission rp 
+        LEFT JOIN roles r ON r.id = rp.role_id
+        LEFT JOIN menus m ON m.id = rp.menu_id 
+        LEFT JOIN sub_menus sm ON sm.id = rp.sub_menu_id 
+        LEFT JOIN permission_level p ON p.id = rp.permission_level
         ORDER BY rp.id DESC
         """)
         role_permissions = cursor.fetchall()
@@ -777,7 +876,7 @@ def update_role_permission(role_permission_id, data):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE NBF_CIA.PUBLIC.ROLE_PERMISSION SET ROLE_ID = %s, MENU_ID = %s, SUB_MENU_ID = %s, PERMISSION_LEVEL = %s WHERE ID = %s",
+            "UPDATE role_permission SET role_id = %s, menu_id = %s, sub_menu_id = %s, permission_level = %s WHERE id = %s",
             (data['role_id'], data['menu_id'], data['submenu_id'], data['permission_level'], role_permission_id)
         )
         conn.commit()
@@ -792,7 +891,7 @@ def delete_role_permission(role_permission_id):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM NBF_CIA.PUBLIC.ROLE_PERMISSION WHERE ID = %s", (role_permission_id,))
+        cursor.execute("DELETE FROM role_permission WHERE id = %s", (role_permission_id,))
         conn.commit()
         return {"message": "Role permission deleted successfully"}, 200
     except Exception as e:

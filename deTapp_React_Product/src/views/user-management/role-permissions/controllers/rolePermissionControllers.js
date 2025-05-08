@@ -20,7 +20,7 @@ import {
 export const getRolePermissionsController = async () => {
   try {
     // Send the GET request to the role permissions API endpoint
-    const response = await get("/master/rolePermission", "python");
+    const response = await get("/rolePermission", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -66,7 +66,7 @@ export const rolePermissionCreationController = async (formData) => {
       permission_level: formData.permission?.ID,
     };
     // Send the POST request to the role permissions API endpoint
-    const response = await post("/master/rolePermission", body, "python");
+    const response = await post("/rolePermission", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -115,7 +115,7 @@ export const rolePermissionUpdateController = async (formData) => {
     };
     // Send the PUT request to the role permissions API endpoint
     const response = await put(
-      `/master/rolePermission?id=${formData.ID}`,
+      `/rolePermission?id=${formData.ID}`,
       body,
       "python"
     );
@@ -147,7 +147,7 @@ export const rolePermissionDeleteController = async (rolePermissionId) => {
     }
     // Send the DELETE request to the role permissions API endpoint
     const response = await remove(
-      `/master/rolePermission?id=${rolePermissionId}`,
+      `/rolePermission?id=${rolePermissionId}`,
       "python"
     );
     // Return the response data

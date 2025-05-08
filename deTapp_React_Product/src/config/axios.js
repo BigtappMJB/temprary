@@ -38,7 +38,7 @@ export const pythonInstance = axios.create({
    * This value is taken from the environment variable `REACT_APP_PYTHON_API_URL`.
    */
 
-  baseURL: process.env.REACT_APP_SPRINGBOOT_API_URL,
+  baseURL: "http://localhost:5000",
   headers: {
     /**
      * Content-Type header set to application/json.

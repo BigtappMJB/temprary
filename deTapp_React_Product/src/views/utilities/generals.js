@@ -124,18 +124,47 @@ export const getCurrentPathName = () => {
   const hash = window.location.hash;
   return hash ? hash.substring(1) : "/";
 };
+/**
+ * Gets submenu details from the menu list based on the provided identifier.
+ * 
+ * @param {Array} menuList - The list of menus to search through
+ * @param {string} identifier - The identifier to match against (path or name)
+ * @param {string} type - The type of identifier ('path' or 'name')
+ * @returns {Object|null} - The matching submenu object or null if not found
+ */
 export const getSubmenuDetails = (menuList, identifier, type = "path") => {
-  for (const menu of menuList) {
-    for (const submenu of menu.submenus) {
-      if (
-        (type === "path" && submenu.submenu_path === identifier) ||
-        (type === "name" && submenu.submenu_name === identifier)
-      ) {
-        return submenu;
+  try {
+    // Safety check for menuList
+    if (!menuList || !Array.isArray(menuList) || menuList.length === 0) {
+      console.warn("getSubmenuDetails: Invalid or empty menuList");
+      return null;
+    }
+
+    // Search through menus and submenus
+    for (const menu of menuList) {
+      // Safety check for submenus
+      if (!menu.submenus || !Array.isArray(menu.submenus)) {
+        console.warn(`getSubmenuDetails: Invalid submenus in menu: ${menu.menu_name || 'unknown'}`);
+        continue;
+      }
+
+      for (const submenu of menu.submenus) {
+        if (
+          (type === "path" && submenu.submenu_path === identifier) ||
+          (type === "name" && submenu.submenu_name === identifier)
+        ) {
+          return submenu;
+        }
       }
     }
+    
+    // If we get here, no matching submenu was found
+    console.warn(`getSubmenuDetails: No submenu found with ${type} = ${identifier}`);
+    return null;
+  } catch (error) {
+    console.error("Error in getSubmenuDetails:", error);
+    return null;
   }
-  return null;
 };
 
 /**

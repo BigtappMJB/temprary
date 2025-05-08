@@ -28,8 +28,9 @@ const Container = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   borderRadius: theme.spacing(1),
   boxShadow: theme.shadows[3],
-  [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(3),
   },
 }));
 
@@ -38,9 +39,11 @@ const SecondContainer = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   borderRadius: theme.spacing(1),
   boxShadow: theme.shadows[3],
-  [theme.breakpoints.down("sm")]: {
-    padding: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(3),
   },
+  overflow: 'hidden',
 }));
 
 const Header = styled(Box)(({ theme }) => ({
@@ -53,6 +56,16 @@ const Header = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
+  flexWrap: 'wrap',
+  gap: theme.spacing(1),
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1.5),
+    flexDirection: 'column',
+    '& .MuiTypography-h6': {
+      fontSize: '1.1rem',
+      marginBottom: theme.spacing(1)
+    }
+  }
 }));
 
 const SubHeader = styled(Box)(({ theme }) => ({
@@ -64,11 +77,24 @@ const SubHeader = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
+  flexWrap: 'wrap',
+  gap: theme.spacing(1),
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1.5),
+    flexDirection: 'column',
+    '& .MuiTypography-h6': {
+      fontSize: '1.1rem',
+      marginBottom: theme.spacing(1)
+    }
+  }
 }));
 
 const FormButton = styled(Button)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+    marginBottom: theme.spacing(1),
+    fontSize: '0.875rem',
+    padding: theme.spacing(1)
   },
 }));
 
@@ -81,7 +107,7 @@ const FormButton = styled(Button)(({ theme }) => ({
  *   <RolePermissionPage />
  * )
  */
-const RolePermissionPage = () => {
+const RolePermission = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
   const [rolesList, setRolesList] = useState([]);
@@ -200,12 +226,12 @@ const RolePermissionPage = () => {
     }
   }, [menuList]);
 
-  const columns = {
-    role_name: "Role",
-    menu_name: "Menu",
-    sub_menu_name: "SubMenu",
-    permission: "Permission",
-  };
+  const columns = [
+    { field: 'role_name', title: 'Role' },
+    { field: 'menu_name', title: 'Menu' },
+    { field: 'sub_menu_name', title: 'SubMenu' },
+    { field: 'permission', title: 'Permission' }
+  ];
 
   /**
    * Initiates the process to add a new role permission.
@@ -527,4 +553,4 @@ const RolePermissionPage = () => {
   );
 };
 
-export default RolePermissionPage;
+export default RolePermission;

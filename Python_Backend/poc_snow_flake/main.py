@@ -14,7 +14,16 @@ from core.openai.openai_controller import  openai_bp
 from core.project_estimate_controller import project_estimate_bp
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:3000"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
+        "expose_headers": ["Content-Type"],
+        "supports_credentials": True,
+        "max_age": 3600
+    }
+})
 
 # Registering existing blueprints
 app.register_blueprint(login_bp)
@@ -26,6 +35,14 @@ app.register_blueprint(openai_bp, url_prefix='/gpt')
 
 # Registering the new project_estimate blueprints
 app.register_blueprint(project_estimate_bp, url_prefix='/estimate')
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

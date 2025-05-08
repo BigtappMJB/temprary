@@ -21,7 +21,7 @@ import { titleCaseFirstWord } from "../../../utilities/generals";
 export const getPermissionList = async () => {
   try {
     // Send the GET request to the permission API endpoint
-    const response = await get("/master/permission", "python");
+    const response = await get("/permission", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -61,7 +61,7 @@ export const rolePermissionCreationController = async (formData) => {
       description: titleCaseFirstWord(formData.description.trim()),
     };
     // Send the POST request to the permission API endpoint
-    const response = await post("/master/permission", body, "python");
+    const response = await post("/permission", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -104,7 +104,7 @@ export const rolePermissionUpdateController = async (formData) => {
     };
     // Send the PUT request to the permission API endpoint
     const response = await put(
-      `/master/permission?id=${formData.ID}`,
+      `/permission?id=${formData.ID}`,
       body,
       "python"
     );
@@ -136,7 +136,7 @@ export const rolePermissionDeleteController = async (rolePermissionId) => {
     }
     // Send the DELETE request to the permission API endpoint
     const response = await remove(
-      `/master/permission?id=${rolePermissionId}`,
+      `/permission?id=${rolePermissionId}`,
       "python"
     );
     // Return the response data

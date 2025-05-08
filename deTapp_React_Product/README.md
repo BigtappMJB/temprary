@@ -61,6 +61,29 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/m
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
+### Environment Variables
+
+This application uses environment variables to configure API endpoints for different environments. Before running the application, you need to set up the environment variables:
+
+1. Copy the `.env.example` file to a new file named `.env`
+2. Update the values in the `.env` file according to your environment:
+
+```
+# Local development environment
+REACT_APP_SPRINGBOOT_API_URL=http://localhost:5000
+REACT_APP_PYTHON_API_URL=http://localhost:5000
+
+# UAT environment (uncomment and modify as needed)
+# REACT_APP_SPRINGBOOT_API_URL=https://uat-api.example.com
+# REACT_APP_PYTHON_API_URL=https://uat-api.example.com
+
+# Production environment (uncomment and modify as needed)
+# REACT_APP_SPRINGBOOT_API_URL=https://api.example.com
+# REACT_APP_PYTHON_API_URL=https://api.example.com
+```
+
+The application uses these environment variables to connect to the appropriate backend API endpoints based on the environment.
+
 ### Deployment
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)

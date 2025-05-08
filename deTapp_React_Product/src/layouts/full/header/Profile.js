@@ -57,19 +57,36 @@ const Profile = () => {
   };
 
   return (
-    <Box>
-      <Tooltip arrow title={email}>
-        <IconButton
-          size="large"
-          aria-label="show 11 new notifications"
-          color="inherit"
-          aria-controls="msgs-menu"
-          aria-haspopup="true"
-          onClick={handleClick2}
-        >
-          <IconUserCircle size="28" stroke="1.5" />
-        </IconButton>
-      </Tooltip>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box 
+        sx={{ 
+          display: { xs: 'none', sm: 'block' },
+          color: 'white',
+          fontSize: '0.875rem',
+          maxWidth: '200px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
+        }}
+      >
+        {email}
+      </Box>
+      <IconButton
+        size="large"
+        aria-label="user profile menu"
+        color="inherit"
+        aria-controls="msgs-menu"
+        aria-haspopup="true"
+        onClick={handleClick2}
+        sx={{ 
+          color: 'white',
+          '&:hover': {
+            backgroundColor: 'rgba(255,255,255,0.1)'
+          }
+        }}
+      >
+        <IconUserCircle size="28" stroke="1.5" />
+      </IconButton>
 
       <Menu
         id="msgs-menu"
@@ -85,35 +102,32 @@ const Profile = () => {
           },
         }}
       >
-        {/* <MenuItem>
+        <MenuItem sx={{ pointerEvents: 'none', opacity: 0.7 }}>
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>{email}</ListItemText>
-        </MenuItem> */}
+          <ListItemText primary={email} />
+        </MenuItem>
+        <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 1 }} />
         <MenuItem>
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>My Profile</ListItemText>
+          <ListItemText primary="My Profile" />
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>My Account</ListItemText>
+          <ListItemText primary="My Account" />
         </MenuItem>
-        <Box mt={1} py={1} px={2}>
-          <Button
-            to="/auth/login"
-            onClick={handleLogOut}
-            variant="outlined"
-            color="primary"
-            component={Button}
-            fullWidth
-          >
-            Logout
-          </Button>
+        <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', mt: 1 }}>
+          <MenuItem onClick={handleLogOut} sx={{ color: 'error.main' }}>
+            <ListItemIcon sx={{ color: 'error.main' }}>
+              <IconUser width={20} />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </MenuItem>
         </Box>
       </Menu>
     </Box>

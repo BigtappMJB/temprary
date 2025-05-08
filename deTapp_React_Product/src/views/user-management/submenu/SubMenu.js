@@ -79,6 +79,14 @@ const FormButton = styled(Button)(({ theme }) => ({
  *   <UsersPage />
  * )
  */
+const columns = [
+  { field: 'menu_name', title: 'Menu' },
+  { field: 'name', title: 'Submenu Name' },
+  { field: 'description', title: 'Description' },
+  { field: 'route', title: 'Path' },
+  { field: 'status', title: 'Status' }
+];
+
 const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
   const [tableData, setTableData] = useState([]);
@@ -99,12 +107,19 @@ const UsersPage = () => {
 
   const { openDialog } = useDialog();
 
-  // Fetches submenu data and updates the table
   const getTableData = async () => {
     try {
       startLoading();
       const response = await getSubMenusController();
-      setTableData(response);
+      
+      // Transform the response data to match the table columns
+      const transformedData = Array.isArray(response) ? response.map(item => ({
+        ...item,
+        menu_name: item.menu?.name || '',
+        status: item.status || 'Active'
+      })) : [];
+      
+      setTableData(transformedData);
     } catch (error) {
       console.error(error);
       if (error.statusCode === 404) {
@@ -114,29 +129,37 @@ const UsersPage = () => {
       stopLoading();
     }
   };
+
+  const getMenus = async () => {
+    try {
+      startLoading();
+      const response = await getMenusController();
+      setRolesList(response);
+    } catch (error) {
+      console.error(error);
+      if (error.statusCode === 404) {
+        setTableData([]);
+      }
+    } finally {
+      stopLoading();
+    }
+  };
+
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || [];
-  // Fetches roles data and updates the roles list
+
   useEffect(() => {
-    const getMenus = async () => {
-      try {
-        startLoading();
-        const response = await getMenusController();
-        setRolesList(response);
-      } catch (error) {
-        console.error(error);
-        if (error.statusCode === 404) {
-          setTableData([]);
-        }
-      } finally {
-        stopLoading();
-      }
-    };
+    getMenus();
+  }, []);
+
+  // Get submenu details
+  useEffect(() => {
     const submenuDetails = getSubmenuDetails(
       menuList,
       getCurrentPathName(),
       "path"
     );
+    
     const permissionList = submenuDetails?.permission_level
       .split(",")
       .map((ele) => ele.trim().toLowerCase());
@@ -377,11 +400,11 @@ const UsersPage = () => {
               isNeed: false,
             },
           },
-          (confirmed) => {
-            // getTableData();
+          () => {
+            // Dialog confirmed callback
           },
           () => {
-            // getTableData();
+            // Dialog cancel callback
           }
         );
       }

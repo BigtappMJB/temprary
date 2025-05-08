@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 import jwt
-import snowflake.connector
+# import snowflake.connector - removed as we're using MySQL
 import base64
 import json
 from flask import current_app

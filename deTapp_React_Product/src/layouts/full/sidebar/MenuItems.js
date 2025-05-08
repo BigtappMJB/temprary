@@ -1,4 +1,15 @@
-import { IconLayoutDashboard, IconLogin, IconUser } from "@tabler/icons-react";
+import {
+  IconLayoutDashboard,
+  IconLogin,
+  IconUsers,
+  IconUserCircle,
+  IconLock,
+  IconTable,
+  IconMenu2,
+  IconListDetails,
+  IconMessageCircle,
+  IconLogout
+} from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
 
@@ -16,7 +27,7 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Table creation",
-    icon: IconLayoutDashboard,
+    icon: IconTable,
     href: "/table-creation",
   },
   {
@@ -26,25 +37,20 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Users",
-    icon: IconUser,
+    icon: IconUsers,
     href: "/users",
   },
-  // {
-  //   id: uniqueId(),
-  //   title: "User Roles",
-  //   icon: IconUser,
-  //   href: "/user-roles",
-  // },
+
   {
     id: uniqueId(),
     title: "Roles",
-    icon: IconUser,
+    icon: IconUserCircle,
     href: "/roles",
   },
   {
     id: uniqueId(),
     title: "Role Permissions",
-    icon: IconUser,
+    icon: IconLock,
     href: "/role-permissions",
   },
   {
@@ -54,13 +60,13 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Menu",
-    icon: IconUser,
+    icon: IconMenu2,
     href: "/menu",
   },
   {
     id: uniqueId(),
     title: "SubMenu",
-    icon: IconUser,
+    icon: IconListDetails,
     href: "/subMenu",
   },
   {
@@ -70,7 +76,7 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Chat",
-    icon: IconUser,
+    icon: IconMessageCircle,
     href: "/chat-interface",
   },
   {
@@ -80,7 +86,7 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Logout",
-    icon: IconLogin,
+    icon: IconLogout,
     href: "/auth/login",
   },
 ];

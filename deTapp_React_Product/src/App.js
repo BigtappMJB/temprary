@@ -9,6 +9,7 @@ import AlertDialog from "./views/utilities/alerts/AlertDialog";
 import { LoadingProvider } from "./components/Loading/loadingProvider";
 import LoadingScreen from "./components/Loading/LoaderComponent";
 import { useEffect, useState } from "react";
+import { NotificationProvider } from './contexts/NotificationContext';
 
 function App() {
   const theme = baselightTheme;
@@ -32,13 +33,15 @@ function App() {
   return (
     <LoadingProvider>
       <DialogProvider>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {routing}
-        </ThemeProvider>
-        <AlertDialog />
-        <LoadingScreen />
+        <NotificationProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {routing}
+            <AlertDialog />
+          </ThemeProvider>
+        </NotificationProvider>
       </DialogProvider>
+      <LoadingScreen />
     </LoadingProvider>
   );
 }

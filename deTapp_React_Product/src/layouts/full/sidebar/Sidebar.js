@@ -31,22 +31,50 @@ const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
       onClose={handleDrawerToggle}
       ModalProps={{ keepMounted: true }}
       sx={{
-        width: open ? 250 : "0",
+        width: open ? 250 : 70,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
           width: open ? 250 : 70,
           boxSizing: "border-box",
-          transition: "width 0.3s",
+          transition: "width 0.2s ease-in-out",
+          overflowX: "hidden",
+          backgroundColor: "#ffffff",
+          borderRight: "1px solid rgba(0, 0, 0, 0.12)"
         },
       }}
     >
-      <Box role="presentation">
-        <IconButton onClick={handleDrawerToggle}>
-          {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
-        <Logo />
+      <Box
+        role="presentation"
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <Box
+          sx={{
+            p: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: open ? 'space-between' : 'center'
+          }}
+        >
+          {open && <Logo />}
+          <IconButton 
+            onClick={handleDrawerToggle}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'rgba(0,0,0,0.04)'
+              }
+            }}
+          >
+            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </Box>
 
-        <SidebarItems navItemClicked={navItemClicked} />
+        <Box sx={{ flex: 1, overflowY: 'auto' }}>
+          <SidebarItems navItemClicked={navItemClicked} isCollapsed={!open} />
+        </Box>
       </Box>
     </Drawer>
   );

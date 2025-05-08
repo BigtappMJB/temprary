@@ -20,12 +20,16 @@ import { titleCaseFirstWord } from "../../../utilities/generals";
  */
 export const getRolesController = async () => {
   try {
+    console.log("[DEBUG] Fetching roles from /role/Allroles");
     // Send the GET request to the role API endpoint
     const response = await get("/role/Allroles", "python");
+    console.log("Roles response:", response);
     // Return the response data
     return response;
   } catch (error) {
-    throw error;
+    console.error("Error fetching roles:", error);
+    // Return empty array to prevent UI errors
+    return [];
   }
 };
 
@@ -61,7 +65,7 @@ export const roleCreationController = async (formData) => {
       description: titleCaseFirstWord(formData.description.trim()),
     };
     // Send the POST request to the role API endpoint
-    const response = await post("/role/roles", body, "python");
+    const response = await post("/roles", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -135,7 +139,7 @@ export const roledeleteController = async (roleId) => {
       throw new Error("Invalid role ID");
     }
     // Send the DELETE request to the role API endpoint
-    const response = await remove(`role/deleteroles/${roleId}`, "python");
+    const response = await remove(`/role/deleteroles/${roleId}`, "python");
     // Return the response data
     return response;
   } catch (error) {

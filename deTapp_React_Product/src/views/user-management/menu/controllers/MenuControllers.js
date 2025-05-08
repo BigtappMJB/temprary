@@ -21,7 +21,7 @@ import { titleCaseFirstWord } from "../../../utilities/generals";
 export const getMenusController = async () => {
   try {
     // Send the GET request to the menu API endpoint
-    const response = await get("/master/menu", "python");
+    const response = await get("/menu", "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -61,7 +61,7 @@ export const menuCreationController = async (formData) => {
       description: titleCaseFirstWord(formData.description.trim()),
     };
     // Send the POST request to the menu API endpoint
-    const response = await post("/master/menu", body, "python");
+    const response = await post("/menu", body, "python");
     // Return the response data
     return response;
   } catch (error) {
@@ -104,7 +104,7 @@ export const menuUpdateController = async (formData) => {
     };
     // Send the PUT request to the menu API endpoint
     const response = await put(
-      `/master/menu?id=${formData.ID}`,
+      `/menu?id=${formData.ID}`,
       body,
       "python"
     );
@@ -135,7 +135,7 @@ export const menuDeleteController = async (menuId) => {
       throw new Error("Invalid menu ID");
     }
     // Send the DELETE request to the menu API endpoint
-    const response = await remove(`/master/menu?id=${menuId}`, "python");
+    const response = await remove(`/menu?id=${menuId}`, "python");
     // Return the response data
     return response;
   } catch (error) {

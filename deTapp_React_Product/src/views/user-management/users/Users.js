@@ -1,6 +1,6 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import UserFormComponent from "./components/userFormComponent";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import DataTable from "./components/DataTable";
 import {
   getUserController,
@@ -9,6 +9,7 @@ import {
   userupdateController,
 } from "./controllers/usersControllers";
 import { useDialog } from "../../utilities/alerts/DialogContent";
+import { useNotificationContext } from '../../../contexts/NotificationContext';
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { getRolesController } from "../roles/controllers/rolesControllers";
 import {
@@ -72,8 +73,7 @@ const FormButton = styled(Button)(({ theme }) => ({
 
 const UsersPage = () => {
   const [selectedValue, setSelectedValue] = useState({});
-  const [tableData, setTableData] = useState([]);
-  const [rolesList, setRolesList] = useState([]);
+
   const { startLoading, stopLoading } = useLoading();
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || [];
@@ -91,43 +91,81 @@ const UsersPage = () => {
   const hasFetchedRoles = useRef(false);
 
   const { openDialog } = useDialog();
+  const { notifySuccess, notifyError, notifyWarning } = useNotificationContext();
+
+  // Function to fetch roles data
+  const getRolesData = async () => {
+    try {
+      console.log("Fetching roles for user form...");
+      const response = await getRolesController();
+      
+      if (response && Array.isArray(response)) {
+        console.log("Roles for user form received:", response);
+        const formattedRoles = response.map(role => ({
+          id: role.ID || role.id,
+          name: role.NAME || role.name,
+          description: role.DESCRIPTION || role.description
+        }));
+        setRolesList(formattedRoles);
+      } else {
+        console.warn("Invalid roles data format for user form:", response);
+        setRolesList([]);
+      }
+    } catch (error) {
+      console.error("Error fetching roles for user form:", error);
+      setRolesList([]);
+    }
+  };
+
+  // Fetch roles when component mounts
+  useEffect(() => {
+    if (!hasFetchedRoles.current) {
+      getTableData();
+      getRolesData();
+      hasFetchedRoles.current = true;
+    }
+  }, []);
 
   // Fetches user data and updates the table
   const getTableData = async () => {
     try {
       startLoading();
+      console.log("Fetching users data...");
       const response = await getUserController();
-      setTableData(response);
-    } catch (error) {
-      console.error(error);
-      if (error.statusCode === 404) {
+      
+      if (response && Array.isArray(response)) {
+        console.log("Users data received:", response);
+        // Transform the data to match the expected format if needed
+        const formattedData = response.map(user => ({
+          id: user.ID || user.id,
+          FIRST_NAME: user.FIRST_NAME || user.first_name,
+          LAST_NAME: user.LAST_NAME || user.last_name,
+          EMAIL: user.EMAIL || user.email,
+          MOBILE: user.MOBILE || user.mobile,
+          ROLE_NAME: user.ROLE_NAME || user.role_name
+        }));
+        setTableData(formattedData);
+      } else {
+        console.warn("Invalid users data format:", response);
         setTableData([]);
       }
+    } catch (error) {
+      console.error("Error in getTableData:", error);
+      setTableData([]);
     } finally {
       stopLoading();
     }
   };
 
-  // Fetches roles data and updates the roles list
+  // Set up permission levels
   useEffect(() => {
-    const getRoles = async () => {
-      try {
-        const response = await getRolesController();
-        setRolesList(response);
-      } catch (error) {
-        console.error(error);
-        if (error.statusCode === 404) {
-          setRolesList([]);
-        }
-      }
-    };
     const submenuDetails = getSubmenuDetails(
       menuList,
       getCurrentPathName(),
       "path"
     );
     const permissionList = submenuDetails?.permission_level
-      .split(",")
+      ?.split(",")
       .map((ele) => ele.trim().toLowerCase());
     setPermissionLevels({
       create: permissionList?.includes("create"),
@@ -135,20 +173,21 @@ const UsersPage = () => {
       view: permissionList?.includes("view"),
       delete: permissionList?.includes("delete"),
     });
-    if (!hasFetchedRoles.current) {
-      getRoles();
-      getTableData();
-      hasFetchedRoles.current = true;
-    }
-  }, []);
+  }, [menuList]);
 
-  const columns = {
-    FIRST_NAME: "First Name",
-    LAST_NAME: "Last Name",
-    EMAIL: "Email",
-    MOBILE: "Mobile No",
-    ROLE_NAME: "Role",
-  };
+  // Define table columns
+  const columns = useMemo(() => [
+    { field: 'FIRST_NAME', title: 'First Name' },
+    { field: 'LAST_NAME', title: 'Last Name' },
+    { field: 'EMAIL', title: 'Email' },
+    { field: 'MOBILE', title: 'Mobile No' },
+    { field: 'ROLE_NAME', title: 'Role' }
+  ], []);
+
+
+  // Initialize table data state
+  const [tableData, setTableData] = useState([]);
+  const [rolesList, setRolesList] = useState([]);
 
   const addUser = () => {
     if (permissionLevels?.create)
@@ -179,8 +218,8 @@ const UsersPage = () => {
   const onformSubmit = async (formData) => {
     try {
       startLoading();
-      let response = null;
       const isAdd = formAction.action === "add";
+      let response;
       
       if (isAdd) {
         response = await userCreationController(formData);
@@ -198,32 +237,13 @@ const UsersPage = () => {
         if (!isAdd) {
           onFormReset();
         }
-        openDialog(
-          "success",
-          `User ${isAdd ? "Addition" : "Updation"} Success`,
-          response.message || `User has been ${isAdd ? "added" : "updated"} successfully`,
-          {
-            confirm: { name: "Ok", isNeed: true },
-            cancel: { name: "Cancel", isNeed: false },
-          },
-          (confirmed) => {}
-        );
+        notifySuccess(response.message || `User has been ${isAdd ? 'created' : 'updated'} successfully`);
+      } else {
+        notifyError(`Failed to ${isAdd ? 'create' : 'update'} user`);
       }
     } catch (error) {
       console.error(error);
-      const isAdd = formAction.action === "add";
-      openDialog(
-        "warning",
-        "Warning",
-        `User ${isAdd ? "Addition" : "Updation"} failed`,
-        {
-          confirm: { name: "Ok", isNeed: true },
-          cancel: { name: "Cancel", isNeed: false },
-        },
-        (confirmed) => {
-          if (confirmed) return;
-        }
-      );
+      notifyError(`Failed to ${formAction.action === 'add' ? 'create' : 'update'} user`);
     } finally {
       stopLoading();
     }
@@ -263,13 +283,14 @@ const UsersPage = () => {
   };
 
   const handleDelete = (selectedRow) => {
-    if (permissionLevels?.delete)
+    if (permissionLevels?.delete) {
       openDialog(
         "warning",
         `Delete confirmation`,
-        `Are you sure you want to delete this user "${
-          selectedRow.FIRST_NAME + " " + selectedRow.LAST_NAME
-        }"?`,
+        `Are you sure you want to delete the following user?
+
+Name: ${selectedRow.FIRST_NAME} ${selectedRow.LAST_NAME}
+Email: ${selectedRow.EMAIL}`,
         {
           confirm: { name: "Yes", isNeed: true },
           cancel: { name: "No", isNeed: true },
@@ -280,7 +301,7 @@ const UsersPage = () => {
           }
         }
       );
-    else
+    } else {
       openDialog(
         "critical",
         `Access Denied`,
@@ -291,6 +312,7 @@ const UsersPage = () => {
         },
         (confirmed) => {}
       );
+    }
   };
 
   const removeDataFromTable = async (selectedRow) => {
@@ -304,30 +326,12 @@ const UsersPage = () => {
 
       if (response) {
         getTableData();
-        openDialog(
-          "success",
-          `User Deletion Success`,
-          response.message || `User has been deleted successfully`,
-          {
-            confirm: { name: "Ok", isNeed: true },
-            cancel: { name: "Cancel", isNeed: false },
-          },
-          (confirmed) => {}
-        );
+        notifySuccess(response.message || 'User has been deleted successfully');
+      } else {
+        notifyError('Failed to delete user');
       }
     } catch (error) {
-      openDialog(
-        "warning",
-        "Warning",
-        `User Deletion failed`,
-        {
-          confirm: { name: "Ok", isNeed: true },
-          cancel: { name: "Cancel", isNeed: false },
-        },
-        (confirmed) => {
-          if (confirmed) return;
-        }
-      );
+      notifyError('User deletion failed. Please try again.');
     } finally {
       stopLoading();
     }

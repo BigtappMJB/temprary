@@ -4,7 +4,7 @@ import string
 from datetime import datetime
 from flask import jsonify, current_app
 from share.general_utils import snow_conf as conf
-import snowflake.connector
+# import snowflake.connector - removed as we're using MySQL
 
 def get_snowflake_connection():
     from mysql.connector import Error
@@ -50,7 +50,7 @@ def insert_user(email, first_name, middle_name, last_name, mobile, role_id, otp,
         conn = get_snowflake_connection()
         cursor = conn.cursor()
         query = """
-        INSERT INTO NBF_CIA.PUBLIC.USERS (EMAIL, FIRST_NAME, MIDDLE_NAME, LAST_NAME, MOBILE, ROLE_ID, PASSWORD, CREATED_DATE)
+        INSERT INTO users (EMAIL, FIRST_NAME, MIDDLE_NAME, LAST_NAME, MOBILE, ROLE_ID, PASSWORD, CREATED_DATE)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (email, first_name, middle_name, last_name, mobile, role_id, otp, created_date))
@@ -66,9 +66,9 @@ def get_user_by_email(email):
         cursor = conn.cursor()
         email = email.strip().lower()  # Normalize email
         query = """
-        SELECT first_name, middle_name, last_name, email, mobile, role_id, password, is_default_password_changed, is_verified, last_login_datetime, otp
-        FROM NBF_CIA.PUBLIC.USERS
-        WHERE email = %s
+        SELECT FIRST_NAME, MIDDLE_NAME, LAST_NAME, EMAIL, MOBILE, ROLE_ID, PASSWORD, is_default_password_changed, is_verified, LAST_LOGIN_DATETIME, OTP
+        FROM users
+        WHERE EMAIL = %s
         """
         current_app.logger.info(f"Executing query: {query} with email: {email}")
         cursor.execute(query, (email,))
@@ -107,8 +107,8 @@ def update_user_password_and_verify(email, password):
     cursor = conn.cursor()
     try:
         cursor.execute(f"""
-            UPDATE NBF_CIA.PUBLIC.USERS
-            SET PASSWORD = '{password}', IS_VERIFIED = TRUE, UPDATED_DATE = '{datetime.now()}', UPDATED_BY = 'system'
+            UPDATE users
+            SET PASSWORD = '{password}', is_verified = 1, UPDATED_DATE = '{datetime.now()}', UPDATED_BY = 'system'
             WHERE EMAIL = '{email}'
         """)
         conn.commit()
@@ -126,8 +126,8 @@ def update_user_password(email, password):
     cursor = conn.cursor()
     try:
         cursor.execute(f"""
-            UPDATE NBF_CIA.PUBLIC.USERS
-            SET PASSWORD = '{password}', IS_DEFAULT_PASSWORD_CHANGED = TRUE, UPDATED_DATE = '{datetime.now()}', UPDATED_BY = 'system'
+            UPDATE users
+            SET PASSWORD = '{password}', is_default_password_changed = '1', UPDATED_DATE = '{datetime.now()}', UPDATED_BY = 'system'
             WHERE EMAIL = '{email}'
         """)
         conn.commit()
@@ -145,7 +145,7 @@ def update_user_otp(email, otp):
     cursor = conn.cursor()
     try:
         cursor.execute(f"""
-            UPDATE NBF_CIA.PUBLIC.USERS
+            UPDATE users
             SET OTP = '{otp}', UPDATED_DATE = '{datetime.now()}', UPDATED_BY = 'system'
             WHERE EMAIL = '{email}'
         """)

@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useDialog } from "./DialogContent";
+import { useDialog } from "./DialogContent.js";
 
 /**
  * AlertDialog Component
@@ -79,6 +79,13 @@ const AlertDialog = () => {
       onClose={closeDialog}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      PaperProps={{
+        sx: {
+          borderRadius: '8px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          minWidth: '400px'
+        }
+      }}
     >
       <DialogTitle
         sx={{
@@ -91,6 +98,11 @@ const AlertDialog = () => {
           color: "white",
           display: "flex",
           alignItems: "center",
+          p: 2,
+          '& .MuiTypography-root': {
+            fontSize: '1.1rem',
+            fontWeight: 600
+          }
         }}
       >
         <Box
@@ -105,28 +117,60 @@ const AlertDialog = () => {
           <IconButton
             aria-label="close"
             onClick={closeDialog}
-            sx={{ color: "white" }}
+            sx={{ 
+              color: "white",
+              '&:hover': {
+                bgcolor: 'rgba(255,255,255,0.1)'
+              }
+            }}
           >
             <CloseIcon />
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ p: 3 }}>
         <DialogContentText
           id="alert-dialog-description"
-          style={{ paddingTop: "10px" }}
+          sx={{
+            color: 'text.primary',
+            fontSize: '1rem',
+            mb: 0
+          }}
         >
           {dialogMessage}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ p: 2.5, gap: 1 }}>
         {buttonNeeded?.confirm?.isNeed && (
-          <Button onClick={handleConfirmYes} color="primary" autoFocus>
+          <Button 
+            onClick={handleConfirmYes} 
+            variant="contained"
+            color={dialogType === "critical" ? "error" : dialogType === "warning" ? "warning" : "primary"}
+            sx={{
+              px: 3,
+              py: 1,
+              borderRadius: '6px',
+              textTransform: 'none',
+              fontWeight: 500
+            }}
+            autoFocus
+          >
             {buttonNeeded?.confirm?.name}
           </Button>
         )}
         {buttonNeeded?.cancel?.isNeed && (
-          <Button onClick={handleConfirmNo} color="secondary">
+          <Button 
+            onClick={handleConfirmNo} 
+            variant="outlined"
+            color="inherit"
+            sx={{
+              px: 3,
+              py: 1,
+              borderRadius: '6px',
+              textTransform: 'none',
+              fontWeight: 500
+            }}
+          >
             {buttonNeeded?.cancel?.name}
           </Button>
         )}
