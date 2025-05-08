@@ -12,16 +12,16 @@ from core.cmd.cmd_controller import cmd_bp
 from core.openai.openai_controller import  openai_bp
 # Importing the new project_estimate blueprints
 from core.project_estimate_controller import project_estimate_bp
+from core.dynamic_page_controller import dynamic_page_bp
+from core.dynamic_crud_controller import dynamic_crud_bp
 
 app = Flask(__name__)
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:3000"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
-        "expose_headers": ["Content-Type"],
-        "supports_credentials": True,
-        "max_age": 3600
+        "origins": ["http://localhost:3000", "*"],
+        "methods": ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
     }
 })
 
@@ -35,6 +35,8 @@ app.register_blueprint(openai_bp, url_prefix='/gpt')
 
 # Registering the new project_estimate blueprints
 app.register_blueprint(project_estimate_bp, url_prefix='/estimate')
+app.register_blueprint(dynamic_page_bp, url_prefix='/dynamic-page')
+app.register_blueprint(dynamic_crud_bp)
 
 @app.after_request
 def after_request(response):
