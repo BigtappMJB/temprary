@@ -136,13 +136,14 @@ def table_configurator():
     elif request.method == 'GET':
         param_type = request.args.get('type')
         if param_type == 'dataType':
-            response, status_code = get_data_type(),200
+            response = get_data_types()
+            return jsonify(response), 200
 
 
 @users_bp.route('/mysqlDataTypes', methods=['GET'])
 def getDataTypes():
-    response, status_code = get_data_type(),200
-    return jsonify(response), status_code
+    response = get_data_types()
+    return jsonify(response), 200
 
 
 # API endpoint to accept JSON and return MySQL CREATE TABLE query
