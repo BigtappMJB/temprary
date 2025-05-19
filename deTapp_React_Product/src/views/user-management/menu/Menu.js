@@ -244,53 +244,6 @@ const Menus = () => {
   }, [permissionLevels, setSelectedValue, setFormAction, openDialog]);
 
   /**
-   * Initiates the process to delete a user.
-   * @param {Object} selectedRow - The selected user's data.
-   */
-  const handleDelete = useCallback((selectedRow) => {
-    if (permissionLevels?.delete) {
-      openDialog(
-        "warning",
-        "Warning",
-        "Are you sure you want to delete this Menu?",
-        {
-          confirm: {
-            name: "Yes",
-            isNeed: true,
-          },
-          cancel: {
-            name: "No",
-            isNeed: true,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            removeDataFromTable(selectedRow);
-          }
-        }
-      );
-    } else {
-      openDialog(
-        "critical",
-        `Access Denied`,
-        "Your access is denied, Kindly contact system administrator.",
-
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {}
-      );
-    }
-  }, [permissionLevels, openDialog, removeDataFromTable]);
-
-  /**
    * Removes a user from the table after confirming deletion.
    * @param {Object} selectedRow - The selected user's data.
    */
@@ -354,6 +307,53 @@ const Menus = () => {
       stopLoading();
     }
   }, [startLoading, stopLoading, setFormAction, getRoles, openDialog]);
+
+  /**
+   * Initiates the process to delete a user.
+   * @param {Object} selectedRow - The selected user's data.
+   */
+  const handleDelete = useCallback((selectedRow) => {
+    if (permissionLevels?.delete) {
+      openDialog(
+        "warning",
+        "Warning",
+        "Are you sure you want to delete this Menu?",
+        {
+          confirm: {
+            name: "Yes",
+            isNeed: true,
+          },
+          cancel: {
+            name: "No",
+            isNeed: true,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            removeDataFromTable(selectedRow);
+          }
+        }
+      );
+    } else {
+      openDialog(
+        "critical",
+        `Access Denied`,
+        "Your access is denied, Kindly contact system administrator.",
+
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {}
+      );
+    }
+  }, [permissionLevels, openDialog, removeDataFromTable]);
 
   return (
     <>

@@ -301,18 +301,19 @@ SubMenuFormComponent.propTypes = {
   }).isRequired, // formAction is required
 
   defaultValues: PropTypes.shape({
-    MENU_ID: PropTypes.any.isRequired, // MENU_ID should be a number and required
+    MENU_ID: PropTypes.oneOfType([PropTypes.number, PropTypes.string]), // MENU_ID can be a number or string
     NAME: PropTypes.string, // NAME is a string
     DESCRIPTION: PropTypes.string, // DESCRIPTION is a string
     ROUTE: PropTypes.string, // ROUTE is a string
-  }).isRequired, // defaultValues is required
+    ID: PropTypes.oneOfType([PropTypes.number, PropTypes.string]) // ID can be a number or string
+  }), // defaultValues can be empty when adding a new submenu
 
   onSubmit: PropTypes.func.isRequired, // onSubmit is a required function
   onReset: PropTypes.func.isRequired, // onReset is a required function
 
   menuList: PropTypes.arrayOf(
     PropTypes.shape({
-      ID: PropTypes.number.isRequired, // ID should be a number and required in menuList
+      ID: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired, // ID can be a number or string and is required
       NAME: PropTypes.string, // menuName is optional and should be a string
     })
   ).isRequired, // menuList is a required array of objects

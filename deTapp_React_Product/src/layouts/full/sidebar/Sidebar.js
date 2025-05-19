@@ -31,15 +31,18 @@ const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
       onClose={handleDrawerToggle}
       ModalProps={{ keepMounted: true }}
       sx={{
-        width: open ? 250 : 70,
+        width: open ? 280 : 80,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: open ? 250 : 70,
+          width: open ? 280 : 80,
           boxSizing: "border-box",
-          transition: "width 0.2s ease-in-out",
+          transition: "width 0.3s ease-in-out",
           overflowX: "hidden",
           backgroundColor: "#ffffff",
-          borderRight: "1px solid rgba(0, 0, 0, 0.12)"
+          borderRight: "1px solid rgba(0, 0, 0, 0.08)",
+          boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)",
+          display: "flex",
+          flexDirection: "column",
         },
       }}
     >
@@ -56,15 +59,19 @@ const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
             p: 2,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: open ? 'space-between' : 'center'
+            justifyContent: open ? 'space-between' : 'center',
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            minHeight: '64px'
           }}
         >
           {open && <Logo />}
           <IconButton 
             onClick={handleDrawerToggle}
             sx={{
+              borderRadius: '8px',
+              backgroundColor: 'rgba(0,0,0,0.02)',
               '&:hover': {
-                backgroundColor: 'rgba(0,0,0,0.04)'
+                backgroundColor: 'rgba(0,0,0,0.08)'
               }
             }}
           >
@@ -72,7 +79,22 @@ const Sidebar = ({ isMobile, open, handleDrawerToggle }) => {
           </IconButton>
         </Box>
 
-        <Box sx={{ flex: 1, overflowY: 'auto' }}>
+        <Box 
+          sx={{ 
+            flex: 1, 
+            overflowY: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(0,0,0,0.2)',
+              borderRadius: '6px',
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: 'rgba(0,0,0,0.05)',
+            }
+          }}
+        >
           <SidebarItems navItemClicked={navItemClicked} isCollapsed={!open} />
         </Box>
       </Box>

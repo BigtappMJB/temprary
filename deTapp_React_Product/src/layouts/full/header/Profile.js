@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from "@mui/material";
 
-import { IconUser, IconUserCircle } from "@tabler/icons-react";
+import { IconUser, IconUserCircle, IconSettings, IconLogout } from "@tabler/icons-react";
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import { loginOutController } from "../../../views/authentication/login/controllers/loginController";
 import {
@@ -57,39 +57,65 @@ const Profile = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <Box 
-        sx={{ 
-          display: { xs: 'none', sm: 'block' },
-          color: 'white',
-          fontSize: '0.875rem',
-          maxWidth: '200px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap'
-        }}
-      >
-        {email}
-      </Box>
-      <IconButton
-        size="large"
-        aria-label="user profile menu"
-        color="inherit"
-        aria-controls="msgs-menu"
-        aria-haspopup="true"
-        onClick={handleClick2}
-        sx={{ 
-          color: 'white',
-          '&:hover': {
-            backgroundColor: 'rgba(255,255,255,0.1)'
-          }
-        }}
-      >
-        <IconUserCircle size="28" stroke="1.5" />
-      </IconButton>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Tooltip title="Account settings">
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1.5,
+            cursor: 'pointer',
+            borderRadius: 2,
+            p: '6px 12px',
+            transition: 'all 0.2s',
+            '&:hover': {
+              backgroundColor: 'rgba(0,0,0,0.04)'
+            }
+          }}
+          onClick={handleClick2}
+        >
+          <Box 
+            sx={{ 
+              width: 38, 
+              height: 38, 
+              borderRadius: '50%', 
+              backgroundColor: 'primary.light',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'primary.main',
+              fontWeight: 'bold',
+              fontSize: '1rem',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+            }}
+          >
+            {/* Display first letter of email as avatar */}
+            {email ? email.charAt(0).toUpperCase() : 'U'}
+          </Box>
+          
+          <Box 
+            sx={{ 
+              display: { xs: 'none', md: 'block' },
+              color: 'text.primary',
+              fontSize: '0.875rem',
+              maxWidth: '180px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            <Box sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
+              {email ? email.split('@')[0] : 'User'}
+            </Box>
+            <Box sx={{ fontSize: '0.75rem', color: 'text.secondary', mt: '-2px' }}>
+              Administrator
+            </Box>
+          </Box>
+        </Box>
+      </Tooltip>
 
       <Menu
-        id="msgs-menu"
+        id="profile-menu"
         anchorEl={anchorEl2}
         keepMounted
         open={Boolean(anchorEl2)}
@@ -98,37 +124,70 @@ const Profile = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         sx={{
           "& .MuiMenu-paper": {
-            width: "200px",
+            width: "240px",
+            borderRadius: "10px",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+            mt: 1
           },
+          "& .MuiMenuItem-root": {
+            borderRadius: "6px",
+            mx: 1,
+            my: 0.5,
+            px: 2
+          }
         }}
       >
-        <MenuItem sx={{ pointerEvents: 'none', opacity: 0.7 }}>
-          <ListItemIcon>
-            <IconUser width={20} />
-          </ListItemIcon>
-          <ListItemText primary={email} />
-        </MenuItem>
-        <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 1 }} />
-        <MenuItem>
-          <ListItemIcon>
-            <IconUser width={20} />
-          </ListItemIcon>
-          <ListItemText primary="My Profile" />
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <IconUser width={20} />
-          </ListItemIcon>
-          <ListItemText primary="My Account" />
-        </MenuItem>
-        <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', mt: 1 }}>
-          <MenuItem onClick={handleLogOut} sx={{ color: 'error.main' }}>
-            <ListItemIcon sx={{ color: 'error.main' }}>
-              <IconUser width={20} />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </MenuItem>
+        <Box sx={{ px: 3, py: 2 }}>
+          <Box sx={{ fontWeight: 600, fontSize: '0.95rem' }}>
+            {email || 'User Account'}
+          </Box>
+          <Box sx={{ fontSize: '0.8rem', color: 'text.secondary', mt: 0.5 }}>
+            Administrator
+          </Box>
         </Box>
+        
+        <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 1 }} />
+        
+        <MenuItem>
+          <ListItemIcon>
+            <IconUser width={20} />
+          </ListItemIcon>
+          <ListItemText 
+            primary="My Profile" 
+            primaryTypographyProps={{ fontSize: '0.9rem' }}
+          />
+        </MenuItem>
+        
+        <MenuItem>
+          <ListItemIcon>
+            <IconSettings width={20} />
+          </ListItemIcon>
+          <ListItemText 
+            primary="Account Settings" 
+            primaryTypographyProps={{ fontSize: '0.9rem' }}
+          />
+        </MenuItem>
+        
+        <Box sx={{ borderTop: '1px solid rgba(0,0,0,0.08)', my: 1 }} />
+        
+        <MenuItem 
+          onClick={handleLogOut} 
+          sx={{ 
+            color: 'error.main',
+            '&:hover': {
+              backgroundColor: 'error.light',
+              color: 'error.dark'
+            }
+          }}
+        >
+          <ListItemIcon sx={{ color: 'inherit' }}>
+            <IconLogout width={20} />
+          </ListItemIcon>
+          <ListItemText 
+            primary="Logout" 
+            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
+          />
+        </MenuItem>
       </Menu>
     </Box>
   );

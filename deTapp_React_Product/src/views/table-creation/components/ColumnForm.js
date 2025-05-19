@@ -14,7 +14,7 @@ import { styled } from "@mui/material/styles";
 import DOMPurify from "dompurify";
 import { errorMessages, validationRegex } from "../../utilities/Validators";
 import debounce from "lodash/debounce";
-import { getColumnsDetailsController } from "../../dynamicPageCreation/controllers/dynamicPageCreationController";
+
 import { useLoading } from "../../../components/Loading/loadingProvider";
 import PropTypes from "prop-types";
 
@@ -211,21 +211,6 @@ const TableColumnForm = forwardRef(
       if (onReset) onReset(data.id);
     };
 
-    // Fetch column details when a table is selected
-    const getColumnDetails = useCallback(
-      async (tableName) => {
-        try {
-          startLoading();
-          const response = await getColumnsDetailsController(tableName);
-          allColumnsDataList.current = response;
-        } catch (error) {
-          console.error(error);
-        } finally {
-          stopLoading();
-        }
-      },
-      [startLoading, stopLoading]
-    );
 
     // Effect to sanitize input values
     useEffect(() => {
@@ -272,26 +257,20 @@ const TableColumnForm = forwardRef(
           fkTableName: data.fkTableName ?? "",
           fkTableFieldName: data.fkTableFieldName ?? "",
         }));
-
         return;
       }
     }, [watchIsForeign, watchIsPrimary, stableReset, data]);
 
-    // Effect for handling API call logic
+    // Effect for handling table name changes
     useEffect(() => {
       if (
         watchTableName?.TABLE_NAME &&
         previousTableValue.current !== watchTableName?.TABLE_NAME
       ) {
-        // Call the API to get column details only if the table name has changed
-        getColumnDetails(watchTableName?.TABLE_NAME);
-        stableReset((prevValues) => ({
-          ...prevValues,
-          fkTableFieldName: data?.fkTableFieldName ?? null,
-        }));
-        previousTableValue.current = watchTableName?.TABLE_NAME; // Update the previous value to avoid rerun
+        previousTableValue.current = watchTableName.TABLE_NAME;
       }
-    }, [watchTableName]); // Only depend on watchTableName
+    }, [watchTableName]);
+
     // Watch for changes and update parent on change
     useEffect(() => {
       const subscription = watch(() => {

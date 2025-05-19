@@ -11,18 +11,22 @@ const Header = ({ handleDrawerToggle, open }) => {
   // const lgDown = useMediaQuery((theme) => theme.breakpoints.down('lg'));
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
-    boxShadow: "none",
-    backgroundColor: "#1e88e5",
-    background: "#1e88e5",
+    boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)",
+    backgroundColor: "#ffffff",
     justifyContent: "center",
     backdropFilter: "blur(4px)",
+    borderBottom: "1px solid rgba(0,0,0,0.08)",
     [theme.breakpoints.up("lg")]: {
       minHeight: "70px",
     },
   }));
   const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
     width: "100%",
-    background: "#1e88e5",
+    background: "#ffffff",
+    padding: theme.spacing(1, 3),
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(1, 2),
+    },
   }));
 
   return (
@@ -30,16 +34,36 @@ const Header = ({ handleDrawerToggle, open }) => {
       <ToolbarStyled>
         <IconButton
           edge="start"
-          color="inherit"
           aria-label="menu"
           onClick={handleDrawerToggle}
           disabled={open}
+          sx={{
+            borderRadius: '8px',
+            backgroundColor: 'rgba(0,0,0,0.03)',
+            color: 'primary.main',
+            '&:hover': {
+              backgroundColor: 'rgba(0,0,0,0.08)',
+            },
+            mr: 2
+          }}
         >
-          {!open && <MenuIcon style={{ color: "black" }} />}
+          {!open && <MenuIcon />}
         </IconButton>
 
+        <Box 
+          sx={{ 
+            display: { xs: 'none', md: 'flex' },
+            alignItems: 'center',
+            color: 'text.secondary',
+            fontWeight: 500,
+            fontSize: '0.875rem'
+          }}
+        >
+          Welcome to DeTapp React Product
+        </Box>
+
         <Box flexGrow={1} />
-        <Stack spacing={1} direction="row" alignItems="center">
+        <Stack spacing={2} direction="row" alignItems="center">
           <Profile />
         </Stack>
       </ToolbarStyled>

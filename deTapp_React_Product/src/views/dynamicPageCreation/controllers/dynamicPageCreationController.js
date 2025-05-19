@@ -1,82 +1,132 @@
 import { get, post } from "../../utilities/apiservices/apiServices";
+import { generateCrudTemplate } from "../templates/crudTemplate";
 
+/**
+ * Fetches the list of tables from the API
+ * @returns {Promise<Array>} List of tables
+ */
 export const getTableListDataController = async () => {
   try {
-    // Send the GET request to the projectCreation API endpoint
-    const response = await get("AllTables", "python");
-    // Return the response data
-    return response;
+    console.log('Fetching tables from API...');
+    const response = await get("dynamic-page/tables", "python");
+    console.log('Raw API Response:', response);
+    
+    // Check if response has data property
+    const data = response?.data || response;
+    console.log('Response data:', data);
+
+    if (data && Array.isArray(data)) {
+      const formattedTables = data.map(table => ({
+        TABLE_NAME: table.tableName || table.TABLE_NAME || table.name
+      }));
+      console.log('Formatted tables:', formattedTables);
+      return formattedTables;
+    }
+
+    console.warn('Invalid response format from tables API:', response);
+    return [];
   } catch (error) {
+    console.error('Error fetching tables:', error);
     throw error;
   }
 };
 
-export const getColumnsDetailsController = async (tableName) => {
-  try {
-    // Send the GET request to the projectCreation API endpoint
-    const response = await get(`columnDetails/${tableName}`, "python");
-    // Return the response data
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const generatePythonAPIController = async (tableName) => {
-  try {
-    // Send the GET request to the projectCreation API endpoint
-    const body = {
-      table: tableName,
-      override: 0,
-    };
-    const response = await post(`generate_blueprint`, body, "python");
-    // Return the response data
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getInputFieldController = async () => {
-  try {
-    // Send the GET request to the projectCreation API endpoint
-    const response = await get(`inputField`, "python");
-    // Return the response data
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
+/**
+ * Creates a dynamic page based on the provided data
+ * @param {Object} formData - Data for creating the page
+ * @returns {Promise<Object>} Response from the API
+ */
 export const createReactFormController = async (formData) => {
   try {
-    // const email = decodeData(getCookie(isUserIdCookieName));
-
-    // Data Validation and Sanitization
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
-
-    const response = await post("gpt/generateCode", formData);
-    // const prompt = reactGenerationPrompt(formData);
-    // console.log(prompt);
-
-    // const openAIResponse = await handleChatGPTResponse(prompt);
-    // const jsxCode = extractJSXBetweenMarkers(openAIResponse);
-    // console.log(jsxCode);
-    //
-
-    // const body={
-    //   ...formData,
-    //   code: jsxCode
-    // }
-    // downloadUpdatedFile(openAIResponse, formData?.tableName);
-    //
-    // Send the GET request to the projectCreation API endpoint
-    // const response = await get("AllTables", "python");
-    // Return the response data
-    return response;
+    
+    console.log('Creating dynamic page with data:', formData);
+    
+    // Validate tableName
+    if (!formData.tableName || formData.tableName === '') {
+      throw new Error("Table name is required");
+    }
+    
+    // Normalize the route path
+    let routePath = formData.routePath || '';
+    
+    // Ensure route path starts with a slash
+    if (!routePath.startsWith('/')) {
+      routePath = '/' + routePath;
+    }
+    
+    // Remove trailing slash if present
+    if (routePath.endsWith('/') && routePath.length > 1) {
+      routePath = routePath.slice(0, -1);
+    }
+    
+    // Prepare the payload according to the API specification
+    const payload = {
+      tableName: formData.tableName,
+      menuName: formData.menuName || '',
+      subMenuName: formData.subMenuName || '',
+      pageName: formData.pageName || '',
+      routePath: routePath,
+      moduleName: formData.moduleName || '',
+      permissionLevels: ["create", "read", "update", "delete"] // Default permission levels
+    };
+    
+    // For debugging - log the exact payload being sent
+    console.log('Sending payload to API:', JSON.stringify(payload, null, 2));
+    
+    // Call the API endpoint and process the response
+    console.log('Calling API endpoint: dynamic-page/create');
+    const response = await post("dynamic-page/create", payload, "python");
+    console.log('API response received:', response);
+    
+    // If the page was created successfully, also generate the React component
+    if (response && response.success) {
+      try {
+        console.log('Generating React component for the new page...');
+        
+        // Call the API to generate the React component
+        const componentResponse = await post("gpt/generateReactComponent", {
+          pageName: formData.pageName,
+          tableName: formData.tableName,
+          routePath: routePath
+        }, "python");
+        
+        console.log('React component generation response:', componentResponse);
+        
+        // Add component generation info to the response
+        if (componentResponse && componentResponse.success) {
+          response.componentGenerated = true;
+          if (componentResponse.data && componentResponse.data.generatedFiles) {
+            response.data = response.data || {};
+            response.data.generatedFiles = componentResponse.data.generatedFiles;
+          }
+        }
+      } catch (componentError) {
+        console.error('Error generating React component:', componentError);
+        // Don't fail the whole operation if component generation fails
+        response.componentGenerated = false;
+        response.componentError = componentError.message || 'Unknown error generating component';
+      }
+    }
+    
+    if (response && response.success) {
+      return {
+        success: true,
+        message: response.message || 'Dynamic page created successfully',
+        data: response.data
+      };
+    } else {
+      // If we get a response but success is false
+      if (response) {
+        throw response; // Throw the entire response object to preserve error details
+      } else {
+        throw new Error('Failed to create dynamic page: No response from server');
+      }
+    }
   } catch (error) {
+    console.error('Error creating dynamic page:', error);
     throw error;
   }
 };

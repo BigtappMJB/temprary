@@ -21,8 +21,26 @@ import {
   projectUpdateController,
 } from "./controllers/activityCodeControllers";
 import { useOutletContext } from "react-router";
-import { getprojectPhasesController } from "../projectPhase/controllers/projectPhaseControllers";
-import { getprojectRolesController } from "../projectRole/controllers/projectRoleControllers";
+// Mock controllers to replace the removed ones
+const getprojectPhasesController = async () => {
+  console.log('Using mock project phases controller');
+  return [
+    { PHASE_CODE: 'PH001', PHASE_NAME: 'Planning' },
+    { PHASE_CODE: 'PH002', PHASE_NAME: 'Development' },
+    { PHASE_CODE: 'PH003', PHASE_NAME: 'Testing' },
+    { PHASE_CODE: 'PH004', PHASE_NAME: 'Deployment' }
+  ];
+};
+
+const getprojectRolesController = async () => {
+  console.log('Using mock project roles controller');
+  return [
+    { PROJECT_ROLE_ID: 'PR001', PROJECT_ROLE_NAME: 'Developer' },
+    { PROJECT_ROLE_ID: 'PR002', PROJECT_ROLE_NAME: 'Designer' },
+    { PROJECT_ROLE_ID: 'PR003', PROJECT_ROLE_NAME: 'Tester' },
+    { PROJECT_ROLE_ID: 'PR004', PROJECT_ROLE_NAME: 'Project Manager' }
+  ];
+};
 
 // Styled Components
 const Container = styled(Paper)(({ theme }) => ({

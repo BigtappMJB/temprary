@@ -9,25 +9,30 @@ const NavGroup = ({ item, onClick, isCollapsed }) => {
   const ListSubheaderStyle = styled((props) => (
     <ListSubheader disableSticky {...props} />
   ))(({ theme }) => ({
-    ...theme.typography.overline,
-    fontWeight: !(isOneSubMenu && pathName === item.children[0].href) && "700",
-    marginBottom: "2px",
-    padding: "8px 10px",
-    borderRadius: "8px",
+    ...theme.typography.subtitle1,
+    fontWeight: !(isOneSubMenu && pathName === item.children[0].href) ? "600" : "700",
+    marginBottom: "8px",
+    marginTop: "16px",
+    padding: "10px 16px",
+    borderRadius: "10px",
     backgroundColor:
       isOneSubMenu && pathName === item.children[0].href
         ? theme.palette.primary.main
-        : "",
+        : "transparent",
     color:
       isOneSubMenu && pathName === item.children[0].href
         ? "white"
         : theme.palette.text.primary,
     lineHeight: "26px",
     textTransform: "none",
-    cursor: item.children.length === 1 ? "pointer" : "text",
+    letterSpacing: "0.5px",
+    cursor: item.children.length === 1 ? "pointer" : "default",
+    transition: "all 0.2s ease-in-out",
+    boxShadow: isOneSubMenu && pathName === item.children[0].href ? "0 4px 10px 0 rgba(0,0,0,0.12)" : "none",
     "&:hover": {
-      backgroundColor: isOneSubMenu && theme.palette.primary.light,
-      color: isOneSubMenu && "black",
+      backgroundColor: isOneSubMenu ? `${theme.palette.primary.light}20` : "transparent",
+      color: isOneSubMenu ? theme.palette.primary.main : theme.palette.text.primary,
+      transform: isOneSubMenu ? "translateX(3px)" : "none",
     },
   }));
   return (
@@ -45,7 +50,10 @@ const NavGroup = ({ item, onClick, isCollapsed }) => {
       }}
     >
       {isCollapsed && item.children[0] ? (
-        React.createElement(item.children[0].icon, { size: 20 })
+        React.createElement(item.children[0].icon, { 
+          style: { fontSize: '1.3rem' },
+          color: isOneSubMenu && pathName === item.children[0].href ? 'primary' : 'inherit'
+        })
       ) : (
         item.subheader
       )}

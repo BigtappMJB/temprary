@@ -14,6 +14,7 @@ from typing import Dict, List, Tuple, Any, Optional
 import mysql.connector
 from mysql.connector import Error
 from flask import jsonify
+from share.general_utils import get_snowflake_connection
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -559,7 +560,7 @@ def get_menu(menu_id):
         conn.close()
 
 def get_all_menus():
-    conn = get_snowflake_connection()
+    conn = get_database_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT * FROM menus")
@@ -657,16 +658,29 @@ def get_sub_menu(sub_menu_id):
         cursor.close()
         conn.close()
 
-def get_all_sub_menus():
+def get_all_sub_menus(menu_id=None):
     conn = get_snowflake_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute(
-            """SELECT sm.*, m.name as menu_name 
-            FROM sub_menus sm 
-            LEFT JOIN menus m ON m.id = sm.menu_id 
-            ORDER BY sm.id DESC"""
-        )
+        if menu_id:
+            # If menu_id is provided, get submenus for that menu
+            cursor.execute(
+                """SELECT sm.*, m.name as menu_name 
+                FROM sub_menus sm 
+                LEFT JOIN menus m ON m.id = sm.menu_id 
+                WHERE sm.menu_id = %s
+                ORDER BY sm.id DESC""",
+                (menu_id,)
+            )
+        else:
+            # Otherwise, get all submenus
+            cursor.execute(
+                """SELECT sm.*, m.name as menu_name 
+                FROM sub_menus sm 
+                LEFT JOIN menus m ON m.id = sm.menu_id 
+                ORDER BY sm.id DESC"""
+            )
+        
         sub_menus = cursor.fetchall()
         if sub_menus:
             column_names = [desc[0] for desc in cursor.description]

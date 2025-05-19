@@ -272,11 +272,37 @@ export const generateCSV = (apiData, baseFilename, columnOrder = null) => {
 
 
 
+/**
+ * Converts an absolute file path to a relative path suitable for dynamic imports
+ * @param {string} absolutePath - The absolute path to convert
+ * @returns {string} - The relative path
+ */
 export const convertToRelativePath = (absolutePath) => {
-  // Strip everything up to 'src/' and replace backslashes with forward slashes
-  const relativePath = absolutePath
-    .replace(/^.*\\generatedPages\\/, '/')  // Keep 'views' as the start
-    .replace(/\\/g, '/');             // Replace backslashes with forward slashes
+  if (!absolutePath) return '';
   
+  // Handle different path formats
+  let relativePath = absolutePath;
+  
+  // Replace backslashes with forward slashes for consistency
+  relativePath = relativePath.replace(/\\/g, '/');
+  
+  // Extract the path after 'generatedPages'
+  if (relativePath.includes('generatedPages')) {
+    relativePath = relativePath.replace(/^.*generatedPages\//, '/');
+  } 
+  // Extract the path after 'views'
+  else if (relativePath.includes('views')) {
+    relativePath = relativePath.replace(/^.*views\//, '/');
+  }
+  
+  // Remove file extension if present
+  relativePath = relativePath.replace(/\.(jsx?|tsx?)$/, '');
+  
+  // Ensure the path starts with a slash
+  if (!relativePath.startsWith('/')) {
+    relativePath = '/' + relativePath;
+  }
+  
+  console.log(`Converted path: ${absolutePath} -> ${relativePath}`);
   return relativePath;
 };

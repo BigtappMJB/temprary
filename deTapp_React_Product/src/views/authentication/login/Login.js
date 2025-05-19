@@ -209,33 +209,37 @@ const LoginPage = () => {
   return (
     <AuthCardComponent title="Login" description="this is Login page">
       {/* Logo Section */}
-      <Box display="flex" alignItems="center" justifyContent="center">
+      <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
         <Logo />
       </Box>
 
-      {apiError && (
-        <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
-          {apiError}
-        </Alert>
-      )}
+      {/* Alert Section - Fixed height container */}
+      <Box sx={{ height: "80px", mb: 2, overflow: "auto" }}>
+        {apiError && (
+          <Alert severity="error" sx={{ mb: 2, alignItems: "center" }}>
+            {apiError}
+          </Alert>
+        )}
 
-      {isDefaultPassword && (
-        <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
-          Your email has been verified successfully and one time password has
-          been mailed.
-        </Alert>
-      )}
-      {isDefaultPasswordUpdated && (
-        <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
-          Your password has been updated successfully.
-        </Alert>
-      )}
+        {isDefaultPassword && (
+          <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
+            Your email has been verified successfully and one time password has
+            been mailed.
+          </Alert>
+        )}
+        
+        {isDefaultPasswordUpdated && (
+          <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
+            Your password has been updated successfully.
+          </Alert>
+        )}
 
-      {forgotPasswordUpdated && (
-        <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
-          Your password has been reset successfully.
-        </Alert>
-      )}
+        {forgotPasswordUpdated && (
+          <Alert severity="success" sx={{ mb: 2, alignItems: "center" }}>
+            Your password has been reset successfully.
+          </Alert>
+        )}
+      </Box>
 
       {/* Login Form Section */}
       <LoginFormComponent

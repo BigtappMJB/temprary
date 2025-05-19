@@ -31,30 +31,34 @@ const Main = styled("main", {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   flexGrow: 1,
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
+  transition: theme.transitions.create(["margin", "width"], {
+    easing: theme.transitions.easing.easeInOut,
+    duration: theme.transitions.duration.standard,
   }),
-  marginLeft: open ? drawerWidth : "0",
-  width: open ? "80vw" : "100%",
-  [theme.breakpoints.down("sm")]: {
-    marginLeft: 0,
+  marginLeft: 0,
+  width: "100%",
+  [theme.breakpoints.up("md")]: {
+    width: open ? `calc(100% - ${open ? 280 : 80}px)` : "100%",
   },
+  backgroundColor: "#f5f7fa",
+  minHeight: "100vh",
 }));
 
 const SubMain = styled("div", {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
-  padding: theme.spacing(2),
+  padding: theme.spacing(3),
   flexGrow: 1,
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
+  transition: theme.transitions.create("all", {
+    easing: theme.transitions.easing.easeInOut,
+    duration: theme.transitions.duration.standard,
   }),
-  marginLeft: open ? drawerWidth : "0",
+  marginLeft: 0,
   [theme.breakpoints.down("sm")]: {
-    marginLeft: 0,
+    padding: theme.spacing(2),
   },
+  maxWidth: "1600px",
+  margin: "0 auto",
 }));
 
 const FullLayout = () => {

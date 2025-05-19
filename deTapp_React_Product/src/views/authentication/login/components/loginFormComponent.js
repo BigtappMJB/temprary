@@ -17,7 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 
 import CustomTextField from "../../../../components/forms/theme-elements/CustomTextField"; // Ensure the correct path
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material";
 import { setCookie } from "../../../utilities/cookieServices/cookieServices";
 import {
   isForgotPasswordCookieName,
@@ -169,14 +169,21 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
               name="username"
               control={control}
               render={({ field }) => (
-                <CustomTextField
-                  {...field}
-                  id="username"
-                  variant="outlined"
-                  fullWidth
-                  error={!!errors.username}
-                  helperText={errors.username?.message}
-                />
+                <Box position="relative">
+                  <CustomTextField
+                    {...field}
+                    id="username"
+                    variant="outlined"
+                    fullWidth
+                    error={!!errors.username}
+                    helperText={errors.username?.message}
+                    InputProps={{
+                      startAdornment: (
+                        <Email color="action" sx={{ mr: 1, ml: 0.5 }} />
+                      ),
+                    }}
+                  />
+                </Box>
               )}
             />
           </Box>
@@ -203,6 +210,11 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
                     fullWidth
                     error={!!errors.password}
                     helperText={errors.password?.message}
+                    InputProps={{
+                      startAdornment: (
+                        <Lock color="action" sx={{ mr: 1, ml: 0.5 }} />
+                      ),
+                    }}
                   />
                   <IconButton
                     aria-label="toggle password visibility"
@@ -253,7 +265,7 @@ const LoginFormComponent = React.forwardRef(({ onSubmit }, ref) => {
             </Grid>
           </Box>
         </Stack>
-        <Box>
+        <Box mt={4}>
           <Button
             color="primary"
             variant="contained"

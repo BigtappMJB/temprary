@@ -1,6 +1,6 @@
 import { Box, Button, Paper, styled, Typography } from "@mui/material";
 import SubMenuFormComponent from "./components/subMenuFormComponent";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDialog } from "../../utilities/alerts/DialogContent";
 import DataTable from "../users/components/DataTable";
 import {
@@ -79,12 +79,13 @@ const FormButton = styled(Button)(({ theme }) => ({
  *   <UsersPage />
  * )
  */
-const columns = [
+// Define columns for the data table
+const tableColumns = [
   { field: 'menu_name', title: 'Menu' },
-  { field: 'name', title: 'Submenu Name' },
-  { field: 'description', title: 'Description' },
-  { field: 'route', title: 'Path' },
-  { field: 'status', title: 'Status' }
+  { field: 'NAME', title: 'Submenu Name' },
+  { field: 'DESCRIPTION', title: 'Description' },
+  { field: 'ROUTE', title: 'Path' },
+  { field: 'STATUS', title: 'Status' }
 ];
 
 const UsersPage = () => {
@@ -107,52 +108,88 @@ const UsersPage = () => {
 
   const { openDialog } = useDialog();
 
-  const getTableData = async () => {
+  const getTableData = useCallback(async () => {
     try {
       startLoading();
       const response = await getSubMenusController();
       
+      // Handle different response formats
+      let dataToProcess = response;
+      
+      // Check if response has a data property (new API format)
+      if (response && response.data) {
+        dataToProcess = response.data;
+      }
+      
       // Transform the response data to match the table columns
-      const transformedData = Array.isArray(response) ? response.map(item => ({
+      const transformedData = Array.isArray(dataToProcess) ? dataToProcess.map(item => ({
         ...item,
-        menu_name: item.menu?.name || '',
-        status: item.status || 'Active'
+        ID: item.ID || item.id,
+        NAME: item.NAME || item.name,
+        DESCRIPTION: item.DESCRIPTION || item.description,
+        ROUTE: item.ROUTE || item.route,
+        menu_name: item.menu_name || 
+                  (item.menu?.NAME || item.menu?.name) || 
+                  '',
+        STATUS: item.STATUS || item.status || 'Active'
       })) : [];
       
+      console.log("Transformed submenu data:", transformedData);
       setTableData(transformedData);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching submenu data:", error);
       if (error.statusCode === 404) {
         setTableData([]);
       }
     } finally {
       stopLoading();
     }
-  };
+  }, [startLoading, stopLoading, setTableData]);
 
-  const getMenus = async () => {
+  const getMenus = useCallback(async () => {
     try {
       startLoading();
       const response = await getMenusController();
-      setRolesList(response);
+      
+      // Handle different response formats
+      let menuData = response;
+      
+      // Check if response has a data property (new API format)
+      if (response && response.data) {
+        menuData = response.data;
+      }
+      
+      // Transform menu data if needed
+      const transformedMenus = Array.isArray(menuData) ? menuData.map(item => ({
+        ...item,
+        ID: item.ID || item.id,
+        NAME: item.NAME || item.name,
+        DESCRIPTION: item.DESCRIPTION || item.description
+      })) : [];
+      
+      console.log("Transformed menu data:", transformedMenus);
+      setRolesList(transformedMenus);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching menus:", error);
       if (error.statusCode === 404) {
-        setTableData([]);
+        setRolesList([]);
       }
     } finally {
       stopLoading();
     }
-  };
+  }, [startLoading, stopLoading, setRolesList]);
 
   const { reduxStore } = useOutletContext() || [];
   const menuList = reduxStore?.menuDetails || [];
 
+  // Initial data fetch for menus
   useEffect(() => {
-    getMenus();
-  }, []);
+    if (!hasFetchedRoles.current) {
+      getMenus();
+    }
+  }, [getMenus]);
 
-  // Get submenu details
+  // Get submenu details and set permissions
   useEffect(() => {
     const submenuDetails = getSubmenuDetails(
       menuList,
@@ -161,8 +198,8 @@ const UsersPage = () => {
     );
     
     const permissionList = submenuDetails?.permission_level
-      .split(",")
-      .map((ele) => ele.trim().toLowerCase());
+      ?.split(",")
+      ?.map((ele) => ele.trim().toLowerCase()) || [];
 
     setPermissionLevels({
       create: permissionList?.includes("create"),
@@ -170,25 +207,23 @@ const UsersPage = () => {
       view: permissionList?.includes("view"),
       delete: permissionList?.includes("delete"),
     });
-    if (!hasFetchedRoles.current) {
+  }, [menuList]);
+  
+  // Fetch table data once permissions are set
+  useEffect(() => {
+    if (!hasFetchedRoles.current && permissionLevels.view !== null) {
+      console.log("Initial data fetch");
       getTableData();
-      getMenus();
-
       hasFetchedRoles.current = true;
     }
-  }, [menuList]);
+  }, [permissionLevels, getTableData]);
 
-  const columns = {
-    menu_name: "Menu",
-    NAME: "SubMenu",
-    DESCRIPTION: "Description",
-    ROUTE: "Route Path",
-  };
+  // Columns are already defined at the top of the file
 
   /**
    * Initiates the process to add a new submenu.
    */
-  const addUser = () => {
+  const addUser = useCallback(() => {
     if (permissionLevels?.create)
       setFormAction({
         display: true,
@@ -213,13 +248,23 @@ const UsersPage = () => {
         (confirmed) => {}
       );
     }
-  };
+  }, [permissionLevels, setFormAction, openDialog]);
+
+  /**
+   * Resets the form and hides it.
+   */
+  const onFormReset = useCallback(() => {
+    setFormAction({
+      display: false,
+      action: null,
+    });
+  }, [setFormAction]);
 
   /**
    * Handles form submission for adding or updating a submenu.
    * @param {Object} formData - The data from the form.
    */
-  const onformSubmit = async (formData) => {
+  const onformSubmit = useCallback(async (formData) => {
     try {
       startLoading();
       let response = null;
@@ -239,7 +284,7 @@ const UsersPage = () => {
           "success",
           `SubMenu ${isAdd ? "Addition" : "Updation"} Success`,
           response.message ||
-            `Submenu has been ${isAdd ? "addded" : "updated"} successfully`,
+            `Submenu has been ${isAdd ? "added" : "updated"} successfully`,
           {
             confirm: {
               name: "Ok",
@@ -254,11 +299,12 @@ const UsersPage = () => {
         );
       }
     } catch (error) {
+      console.error('Error in submenu operation:', error);
       const isAdd = formAction.action === "add";
       openDialog(
         "warning",
         "Warning",
-        `SubMenu ${isAdd ? "Addition" : "Updation"} failed`,
+        error.errorMessage || `SubMenu ${isAdd ? "Addition" : "Updation"} failed`,
         {
           confirm: {
             name: "Ok",
@@ -278,23 +324,13 @@ const UsersPage = () => {
     } finally {
       stopLoading();
     }
-  };
-
-  /**
-   * Resets the form and hides it.
-   */
-  const onFormReset = () => {
-    setFormAction({
-      display: false,
-      action: null,
-    });
-  };
+  }, [startLoading, stopLoading, formAction, selectedValue, getTableData, onFormReset, openDialog]);
 
   /**
    * Initiates the process to update a submenu's information.
    * @param {Object} selectedRow - The selected submenu's data.
    */
-  const handleUpdateLogic = (selectedRow) => {
+  const handleUpdateLogic = useCallback((selectedRow) => {
     if (permissionLevels?.edit) {
       setSelectedValue(selectedRow);
       ScrollToTopButton();
@@ -321,13 +357,78 @@ const UsersPage = () => {
         (confirmed) => {}
       );
     }
-  };
+  }, [permissionLevels, setSelectedValue, setFormAction, openDialog]);
+
+  /**
+   * Removes a submenu from the table after confirming deletion.
+   * @param {Object} selectedRow - The selected submenu's data.
+   */
+  const removeDataFromTable = useCallback(async (selectedRow) => {
+    try {
+      startLoading();
+      setFormAction({
+        display: false,
+        action: null,
+      });
+      const response = await subMenuDeleteController(selectedRow.ID);
+
+      if (response) {
+        getTableData();
+
+        openDialog(
+          "success",
+          `SubMenu Deletion Success`,
+          response.message || `SubMenu has been deleted successfully  `,
+          {
+            confirm: {
+              name: "Ok",
+              isNeed: true,
+            },
+            cancel: {
+              name: "Cancel",
+              isNeed: false,
+            },
+          },
+          () => {
+            // Dialog confirmed callback
+          },
+          () => {
+            // Dialog cancel callback
+          }
+        );
+      }
+    } catch (error) {
+      console.error('Error deleting submenu:', error);
+      openDialog(
+        "warning",
+        "Warning",
+        error.errorMessage || `SubMenu Deletion failed`,
+        {
+          confirm: {
+            name: "Ok",
+            isNeed: true,
+          },
+          cancel: {
+            name: "Cancel",
+            isNeed: false,
+          },
+        },
+        (confirmed) => {
+          if (confirmed) {
+            return;
+          }
+        }
+      );
+    } finally {
+      stopLoading();
+    }
+  }, [startLoading, stopLoading, setFormAction, getTableData, openDialog]);
 
   /**
    * Initiates the process to delete a submenu.
    * @param {Object} selectedRow - The selected submenu's data.
    */
-  const handleDelete = (selectedRow) => {
+  const handleDelete = useCallback((selectedRow) => {
     if (permissionLevels?.delete)
       openDialog(
         "warning",
@@ -368,71 +469,7 @@ const UsersPage = () => {
         (confirmed) => {}
       );
     }
-  };
-
-  /**
-   * Removes a submenu from the table after confirming deletion.
-   * @param {Object} selectedRow - The selected submenu's data.
-   */
-  const removeDataFromTable = async (selectedRow) => {
-    try {
-      startLoading();
-      setFormAction({
-        display: false,
-        action: null,
-      });
-      const response = await subMenuDeleteController(selectedRow.ID);
-
-      if (response) {
-        getTableData();
-
-        openDialog(
-          "success",
-          `SubMenu Deletion Success`,
-          response.message || `SubMenu has been deleted successfully  `,
-          {
-            confirm: {
-              name: "Ok",
-              isNeed: true,
-            },
-            cancel: {
-              name: "Cancel",
-              isNeed: false,
-            },
-          },
-          () => {
-            // Dialog confirmed callback
-          },
-          () => {
-            // Dialog cancel callback
-          }
-        );
-      }
-    } catch (error) {
-      openDialog(
-        "warning",
-        "Warning",
-        error.errorMessage || `SubMenu Deletion failed`,
-        {
-          confirm: {
-            name: "Ok",
-            isNeed: true,
-          },
-          cancel: {
-            name: "Cancel",
-            isNeed: false,
-          },
-        },
-        (confirmed) => {
-          if (confirmed) {
-            return;
-          }
-        }
-      );
-    } finally {
-      stopLoading();
-    }
-  };
+  }, [permissionLevels, removeDataFromTable, openDialog]);
 
   return (
     <>
@@ -484,7 +521,7 @@ const UsersPage = () => {
             tableData={tableData}
             handleUpdateLogic={handleUpdateLogic}
             handleDelete={handleDelete}
-            columns={columns}
+            columns={tableColumns}
             permissionLevels={permissionLevels}
           />
         ) : (

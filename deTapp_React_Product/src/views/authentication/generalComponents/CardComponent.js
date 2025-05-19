@@ -58,6 +58,9 @@ const AuthCardComponent = ({ title, description, children }) => {
           sx={{
             p: 4,
             zIndex: 1,
+            width: "500px",
+            height: "auto",
+            minHeight: "500px",
             maxWidth: "500px",
             mx: 2,
           }}
