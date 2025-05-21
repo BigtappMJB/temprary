@@ -1,0 +1,13 @@
+com\codegen\exception\RapidControllerException.class
+com\codegen\model\GeneratorInput.class
+com\codegen\service\ReactCodeGenService.class
+com\codegen\configuration\CorsConfig$1.class
+com\codegen\RapidCodeGeneratorApplication.class
+com\codegen\service\CodeGenService.class
+com\codegen\service\DataBaseService.class
+com\codegen\exception\GlobalExceptionHandler.class
+com\codegen\exception\ServiceException.class
+com\codegen\controller\CodeGenController.class
+com\codegen\configuration\CorsConfig.class
+com\codegen\exception\ErrorResponse.class
+com\codegen\model\GeneratorInput$Field.class
