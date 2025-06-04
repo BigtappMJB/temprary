@@ -1,10 +1,10 @@
 import React from 'react';
-import EmployeeCrud from './components/EmployeeCrud';
+import EveCrud from './components/EveCrud';
 
 function App() {
   return (
     <div style={{ margin: 20 }}>
-      <EmployeeCrud />
+      <EveCrud />
     </div>
   );
 }

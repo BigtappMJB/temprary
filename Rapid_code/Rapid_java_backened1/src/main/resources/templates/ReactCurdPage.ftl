@@ -1,7 +1,5 @@
 <#assign cls = className?substring(className?last_index_of(".") + 1)>
 <#assign clsLower = cls?uncap_first>
-<#assign pk = primaryKey!'id'>
-<#assign primaryKey = primaryKey!'id'>
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -86,31 +84,29 @@ return (
                     onChange={handleChange}
                     margin="normal"
                     fullWidth
-                    disabled={ <#if field.name == primaryKey>"true"<#else>"false"</#if> === "true" }
+                    disabled={<#if field.name == "primaryKey">true<#else>false</#if>}
             />
         </#list>
 
         <Button
                 variant="contained"
                 color="primary"
+
                 type="submit"
         >
-            {formData["${primaryKey}"] ? "Update" : "Create"}
+            {formData.primaryKey ? "Update" : "Create"}
         </Button>
         <Button
                 variant="outlined"
                 color="error"
                 onClick={handleDeleteAll}
 
-                type="button"
-<#--                style={{ marginLeft : 8 }}-->
-
         >
             Delete All
         </Button>
     </form>
 
-    <Table>
+    <Table >
         <TableHead>
             <TableRow>
                 <#list fields as field>
@@ -121,22 +117,20 @@ return (
         </TableHead>
         <TableBody>
             {list.map((item) => (
-            <TableRow key={item["${pk}"]}>
+            <TableRow key={item[${primaryKey}]}>
                 <#list fields as field>
-                    <TableCell>{item["${field.name}"]}</TableCell>
+                    <TableCell>{item.${field.name}}</TableCell>
                 </#list>
                 <TableCell>
                     <Button onClick={() => handleEdit(item)}>Edit</Button>
-                    <Button
-                            color="error"
-                            onClick={() => handleDelete(item["${pk}"])}
-                    style={{ marginLeft: 8 }}
-                    >
+                    <Button color="error" onClick={() => handleDelete(item[${primaryKey}])} style={{ marginLeft: 8 }}>
                     Delete
                     </Button>
                 </TableCell>
             </TableRow>
-            ))}
+
+            )
+            )}
         </TableBody>
     </Table>
 </div>

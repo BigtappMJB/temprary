@@ -12,12 +12,12 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.codegen</groupId>
-    <artifactId>employee</artifactId>
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>employee</name>
+    <name>${artifactId}</name>
     <description>Generated Spring Boot App</description>
 
     <properties>

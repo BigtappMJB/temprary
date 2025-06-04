@@ -1,22 +1,17 @@
-<#assign cls = className?substring(className?last_index_of(".") + 1)>
-<#assign clsLower = cls?uncap_first>
-<#assign pk = primaryKey!'id'>
-<#assign primaryKey = primaryKey!'id'>
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { TextField, Button, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 
-function ${cls}Crud() {
+function employeeCrud() {
 const [formData, setFormData] = useState({
-<#list fields as field>
-    ${field.name}: "",
-</#list>
+    updated_at: "",
+    employee_id: "",
 });
 
 const [list, setList] = useState([]);
 
-const apiBaseUrl = "/api/${clsLower}";
+const apiBaseUrl = "/api/employee";
 
 useEffect(() => {
 fetchList();
@@ -24,10 +19,10 @@ fetchList();
 
 const fetchList = async () => {
 try {
-const response = await axios.get(`${apiBaseUrl}/all`);
+const response = await axios.get(`/api/employee/all`);
 setList(response.data);
 } catch (error) {
-console.error("Failed to fetch ${cls} list:", error);
+console.error("Failed to fetch employee list:", error);
 }
 };
 
@@ -39,15 +34,14 @@ const handleSubmit = async (e) => {
 e.preventDefault();
 try {
 // Create or update via POST to /create
-await axios.post(`${apiBaseUrl}/create`, formData);
+await axios.post(`/api/employee/create`, formData);
 setFormData({
-<#list fields as field>
-    ${field.name}: "",
-</#list>
+    updated_at: "",
+    employee_id: "",
 });
 fetchList();
 } catch (error) {
-console.error("Failed to save ${cls}:", error);
+console.error("Failed to save employee:", error);
 }
 };
 
@@ -57,45 +51,52 @@ setFormData(item);
 
 const handleDelete = async (primaryKey) => {
 try {
-await axios.delete(`${apiBaseUrl}/delete/${primaryKey}`);
+await axios.delete(`/api/employee/delete/id`);
 fetchList();
 } catch (error) {
-console.error("Failed to delete ${cls}:", error);
+console.error("Failed to delete employee:", error);
 }
 };
 
 const handleDeleteAll = async () => {
 try {
-await axios.delete(`${apiBaseUrl}/deleteAll`);
+await axios.delete(`/api/employee/deleteAll`);
 fetchList();
 } catch (error) {
-console.error("Failed to delete all ${cls}:", error);
+console.error("Failed to delete all employee:", error);
 }
 };
 
 return (
 <div>
-    <h2>${cls} Management</h2>
+    <h2>employee Management</h2>
 
     <form onSubmit={handleSubmit}>
-        <#list fields as field>
             <TextField
-                    label="${field.name?cap_first}"
-                    name="${field.name}"
-                    value={formData.${field.name}}
+                    label="Updated_at"
+                    name="updated_at"
+                    value={formData.updated_at}
                     onChange={handleChange}
                     margin="normal"
                     fullWidth
-                    disabled={ <#if field.name == primaryKey>"true"<#else>"false"</#if> === "true" }
+                    disabled={ "false" === "true" }
             />
-        </#list>
+            <TextField
+                    label="Employee_id"
+                    name="employee_id"
+                    value={formData.employee_id}
+                    onChange={handleChange}
+                    margin="normal"
+                    fullWidth
+                    disabled={ "false" === "true" }
+            />
 
         <Button
                 variant="contained"
                 color="primary"
                 type="submit"
         >
-            {formData["${primaryKey}"] ? "Update" : "Create"}
+            {formData["id"] ? "Update" : "Create"}
         </Button>
         <Button
                 variant="outlined"
@@ -103,7 +104,6 @@ return (
                 onClick={handleDeleteAll}
 
                 type="button"
-<#--                style={{ marginLeft : 8 }}-->
 
         >
             Delete All
@@ -113,23 +113,21 @@ return (
     <Table>
         <TableHead>
             <TableRow>
-                <#list fields as field>
-                    <TableCell>${field.name?cap_first}</TableCell>
-                </#list>
+                    <TableCell>Updated_at</TableCell>
+                    <TableCell>Employee_id</TableCell>
                 <TableCell>Actions</TableCell>
             </TableRow>
         </TableHead>
         <TableBody>
             {list.map((item) => (
-            <TableRow key={item["${pk}"]}>
-                <#list fields as field>
-                    <TableCell>{item["${field.name}"]}</TableCell>
-                </#list>
+            <TableRow key={item["id"]}>
+                    <TableCell>{item["updated_at"]}</TableCell>
+                    <TableCell>{item["employee_id"]}</TableCell>
                 <TableCell>
                     <Button onClick={() => handleEdit(item)}>Edit</Button>
                     <Button
                             color="error"
-                            onClick={() => handleDelete(item["${pk}"])}
+                            onClick={() => handleDelete(item["id"])}
                     style={{ marginLeft: 8 }}
                     >
                     Delete
@@ -143,4 +141,4 @@ return (
 );
 }
 
-export default ${cls}Crud;
+export default employeeCrud;
