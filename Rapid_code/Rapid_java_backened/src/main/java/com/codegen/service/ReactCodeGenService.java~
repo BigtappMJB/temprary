@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,24 +75,27 @@ public class ReactCodeGenService {
             model.put("fields", fields);
             model.put("primaryKey", primaryKey);
             model.put("apiBaseUrl", "/api/" + getSimpleClassName(entityName).toLowerCase());
+            // Generate React CRUD page component from Freemarker template
 
-            // Define custom path for frontend
+//            String reactComponentPath = basePath + "src/components/" + firstCaptialReactComponent + "Crud.jsx";
             File componentsDir = new File("C:\\Users\\MohammadJuned\\git\\Rapid_Code_Module\\rapid-code-generator-frontend\\rapid-frontend\\src\\components\\");
             if (!componentsDir.exists()) {
                 componentsDir.mkdirs(); // Create the directory if it doesn't exist
             }
 
+
             String reactComponentPath = "C:\\Users\\MohammadJuned\\git\\Rapid_Code_Module\\rapid-code-generator-frontend\\rapid-frontend\\src\\components\\" + firstCaptialReactComponent + "Crud.jsx";
             writeTemplateToFile("ReactCurdPage.ftl", model, reactComponentPath);
 
-            // Generate other files as needed (index.js, App.js, etc.)
+            // Copy or generate other React app files: index.js, App.js, package.json, public/index.html
+            // For example, write basic index.js
             writeBasicIndexJs(basePath);
             writeBasicAppJs(basePath, firstCaptialReactComponent);
             writeBasicPackageJson(basePath);
             writeBasicIndexHtml(basePath);
 
             // Zip the React app folder
-            String zipPath = basePath + firstCaptialReactComponent + "-react.zip";
+            String zipPath = basePath + firstCaptialReactComponent+"-react.zip";
             zipFolder(basePath, zipPath);
 
             log.info("React app generation complete for entity: {}", entityName);
@@ -102,7 +106,6 @@ public class ReactCodeGenService {
             throw new ServiceException("Failed to generate React app", e);
         }
     }
-
     private String getSimpleClassName(String fullClassName) {
         return fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
     }

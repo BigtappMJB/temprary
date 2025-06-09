@@ -1,0 +1,4 @@
+package com.codegen.repository;
+
+public class MenuRepository {
+}

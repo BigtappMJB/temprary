@@ -1,0 +1,56 @@
+
+package com.codegen.model;
+
+import jakarta.persistence.*;
+import java.io.Serializable;
+
+
+@Entity
+@Table(name = "menus")
+public class Menus implements Serializable {
+
+private static final long serialVersionUID = 1L;
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "DESCRIPTION")
+    private String DESCRIPTION;
+
+
+public Menus() {
+}
+
+public Menus(
+        Long id, 
+        String DESCRIPTION
+) {
+    this.id = id;
+    this.DESCRIPTION = DESCRIPTION;
+}
+
+    public Long getId() {
+    return id;
+    }
+
+    public void setId(Long id) {
+    this.id = id;
+    }
+    public String getDESCRIPTION() {
+    return DESCRIPTION;
+    }
+
+    public void setDESCRIPTION(String DESCRIPTION) {
+    this.DESCRIPTION = DESCRIPTION;
+    }
+
+
+//@Override
+//public String toString() {
+//return "Menus{" +
+//    "id=" + id + ", "
+//    "DESCRIPTION=" + DESCRIPTION +
+//"}";
+}
+}

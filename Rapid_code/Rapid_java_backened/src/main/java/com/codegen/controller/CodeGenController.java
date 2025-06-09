@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,8 @@ import com.codegen.service.CodeGenService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+import static freemarker.template.utility.StringUtil.capitalize;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/generator")
@@ -39,6 +42,9 @@ public class CodeGenController {
     @Autowired
     private CodeGenService codeGenService;
 
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private DynamicPageService dynamicPageService;
@@ -140,7 +146,7 @@ public ResponseEntity<Map<String, Object>> generateFullApp(@RequestBody @Valid I
         throw new RapidControllerException("Permission levels list must not be empty");
     }
 
-    // Here we will set createdBy from logged-in user or static for now
+    // Here w can set createdBy from logged-in user or static for now
     String createdBy = "system";
 
     // 1. Get or create Menu, get menuId
@@ -167,10 +173,11 @@ public ResponseEntity<Map<String, Object>> generateFullApp(@RequestBody @Valid I
         }
     }
 
-    // 6. Build GeneratorInput DTO for codeGenService
-    GeneratorInput generatorInput = new GeneratorInput();
-    generatorInput.setClassName("com.codegen.model." + input.getTableName());
 
+    GeneratorInput generatorInput = new GeneratorInput();
+    generatorInput.setClassName("com.codegen.model." + capitalize(input.getTableName()));
+    generatorInput.setMasterTable(input.getMasterTable()); // Will be null if not in JSON
+    generatorInput.setRelationshipType(input.getRelationshipType()); // Will be null if not in JSON
     List<GeneratorInput.Field> fields = new ArrayList<>();
     if (input.getFields() != null) {
         for (IncomingGeneratorDTO.IncomingField incomingField : input.getFields()) {
@@ -219,22 +226,22 @@ public ResponseEntity<Map<String, Object>> generateFullApp(@RequestBody @Valid I
 
     @GetMapping("/download/{fileName}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable String fileName) throws IOException {
-       
+
         String filePath = "generated-app/target/" + fileName;
         File file = new File(filePath);
 
-        
+
         log.info("Generated file path: {}", filePath);
         if (!file.exists()) {
             log.error("File not found: {}", filePath);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found".getBytes());
         }
 
-        
+
         InputStream inputStream = new FileInputStream(file);
         byte[] fileContent = inputStream.readAllBytes();
 
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=" + fileName);
 

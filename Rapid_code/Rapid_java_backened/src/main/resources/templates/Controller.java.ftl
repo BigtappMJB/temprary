@@ -9,6 +9,7 @@ import ${servicePackage}.${cls}Service;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/${clsLower}")
@@ -18,6 +19,11 @@ public class ${cls}Controller {
 
     public ${cls}Controller(${cls}Service ${clsLower}Service) {
         this.${clsLower}Service = ${clsLower}Service;
+    }
+
+@GetMapping("/hello")
+public ResponseEntity<String> sayHello() {
+    return ResponseEntity.ok("Hello, User!");
     }
 
     @GetMapping("/all")

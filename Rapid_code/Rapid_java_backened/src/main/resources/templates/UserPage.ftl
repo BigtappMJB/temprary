@@ -1,13 +1,13 @@
 <#assign cls = className?substring(className?last_index_of(".") + 1)>
 <#assign clsLower = cls?uncap_first>
 <#assign pk = primaryKey!'id'>
-<#assign primaryKey = primaryKey!'id'>
+<#assign pkFormatted = primaryKey?string("true", "false")> <!-- Explicitly format the boolean -->
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { TextField, Button, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 
-function ${cls}Crud() {
+function ${cls}Page() {
 const [formData, setFormData] = useState({
 <#list fields as field>
     ${field.name}: "",
@@ -15,7 +15,6 @@ const [formData, setFormData] = useState({
 });
 
 const [list, setList] = useState([]);
-
 const apiBaseUrl = "/api/${clsLower}";
 
 useEffect(() => {
@@ -38,7 +37,6 @@ setFormData({ ...formData, [e.target.name]: e.target.value });
 const handleSubmit = async (e) => {
 e.preventDefault();
 try {
-// Create or update via POST to /create
 await axios.post(`${apiBaseUrl}/create`, formData);
 setFormData({
 <#list fields as field>
@@ -86,23 +84,14 @@ return (
                     onChange={handleChange}
                     margin="normal"
                     fullWidth
-                    disabled={ <#if field.name == primaryKey>"true"<#else>"false"</#if> === "true" }
+                    disabled="${field.name == pkFormatted ? 'true' : 'false'}"  <!-- Fix this for disabled -->
             />
         </#list>
 
-        <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-        >
-            {formData["${primaryKey}"] ? "Update" : "Create"}
+        <Button variant="contained" color="primary" type="submit">
+            {formData["${pk}"] ? "Update" : "Create"}
         </Button>
-        <Button
-                variant="outlined"
-                color="error"
-                onClick={handleDeleteAll}
-                type="button"
-        >
+        <Button variant="outlined" color="error" onClick={handleDeleteAll} type="button">
             Delete All
         </Button>
     </form>
@@ -117,29 +106,27 @@ return (
             </TableRow>
         </TableHead>
         <TableBody>
-            {list.map((item) => (
-            <TableRow key={item["${pk}"]}>
-                <#list fields as field>
-                    <TableCell>{item["${field.name}"]}</TableCell>
-                </#list>
-                <TableCell>
-                    <Button onClick={() => handleEdit(item)}>Edit</Button>
-                    <Button
-                            color="error"
-                            onClick={() => handleDelete(item["${pk}"])}
-                    style={{ marginLeft: 8 }}
-                    >
-                    Delete
-                    </Button>
-                </TableCell>
-            </TableRow>
-            ))}
+            <#list list as item>
+                <TableRow key="${item[pk]}">
+                    <#list fields as field>
+                        <TableCell>{item["${field.name}"]}</TableCell>
+                    </#list>
+                    <TableCell>
+                        <Button onClick={() => handleEdit(item)}>Edit</Button>
+                        <Button
+                                color="error"
+                                onClick={() => handleDelete(item["${pk}"])}
+                        style="margin-left: 8px"
+                        >
+                        Delete
+                        </Button>
+                    </TableCell>
+                </TableRow>
+            </#list>
         </TableBody>
     </Table>
 </div>
-
-
 );
 }
 
-export default ${cls}Crud;
+export default ${cls}Page;

@@ -4,7 +4,7 @@
 
 
 package ${package}.repository;
-import java.util.List;
+
 import ${package}.model.${className?substring(className?last_index_of(".") + 1)};
 <#if relationshipType?? && masterTable??>
     import ${package}.model.${masterTable?capitalize};

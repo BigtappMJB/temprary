@@ -1,10 +1,10 @@
 import React from 'react';
-import EmployeeCrud from './components/EmployeeCrud';
+import EmployeeeCrud from './components/EmployeeeCrud';
 
 function App() {
   return (
     <div style={{ margin: 20 }}>
-      <EmployeeCrud />
+      <EmployeeeCrud />
     </div>
   );
 }

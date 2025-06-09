@@ -124,11 +124,15 @@ public class CodeGenService {
 
 			// Infer relationshipType if not provided and uiType is dropdown
 			List<String> generatedFiles = new ArrayList<>();
-			if (input.getMasterTable() != null && !input.getMasterTable().trim().isEmpty()) {
-				String masterTable = input.getMasterTable().toLowerCase().trim();
-				model.put("masterTable", masterTable);
-				model.put("relationshipType", input.getRelationshipType());
-
+			if (input.getMasterTable() != null && !input.getMasterTable().isEmpty()) {
+				String masterTable = input.getMasterTable().toLowerCase();
+				// Infer relationshipType for dropdown
+				if (input.getRelationshipType() == null) {
+					boolean hasDropdown = fields.stream().anyMatch(f -> "dropdown".equalsIgnoreCase(f.getUiType()));
+					if (hasDropdown) {
+						model.put("relationshipType", "ManyToOne");
+					}
+				}
 				// Validate master table existence
 				List<String> tables = jdbcTemplate.queryForList(
 						"SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE()",
@@ -138,13 +142,12 @@ public class CodeGenService {
 					log.warn("Master table '{}' does not exist in the database", masterTable);
 					throw new ServiceException("Master table '" + masterTable + "' does not exist in the database");
 				}
-
 				// Generate master entity if needed
-				String masterEntityFile = javaBasePathModel + capitalize(masterTable) + ".java";
+				String masterEntityFile = javaBasePathModel + capitalize(input.getMasterTable()) + ".java";
 				if (!Files.exists(Paths.get(masterEntityFile))) {
 					GeneratorInput masterInput = new GeneratorInput();
-					masterInput.setClassName("com.codegen.model." + capitalize(masterTable));
-					masterInput.setFields(fetchColumns(masterTable));
+					masterInput.setClassName("com.codegen.model." + capitalize(input.getMasterTable()));
+					masterInput.setFields(fetchColumns(input.getMasterTable()));
 					Map<String, Object> masterModel = new HashMap<>();
 					masterModel.put("className", masterInput.getClassName());
 					masterModel.put("fields", masterInput.getFields());
@@ -157,13 +160,11 @@ public class CodeGenService {
 				}
 			}
 
-
-
 			// Define file paths
 			String controllerPath = javaBasePathController + className + "Controller.java";
 			String servicePath = javaBasePathService + className + "Service.java";
 			String repositoryPath = javaBasePathRepository + className + "Repository.java";
-			String modelPath = javaBasePathModel + capitalize( className) + ".java";
+			String modelPath = javaBasePathModel + className + ".java";
 			String propertiesPath = resourcesPath + "application.properties";
 
 			// Generate files
