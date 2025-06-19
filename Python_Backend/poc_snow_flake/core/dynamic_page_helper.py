@@ -1,9 +1,17 @@
+
+
+
+
+
 from flask import jsonify
+from utility.jason_transformer import JsonTransformer
 from core.database import get_database_connection, close_connection
+
 import json
 import os
 import time
 import random
+import requests
 import string
 import re
 import logging
@@ -13,6 +21,7 @@ from typing import Dict, List, Tuple, Any, Optional
 
 # Configure logging
 logger = logging.getLogger('dynamic_page_helper')
+  # Change to actual URL
 
 def get_table_list():
     """Get list of available tables from the database"""
@@ -282,14 +291,18 @@ def create_or_update_role_permissions(role_id, menu_id, submenu_id, permission_l
     except Exception as e:
         print(f"Error creating/updating role permission: {e}")
         return False
-
+JAVA_API_URL = "http://localhost:8080/api/generator/hello"
 def create_dynamic_page(data):
+
     """Create a new dynamic page based on the provided data"""
     conn = None
     cursor = None
     try:
         logger.info("Creating dynamic page with data: %s", data)
-        
+
+
+
+        # logger.info("Creating dynamicMJJJJBBBBBBBBBBBBBBBBBBBBB$################@D")
         # Extract data from the request
         table_name = data.get('tableName')
         menu_name = data.get('menuName')
@@ -355,7 +368,41 @@ def create_dynamic_page(data):
                 success = create_or_update_role_permissions(role_id, menu_id, submenu_id, level_id)
                 if not success:
                     return {"success": False, "error": f"Failed to create/update role permission for role {role_id}"}, 500
-        
+        try:
+            # Test call to Java API hello endpoint
+            test_response = requests.get(JAVA_API_URL, timeout=5)
+            if test_response.status_code == 200:
+                logger.info(f"Java API hello test success: {test_response.text}")
+            else:
+                logger.warning(f"Java API hello test failed with status {test_response.status_code}")
+        except Exception as test_ex:
+            logger.error(f"Error testing Java API hello endpoint: {test_ex}")
+
+        try:
+            # Actual Java code generation call
+            transformer = JsonTransformer()
+            # java_payload= {
+            #     "className": "com.codegen.model.ihnji",
+            #     "fields": [
+            #         {"name": "inni", "type": "Double", "primary": True},
+            #         {"name": "knkkin", "type": "String", "primary": False},
+            #         {"name": "knmkn", "type": "String", "primary": False}
+            #     ]
+            # }
+            java_payload = transformer.transform(data)
+
+            logger.info(f"Java API payload: {java_payload}")
+            java_response = requests.post("http://localhost:8080/api/generator/generateApp", json=java_payload, timeout=20)
+            if java_response.status_code == 200:
+                logger.info("Java API code generation successful.")
+                java_result = java_response.json()
+            else:
+                logger.error(f"Java API failed with status {java_response.status_code}: {java_response.text}")
+                java_result = None
+        except Exception as ex:
+            logger.error(f"Error calling Java API: {ex}")
+            java_result = None
+
         # 7. Generate code files
         # Get table metadata for code generation
         cursor.execute(f"DESCRIBE {table_name}")
@@ -400,7 +447,7 @@ def create_dynamic_page(data):
                 "inputType": input_type,
                 "validations": validations
             }
-        
+
         # Generate code files using code generator
         try:
             from core.code_generator import generate_code
@@ -464,7 +511,8 @@ def create_dynamic_page(data):
         response_data["note"] = "The dynamic page has been created. The new endpoints will be available immediately without server reload."
             
         return response_data, 200
-        
+
+
     except Error as e:
         logger.error(f"Database error in create_dynamic_page: {e}")
         logger.error(f"Stack trace: {traceback.format_exc()}")
@@ -473,6 +521,8 @@ def create_dynamic_page(data):
             "error": f"Database error: {str(e)}",
             "message": "There was a problem connecting to the database. Please try again later."
         }, 500
+
+
     except Exception as e:
         logger.error(f"Unexpected error in create_dynamic_page: {e}")
         logger.error(f"Stack trace: {traceback.format_exc()}")

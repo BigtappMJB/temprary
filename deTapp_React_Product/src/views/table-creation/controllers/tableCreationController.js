@@ -29,8 +29,6 @@ export const tableCreationController = async (formData) => {
       created_by: decodeData(getCookie(isUserIdCookieName)),
     };
 
-    
-
     // Send the POST request to the cmd API API endpoint
     const response = await post("/generate-create-query", body, "python");
     // Return the response data
@@ -45,6 +43,7 @@ export const getDataTypesController = async () => {
     // Prepare the body object with sanitized data
     // Send the GET request to the cmd API API endpoint
     const response = await get("/mysqlDataTypes", "python");
+
     // Return the response data
     return Object.values(response);
   } catch (error) {

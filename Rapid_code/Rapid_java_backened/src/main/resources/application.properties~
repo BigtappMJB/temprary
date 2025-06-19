@@ -1,0 +1,48 @@
+spring.application.name=${SPRING_APP_NAME:rapid-code-generator}
+logging.pattern.console=${LOGGING_PATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+server.port=8080
+
+spring.freemarker.template-loader-path=classpath:/templates/
+spring.freemarker.suffix=.ftl
+
+
+# ==================== MySQL Configuration ====================
+spring.datasource.url=jdbc:mysql://13.201.216.64:3306/automationUtil
+spring.datasource.username=automation
+spring.datasource.password=Welcome@2024*
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+#spring.jpa.hibernate.ddl-auto=update
+#spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.hibernate.ddl-auto=none
+
+spring.jpa.show-sql=true
+
+react.generated.components.path=C:/Users/MohammadJuned/Documents/New folder/Rapid_Development_Application/deTapp_React_Product/src/views/generatedPages/components
+maven.executable.path=C:/Users/MohammadJuned/Downloads/apache-maven-3.9.9-bin/apache-maven-3.9.9/bin/mvn.cmd
+# Connection Pool (HikariCP)
+spring.datasource.hikari.maximum-pool-size=5
+spring.datasource.hikari.pool-name=mysqlPool
+
+## ==================== JWT Configuration ====================
+#jwt.secret=your_jwt_secret_key_here
+#jwt.expiration=3600
+
+# ==================== Email Configuration ====================
+spring.mail.username=praneethch43@gmail.com
+spring.mail.password=ucjv vswc wxxg dnrk
+spring.mail.host=smtp.example.com
+spring.mail.port=587
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+## ==================== Scheduler ====================
+#scheduler.interval=3600
+#
+## ==================== Snowflake (Optional) ====================
+#snowflake.user=your_snowflake_user
+#snowflake.password=your_snowflake_password
+#snowflake.account=your_snowflake_account
+#snowflake.warehouse=your_snowflake_warehouse
+#snowflake.database=your_snowflake_database
+#snowflake.schema=your_snowflake_schema
+#snowflake.role=your_snowflake_role

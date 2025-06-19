@@ -7,26 +7,26 @@ import { generateCrudTemplate } from "../templates/crudTemplate";
  */
 export const getTableListDataController = async () => {
   try {
-    console.log('Fetching tables from API...');
+    console.log("Fetching tables from API...");
     const response = await get("dynamic-page/tables", "python");
-    console.log('Raw API Response:', response);
-    
+    console.log("Raw API Response:", response);
+
     // Check if response has data property
     const data = response?.data || response;
-    console.log('Response data:', data);
+    console.log("Response data:", data);
 
     if (data && Array.isArray(data)) {
-      const formattedTables = data.map(table => ({
-        TABLE_NAME: table.tableName || table.TABLE_NAME || table.name
+      const formattedTables = data.map((table) => ({
+        TABLE_NAME: table.tableName || table.TABLE_NAME || table.name,
       }));
-      console.log('Formatted tables:', formattedTables);
+      console.log("Formatted tables:", formattedTables);
       return formattedTables;
     }
 
-    console.warn('Invalid response format from tables API:', response);
+    console.warn("Invalid response format from tables API:", response);
     return [];
   } catch (error) {
-    console.error('Error fetching tables:', error);
+    console.error("Error fetching tables:", error);
     throw error;
   }
 };
@@ -36,97 +36,184 @@ export const getTableListDataController = async () => {
  * @param {Object} formData - Data for creating the page
  * @returns {Promise<Object>} Response from the API
  */
+// export const createReactFormController = async (formData) => {
+//   try {
+//     if (!formData || typeof formData !== "object") {
+//       throw new Error("Invalid form data");
+//     }
+
+//     console.log("Creating dynamic page with data:", formData);
+
+//     // Validate tableName
+//     if (!formData.tableName || formData.tableName === "") {
+//       throw new Error("Table name is required");
+//     }
+
+//     // Normalize the route path
+//     let routePath = formData.routePath || "";
+
+//     // Ensure route path starts with a slash
+//     if (!routePath.startsWith("/")) {
+//       routePath = "/" + routePath;
+//     }
+
+//     // Remove trailing slash if present
+//     if (routePath.endsWith("/") && routePath.length > 1) {
+//       routePath = routePath.slice(0, -1);
+//     }
+
+//     // Prepare the payload according to the API specification
+//     const payload = {
+//       tableName: formData.tableName,
+//       fields: formData.fields || [],
+//       menuName: formData.menuName || "",
+//       subMenuName: formData.subMenuName || "",
+//       pageName: formData.pageName || "",
+//       routePath: routePath,
+//       moduleName: formData.moduleName || "",
+//       permissionLevels: ["create", "read", "update", "delete"], // Default permission levels
+//     };
+//     // const payload = {
+//     //   className: "com.codegen.model.ihnji",
+//     //   fields: [
+//     //     { name: "inni", type: "Double", primary: true },
+//     //     { name: "knkkin", type: "String", primary: false },
+//     //     { name: "knmkn ", type: "String", primary: false },
+//     //   ],
+//     // };
+
+//     // For debugging - log the exact payload being sent
+//     console.log("Sending payload to API:", JSON.stringify(payload, null, 2));
+
+//     // Call the API endpoint and process the response
+//     console.log("Calling API endpoint: dynamic-page/create");
+//     const response = await post("dynamic-page/create", payload, "python");
+//     // const response = await post("/api/generator/generateApp", payload, "java");
+//     console.log("API response received:", response);
+
+//     // If the page was created successfully, also generate the React component
+//     if (response) {
+//       try {
+//         console.log("Generating React component for the new page...");
+
+//         // Call the API to generate the React componAPI response receivedent
+//         const componentResponse = await post(
+//           "gpt/generateReactComponent",
+//           {
+//             pageName: formData.pageName,
+//             tableName: formData.tableName,
+//             fields: formData.fields || [],
+//             routePath: routePath,
+//           },
+//           "python"
+//         );
+
+//         console.log("React component generation response:", componentResponse);
+
+//         // Add component generation info to the response
+//         if (componentResponse && componentResponse.success) {
+//           response.componentGenerated = true;
+//           if (componentResponse.data && componentResponse.data.generatedFiles) {
+//             response.data = response.data || {};
+//             response.data.generatedFiles =
+//               componentResponse.data.generatedFiles;
+//           }
+//         }
+//       } catch (componentError) {
+//         console.error("Error generating React component:", componentError);
+//         // Don't fail the whole operation if component generation fails
+//         response.componentGenerated = false;
+//         response.componentError =
+//           componentError.message || "Unknown error generating component";
+//       }
+//     }
+
+//     if (response && response.success) {
+//       return {
+//         success: true,
+//         message: response.message || "Dynamic page created successfully",
+//         data: response.data,
+//       };
+//     } else {
+//       // If we get a response but success is false
+//       if (response) {
+//         throw response; // Throw the entire response object to preserve error details
+//       } else {
+//         throw new Error(
+//           "Failed to create dynamic page: No response from server"
+//         );
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error creating dynamic page:", error);
+//     throw error;
+//   }
+// };
+
 export const createReactFormController = async (formData) => {
   try {
     if (!formData || typeof formData !== "object") {
       throw new Error("Invalid form data");
     }
-    
-    console.log('Creating dynamic page with data:', formData);
-    
+
+    console.log("Creating dynamic page with data:", formData);
+
     // Validate tableName
-    if (!formData.tableName || formData.tableName === '') {
+    if (!formData.tableName || formData.tableName === "") {
       throw new Error("Table name is required");
     }
-    
+
     // Normalize the route path
-    let routePath = formData.routePath || '';
-    
-    // Ensure route path starts with a slash
-    if (!routePath.startsWith('/')) {
-      routePath = '/' + routePath;
+    let routePath = formData.routePath || "";
+
+    if (!routePath.startsWith("/")) {
+      routePath = "/" + routePath;
     }
-    
-    // Remove trailing slash if present
-    if (routePath.endsWith('/') && routePath.length > 1) {
+
+    if (routePath.endsWith("/") && routePath.length > 1) {
       routePath = routePath.slice(0, -1);
     }
-    
-    // Prepare the payload according to the API specification
+
+    // Prepare payload for your Java backend API
     const payload = {
       tableName: formData.tableName,
-      menuName: formData.menuName || '',
-      subMenuName: formData.subMenuName || '',
-      pageName: formData.pageName || '',
+      fields: formData.fields || [],
+      menuName: formData.menuName || "",
+      subMenuName: formData.subMenuName || "",
+      description: formData.description || "",
+      pageName: formData.pageName || "",
       routePath: routePath,
-      moduleName: formData.moduleName || '',
-      permissionLevels: ["create", "read", "update", "delete"] // Default permission levels
+      moduleName: formData.moduleName || "",
+      masterTable: formData.masterTable || false,
+      relationshipType: formData.relationshipType || "one-to-many", // Default to one-to-many
+      permissionLevels: ["create", "read", "update", "delete"], // Default permissions
     };
-    
-    // For debugging - log the exact payload being sent
-    console.log('Sending payload to API:', JSON.stringify(payload, null, 2));
-    
-    // Call the API endpoint and process the response
-    console.log('Calling API endpoint: dynamic-page/create');
-    const response = await post("dynamic-page/create", payload, "python");
-    console.log('API response received:', response);
-    
-    // If the page was created successfully, also generate the React component
-    if (response && response.success) {
-      try {
-        console.log('Generating React component for the new page...');
-        
-        // Call the API to generate the React component
-        const componentResponse = await post("gpt/generateReactComponent", {
-          pageName: formData.pageName,
-          tableName: formData.tableName,
-          routePath: routePath
-        }, "python");
-        
-        console.log('React component generation response:', componentResponse);
-        
-        // Add component generation info to the response
-        if (componentResponse && componentResponse.success) {
-          response.componentGenerated = true;
-          if (componentResponse.data && componentResponse.data.generatedFiles) {
-            response.data = response.data || {};
-            response.data.generatedFiles = componentResponse.data.generatedFiles;
-          }
-        }
-      } catch (componentError) {
-        console.error('Error generating React component:', componentError);
-        // Don't fail the whole operation if component generation fails
-        response.componentGenerated = false;
-        response.componentError = componentError.message || 'Unknown error generating component';
-      }
-    }
-    
+
+    console.log("Sending payload to API:", JSON.stringify(payload, null, 2));
+
+    // Call your Java backend API only — no React component separate call needed
+    const response = await post("/api/generator/generateApp", payload, "java");
+
+    console.log("API response received:", response);
+
+    // Directly return the response from Java backend
     if (response && response.success) {
       return {
         success: true,
-        message: response.message || 'Dynamic page created successfully',
-        data: response.data
+        message: response.message || "Dynamic page created successfully",
+        data: response.data,
       };
     } else {
-      // If we get a response but success is false
       if (response) {
-        throw response; // Throw the entire response object to preserve error details
+        throw response;
       } else {
-        throw new Error('Failed to create dynamic page: No response from server');
+        throw new Error(
+          "Failed to create dynamic page: No response from server"
+        );
       }
     }
   } catch (error) {
-    console.error('Error creating dynamic page:', error);
+    console.error("Error creating dynamic page:", error);
     throw error;
   }
 };

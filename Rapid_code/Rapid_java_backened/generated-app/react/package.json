@@ -4,13 +4,19 @@
   "private": true,
   "dependencies": {
     "react": "^18.2.0",
-"react-scripts": "5.0.1",
-    "@fontsource/roboto": "^5.0.0",
     "react-dom": "^18.2.0",
     "@mui/material": "^5.14.4",
+    "@mui/icons-material": "^5.14.4",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "axios": "^1.4.0"
+    "react-hook-form": "^7.45.0",
+    "@hookform/resolvers": "^3.1.0",
+    "yup": "^1.2.0",
+    "lodash": "^4.17.21",
+    "dompurify": "^3.0.5",
+    "prop-types": "^15.8.1",
+    "@fontsource/roboto": "^5.0.0",
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

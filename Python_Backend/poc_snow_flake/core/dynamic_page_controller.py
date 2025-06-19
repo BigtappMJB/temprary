@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
+
 from core.dynamic_page_helper import get_table_list, get_table_metadata, create_dynamic_page, check_dynamic_page_exists
 from core.async_page_creator import start_async_page_creation, get_creation_status
 import logging
 import mysql.connector
 from mysql.connector import Error
 import os
+import requests
 import json
 
 # Configure logging
@@ -81,8 +83,8 @@ def create_page():
     """Create a new dynamic page with menu, submenu, and permissions (synchronous)"""
     try:
         # Log the start of the request
-        logger.info("Received request to create dynamic page (synchronous)")
-        
+        logger.info("Received request YO MJBBBBBB to create dynamic page (synchronous)")
+
         # Get the JSON data
         data = request.get_json()
         if not data:
@@ -99,7 +101,7 @@ def create_page():
             result, status_code = create_dynamic_page(data)
             
             # Log the success
-            logger.info(f"Dynamic page creation completed with status code: {status_code}")
+            logger.info(f"Dynamic page creation MJBBBBB completed with status code: {status_code}")
             
             # Return the result
             return jsonify(result), status_code

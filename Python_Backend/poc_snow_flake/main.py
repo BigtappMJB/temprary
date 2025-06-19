@@ -156,5 +156,5 @@ if __name__ == "__main__":
     # Run with debug mode but disable the reloader
     # This prevents the server from restarting when new files are created
     # You'll need to manually restart the server when you make changes to your code
-    app.run(debug=True, port=5000, use_reloader=False)
+    app.run(debug=True, port=5000, use_reloader=True)
 

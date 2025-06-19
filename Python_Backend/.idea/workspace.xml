@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7e82f603-1f1a-404b-b7c2-7dba701cc826" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc_snow_flake/core/dynamic_page_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/poc_snow_flake/core/dynamic_page_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc_snow_flake/core/dynamic_page_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/poc_snow_flake/core/dynamic_page_helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc_snow_flake/core/users_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/poc_snow_flake/core/users_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc_snow_flake/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/poc_snow_flake/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc_snow_flake/share/general_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/poc_snow_flake/share/general_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/Employeee-react.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/react/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/src/db/generated_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/generated-app/src/db/generated_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/DTO/IncomingGeneratorDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/DTO/IncomingGeneratorDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/controller/CodeGenController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/controller/CodeGenController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/model/GeneratorInput.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/model/GeneratorInput.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/service/CodeGenService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/service/CodeGenService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/service/ReactCodeGenService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/java/com/codegen/service/ReactCodeGenService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/resources/templates/ReactCurdPage.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened/src/main/resources/templates/ReactCurdPage.ftl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_code/Rapid_java_backened1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/.env.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/src/views/dynamicPageCreation/components/pageDetailsForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/src/views/dynamicPageCreation/components/pageDetailsForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/src/views/dynamicPageCreation/controllers/dynamicPageCreationController.js" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/src/views/dynamicPageCreation/controllers/dynamicPageCreationController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/src/views/dynamicPageCreation/dynamicPageCreation.js" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/src/views/dynamicPageCreation/dynamicPageCreation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/src/views/generatedPages/components/DynamicComponentGenerator.js" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/src/views/generatedPages/components/DynamicComponentGenerator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/src/views/generatedPages/components/DynamicPageFallback.js" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/src/views/generatedPages/components/DynamicPageFallback.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/src/views/generatedPages/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/src/views/generatedPages/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deTapp_React_Product/src/views/table-creation/controllers/tableCreationController.js" beforeDir="false" afterPath="$PROJECT_DIR$/../deTapp_React_Product/src/views/table-creation/controllers/tableCreationController.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2xRKtO4BQjabTvBXpOR15ttHjOV" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python Debug Server.Unnamed.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.jason_transformer.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.users_controller.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Python.jason_transformer">
+    <configuration name="Unnamed" type="PyRemoteDebugConfigurationType" factoryName="Python Remote Debug" nameIsGenerated="true">
+      <module name="Python_Backend" />
+      <option name="PORT" value="0" />
+      <option name="HOST" value="localhost" />
+      <PathMappingSettings>
+        <option name="pathMappings">
+          <list />
+        </option>
+      </PathMappingSettings>
+      <option name="REDIRECT_OUTPUT" value="true" />
+      <option name="SUSPEND_AFTER_CONNECT" value="true" />
+      <method v="2" />
+    </configuration>
+    <configuration name="jason_transformer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="poc_snow_flake" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/poc_snow_flake/utility" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/poc_snow_flake/utility/jason_transformer.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="users_controller" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Python_Backend" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/poc_snow_flake/core" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/poc_snow_flake/core/users_controller.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Unnamed" type="ReactNative" factoryName="React Native" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <react-native value="" />
+      <platform value="ANDROID" />
+      <envs />
+      <only-packager />
+      <browser value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
+      <method v="2">
+        <option name="ReactNativePackager" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Python.jason_transformer" />
+      <item itemvalue="Python.users_controller" />
+      <item itemvalue="Python Debug Server.Unnamed" />
+      <item itemvalue="React Native.Unnamed" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.jason_transformer" />
+        <item itemvalue="Python.users_controller" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7e82f603-1f1a-404b-b7c2-7dba701cc826" name="Changes" comment="" />
+      <created>1747895660002</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1747895660002</updated>
+      <workItem from="1747895661383" duration="3721000" />
+      <workItem from="1747981471784" duration="11325000" />
+      <workItem from="1748259629595" duration="588000" />
+      <workItem from="1748260268690" duration="28000" />
+      <workItem from="1748320971302" duration="58000" />
+      <workItem from="1748321046910" duration="35000" />
+      <workItem from="1748336037874" duration="519000" />
+      <workItem from="1748512422011" duration="66000" />
+      <workItem from="1748512557822" duration="18242000" />
+      <workItem from="1748927726524" duration="5131000" />
+      <workItem from="1748951551380" duration="4180000" />
+      <workItem from="1749200902073" duration="5211000" />
+      <workItem from="1749465771874" duration="2869000" />
+      <workItem from="1749795950160" duration="1637000" />
+      <workItem from="1749809887435" duration="8255000" />
+      <workItem from="1750306574233" duration="2987000" />
+      <workItem from="1750313218691" duration="444000" />
+      <workItem from="1750314126733" duration="646000" />
+      <workItem from="1750317021175" duration="1476000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/poc_snow_flake/core/users_controller.py</url>
+          <line>115</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Python_Backend$jason_transformer.coverage" NAME="jason_transformer Coverage Results" MODIFIED="1748336253490" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/poc_snow_flake/utility" />
+  </component>
+</project>

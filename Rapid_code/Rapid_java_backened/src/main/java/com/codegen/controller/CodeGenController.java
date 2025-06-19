@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.codegen.DTO.IncomingGeneratorDTO;
 import com.codegen.service.DynamicPageService;
@@ -146,15 +143,21 @@ public ResponseEntity<Map<String, Object>> generateFullApp(@RequestBody @Valid I
         throw new RapidControllerException("Permission levels list must not be empty");
     }
 
-    // Here w can set createdBy from logged-in user or static for now
+    // Define supported UI input types
+    final List<String> supportedInputTypes = Arrays.asList(
+            "email", "date", "dropdown", "textbox", "Checkbox", "radio-button"
+    );
+
+    // Here we can set createdBy from logged-in user or static for now
     String createdBy = "system";
 
     // 1. Get or create Menu, get menuId
     Long menuId = dynamicPageService.getOrCreateMenu(input.getMenuName(), createdBy);
 
     // 2. Create or update SubMenu, get subMenuId
-    Long subMenuId = dynamicPageService.createOrUpdateSubMenu(menuId, input.getSubMenuName(),
-            input.getDescription(), input.getRoutePath(), createdBy);
+    Long subMenuId = dynamicPageService.createOrUpdateSubMenu(
+            menuId, input.getSubMenuName(), input.getDescription(), input.getRoutePath(), createdBy
+    );
 
     // 3. Get permission level IDs map for given names
     Map<String, Long> permissionLevelIds = dynamicPageService.getPermissionLevelIdsByNames(input.getPermissionLevels());
@@ -173,9 +176,9 @@ public ResponseEntity<Map<String, Object>> generateFullApp(@RequestBody @Valid I
         }
     }
 
-
+    // 6. Prepare GeneratorInput with fields, including UI type information
     GeneratorInput generatorInput = new GeneratorInput();
-    generatorInput.setClassName("com.codegen.model." + capitalize(input.getTableName()));
+    generatorInput.setClassName("com.codegen.model." + input.getTableName()); // Capitalization will be handled in service
     generatorInput.setMasterTable(input.getMasterTable()); // Will be null if not in JSON
     generatorInput.setRelationshipType(input.getRelationshipType()); // Will be null if not in JSON
     List<GeneratorInput.Field> fields = new ArrayList<>();
@@ -188,12 +191,25 @@ public ResponseEntity<Map<String, Object>> generateFullApp(@RequestBody @Valid I
                 }
             }
             if (name == null || name.trim().isEmpty()) {
-                continue; // skip invalid fields
+                continue; // Skip invalid fields
             }
+
             GeneratorInput.Field field = new GeneratorInput.Field();
             field.setName(name);
-            field.setType(incomingField.getType() != null ? incomingField.getType() : "String");
+            field.setType(incomingField.getType()); // No defaulting to "String" anymore
             field.setPrimary(incomingField.getPrimary() != null && incomingField.getPrimary());
+
+            // Set UI type, validate against supported types, default to textbox if invalid
+            String uiType = incomingField.getUiType() != null ? incomingField.getUiType() : "textbox";
+            if (!supportedInputTypes.contains(uiType)) {
+                uiType = "textbox"; // Fallback to textbox if uiType is unsupported
+            }
+            field.setUiType(uiType);
+
+            // Set numOptions and optionValues
+            field.setNumOptions(incomingField.getNumOptions() != null ? incomingField.getNumOptions() : 0);
+            field.setOptionValues(incomingField.getOptionValues() != null ? incomingField.getOptionValues() : new ArrayList<>());
+
             fields.add(field);
         }
     }
@@ -222,7 +238,6 @@ public ResponseEntity<Map<String, Object>> generateFullApp(@RequestBody @Valid I
 
     return ResponseEntity.ok(response);
 }
-
 
     @GetMapping("/download/{fileName}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable String fileName) throws IOException {

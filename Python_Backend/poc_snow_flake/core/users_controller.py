@@ -116,6 +116,7 @@ def get_input_field_details():
 @users_bp.route('/dynamicPageCreation', methods=['POST'])
 def get_page_creation():
     try:
+
         data = request.json
         print(data)
         users = dynamic_page_creation(data)

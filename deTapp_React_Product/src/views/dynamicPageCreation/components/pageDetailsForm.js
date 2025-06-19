@@ -77,6 +77,7 @@ const schema = yup.object().shape({
  * />
  */
 const PageCreationForm = forwardRef(({ onSubmit, onReset }, ref) => {
+  console.log("PageCreationForm ######################## rendered");
   // State for managing whether the form fields should be read-only
   const [readOnly] = useState(false);
 

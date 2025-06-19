@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Python_Backend.iml" filepath="$PROJECT_DIR$/.idea/Python_Backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/poc_snow_flake/untitled/.venv/.venv.iml" filepath="$PROJECT_DIR$/poc_snow_flake/untitled/.venv/.venv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/poc_snow_flake/poc_snow_flake.iml" filepath="$PROJECT_DIR$/poc_snow_flake/poc_snow_flake.iml" />
     </modules>
   </component>
 </project>
