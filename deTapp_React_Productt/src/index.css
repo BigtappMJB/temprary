@@ -1,0 +1,270 @@
+/**
+ * Global styles for the application
+ */
+
+/* Reset margin and set font family for the body element */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/**
+ * Styles for code elements
+ */
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/**
+ * Styles for input fields
+ * 
+ * Prevents input fields from shrinking and sets a fixed width
+ */
+.input-field {
+  flex-shrink: 0; /* Prevents the input fields from shrinking */
+  width: 200px; /* Adjust the width as needed */
+  background-color: "#ffffff";
+  border-radius: 8px !important;
+}
+
+/**
+ * Styles for panel headers
+ * 
+ * Sets a gradient background color for panel headers
+ */
+.panel-header {
+  background: hsla(215, 84%, 34%, 1);
+  background: linear-gradient(
+    360deg,
+    hsla(215, 84%, 34%, 1) 0%,
+    hsla(215, 57%, 71%, 1) 80%,
+    hsla(215, 100%, 90%, 1) 100%
+  );
+  background: -moz-linear-gradient(
+    360deg,
+    hsla(215, 84%, 34%, 1) 0%,
+    hsla(215, 57%, 71%, 1) 80%,
+    hsla(215, 100%, 90%, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    360deg,
+    hsla(215, 84%, 34%, 1) 0%,
+    hsla(215, 57%, 71%, 1) 80%,
+    hsla(215, 100%, 90%, 1) 100%
+  );
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#0E4CA1", endColorstr="#8BAEDF", GradientType=1 );
+}
+
+/**
+ * Styles for main element
+ * 
+ * Sets a light gray background color for the main element
+ */
+main {
+  background: #fafafd !important;
+}
+
+/**
+ * Styles for panel backgrounds
+ * 
+ * Sets a white background color and padding for panel backgrounds
+ */
+.panel-bg {
+  background: #fff !important;
+  padding: 10px 20px !important;
+}
+
+/**
+ * Styles for danger buttons
+ * 
+ * Sets a red background color for danger buttons
+ */
+.danger {
+  background-color: #d92d20 !important;
+}
+
+/**
+ * Styles for primary buttons
+ * 
+ * Sets a blue background color for primary buttons
+ */
+.primary {
+  background-color: #166eb7 !important;
+}
+
+/**
+ * Styles for warning buttons
+ * 
+ * Sets an orange background color for warning buttons
+ */
+.warning {
+  background-color: #f99127 !important;
+}
+
+/**
+ * Styles for text inputs
+ * 
+ * Sets a fixed height and padding for text inputs
+ */
+input[type="text"] {
+  height: 34px !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+}
+
+/* Hide the built-in eye icon in Edge and Internet Explorer */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Hide the built-in eye icon in WebKit browsers (e.g., Safari) */
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none;
+}
+
+/**
+ * Styles for buttons
+ * 
+ * Sets a minimum width for buttons
+ */
+.MuiButton-contained {
+  min-width: 100px !important;
+}
+
+/**
+ * Styles for grid items
+ * 
+ * Sets padding for grid items
+ */
+.css-mhc70k-MuiGrid-root > .MuiGrid-item {
+  padding: 10px 10px 10px 25px !important;
+  /*  padding-bottom: 15px!important;
+    padding-right: 10px!important;
+    padding-left: 25px!important;
+    padding-top: 25px!important; */
+}
+
+/**
+ * Styles for table headers
+ * 
+ * Sets a white background color and padding for table headers
+ */
+.table-header {
+  background-color: #ffffff !important;
+  padding: 8px 15px !important;
+  margin-bottom: 0px !important;
+}
+
+/**
+ * Styles for table name headers
+ * 
+ * Sets a fixed height and padding for table name headers
+ */
+.tablename-head > .MuiInputBase-root > input {
+  height: 34px !important;
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
+/**
+ * Styles for table name headers (th elements)
+ * 
+ * Sets padding and font size for table name headers (th elements)
+ */
+.tablename-head th {
+  padding: 5px 10px 10px 10px !important;
+  font-size: 14px;
+  /* width:  500000vw !important; */
+}
+
+/**
+ * Styles for table name headers (h6 elements)
+ * 
+ * Sets a blue color for table name headers (h6 elements)
+ */
+.tablename-head h6 {
+  color: #166eb7 !important;
+}
+
+/**
+ * Styles for table body cells
+ * 
+ * Sets padding and font size for table body cells
+ */
+.tablename-body td {
+  padding: 5px !important;
+  padding-left: 15px !important;
+  font-size: 14px;
+}
+
+/**
+ * Styles for table body cells (button elements)
+ * 
+ * Sets a minimum width for table body cells (button elements)
+ */
+.tablename-body td button {
+  min-width: auto !important;
+}
+
+/**
+ * Styles for table footers
+ * 
+ * Sets a light gray background color for table footers
+ */
+.tablename-footer {
+  background: #f2f2f2;
+}
+
+/**
+ * Styles for common tables
+ * 
+ * Sets padding for common tables
+ */
+.common-table {
+  padding-bottom: 0px !important;
+}
+
+/**
+ * Styles for disabled buttons
+ * 
+ * Sets a gray color and opacity for disabled buttons
+ */
+.css-16isonm-MuiButtonBase-root-MuiButton-root.Mui-disabled {
+  color: rgb(0, 0, 0);
+  opacity: 0.5;
+}
+
+.css-16isonm-MuiButtonBase-root-MuiButton-root.Mui-disabled {
+  color: rgba(0, 0, 0, 0.26) !important;
+  box-shadow: none;
+  background-color: rgba(73, 82, 88, 0.12) !important;
+}
+.css-ka7ti6-MuiAutocomplete-root .MuiOutlinedInput-root {
+  padding: 0px !important;
+}
+
+.css-1mkcvpn-MuiInputBase-root-MuiOutlinedInput-root {
+  border-radius: 8px !important;
+}
+.css-1e9omt0-MuiPaper-root-MuiAlert-root {
+  align-content: center !important;
+}
+
+.custom-disabled {
+  cursor: not-allowed !important;
+  display: none !important;
+  opacity: 0.5 !important;
+  pointer-events: none; /* Disables click events */
+}
+
+.custom-display-disabled {
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+  pointer-events: none; /* Disables click events */
+}

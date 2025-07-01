@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="932740d9-049c-4866-8a23-bad57e3eb813" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/utility/jason_transformer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/.gitattributes" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/core/dynamic_page_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/core/dynamic_page_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/core/dynamic_page_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/core/dynamic_page_helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/core/users_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/core/users_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/share/general_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Python_Backend/poc_snow_flake/share/general_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/classes/com/codegen/model/employee.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/classes/com/codegen/model/employee.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/employee-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/employee-0.0.1-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/employee-0.0.1-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/employee-0.0.1-SNAPSHOT.jar.original" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/employee-generated-app.zip" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/employee-generated-app.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/generated-app/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/classes/com/codegen/controller/CodeGenController.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/classes/com/codegen/controller/CodeGenController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/classes/templates/ReactCurdPage.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/classes/templates/ReactCurdPage.ftl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/rapid-code-generator-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/rapid-code-generator-0.0.1-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/rapid-code-generator-0.0.1-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/rapid-code-generator-0.0.1-SNAPSHOT.jar.original" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/surefire-reports/TEST-com.codegen.demo.RapidCodeGeneratorApplicationTests.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/surefire-reports/TEST-com.codegen.demo.RapidCodeGeneratorApplicationTests.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/surefire-reports/TEST-controller.CodeGenControllerTests.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/surefire-reports/TEST-controller.CodeGenControllerTests.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/surefire-reports/com.codegen.demo.RapidCodeGeneratorApplicationTests.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/surefire-reports/com.codegen.demo.RapidCodeGeneratorApplicationTests.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/surefire-reports/controller.CodeGenControllerTests.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../Rapid_Code_Module/rapid-code-generator-Backened/target/surefire-reports/controller.CodeGenControllerTests.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/dynamicPageCreation/controllers/dynamicPageCreationController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/dynamicPageCreation/controllers/dynamicPageCreationController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/dynamicPageCreation/dynamicPageCreation.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/dynamicPageCreation/dynamicPageCreation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/table-creation/controllers/tableCreationController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/table-creation/controllers/tableCreationController.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="2xlVACga8nmRyd8LoKidl269yJ2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="932740d9-049c-4866-8a23-bad57e3eb813" name="Changes" comment="" />
+      <created>1748512502734</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748512502734</updated>
+      <workItem from="1748512504072" duration="7000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
