@@ -1,6 +1,0 @@
-projectKey=detapp_local_sonar_v2
-serverUrl=http://127.0.0.1:9000
-serverVersion=10.7.0.96327
-dashboardUrl=http://127.0.0.1:9000/dashboard?id=detapp_local_sonar_v2
-ceTaskId=8fc0c0a0-4b3b-4818-8c03-e29139cb8d18
-ceTaskUrl=http://127.0.0.1:9000/api/ce/task?id=8fc0c0a0-4b3b-4818-8c03-e29139cb8d18
