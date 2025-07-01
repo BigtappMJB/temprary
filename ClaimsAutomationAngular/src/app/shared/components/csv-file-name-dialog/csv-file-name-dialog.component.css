@@ -1,8 +1,0 @@
-.mat-paginator {
-  width: calc(100% - 0px) !important;
-}
-
-mat-dialog-actions {
-  display: flex;
-  justify-content: flex-end; /* Aligns content to the right */
-}
