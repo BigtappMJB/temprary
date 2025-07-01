@@ -1,3 +1,0 @@
-@echo off
-echo Starting Python service...
-node server/start_python_service.js
